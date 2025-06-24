@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>PFVTT Login</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <h1><%= register ? 'Register for PFVTT' : 'Login to PFVTT' %></h1>
+  <% if (error) { %>
+    <p style="color:red"><%= error %></p>
+  <% } %>
+  <form id="auth-form" method="POST" action="<%= register ? '/register' : '/login' %>">
+    <label>Username: <input type="text" name="username" required></label><br>
+    <label>Password: <input type="password" name="password" required></label><br>
+    <button type="submit"><%= register ? 'Register' : 'Login' %></button>
+  </form>
+  <% if (!register) { %>
+    <p>Don't have an account? <a href="/register">Register here</a></p>
+  <% } else { %>
+    <p>Already have an account? <a href="/login">Login here</a></p>
+  <% } %>
+  <script src="/login.js"></script>
+</body>
+</html>

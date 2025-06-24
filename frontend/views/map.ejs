@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>PFVTT Map</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <h1>Welcome to the Map!</h1>
+  <div id="map-data"></div>
+  <div id="map-visual" style="width:600px;height:400px;border:1px solid #888;margin-top:20px;display:flex;align-items:center;justify-content:center;">
+    <span style="color:#888;">[Map visual placeholder]</span>
+  </div>
+  <a href="/login">Logout</a>
+  <script>
+    fetch('/api/map')
+      .then(res => res.json())
+      .then(data => {
+        document.getElementById('map-data').textContent = 'Map data: ' + JSON.stringify(data);
+      })
+      .catch(() => {
+        document.getElementById('map-data').textContent = 'Failed to load map data.';
+      });
+  </script>
+</body>
+</html>

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>PFVTT Campaigns</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <h1>Campaign Management</h1>
+  <div class="campaign-container">
+    <ul id="campaign-list">
+      <!-- Campaigns will be dynamically loaded here -->
+    </ul>
+    <form id="create-campaign-form">
+      <input type="text" id="campaign-name" placeholder="New campaign name" required />
+      <input type="text" id="campaign-description" placeholder="Description" />
+      <select id="campaign-system">
+        <option value="">Select system</option>
+        <option value="D&D 5e">D&D 5e</option>
+        <option value="Pathfinder">Pathfinder</option>
+        <option value="Pathfinder 2">Pathfinder 2</option>
+        <option value="D&D 3.5">D&D 3.5</option>
+      </select>
+      <input type="text" id="campaign-image-url" placeholder="Image URL" />
+      <button type="submit">Create New Campaign</button>
+    </form>
+  </div>
+  <a href="/login" id="logout-link">Logout</a>
+  <script src="/campaigns.js"></script>
+  <script>
+    // Check login state in localStorage/sessionStorage
+    const user = localStorage.getItem('pfvtt_user') || sessionStorage.getItem('pfvtt_user');
+    if (!user) {
+      window.location.href = '/login';
+    }
+    document.getElementById('logout-link').addEventListener('click', function() {
+      localStorage.removeItem('pfvtt_user');
+      sessionStorage.removeItem('pfvtt_user');
+    });
+  </script>
+</body>
+</html>

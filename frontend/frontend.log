@@ -1,0 +1,4 @@
+Received POST /api/campaigns at frontend proxy: {"name":"Pathfinder 2","description":"PF 2","game_rules_id":"3","image_url":"","username":"nevarim@gmail.com"}
+Received POST /api/campaigns at frontend proxy: {"name":"Pathfinder","description":"PF","game_rules_id":"3","image_url":"","username":"nevarim"}
+Received POST /api/campaigns at frontend proxy: {"name":"D&D 5","description":"D&D 5","game_rules_id":"1","image_url":"","username":"nevarim"}
+Received POST /api/campaigns at frontend proxy: {"name":"D&D 3.5","description":"3.5","game_rules_id":"4","image_url":"","username":"nevarim"}
