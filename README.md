@@ -36,12 +36,17 @@ npm start
 
 The backend will handle API and DB logic, while the frontend serves the EJS pages and static assets.
 
-## Features
-- Login and registration pages
-- Campaign management UI
-- Map page (after successful login)
-- Game rules management (Pathfinder, Pathfinder 2, D&D 5.0, D&D 3.5)
-- Uses localStorage/sessionStorage for login state on the frontend
+## Features & Possibilities
+- **Login and registration**: Secure login and registration forms with error handling, validation, and password reset request (mock, UI+API)
+- **Password reset**: Request password reset from the login page, handled by `/api/reset_password` endpoint (mock implementation)
+- **Session state**: Login state is stored in localStorage/sessionStorage on the frontend
+- **Campaign management**: Create, list, and delete campaigns; each campaign can be associated with a game system and metadata (title, description, image)
+- **Game rules management**: Admin interface to add, edit, and delete game rules (Pathfinder, Pathfinder 2, D&D 5.0, D&D 3.5 supported by default)
+- **Map page**: View map data after login (visual map display and interaction tools in progress)
+- **Actors, scenes, journals, permissions**: Backend API ready for managing actors, scenes, journals, and campaign permissions (frontend integration planned)
+- **Import/export**: Campaign data import/export (Foundry VTT compatible, planned)
+- **Responsive design**: All main pages are mobile-friendly
+- **Extensible**: Modular rule management and future support for real-time features, chat, and map drawing tools
 
 ## Roadmap
 See `ROADMAP.md` for planned features and progress.

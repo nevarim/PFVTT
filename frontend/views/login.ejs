@@ -1,24 +1,47 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>PFVTT Login</title>
+  <title>PFVTT Login / Register</title>
   <link rel="stylesheet" href="/style.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body>
-  <h1><%= register ? 'Register for PFVTT' : 'Login to PFVTT' %></h1>
-  <% if (error) { %>
-    <p style="color:red"><%= error %></p>
-  <% } %>
-  <form id="auth-form" method="POST" action="<%= register ? '/register' : '/login' %>">
-    <label>Username: <input type="text" name="username" required></label><br>
-    <label>Password: <input type="password" name="password" required></label><br>
-    <button type="submit"><%= register ? 'Register' : 'Login' %></button>
-  </form>
-  <% if (!register) { %>
-    <p>Don't have an account? <a href="/register">Register here</a></p>
-  <% } else { %>
-    <p>Already have an account? <a href="/login">Login here</a></p>
-  <% } %>
+  <h1 id="form-title">Login to PFVTT</h1>
+  <div id="form-container">
+    <form id="auth-form" autocomplete="off">
+      <label>Username:
+        <input type="text" name="username" required autocomplete="username">
+      </label>
+      <label>Password:
+        <input type="password" name="password" required autocomplete="current-password">
+      </label>
+      <button type="submit" id="submit-btn">Login</button>
+      <p class="form-note">Dopo il login verrai reindirizzato alla pagina campagne.</p>
+    </form>
+    <form id="register-form" style="display:none;">
+      <label>Username:
+        <input type="text" name="reg_username" required autocomplete="username">
+      </label>
+      <label>Password:
+        <input type="password" name="reg_password" required autocomplete="new-password">
+      </label>
+      <button type="submit">Register</button>
+      <p class="form-note">Dopo la registrazione verrai reindirizzato alla pagina campagne.</p>
+    </form>
+    <form id="reset-form" style="display:none;">
+      <label>Username or Email:
+        <input type="text" name="reset_user" required autocomplete="username">
+      </label>
+      <button type="submit">Request Password Reset</button>
+    </form>
+    <p id="form-links">
+      <span id="to-register">Non hai un account? <a href="#" id="register-link">Registrati qui</a></span>
+      <span id="to-login" style="display:none;">Hai già un account? <a href="#" id="login-link">Accedi qui</a></span>
+      <span id="forgot-pass">| <a href="#" id="forgot-password-link">Password dimenticata?</a></span>
+      <span id="back-login" style="display:none;">| <a href="#" id="back-login-link">Torna al login</a></span>
+    </p>
+    <p id="error-msg" style="color:red; display:none;"></p>
+  </div>
   <script src="/login.js"></script>
 </body>
 </html>

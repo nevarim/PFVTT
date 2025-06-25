@@ -20,6 +20,7 @@ Future<void> main(List<String> arguments) async {
   await for (HttpRequest request in server) {
     try {
       if (request.uri.path == '/login' && request.method == 'POST') {
+  print('BACKEND /login chiamato');
         String content = await utf8.decoder.bind(request).join();
         Map<String, String> params = {};
         if (request.headers.contentType?.mimeType == 'application/json') {
@@ -47,8 +48,18 @@ Future<void> main(List<String> arguments) async {
         }
         await request.response.close();
       } else if (request.uri.path == '/register' && request.method == 'POST') {
+      } else if (request.uri.path == '/api/reset_password' && request.method == 'POST') {
         String content = await utf8.decoder.bind(request).join();
-        Map<String, String> params = {};
+        Map<String, dynamic> params = jsonDecode(content);
+        final user = params['user'];
+        request.response.headers.contentType = ContentType.json;
+        if (user == null || user.toString().trim().isEmpty) {
+          request.response.write(jsonEncode({'success': false, 'message': 'Missing username or email.'}));
+        } else {
+          // TODO: implement real password reset logic (email, token, etc.)
+          request.response.write(jsonEncode({'success': true, 'message': 'Reset request received (mock).'}));
+        }
+        await request.response.close();
         if (request.headers.contentType?.mimeType == 'application/json') {
           params = Map<String, String>.from(jsonDecode(content));
         } else {
@@ -98,30 +109,114 @@ Future<void> main(List<String> arguments) async {
         request.response.write(jsonEncode({'success': true, 'maps': maps}));
         await request.response.close();
       } else if (request.uri.path == '/rules' || request.uri.path == '/api/rules') {
-        try {
-          var results = await conn.query('SELECT id, system, rules_json FROM game_rules');
-          List<Map<String, dynamic>> rules = [];
-          for (var row in results) {
-            var rulesJsonValue = row[2];
-            if (rulesJsonValue is Blob) {
-              rulesJsonValue = utf8.decode(rulesJsonValue.toBytes());
-            } else if (rulesJsonValue is List<int>) {
-              rulesJsonValue = utf8.decode(rulesJsonValue);
-            } else if (rulesJsonValue is String) {
-              // already a string, do nothing
-            } else {
-              rulesJsonValue = rulesJsonValue.toString();
+        if (request.method == 'GET') {
+          try {
+            var results = await conn.query('SELECT id, system, rules_json FROM game_rules');
+            List<Map<String, dynamic>> rules = [];
+            for (var row in results) {
+              var rulesJsonValue = row[2];
+              if (rulesJsonValue is Blob) {
+                rulesJsonValue = utf8.decode(rulesJsonValue.toBytes());
+              } else if (rulesJsonValue is List<int>) {
+                rulesJsonValue = utf8.decode(rulesJsonValue);
+              } else if (rulesJsonValue is String) {
+                // already a string, do nothing
+              } else {
+                rulesJsonValue = rulesJsonValue.toString();
+              }
+              rules.add({"id": row[0], "system": row[1], "rules_json": rulesJsonValue});
             }
-            rules.add({"id": row[0], "system": row[1], "rules_json": rulesJsonValue});
+            request.response.write(jsonEncode(rules));
+          } catch (e, stack) {
+            print('Error in /api/rules: \$e');
+            print(stack);
+            request.response.statusCode = HttpStatus.internalServerError;
+            request.response.write("Server error: \$e");
           }
-          request.response.write(jsonEncode(rules));
-        } catch (e, stack) {
-          print('Error in /api/rules: \$e');
-          print(stack);
-          request.response.statusCode = HttpStatus.internalServerError;
-          request.response.write("Server error: \$e");
+          await request.response.close();
+        } else if (request.method == 'POST') {
+          // Add new rule
+          try {
+            String content = await utf8.decoder.bind(request).join();
+            Map<String, dynamic> params = jsonDecode(content);
+            final system = params['system'];
+            final rulesJson = params['rules_json'];
+            if (system == null || rulesJson == null) {
+              request.response.statusCode = HttpStatus.badRequest;
+              request.response.headers.contentType = ContentType.json;
+              request.response.write(jsonEncode({'success': false, 'error': 'Missing system or rules_json'}));
+              await request.response.close();
+              return;
+            }
+            await conn.query('INSERT INTO game_rules (system, rules_json) VALUES (?, ?)', [system, rulesJson]);
+            request.response.headers.contentType = ContentType.json;
+            request.response.write(jsonEncode({'success': true}));
+            await request.response.close();
+          } catch (e, stack) {
+            print('Error in POST /api/rules: \$e');
+            print(stack);
+            request.response.statusCode = HttpStatus.internalServerError;
+            request.response.headers.contentType = ContentType.json;
+            request.response.write(jsonEncode({'success': false, 'error': e.toString()}));
+            await request.response.close();
+          }
+        } else if (request.method == 'PUT') {
+          // Edit rule
+          try {
+            String content = await utf8.decoder.bind(request).join();
+            Map<String, dynamic> params = jsonDecode(content);
+            final id = params['id'];
+            final system = params['system'];
+            final rulesJson = params['rules_json'];
+            if (id == null || system == null || rulesJson == null) {
+              request.response.statusCode = HttpStatus.badRequest;
+              request.response.headers.contentType = ContentType.json;
+              request.response.write(jsonEncode({'success': false, 'error': 'Missing id, system, or rules_json'}));
+              await request.response.close();
+              return;
+            }
+            await conn.query('UPDATE game_rules SET system = ?, rules_json = ? WHERE id = ?', [system, rulesJson, id]);
+            request.response.headers.contentType = ContentType.json;
+            request.response.write(jsonEncode({'success': true}));
+            await request.response.close();
+          } catch (e, stack) {
+            print('Error in PUT /api/rules: \$e');
+            print(stack);
+            request.response.statusCode = HttpStatus.internalServerError;
+            request.response.headers.contentType = ContentType.json;
+            request.response.write(jsonEncode({'success': false, 'error': e.toString()}));
+            await request.response.close();
+          }
+        } else if (request.method == 'DELETE') {
+          // Delete rule
+          try {
+            String content = await utf8.decoder.bind(request).join();
+            Map<String, dynamic> params = jsonDecode(content);
+            final id = params['id'];
+            if (id == null) {
+              request.response.statusCode = HttpStatus.badRequest;
+              request.response.headers.contentType = ContentType.json;
+              request.response.write(jsonEncode({'success': false, 'error': 'Missing id'}));
+              await request.response.close();
+              return;
+            }
+            await conn.query('DELETE FROM game_rules WHERE id = ?', [id]);
+            request.response.headers.contentType = ContentType.json;
+            request.response.write(jsonEncode({'success': true}));
+            await request.response.close();
+          } catch (e, stack) {
+            print('Error in DELETE /api/rules: \$e');
+            print(stack);
+            request.response.statusCode = HttpStatus.internalServerError;
+            request.response.headers.contentType = ContentType.json;
+            request.response.write(jsonEncode({'success': false, 'error': e.toString()}));
+            await request.response.close();
+          }
+        } else {
+          request.response.statusCode = HttpStatus.methodNotAllowed;
+          request.response.write('Method not allowed');
+          await request.response.close();
         }
-        await request.response.close();
       } else if (request.uri.path == '/campaigns' && request.method == 'POST') {
         print('Received POST /campaigns request');
         try {
@@ -181,7 +276,7 @@ Future<void> main(List<String> arguments) async {
             return;
           }
           final userId = userRes.first[0];
-          var results = await conn.query('SELECT id, name, description, game_rules_id, image_url, created_at FROM campaigns WHERE user_id = ?', [userId]);
+          var results = await conn.query('SELECT c.id, c.name, c.description, c.game_rules_id, c.image_url, c.created_at, gr.system FROM campaigns c LEFT JOIN game_rules gr ON c.game_rules_id = gr.id WHERE c.user_id = ?', [userId]);
           List<Map<String, dynamic>> campaigns = [];
           for (var row in results) {
             var imageUrlValue = row[4];
@@ -200,7 +295,8 @@ Future<void> main(List<String> arguments) async {
               'description': row[2]?.toString(),
               'game_rules_id': row[3],
               'image_url': imageUrlValue,
-              'created_at': row[5]?.toString()
+              'created_at': row[5]?.toString(),
+              'system': row[6]?.toString()
             });
           }
           request.response.headers.contentType = ContentType.json;

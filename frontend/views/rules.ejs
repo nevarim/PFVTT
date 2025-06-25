@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>PFVTT Game Rules Management</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <h1>Game Rules Management</h1>
+  <div class="rules-container">
+    <table id="rules-table">
+      <thead>
+        <tr><th>ID</th><th>System</th><th>Description</th><th>Actions</th></tr>
+      </thead>
+      <tbody>
+        <!-- Rules will be dynamically loaded here -->
+      </tbody>
+    </table>
+    <h2>Add / Edit Rule</h2>
+    <form id="rule-form">
+      <input type="hidden" id="rule-id" />
+      <input type="text" id="rule-system" placeholder="System (e.g., D&D 5e)" required />
+      <input type="text" id="rule-description" placeholder="Description" required />
+      <button type="submit">Save Rule</button>
+      <button type="button" id="cancel-edit" style="display:none;">Cancel</button>
+    </form>
+  </div>
+  <a href="/campaigns">Back to Campaigns</a>
+  <script src="/rules.js"></script>
+</body>
+</html>

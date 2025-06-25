@@ -15,6 +15,10 @@
 - [x] Map data API
 - [x] User registration API
 - [x] Campaign management API
+- [x] Actors API
+- [x] Scenes API
+- [x] Journals API
+- [x] Campaign permissions API
 
 ### 3. Frontend (EJS)
 - [x] Set up Node.js + EJS project
@@ -27,8 +31,8 @@
 - [x] Connect to backend login/register APIs
 - [x] Store login state in localStorage/sessionStorage
 - [x] Error handling and validation improvements
-- [ ] Responsive/mobile-friendly design
-- [ ] Implement password reset (future)
+- [x] Responsive/mobile-friendly design
+- [x] Implement password reset (mock, UI+API)
 
 #### 4.2 Map Page
 - [x] Basic map page UI
@@ -47,10 +51,10 @@
 - [ ] Edit campaign (future)
 - [ ] Link campaigns to map and rules (planned)
 - [x] Campaign metadata (title, description, system, image)
-- [ ] Actors management (add, edit, remove, assign to campaign)
-- [ ] Scenes management (add, edit, remove, assign to campaign)
-- [ ] Journals management (add, edit, remove, assign to campaign)
-- [ ] Permissions and user roles per campaign
+- [ ] Actors management (API ready, frontend missing)
+- [ ] Scenes management (API ready, frontend missing)
+- [ ] Journals management (API ready, frontend missing)
+- [ ] Permissions and user roles per campaign (API ready, frontend missing)
 - [ ] Import/export campaign data (Foundry VTT compatible)
 - [ ] Game rules selection (UI for choosing ruleset when creating/editing a campaign, backend ready for ruleset association)
 
@@ -2483,12 +2487,4 @@
 
 ## Notes
 - Prioritize secure authentication and modular rule management.
-- Future: Add real-time features, chat, and map drawing tools.
-- [ ] Pathfinder
-- [ ] Pathfinder 2
-- [ ] D&D 5.0
-- [ ] D&D 3.5
-
-### 7. Testing & Deployment
-- [ ] End-to-end tests
-- [
+- Future: Add real-time features, chat, and map

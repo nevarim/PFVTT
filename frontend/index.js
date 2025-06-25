@@ -30,19 +30,35 @@ app.get('/register', (req, res) => {
 });
 
 app.post('/login', async (req, res) => {
+  console.log('POST /login chiamato con:', req.body);
   const { username, password } = req.body;
   try {
     const response = await axios.post('http://localhost:8080/login', { username, password }, {
       headers: { 'Content-Type': 'application/json' }
     });
+    if (
+      (req.headers['content-type'] && req.headers['content-type'].includes('application/json')) ||
+      (req.headers['accept'] && req.headers['accept'].includes('application/json')) ||
+      req.xhr
+    ) {
+      // AJAX/JS login: respond with JSON
+      if (response.data.success) {
+        loggedIn = true;
+      }
+      return res.json(response.data);
+    }
     if (response.data.success) {
-      loggedIn = true;
-      res.redirect('/campaigns');
+      // Traditional form: redirect to map
+      req.session.user = username;
+      return res.redirect('/map');
     } else {
-      res.render('login', { error: response.data.message, register: false });
+      return res.render('login', { error: response.data.error || 'Login failed', register: false });
     }
   } catch (err) {
-    res.render('login', { error: 'Backend error' });
+    if (req.headers['content-type'] && req.headers['content-type'].includes('application/json')) {
+      return res.json({ success: false, error: 'Backend error' });
+    }
+    return res.render('login', { error: 'Backend error', register: false });
   }
 });
 
@@ -52,6 +68,17 @@ app.post('/register', async (req, res) => {
     const response = await axios.post('http://localhost:8080/register', { username, password }, {
       headers: { 'Content-Type': 'application/json' }
     });
+    if (
+      (req.headers['content-type'] && req.headers['content-type'].includes('application/json')) ||
+      (req.headers['accept'] && req.headers['accept'].includes('application/json')) ||
+      req.xhr
+    ) {
+      // AJAX/JS register: respond with JSON
+      if (response.data.success) {
+        loggedIn = true;
+      }
+      return res.json(response.data);
+    }
     if (response.data.success) {
       loggedIn = true;
       res.redirect('/login');
@@ -59,6 +86,9 @@ app.post('/register', async (req, res) => {
       res.render('login', { error: response.data.message, register: true });
     }
   } catch (err) {
+    if (req.headers['content-type'] && req.headers['content-type'].includes('application/json')) {
+      return res.json({ success: false, error: 'Backend error' });
+    }
     res.render('login', { error: 'Backend error', register: true });
   }
 });
@@ -110,12 +140,59 @@ app.post('/api/campaigns', async (req, res) => {
 app.get('/api/rules', async (req, res) => {
   try {
     const response = await axios.get('http://localhost:8080/api/rules');
-    res.status(response.status).json(response.data);
+    res.json(response.data);
   } catch (err) {
     res.status(500).json({ error: 'Failed to fetch rules from backend' });
   }
 });
 
+app.post('/api/rules', async (req, res) => {
+  try {
+    const response = await axios.post('http://localhost:8080/api/rules', req.body, { headers: { 'Content-Type': 'application/json' } });
+    res.json(response.data);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to add rule' });
+  }
+});
+
+app.put('/api/rules', async (req, res) => {
+  try {
+    const response = await axios.put('http://localhost:8080/api/rules', req.body, { headers: { 'Content-Type': 'application/json' } });
+    res.json(response.data);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to update rule' });
+  }
+});
+
+app.delete('/api/rules', async (req, res) => {
+  try {
+    const response = await axios.delete('http://localhost:8080/api/rules', { data: req.body, headers: { 'Content-Type': 'application/json' } });
+    res.json(response.data);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to delete rule' });
+  }
+});
+
+app.get('/rules', (req, res) => {
+  if (!loggedIn) {
+    return res.redirect('/login');
+  }
+  res.render('rules');
+});
+
+app.post('/api/reset_password', async (req, res) => {
+  try {
+    const response = await axios.post('http://localhost:8080/api/reset_password', req.body, { headers: { 'Content-Type': 'application/json' } });
+    res.json(response.data);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to request password reset' });
+  }
+});
+
+app.post('/logout', (req, res) => {
+  loggedIn = false;
+  res.json({ success: true });
+});
 app.listen(PORT, () => {
   console.log(`Frontend running at http://localhost:${PORT}`);
 });

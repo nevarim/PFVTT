@@ -15,16 +15,13 @@
       <input type="text" id="campaign-description" placeholder="Description" />
       <select id="campaign-system">
         <option value="">Select system</option>
-        <option value="D&D 5e">D&D 5e</option>
-        <option value="Pathfinder">Pathfinder</option>
-        <option value="Pathfinder 2">Pathfinder 2</option>
-        <option value="D&D 3.5">D&D 3.5</option>
+        <!-- Options will be dynamically loaded by campaigns.js -->
       </select>
       <input type="text" id="campaign-image-url" placeholder="Image URL" />
       <button type="submit">Create New Campaign</button>
     </form>
   </div>
-  <a href="/login" id="logout-link">Logout</a>
+  <a href="#" id="logout-link">Logout</a>
   <script src="/campaigns.js"></script>
   <script>
     // Check login state in localStorage/sessionStorage
@@ -32,9 +29,13 @@
     if (!user) {
       window.location.href = '/login';
     }
-    document.getElementById('logout-link').addEventListener('click', function() {
+    document.getElementById('logout-link').addEventListener('click', async function(e) {
+      e.preventDefault();
       localStorage.removeItem('pfvtt_user');
       sessionStorage.removeItem('pfvtt_user');
+      // Inform server to logout
+      await fetch('/logout', { method: 'POST' });
+      window.location.href = '/login';
     });
   </script>
 </body>
