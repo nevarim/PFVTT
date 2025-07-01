@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>PFVTT Campaign Permissions</title>
+  <link rel="stylesheet" href="/style.css">
+  <style>
+    .permissions-container {
+      display: flex;
+      height: 100vh;
+      background: #2c2c2c;
+      color: #fff;
+    }
+    .permissions-sidebar {
+      width: 300px;
+      background: #1a1a1a;
+      border-right: 1px solid #444;
+      padding: 20px;
+      overflow-y: auto;
+    }
+    .permissions-main {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+    }
+    .campaign-info {
+      background: #333;
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+    }
+    .campaign-name {
+      font-size: 24px;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+    .campaign-description {
+      color: #aaa;
+      margin-bottom: 15px;
+    }
+    .permissions-list {
+      background: #2c2c2c;
+      border: 1px solid #444;
+      border-radius: 10px;
+      padding: 20px;
+    }
+    .permission-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px;
+      background: #333;
+      margin: 10px 0;
+      border-radius: 5px;
+      border: 1px solid #444;
+    }
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    .user-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: #555;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      color: #fff;
+    }
+    .user-details h4 {
+      margin: 0;
+      color: #fff;
+    }
+    .user-details .user-id {
+      color: #aaa;
+      font-size: 12px;
+    }
+    .role-badge {
+      padding: 6px 12px;
+      border-radius: 15px;
+      font-size: 12px;
+      font-weight: bold;
+      text-transform: uppercase;
+    }
+    .role-owner {
+      background: #dc3545;
+      color: white;
+    }
+    .role-gm {
+      background: #fd7e14;
+      color: white;
+    }
+    .role-player {
+      background: #28a745;
+      color: white;
+    }
+    .role-observer {
+      background: #6c757d;
+      color: white;
+    }
+    .permission-actions {
+      display: flex;
+      gap: 10px;
+    }
+    .add-user-btn {
+      width: 100%;
+      padding: 15px;
+      background: #28a745;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+      margin-bottom: 20px;
+    }
+    .add-user-btn:hover {
+      background: #218838;
+    }
+    .back-btn {
+      background: #6c757d;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-bottom: 20px;
+    }
+    .back-btn:hover {
+      background: #545b62;
+    }
+    .btn {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 12px;
+      transition: background-color 0.3s;
+    }
+    .btn-primary {
+      background: #007bff;
+      color: white;
+    }
+    .btn-primary:hover {
+      background: #0056b3;
+    }
+    .btn-danger {
+      background: #dc3545;
+      color: white;
+    }
+    .btn-danger:hover {
+      background: #c82333;
+    }
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.5);
+    }
+    .modal-content {
+      background-color: #2c2c2c;
+      margin: 5% auto;
+      padding: 20px;
+      border: 1px solid #444;
+      border-radius: 10px;
+      width: 80%;
+      max-width: 500px;
+      color: #fff;
+    }
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #444;
+    }
+    .close {
+      color: #aaa;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .close:hover {
+      color: #fff;
+    }
+    .form-group {
+      margin-bottom: 15px;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      color: #aaa;
+    }
+    .form-group select,
+    .form-group input {
+      width: 100%;
+      padding: 10px;
+      background: #1a1a1a;
+      border: 1px solid #444;
+      border-radius: 5px;
+      color: #fff;
+      font-family: inherit;
+    }
+    .empty-state {
+      text-align: center;
+      color: #aaa;
+      padding: 40px;
+    }
+    .empty-state h3 {
+      margin-bottom: 10px;
+    }
+    .role-description {
+      background: #1a1a1a;
+      padding: 15px;
+      border-radius: 5px;
+      margin-bottom: 20px;
+    }
+    .role-description h4 {
+      color: #fff;
+      margin-bottom: 10px;
+    }
+    .role-description ul {
+      color: #aaa;
+      margin: 0;
+      padding-left: 20px;
+    }
+    .role-description li {
+      margin-bottom: 5px;
+    }
+  </style>
+</head>
+<body>
+  <div class="permissions-container">
+    <div class="permissions-sidebar">
+      <button class="back-btn" onclick="window.location.href='/campaigns'">← Back to Campaigns</button>
+      <button class="add-user-btn" onclick="openAddUserModal()">+ Add User</button>
+      
+      <div class="role-description">
+        <h4>Role Descriptions</h4>
+        <div style="margin-bottom: 15px;">
+          <span class="role-badge role-owner">Owner</span>
+          <ul style="margin-top: 5px;">
+            <li>Full campaign control</li>
+            <li>Manage permissions</li>
+            <li>Delete campaign</li>
+          </ul>
+        </div>
+        <div style="margin-bottom: 15px;">
+          <span class="role-badge role-gm">GM</span>
+          <ul style="margin-top: 5px;">
+            <li>Manage scenes & actors</li>
+            <li>Control game flow</li>
+            <li>Edit campaign details</li>
+          </ul>
+        </div>
+        <div style="margin-bottom: 15px;">
+          <span class="role-badge role-player">Player</span>
+          <ul style="margin-top: 5px;">
+            <li>View campaign content</li>
+            <li>Manage own actors</li>
+            <li>Participate in sessions</li>
+          </ul>
+        </div>
+        <div>
+          <span class="role-badge role-observer">Observer</span>
+          <ul style="margin-top: 5px;">
+            <li>View-only access</li>
+            <li>No editing permissions</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    
+    <div class="permissions-main">
+      <div class="campaign-info" id="campaignInfo">
+        <!-- Campaign info will be loaded here -->
+      </div>
+      
+      <div class="permissions-list">
+        <h3>Campaign Permissions</h3>
+        <div id="permissionsList">
+          <!-- Permissions will be loaded here -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add User Modal -->
+  <div id="addUserModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Add User to Campaign</h2>
+        <span class="close" onclick="closeAddUserModal()">&times;</span>
+      </div>
+      <form id="addUserForm">
+        <div class="form-group">
+          <label for="userId">User ID:</label>
+          <input type="number" id="userId" name="user_id" required>
+          <small style="color: #aaa;">Enter the numeric user ID</small>
+        </div>
+        <div class="form-group">
+          <label for="userRole">Role:</label>
+          <select id="userRole" name="role" required>
+            <option value="">Select a role...</option>
+            <option value="gm">Game Master (GM)</option>
+            <option value="player">Player</option>
+            <option value="observer">Observer</option>
+          </select>
+        </div>
+        <div class="permission-actions">
+          <button type="submit" class="btn btn-primary">Add User</button>
+          <button type="button" class="btn btn-danger" onclick="closeAddUserModal()">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="/permissions.js"></script>
+</body>
+</html>

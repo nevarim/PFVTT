@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>PFVTT Scenes</title>
+  <link rel="stylesheet" href="/style.css">
+  <style>
+    .scenes-container {
+      display: flex;
+      height: 100vh;
+      background: #2c2c2c;
+      color: #fff;
+    }
+    .scenes-sidebar {
+      width: 300px;
+      background: #1a1a1a;
+      border-right: 1px solid #444;
+      padding: 20px;
+      overflow-y: auto;
+    }
+    .scenes-main {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+    }
+    .scene-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .scene-item {
+      background: #333;
+      margin: 10px 0;
+      padding: 15px;
+      border-radius: 5px;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: all 0.3s;
+      position: relative;
+    }
+    .scene-item:hover {
+      background: #444;
+      border-color: #666;
+    }
+    .scene-item.selected {
+      border-color: #007bff;
+      background: #2a4a6b;
+    }
+    .scene-item.active {
+      border-color: #28a745;
+      background: #1e4d2b;
+    }
+    .scene-item.active::after {
+      content: "ACTIVE";
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      background: #28a745;
+      color: white;
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-size: 10px;
+      font-weight: bold;
+    }
+    .scene-name {
+      font-weight: bold;
+      font-size: 16px;
+      margin-bottom: 5px;
+    }
+    .scene-description {
+      color: #aaa;
+      font-size: 12px;
+      margin-bottom: 5px;
+    }
+    .scene-dimensions {
+      color: #888;
+      font-size: 11px;
+    }
+    .create-scene-btn {
+      width: 100%;
+      padding: 15px;
+      background: #28a745;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+      margin-bottom: 20px;
+    }
+    .create-scene-btn:hover {
+      background: #218838;
+    }
+    .scene-sheet {
+      background: #2c2c2c;
+      border: 1px solid #444;
+      border-radius: 10px;
+      padding: 20px;
+      max-width: 800px;
+    }
+    .scene-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 15px;
+      border-bottom: 2px solid #444;
+    }
+    .scene-thumbnail {
+      width: 120px;
+      height: 80px;
+      border-radius: 5px;
+      background: #444;
+      margin-right: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      color: #aaa;
+      background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23666"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>');
+      background-repeat: no-repeat;
+      background-position: center;
+      background-size: 40px;
+    }
+    .scene-info h2 {
+      margin: 0;
+      color: #fff;
+    }
+    .scene-info .scene-status {
+      color: #aaa;
+      margin: 5px 0;
+    }
+    .scene-properties {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin: 20px 0;
+    }
+    .property-block {
+      background: #1a1a1a;
+      padding: 15px;
+      border-radius: 5px;
+    }
+    .property-label {
+      color: #aaa;
+      font-size: 12px;
+      text-transform: uppercase;
+      margin-bottom: 5px;
+    }
+    .property-value {
+      font-size: 16px;
+      font-weight: bold;
+      color: #fff;
+    }
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.8);
+    }
+    .modal-content {
+      background-color: #2c2c2c;
+      margin: 5% auto;
+      padding: 20px;
+      border: 1px solid #444;
+      border-radius: 10px;
+      width: 80%;
+      max-width: 500px;
+      color: #fff;
+    }
+    .close {
+      color: #aaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .close:hover {
+      color: #fff;
+    }
+    .form-group {
+      margin: 15px 0;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      color: #aaa;
+    }
+    .form-group input, .form-group select, .form-group textarea {
+      width: 100%;
+      padding: 10px;
+      background: #1a1a1a;
+      border: 1px solid #444;
+      border-radius: 5px;
+      color: #fff;
+      resize: vertical;
+    }
+    .form-group textarea {
+      min-height: 80px;
+    }
+    .btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin: 5px;
+    }
+    .btn-primary {
+      background: #007bff;
+      color: white;
+    }
+    .btn-primary:hover {
+      background: #0056b3;
+    }
+    .btn-success {
+      background: #28a745;
+      color: white;
+    }
+    .btn-success:hover {
+      background: #218838;
+    }
+    .btn-danger {
+      background: #dc3545;
+      color: white;
+    }
+    .btn-danger:hover {
+      background: #c82333;
+    }
+    .campaign-header {
+      background: #1a1a1a;
+      padding: 15px;
+      margin-bottom: 20px;
+      border-radius: 5px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .back-btn {
+      background: #6c757d;
+      color: white;
+      padding: 10px 15px;
+      text-decoration: none;
+      border-radius: 5px;
+    }
+    .back-btn:hover {
+      background: #545b62;
+      color: white;
+      text-decoration: none;
+    }
+    .scene-actions {
+      margin-top: 20px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+  </style>
+</head>
+<body>
+  <div class="campaign-header">
+    <h1 id="campaign-title">Campaign Scenes</h1>
+    <a href="/campaigns" class="back-btn">← Back to Campaigns</a>
+  </div>
+  
+  <div class="scenes-container">
+    <div class="scenes-sidebar">
+      <button class="create-scene-btn" onclick="openCreateSceneModal()">+ Create New Scene</button>
+      <ul id="scene-list" class="scene-list">
+        <!-- Scenes will be loaded here -->
+      </ul>
+    </div>
+    
+    <div class="scenes-main">
+      <div id="scene-sheet-container">
+        <div class="scene-sheet" style="text-align: center; color: #aaa; padding: 100px;">
+          <h3>Select a scene to view details</h3>
+          <p>Choose a scene from the sidebar or create a new one</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Create Scene Modal -->
+  <div id="create-scene-modal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeCreateSceneModal()">&times;</span>
+      <h2>Create New Scene</h2>
+      <form id="create-scene-form">
+        <div class="form-group">
+          <label for="scene-name">Scene Name:</label>
+          <input type="text" id="scene-name" required>
+        </div>
+        <div class="form-group">
+          <label for="scene-description">Description:</label>
+          <textarea id="scene-description" placeholder="Describe this scene..."></textarea>
+        </div>
+        <div class="form-group">
+          <label for="scene-width">Width (grid units):</label>
+          <input type="number" id="scene-width" min="5" max="100" value="20">
+        </div>
+        <div class="form-group">
+          <label for="scene-height">Height (grid units):</label>
+          <input type="number" id="scene-height" min="5" max="100" value="15">
+        </div>
+        <div class="form-group">
+          <label for="scene-grid-size">Grid Size (pixels):</label>
+          <input type="number" id="scene-grid-size" min="10" max="200" value="50">
+        </div>
+        <div class="form-group">
+          <label for="scene-background-color">Background Color:</label>
+          <input type="color" id="scene-background-color" value="#2c2c2c">
+        </div>
+        <button type="submit" class="btn btn-primary">Create Scene</button>
+        <button type="button" class="btn btn-danger" onclick="closeCreateSceneModal()">Cancel</button>
+      </form>
+    </div>
+  </div>
+
+  <script src="/scenes.js"></script>
+</body>
+</html>

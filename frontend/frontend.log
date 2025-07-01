@@ -2,3 +2,162 @@ Received POST /api/campaigns at frontend proxy: {"name":"Pathfinder 2","descript
 Received POST /api/campaigns at frontend proxy: {"name":"Pathfinder","description":"PF","game_rules_id":"3","image_url":"","username":"nevarim"}
 Received POST /api/campaigns at frontend proxy: {"name":"D&D 5","description":"D&D 5","game_rules_id":"1","image_url":"","username":"nevarim"}
 Received POST /api/campaigns at frontend proxy: {"name":"D&D 3.5","description":"3.5","game_rules_id":"4","image_url":"","username":"nevarim"}
+Received POST /api/campaigns at frontend proxy: {"name":"Pathfinder 2","description":"PF 2","game_rules_id":"3","image_url":"","username":"nevarim"}
+Received POST /api/campaigns at frontend proxy: {"name":"Pathfinder 2","description":"PF 2","game_rules_id":"3","image_url":"","username":"nevarim"}
+Received POST /api/campaigns at frontend proxy: {"name":"Pathfinder","description":"PF","game_rules_id":"2","image_url":"","username":"nevarim"}
+Received POST /api/campaigns at frontend proxy: {"name":"D&D 5","description":"D&D 5","game_rules_id":"1","image_url":"","username":"nevarim"}
+Received POST /api/campaigns at frontend proxy: {"name":"D&D 3.5","description":"3.5","game_rules_id":"4","image_url":"","username":"nevarim"}
+UPLOAD PROXY: Received fields: {"user_id":"1","campaign_id":"2"}
+UPLOAD PROXY: Received file: png-clipart-graphy-fantasy-warrior-warrior-photography-action-figure.png image/png 39024
+UPLOAD PROXY ERROR: AggregateError
+UPLOAD PROXY: Received fields: {"user_id":"1","campaign_id":"2"}
+UPLOAD PROXY: Received file: Untitled.png image/png 487787
+UPLOAD PROXY ERROR: AggregateError
+UPLOAD PROXY: Received fields: {"user_id":"1","campaign_id":"2"}
+UPLOAD PROXY: Received file: png-clipart-graphy-fantasy-warrior-warrior-photography-action-figure.png image/png 39024
+UPLOAD PROXY: Forwarding to backend with user_id=1, campaign_id=2
+UPLOAD PROXY ERROR: AggregateError
+UPLOAD PROXY: Received fields: {"user_id":"1","campaign_id":"2"}
+UPLOAD PROXY: Received file: door.png image/png 35189
+UPLOAD PROXY: Forwarding to backend with user_id=1, campaign_id=2
+UPLOAD PROXY ERROR: AggregateError
+UPLOAD PROXY: Received fields: {"user_id":"1","campaign_id":"2"}
+UPLOAD PROXY: Received file: png-clipart-graphy-fantasy-warrior-warrior-photography-action-figure.png image/png 39024
+UPLOAD PROXY: Forwarding to backend with user_id=1, campaign_id=2
+UPLOAD PROXY ERROR: AggregateError
+UPLOAD PROXY: Received fields: {"user_id":"1","campaign_id":"2"}
+UPLOAD PROXY: Received file: door.png image/png 35189
+UPLOAD PROXY: Forwarding to backend with user_id=1, campaign_id=2
+UPLOAD PROXY ERROR: AggregateError
+UPLOAD PROXY: Received fields: {"user_id":"1","campaign_id":"2"}
+UPLOAD PROXY: Received file: Untitled.png image/png 487787
+UPLOAD PROXY: Forwarding to backend with user_id=1, campaign_id=2
+UPLOAD PROXY ERROR: AggregateError
+UPLOAD PROXY: Received fields: {"user_id":"1","campaign_id":"2"}
+UPLOAD PROXY: Received file: circle.png image/png 168278
+UPLOAD PROXY: Forwarding to backend with user_id=1, campaign_id=2
+UPLOAD PROXY ERROR: AggregateError
+UPLOAD PROXY: Received fields: {"user_id":"1","campaign_id":"2"}
+UPLOAD PROXY: Received file: door.png image/png 35189
+UPLOAD PROXY: Forwarding to backend with user_id=1, campaign_id=2
+UPLOAD PROXY ERROR: AggregateError
+UPLOAD PROXY: Received fields: {"user_id":"1","campaign_id":"2"}
+UPLOAD PROXY: Received file: Untitled.png image/png 487787
+UPLOAD PROXY: Forwarding to backend with user_id=1, campaign_id=2
+UPLOAD PROXY ERROR: AggregateError
+Received POST /api/campaigns at frontend proxy: {"name":"Pathfinder 2","description":"p","game_rules_id":"","image_url":"","username":"nevarim"}
+Received POST /api/campaigns at frontend proxy: {"name":"Pathfinder 2","description":"p","game_rules_id":"","image_url":"","username":"nevarim"}
+Received POST /api/campaigns at frontend proxy: {"name":"Pathfinder 2","description":"p","game_rules_id":"","image_url":"","username":"nevarim"}
+UPLOAD PROXY: Received fields: {"user_id":"1","campaign_id":"2"}
+UPLOAD PROXY: Received file: Untitled.png image/png 487787
+UPLOAD PROXY: Forwarding to backend with user_id=1, campaign_id=2
+UPLOAD PROXY ERROR: AggregateError
+UPLOAD PROXY: Received fields: {"user_id":"1","campaign_id":"2"}
+UPLOAD PROXY: Received file: test_image.png image/png 67
+UPLOAD PROXY: Forwarding to backend with user_id=1, campaign_id=2
+UPLOAD PROXY: Backend response: {"success":true,"image_url":"backend/images/campaign_2/test_image.png"}
+UPLOAD PROXY: Success
+UPLOAD PROXY: Received fields: {"user_id":"1","campaign_id":"2"}
+UPLOAD PROXY: Received file: circle.png image/png 168278
+UPLOAD PROXY: Forwarding to backend with user_id=1, campaign_id=2
+UPLOAD PROXY ERROR: AggregateError
+UPLOAD PROXY: Received fields: {"user_id":"1","campaign_id":"17"}
+UPLOAD PROXY: Received file: 15.png image/png 72
+UPLOAD PROXY: Forwarding to backend with user_id=1, campaign_id=17
+UPLOAD PROXY: Backend response: {"success":true,"url":"images/campaign/1/17.png"}
+UPLOAD PROXY: Success
+UPLOAD PROXY: Received fields: {"user_id":"1","campaign_id":"6"}
+UPLOAD PROXY: Received file: png-clipart-graphy-fantasy-warrior-warrior-photography-action-figure.png image/png 39024
+UPLOAD PROXY: Forwarding to backend with user_id=1, campaign_id=6
+UPLOAD PROXY ERROR: AggregateError
+UPLOAD PROXY: Received fields: {"user_id":"1","campaign_id":"2"}
+UPLOAD PROXY: Received file: Untitled.png image/png 487787
+UPLOAD PROXY: Forwarding to backend with user_id=1, campaign_id=2
+UPLOAD PROXY ERROR: AggregateError
+UPLOAD PROXY: Received fields: {"user_id":"1","campaign_id":"2"}
+UPLOAD PROXY: Received file: png-clipart-graphy-fantasy-warrior-warrior-photography-action-figure.png image/png 39024
+UPLOAD PROXY: Forwarding to backend with user_id=1, campaign_id=2
+UPLOAD PROXY ERROR: AggregateError: 
+UPLOAD PROXY ERROR: Error code: ECONNREFUSED
+UPLOAD PROXY ERROR: No response received from backend
+UPLOAD PROXY: Received fields: {"user_id":"1","campaign_id":"2"}
+UPLOAD PROXY: Received file: circle.png image/png 168278
+UPLOAD PROXY: Forwarding to backend with user_id=1, campaign_id=2
+UPLOAD PROXY ERROR: AggregateError: 
+UPLOAD PROXY ERROR: Error code: ECONNREFUSED
+UPLOAD PROXY ERROR: No response received from backend
+UPLOAD PROXY: Received fields: {"user_id":"1","campaign_id":"2"}
+UPLOAD PROXY: Received file: circle.png image/png 168278
+UPLOAD PROXY: Forwarding to backend with user_id=1, campaign_id=2
+UPLOAD PROXY ERROR: AggregateError: 
+UPLOAD PROXY ERROR: Error code: ECONNREFUSED
+UPLOAD PROXY ERROR: No response received from backend
+UPLOAD PROXY: Received fields: {"user_id":"1","campaign_id":"2"}
+UPLOAD PROXY: Received file: door.png image/png 35189
+UPLOAD PROXY: Forwarding to backend with user_id=1, campaign_id=2
+UPLOAD PROXY ERROR: AggregateError: 
+UPLOAD PROXY ERROR: Error code: ECONNREFUSED
+UPLOAD PROXY ERROR: No response received from backend
+UPLOAD PROXY: Received fields: {"user_id":"1","campaign_id":"2"}
+UPLOAD PROXY: Received file: circle.png image/png 168278
+UPLOAD PROXY: Forwarding to backend with user_id=1, campaign_id=2
+UPLOAD PROXY ERROR: AggregateError: 
+UPLOAD PROXY ERROR: Error code: ECONNREFUSED
+UPLOAD PROXY ERROR: No response received from backend
+UPLOAD PROXY: Received fields: {"user_id":"1","campaign_id":"2"}
+UPLOAD PROXY: Received file: Untitled.png image/png 487787
+UPLOAD PROXY: Forwarding to backend with user_id=1, campaign_id=2
+UPLOAD PROXY ERROR: AggregateError: 
+UPLOAD PROXY ERROR: Error code: ECONNREFUSED
+UPLOAD PROXY ERROR: No response received from backend
+UPLOAD PROXY: Received fields: {"user_id":"1","campaign_id":"2"}
+UPLOAD PROXY: Received file: png-clipart-graphy-fantasy-warrior-warrior-photography-action-figure.png image/png 39024
+UPLOAD PROXY: Forwarding to backend with user_id=1, campaign_id=2
+UPLOAD PROXY ERROR: AggregateError: 
+UPLOAD PROXY ERROR: Error code: ECONNREFUSED
+UPLOAD PROXY ERROR: No response received from backend
+UPLOAD: png-clipart-graphy-fantasy-warrior-warrior-photography-action-figure.png - user_id:1 campaign_id:2
+UPLOAD ERROR: ECONNREFUSED: 
+UPLOAD: door.png - user_id:1 campaign_id:2
+UPLOAD ERROR: ECONNREFUSED: 
+CAMPAIGN BACKGROUND UPLOAD: png-clipart-graphy-fantasy-warrior-warrior-photography-action-figure.png - user_id:1 campaign_id:2
+CAMPAIGN BACKGROUND UPLOAD ERROR: ECONNREFUSED: 
+CAMPAIGN BACKGROUND UPLOAD: Untitled.png - user_id:1 campaign_id:2
+CAMPAIGN BACKGROUND UPLOAD ERROR: ECONNREFUSED: 
+CAMPAIGN BACKGROUND UPLOAD: door.png - user_id:1 campaign_id:2
+CAMPAIGN BACKGROUND UPLOAD ERROR: ECONNREFUSED: 
+CAMPAIGN BACKGROUND UPLOAD: circle.png - user_id:1 campaign_id:4
+CAMPAIGN BACKGROUND UPLOAD ERROR: ECONNREFUSED: 
+CAMPAIGN BACKGROUND UPLOAD: test.png - user_id:1 campaign_id:4
+CAMPAIGN BACKGROUND UPLOAD ERROR: ECONNREFUSED: 
+CAMPAIGN BACKGROUND UPLOAD: test.png - user_id:1 campaign_id:5
+CAMPAIGN BACKGROUND UPLOAD: Success
+CAMPAIGN BACKGROUND UPLOAD: splash.png - user_id:1 campaign_id:4
+CAMPAIGN BACKGROUND UPLOAD ERROR: ECONNREFUSED: 
+CAMPAIGN BACKGROUND UPLOAD: RouiaLogo.png - user_id:1 campaign_id:2
+CAMPAIGN BACKGROUND UPLOAD ERROR: ECONNREFUSED: 
+CAMPAIGN BACKGROUND UPLOAD: RouiaLogo.png - user_id:1 campaign_id:2
+CAMPAIGN BACKGROUND UPLOAD ERROR: ECONNREFUSED: 
+CAMPAIGN BACKGROUND UPLOAD: RouiaLogo.png - user_id:1 campaign_id:4
+CAMPAIGN BACKGROUND UPLOAD ERROR: ECONNREFUSED: 
+CAMPAIGN BACKGROUND UPLOAD: RouiaLogo.png - user_id:1 campaign_id:2
+CAMPAIGN BACKGROUND UPLOAD: RouiaLogo.png - user_id:1 campaign_id:2
+CAMPAIGN BACKGROUND UPLOAD: RouiaLogo.png - user_id:1 campaign_id:2
+CAMPAIGN BACKGROUND UPLOAD: RouiaLogo.png - user_id:1 campaign_id:2
+CAMPAIGN BACKGROUND UPLOAD: RouiaLogo.png - user_id:1 campaign_id:2
+CAMPAIGN BACKGROUND UPLOAD: Success
+CAMPAIGN BACKGROUND UPLOAD: Success
+CAMPAIGN BACKGROUND UPLOAD: Success
+CAMPAIGN BACKGROUND UPLOAD: Success
+CAMPAIGN BACKGROUND UPLOAD: Success
+Received POST /api/campaigns at frontend proxy: {"name":"test 3.5 2","description":"sada","game_rules_id":"4","image_url":"","username":"nevarim"}
+Received POST /api/campaigns at frontend proxy: {"name":"Pathfinder","description":"Waynar world","game_rules_id":"2","image_url":"","username":"nevarim"}
+UPLOAD: 1751324998200_Abigail_icon.png - user_id:1 campaign_id:1
+UPLOAD ERROR: ERR_BAD_REQUEST: Request failed with status code 400
+UPLOAD ERROR: Backend status 400
+UPLOAD: 1751324998200_Abigail_icon.png - user_id:1 campaign_id:1
+UPLOAD ERROR: ECONNREFUSED: 
+UPLOAD: 1751324998200_Abigail_icon.png - user_id:1 campaign_id:1
+UPLOAD ERROR: ECONNREFUSED: 
+UPLOAD: 1751324998200_Abigail_icon.png - user_id:1 campaign_id:1
+UPLOAD ERROR: ECONNREFUSED: 

@@ -17,11 +17,50 @@
         <option value="">Select system</option>
         <!-- Options will be dynamically loaded by campaigns.js -->
       </select>
-      <input type="text" id="campaign-image-url" placeholder="Image URL" />
       <button type="submit">Create New Campaign</button>
     </form>
+    
+    <!-- Import/Export Section -->
+    <div class="import-export-section">
+      <h2>Import/Export Campaigns</h2>
+      <div class="import-export-controls">
+        <input type="file" id="import-file" accept=".json" style="display:none;" />
+        <button type="button" id="import-btn">Import Campaign</button>
+        <button type="button" id="export-btn" disabled>Export Selected Campaign</button>
+      </div>
+    </div>
+    <!-- Edit Campaign Modal -->
+    <div id="edit-campaign-modal" class="modal" style="display:none;">
+      <div class="modal-content">
+        <span id="close-edit-modal" class="close">&times;</span>
+        <h2>Edit Campaign</h2>
+        <form id="edit-campaign-form" enctype="multipart/form-data">
+          <input type="hidden" id="edit-campaign-id" />
+          <input type="text" id="edit-campaign-name" placeholder="Campaign name" required />
+          <input type="text" id="edit-campaign-description" placeholder="Description" />
+          <select id="edit-campaign-system">
+            <option value="">Select system</option>
+          </select>
+          <input type="text" id="edit-campaign-image-url" placeholder="Image URL" />
+          <input type="file" id="edit-campaign-image-upload" accept="image/png" />
+          <div id="edit-campaign-image-crop-container" style="display:none;">
+            <img id="edit-campaign-crop-preview" style="max-width:200px;max-height:200px;" />
+            <!-- Crop tool UI will be handled in JS -->
+          </div>
+          <label for="edit-campaign-background-upload">Campaign Background Image:</label>
+          <input type="file" id="edit-campaign-background-upload" accept="image/png" />
+          <div id="edit-campaign-background-crop-container" style="display:none;">
+            <img id="edit-campaign-background-crop-preview" style="max-width:300px;max-height:200px;" />
+            <div id="background-crop-controls">
+              <button type="button" id="crop-background-btn">Crop & Set Background</button>
+            </div>
+          </div>
+          <button type="submit">Save Changes</button>
+        </form>
+      </div>
+    </div>
   </div>
-  <a href="#" id="logout-link">Logout</a>
+  <a href="#" id="logout-link" class="logout-btn">Logout</a>
   <script src="/campaigns.js"></script>
   <script>
     // Check login state in localStorage/sessionStorage

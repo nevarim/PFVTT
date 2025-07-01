@@ -1,25 +1,2331 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>PFVTT Map</title>
+  <title>PFVTT - Campaign Manager</title>
   <link rel="stylesheet" href="/style.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #1a1a1a;
+      color: #fff;
+      overflow: hidden;
+    }
+    
+    .campaign-interface {
+      display: flex;
+      height: 100vh;
+      width: 100vw;
+    }
+    
+    /* Left Sidebar */
+    .left-sidebar {
+      width: 280px;
+      background: #2c2c2c;
+      border-right: 1px solid #444;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    
+    .campaign-header {
+      padding: 15px;
+      background: #333;
+      border-bottom: 1px solid #444;
+    }
+    
+    .campaign-title {
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+    
+    .campaign-system {
+      font-size: 12px;
+      color: #aaa;
+    }
+    
+    .sidebar-tabs {
+      display: flex;
+      background: #2a2a2a;
+      border-bottom: 1px solid #444;
+    }
+    
+    .sidebar-tab {
+      flex: 1;
+      padding: 10px 5px;
+      text-align: center;
+      background: #2a2a2a;
+      border: none;
+      color: #ccc;
+      cursor: pointer;
+      font-size: 11px;
+      border-right: 1px solid #444;
+    }
+    
+    .sidebar-tab:last-child {
+      border-right: none;
+    }
+    
+    .sidebar-tab.active {
+      background: #0066cc;
+      color: white;
+    }
+    
+    .sidebar-tab:hover:not(.active) {
+      background: #333;
+    }
+    
+    .sidebar-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 10px;
+    }
+    
+    .content-section {
+      display: none;
+    }
+    
+    .content-section.active {
+      display: block;
+    }
+    
+    /* Main Canvas Area */
+    .main-canvas {
+      flex: 1;
+      position: relative;
+      background: #1a1a1a;
+      overflow: hidden;
+    }
+    
+    .canvas-toolbar {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      z-index: 1000;
+      display: flex;
+      gap: 5px;
+    }
+    
+    .tool-group {
+      display: flex;
+      background: rgba(44, 44, 44, 0.9);
+      border-radius: 5px;
+      padding: 5px;
+      gap: 2px;
+    }
+    
+    .tool-btn {
+      width: 35px;
+      height: 35px;
+      background: #444;
+      border: none;
+      border-radius: 3px;
+      color: #ccc;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+    }
+    
+    .tool-btn:hover {
+      background: #555;
+    }
+    
+    .tool-btn.active {
+      background: #0066cc;
+      color: white;
+    }
+    
+    .map-ui-overlay {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      pointer-events: none;
+      z-index: 10;
+    }
+    
+    .zoom-indicator, .coordinates-indicator, .help-toggle {
+        background: rgba(0, 0, 0, 0.7);
+        color: white;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 12px;
+        margin-bottom: 5px;
+        font-family: monospace;
+      }
+      
+      .help-toggle {
+        cursor: pointer;
+        pointer-events: auto;
+        text-align: center;
+        width: 20px;
+        font-weight: bold;
+      }
+      
+      .help-toggle:hover {
+        background: rgba(0, 0, 0, 0.9);
+      }
+      
+      .help-panel {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        background: rgba(0, 0, 0, 0.9);
+        color: white;
+        border-radius: 8px;
+        padding: 0;
+        max-width: 300px;
+        z-index: 20;
+        border: 1px solid #555;
+      }
+      
+      .help-header {
+        background: #333;
+        padding: 10px;
+        border-radius: 8px 8px 0 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-weight: bold;
+      }
+      
+      .help-header button {
+        background: none;
+        border: none;
+        color: white;
+        font-size: 16px;
+        cursor: pointer;
+        padding: 0;
+        width: 20px;
+        height: 20px;
+      }
+      
+      .help-content {
+        padding: 15px;
+      }
+      
+      .help-section {
+        margin-bottom: 15px;
+      }
+      
+      .help-section:last-child {
+        margin-bottom: 0;
+      }
+      
+      .help-section h4 {
+        margin: 0 0 8px 0;
+        color: #4a90e2;
+        font-size: 14px;
+      }
+      
+      .help-section ul {
+        margin: 0;
+        padding-left: 15px;
+        font-size: 12px;
+        line-height: 1.4;
+      }
+      
+      .help-section li {
+        margin-bottom: 4px;
+      }
+    
+    .map-viewport {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      overflow: hidden;
+      background: #1a1a1a;
+      cursor: default;
+      user-select: none;
+      min-height: 600px;
+    }
+    
+    .map-grid {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 2000px;
+      height: 2000px;
+      margin-left: -1000px;
+      margin-top: -1000px;
+      background-color: #2a2a2a;
+      background-image: 
+        linear-gradient(rgba(255,255,255,0.15) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.15) 1px, transparent 1px);
+      background-size: 50px 50px;
+      transform-origin: 0 0;
+    }
+    
+    /* Map Layers System */
+    .map-layer {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+    
+    .map-layer.active {
+      pointer-events: auto;
+    }
+    
+    #map-layer {
+      z-index: 1;
+    }
+    
+    #walls-layer {
+      z-index: 2;
+    }
+    
+    #tokens-layer {
+      z-index: 3;
+    }
+    
+    #gm-layer {
+      z-index: 4;
+      opacity: 0.7;
+    }
+
+    #audio-layer {
+      z-index: 5;
+      opacity: 0.8;
+    }
+
+    #props-layer {
+      z-index: 6;
+      opacity: 0.9;
+    }
+
+    .layer-hidden {
+      display: none !important;
+    }
+    
+    /* Map Assets */
+    .map-asset {
+      user-select: none;
+      transition: all 0.2s ease;
+    }
+    
+    .map-asset:hover {
+      transform: scale(1.05);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    }
+    
+    /* Drag and Drop Visual Feedback */
+    .map-viewport.drag-over {
+      background-color: rgba(0, 123, 255, 0.1);
+      border: 2px dashed #007bff;
+    }
+    
+    /* Asset List Items Draggable */
+    .assets-list .item[draggable="true"] {
+      cursor: grab;
+    }
+    
+    .assets-list .item[draggable="true"]:active {
+      cursor: grabbing;
+    }
+    
+    /* Layer Controls */
+    .layer-controls {
+      position: absolute;
+      bottom: 10px;
+      left: 10px;
+      background: rgba(44, 44, 44, 0.9);
+      border-radius: 5px;
+      padding: 8px;
+      display: flex;
+      gap: 5px;
+      z-index: 1000;
+    }
+    
+    .layer-btn {
+      width: 30px;
+      height: 30px;
+      background: #444;
+      border: none;
+      border-radius: 3px;
+      color: #ccc;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      position: relative;
+    }
+    
+    .layer-btn:hover {
+      background: #555;
+    }
+    
+    .layer-btn.active {
+      background: #0066cc;
+      color: white;
+      border: 2px solid #4da6ff;
+      box-shadow: 0 0 8px rgba(77, 166, 255, 0.5);
+      transform: scale(1.1);
+    }
+
+    .layer-btn.hidden {
+      opacity: 0.3;
+    }
+
+    .layer-btn {
+      transition: all 0.2s ease;
+    }
+    
+    .layer-btn::after {
+      content: attr(data-layer);
+      position: absolute;
+      bottom: -20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 0, 0, 0.8);
+      color: white;
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-size: 10px;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s;
+    }
+    
+    .layer-btn:hover::after {
+      opacity: 1;
+    }
+    
+    /* Right Panel */
+    .right-panel {
+      width: 300px;
+      background: #2c2c2c;
+      border-left: 1px solid #444;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    
+    .panel-tabs {
+      display: flex;
+      background: #2a2a2a;
+      border-bottom: 1px solid #444;
+    }
+    
+    .panel-tab {
+      flex: 1;
+      padding: 10px 5px;
+      text-align: center;
+      background: #2a2a2a;
+      border: none;
+      color: #ccc;
+      cursor: pointer;
+      font-size: 11px;
+      border-right: 1px solid #444;
+    }
+    
+    .panel-tab:last-child {
+      border-right: none;
+    }
+    
+    .panel-tab.active {
+      background: #0066cc;
+      color: white;
+    }
+    
+    .panel-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 10px;
+    }
+    
+    .panel-section {
+      display: none;
+    }
+    
+    .panel-section.active {
+      display: block;
+    }
+    
+    /* Common Elements */
+    .item-list {
+      list-style: none;
+    }
+    
+    .item {
+      background: #333;
+      margin: 5px 0;
+      padding: 8px;
+      border-radius: 4px;
+      cursor: pointer;
+      border: 1px solid transparent;
+    }
+    
+    .item:hover {
+      background: #3a3a3a;
+      border-color: #555;
+    }
+    
+    .item.selected {
+      border-color: #0066cc;
+      background: #2a4a6a;
+    }
+    
+    .item.selected {
+      background: #4a90e2;
+      color: white;
+    }
+    
+    .item-name {
+      font-weight: bold;
+      margin-bottom: 3px;
+    }
+    
+    .item-details {
+      font-size: 11px;
+      color: #999;
+    }
+    
+    .item-actions {
+      display: flex;
+      gap: 5px;
+      margin-top: 5px;
+    }
+    
+    .item-actions button {
+      background: #444;
+      border: none;
+      color: #ccc;
+      padding: 2px 6px;
+      border-radius: 3px;
+      cursor: pointer;
+      font-size: 12px;
+    }
+    
+    .item-actions button:hover {
+      background: #555;
+    }
+    
+    .btn {
+      background: #444;
+      color: white;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 3px;
+      cursor: pointer;
+      font-size: 12px;
+      margin: 2px;
+    }
+    
+    .btn:hover {
+      background: #555;
+    }
+    
+    .btn.primary {
+      background: #0066cc;
+    }
+    
+    .btn.primary:hover {
+      background: #0077dd;
+    }
+    
+    .btn.danger {
+      background: #cc3333;
+    }
+    
+    .btn.danger:hover {
+      background: #dd4444;
+    }
+    
+    .input-group {
+      margin: 10px 0;
+    }
+    
+    .input-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-size: 12px;
+      color: #ccc;
+    }
+    
+    .input-group input, .input-group select, .input-group textarea {
+      width: 100%;
+      padding: 6px;
+      background: #333;
+      border: 1px solid #555;
+      border-radius: 3px;
+      color: white;
+      font-size: 12px;
+    }
+    
+    .input-group input:focus, .input-group select:focus, .input-group textarea:focus {
+      outline: none;
+      border-color: #0066cc;
+    }
+    
+    .back-button {
+      position: absolute;
+      bottom: 20px;
+      right: 20px;
+      z-index: 1001;
+      background: rgba(102, 102, 102, 0.9);
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 12px;
+    }
+    
+    .back-button:hover {
+      background: rgba(119, 119, 119, 0.9);
+    }
+    
+    .search-box {
+      width: 100%;
+      padding: 6px;
+      background: #333;
+      border: 1px solid #555;
+      border-radius: 3px;
+      color: white;
+      font-size: 12px;
+      margin-bottom: 10px;
+    }
+    
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      padding-bottom: 5px;
+      border-bottom: 1px solid #444;
+    }
+    
+    .section-title {
+      font-size: 14px;
+      font-weight: bold;
+    }
+    
+    .add-btn {
+      background: #0066cc;
+      color: white;
+      border: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 3px;
+      cursor: pointer;
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .add-btn:hover {
+      background: #0077dd;
+    }
+  </style>
 </head>
 <body>
-  <h1>Welcome to the Map!</h1>
-  <div id="map-data"></div>
-  <div id="map-visual" style="width:600px;height:400px;border:1px solid #888;margin-top:20px;display:flex;align-items:center;justify-content:center;">
-    <span style="color:#888;">[Map visual placeholder]</span>
+  <div class="campaign-interface">
+    <!-- Left Sidebar -->
+    <div class="left-sidebar">
+      <div class="campaign-header">
+        <div class="campaign-title" id="campaign-name">Loading...</div>
+        <div class="campaign-system" id="campaign-system">Loading system...</div>
+      </div>
+      
+      <div class="sidebar-tabs">
+        <button class="sidebar-tab active" data-tab="maps">Maps</button>
+        <button class="sidebar-tab" data-tab="scenes">Scenes</button>
+        <button class="sidebar-tab" data-tab="assets">Assets</button>
+        <button class="sidebar-tab" data-tab="settings">Settings</button>
+      </div>
+      
+      <div class="sidebar-content">
+        <!-- Maps Section -->
+        <div class="content-section active" id="maps-section">
+          <div class="section-header">
+            <span class="section-title">Maps</span>
+            <button class="add-btn" onclick="createNewMap()">+</button>
+          </div>
+          <input type="text" class="search-box" placeholder="Search maps..." id="maps-search">
+          <ul class="item-list" id="maps-list">
+            <!-- Maps will be loaded here -->
+          </ul>
+        </div>
+        
+        <!-- Scenes Section -->
+        <div class="content-section" id="scenes-section">
+          <div class="section-header">
+            <span class="section-title">Scenes</span>
+            <button class="add-btn" onclick="createNewScene()">+</button>
+          </div>
+          <input type="text" class="search-box" placeholder="Search scenes...">
+          <ul class="item-list" id="scenes-list">
+            <!-- Scenes will be loaded here -->
+          </ul>
+        </div>
+        
+        <!-- Assets Section -->
+        <div class="content-section" id="assets-section">
+          <div class="section-header">
+            <span class="section-title">Assets</span>
+            <button class="add-btn" onclick="uploadAsset()">+</button>
+          </div>
+          <input type="text" class="search-box" placeholder="Search assets...">
+          <div class="input-group">
+            <label>Asset Categories</label>
+            <select id="asset-category-select">
+              <option value="all">All</option>
+              <option value="tokens">Tokens</option>
+              <option value="background">Backgrounds</option>
+              <option value="props">Props</option>
+              <option value="audio">Audio</option>
+            </select>
+          </div>
+          <ul class="item-list">
+            <li class="item">
+              <div class="item-name">Goblin Token</div>
+              <div class="item-details">32x32px</div>
+            </li>
+            <li class="item">
+              <div class="item-name">Dungeon Tiles</div>
+              <div class="item-details">Tileset</div>
+            </li>
+          </ul>
+        </div>
+        
+        <!-- Settings Section -->
+        <div class="content-section" id="settings-section">
+          <div class="section-header">
+            <span class="section-title">Campaign Settings</span>
+          </div>
+          <div class="input-group">
+            <label>Grid Size</label>
+            <select id="grid-size">
+              <option value="25">25px</option>
+              <option value="50" selected>50px</option>
+              <option value="75">75px</option>
+              <option value="100">100px</option>
+            </select>
+          </div>
+          <div class="input-group">
+            <label>Grid Color</label>
+            <input type="color" value="#ffffff" id="grid-color">
+          </div>
+          <div class="input-group">
+            <label>Grid Opacity</label>
+            <input type="range" min="0" max="100" value="10" id="grid-opacity">
+          </div>
+          <button class="btn primary" onclick="saveSettings()">Save Settings</button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Main Canvas -->
+    <div class="main-canvas">
+      <button class="back-button" onclick="window.location.href='/campaigns'">← Back to Campaigns</button>
+      
+      <div class="canvas-toolbar">
+        <div class="tool-group">
+          <button class="tool-btn active" data-tool="select" title="Select">⚬</button>
+          <button class="tool-btn" data-tool="move" title="Move">✋</button>
+          <button class="tool-btn" data-tool="draw" title="Draw">✏</button>
+          <button class="tool-btn" data-tool="measure" title="Measure">📏</button>
+        </div>
+        
+        <div class="tool-group">
+          <button class="tool-btn" data-tool="token" title="Add Token">👤</button>
+          <button class="tool-btn" data-tool="light" title="Lighting">💡</button>
+          <button class="tool-btn" data-tool="fog" title="Fog of War">🌫</button>
+        </div>
+        
+        <div class="tool-group">
+          <button class="tool-btn" data-tool="zoom-in" title="Zoom In">+</button>
+          <button class="tool-btn" data-tool="zoom-out" title="Zoom Out">-</button>
+          <button class="tool-btn" data-tool="zoom-fit" title="Fit to Screen">⚏</button>
+        </div>
+      </div>
+      
+      <div class="map-viewport" id="map-viewport">
+        <div class="map-grid" id="map-grid">
+          <!-- Layer system like Roll20 -->
+          <div class="map-layer" id="map-layer" data-layer="map">
+            <!-- Background images and map content -->
+          </div>
+          <div class="map-layer" id="walls-layer" data-layer="walls">
+            <!-- Walls, doors, and lighting objects -->
+          </div>
+          <div class="map-layer" id="tokens-layer" data-layer="tokens">
+            <!-- Player tokens and NPCs -->
+          </div>
+          <div class="map-layer" id="gm-layer" data-layer="gm">
+            <!-- GM-only content, notes, hidden objects -->
+          </div>
+          <div class="map-layer" id="audio-layer" data-layer="audio">
+            <!-- Audio sources and ambient sounds -->
+          </div>
+          <div class="map-layer" id="props-layer" data-layer="props">
+            <!-- Props and decorative objects -->
+          </div>
+        </div>
+        
+        <!-- Layer Controls -->
+         <div class="layer-controls">
+           <button class="layer-btn active" data-layer="Map" data-target="map-layer" title="Map Layer">🗺️</button>
+           <button class="layer-btn active" data-layer="Walls" data-target="walls-layer" title="Walls & Lighting">🧱</button>
+           <button class="layer-btn active" data-layer="Tokens" data-target="tokens-layer" title="Tokens Layer">👤</button>
+           <button class="layer-btn active" data-layer="GM" data-target="gm-layer" title="GM Layer">👁️</button>
+           <button class="layer-btn active" data-layer="Audio" data-target="audio-layer" title="Audio Layer">🔊</button>
+           <button class="layer-btn active" data-layer="Props" data-target="props-layer" title="Props Layer">🎭</button>
+         </div>
+        
+        <!-- Map UI Overlays -->
+        <div class="map-ui-overlay">
+          <div class="zoom-indicator" id="zoom-indicator">100%</div>
+          <div class="coordinates-indicator" id="coordinates-indicator">X: 0, Y: 0</div>
+          <div class="help-toggle" id="help-toggle" onclick="toggleHelp()">?</div>
+        </div>
+        
+        <!-- Help Panel -->
+        <div class="help-panel" id="help-panel" style="display: none;">
+          <div class="help-header">
+            <span>Navigation Help</span>
+            <button onclick="toggleHelp()">×</button>
+          </div>
+          <div class="help-content">
+            <div class="help-section">
+               <h4>Mouse Controls (Roll20 Style):</h4>
+               <ul>
+                 <li><strong>Mouse Wheel:</strong> Zoom in/out</li>
+                 <li><strong>Right Click + Drag:</strong> Pan map</li>
+                 <li><strong>Left Click:</strong> Select/interact with elements</li>
+               </ul>
+             </div>
+            <div class="help-section">
+              <h4>Keyboard Shortcuts:</h4>
+              <ul>
+                <li><strong>+ / =:</strong> Zoom in</li>
+                <li><strong>-:</strong> Zoom out</li>
+                <li><strong>0:</strong> Fit to screen</li>
+                <li><strong>Space:</strong> Select tool</li>
+                <li><strong>1:</strong> Select Map layer</li>
+                <li><strong>2:</strong> Select Walls layer</li>
+                <li><strong>3:</strong> Select Tokens layer</li>
+                <li><strong>4:</strong> Select GM layer</li>
+                <li><strong>5:</strong> Select Audio layer</li>
+                <li><strong>6:</strong> Select Props layer</li>
+              </ul>
+            </div>
+            <div class="help-section">
+              <h4>Layer System (Roll20 Style):</h4>
+              <ul>
+                <li><strong>🗺️ Map:</strong> Background images and terrain</li>
+                <li><strong>🧱 Walls:</strong> Walls, doors, and lighting</li>
+                <li><strong>👤 Tokens:</strong> Player characters and NPCs</li>
+                <li><strong>👁️ GM:</strong> GM-only notes and objects</li>
+                <li><strong>🔊 Audio:</strong> Sound effects and ambient audio</li>
+                <li><strong>🎭 Props:</strong> Decorative objects and props</li>
+                <li><strong>Left Click:</strong> Select active layer (exclusive)</li>
+                <li><strong>Right Click:</strong> Toggle layer visibility</li>
+                <li><strong>Keys 1-6:</strong> Quick layer selection</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Right Panel -->
+    <div class="right-panel">
+      <div class="panel-tabs">
+        <button class="panel-tab active" data-panel="tokens">Tokens</button>
+        <button class="panel-tab" data-panel="journal">Journal</button>
+        <button class="panel-tab" data-panel="chat">Chat</button>
+      </div>
+      
+      <div class="panel-content">
+        <!-- Tokens Panel -->
+        <div class="panel-section active" id="tokens-panel">
+          <div class="section-header">
+            <span class="section-title">Tokens</span>
+            <button class="add-btn" onclick="addToken()">+</button>
+          </div>
+          <input type="text" class="search-box" placeholder="Search tokens...">
+          <ul class="item-list" id="tokens-list">
+            <!-- Active tokens on the map will appear here -->
+          </ul>
+        </div>
+        
+        <!-- Journal Panel -->
+        <div class="panel-section" id="journal-panel">
+          <div class="section-header">
+            <span class="section-title">Journal</span>
+            <button class="add-btn" onclick="addJournalEntry()">+</button>
+          </div>
+          <input type="text" class="search-box" placeholder="Search journal...">
+          <ul class="item-list">
+            <li class="item">
+              <div class="item-name">Session Notes</div>
+              <div class="item-details">Last updated: Today</div>
+            </li>
+            <li class="item">
+              <div class="item-name">NPC: Tavern Keeper</div>
+              <div class="item-details">Character sheet</div>
+            </li>
+          </ul>
+        </div>
+        
+        <!-- Chat Panel -->
+        <div class="panel-section" id="chat-panel">
+          <div class="section-header">
+            <span class="section-title">Chat</span>
+          </div>
+          <div id="chat-messages" style="height: 300px; overflow-y: auto; background: #1a1a1a; padding: 10px; border-radius: 3px; margin-bottom: 10px;">
+            <div style="margin-bottom: 10px; padding: 5px; background: #333; border-radius: 3px;">
+              <strong>GM:</strong> Welcome to the campaign!
+            </div>
+            <div style="margin-bottom: 10px; padding: 5px; background: #2a4a2a; border-radius: 3px;">
+              <strong>Player1:</strong> Ready to start!
+            </div>
+          </div>
+          <div style="display: flex; gap: 5px;">
+            <input type="text" id="chat-input" placeholder="Type a message..." style="flex: 1; padding: 6px; background: #333; border: 1px solid #555; border-radius: 3px; color: white;">
+            <button class="btn primary" onclick="sendChatMessage()">Send</button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
-  <a href="/login">Logout</a>
+  
   <script>
-    fetch('/api/map')
-      .then(res => res.json())
-      .then(data => {
-        document.getElementById('map-data').textContent = 'Map data: ' + JSON.stringify(data);
-      })
-      .catch(() => {
-        document.getElementById('map-data').textContent = 'Failed to load map data.';
+    // Get campaign ID from session storage
+    const campaignId = sessionStorage.getItem('current_campaign_id');
+    
+    if (!campaignId) {
+      alert('No campaign selected');
+      window.location.href = '/campaigns';
+    }
+    
+    // Tab switching for sidebar
+    document.querySelectorAll('.sidebar-tab').forEach(tab => {
+      tab.addEventListener('click', function() {
+        // Remove active class from all tabs and sections
+        document.querySelectorAll('.sidebar-tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+        
+        // Add active class to clicked tab and corresponding section
+        this.classList.add('active');
+        document.getElementById(this.dataset.tab + '-section').classList.add('active');
       });
+    });
+    
+    // Tab switching for right panel
+    document.querySelectorAll('.panel-tab').forEach(tab => {
+      tab.addEventListener('click', function() {
+        // Remove active class from all tabs and sections
+        document.querySelectorAll('.panel-tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.panel-section').forEach(s => s.classList.remove('active'));
+        
+        // Add active class to clicked tab and corresponding section
+        this.classList.add('active');
+        document.getElementById(this.dataset.panel + '-panel').classList.add('active');
+      });
+    });
+    
+    // Tool selection
+    document.querySelectorAll('.tool-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        const tool = this.dataset.tool;
+        
+        if (tool === 'zoom-in' || tool === 'zoom-out' || tool === 'zoom-fit') {
+          handleZoom(tool);
+          return;
+        }
+        
+        // Remove active class from all tools
+        document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'));
+        // Add active class to clicked tool
+        this.classList.add('active');
+        
+        // Update current tool and cursor
+        currentTool = tool;
+        updateCursor();
+        
+        // Save current tool in session
+        sessionStorage.setItem('current_map_tool', tool);
+      });
+    });
+    
+    // Enhanced map navigation functionality
+    let currentZoom = 1;
+      let panX = 0;
+      let panY = 0;
+      let isDragging = false;
+      let lastMouseX = 0;
+      let lastMouseY = 0;
+      let currentTool = 'select';
+      let currentMapId = sessionStorage.getItem('current_map_id') || null;
+    
+    function handleZoom(action, mouseX = null, mouseY = null) {
+      const mapGrid = document.getElementById('map-grid');
+      const viewport = document.getElementById('map-viewport');
+      
+      const oldZoom = currentZoom;
+      
+      switch(action) {
+        case 'zoom-in':
+          currentZoom = Math.min(currentZoom * 1.2, 5);
+          break;
+        case 'zoom-out':
+          currentZoom = Math.max(currentZoom / 1.2, 0.1);
+          break;
+        case 'zoom-fit':
+          currentZoom = 1;
+          panX = 0;
+          panY = 0;
+          break;
+      }
+      
+      // Zoom towards mouse position if provided
+      if (mouseX !== null && mouseY !== null && action !== 'zoom-fit') {
+        const rect = viewport.getBoundingClientRect();
+        const centerX = rect.width / 2;
+        const centerY = rect.height / 2;
+        
+        const zoomFactor = currentZoom / oldZoom;
+        panX = (panX - (mouseX - centerX)) * zoomFactor + (mouseX - centerX);
+        panY = (panY - (mouseY - centerY)) * zoomFactor + (mouseY - centerY);
+      }
+      
+      updateMapTransform();
+    }
+    
+    function updateMapTransform() {
+      const mapGrid = document.getElementById('map-grid');
+      mapGrid.style.transform = `translate(${panX}px, ${panY}px) scale(${currentZoom})`;
+      
+      // Update zoom indicator
+      const zoomIndicator = document.getElementById('zoom-indicator');
+      if (zoomIndicator) {
+        zoomIndicator.textContent = Math.round(currentZoom * 100) + '%';
+      }
+    }
+    
+    // Initialize map navigation
+    function initializeMapNavigation() {
+      const viewport = document.getElementById('map-viewport');
+      const mapGrid = document.getElementById('map-grid');
+      
+      // Mouse wheel zoom
+      viewport.addEventListener('wheel', function(e) {
+        e.preventDefault();
+        const rect = viewport.getBoundingClientRect();
+        const mouseX = e.clientX - rect.left;
+        const mouseY = e.clientY - rect.top;
+        
+        if (e.deltaY < 0) {
+          handleZoom('zoom-in', mouseX, mouseY);
+        } else {
+          handleZoom('zoom-out', mouseX, mouseY);
+        }
+      });
+      
+      // Click to show grid coordinates in chat (debug feature)
+      viewport.addEventListener('click', function(e) {
+        const rect = viewport.getBoundingClientRect();
+        const mouseX = e.clientX - rect.left;
+        const mouseY = e.clientY - rect.top;
+        
+        // Convert screen coordinates to map coordinates (considering zoom and pan)
+        const mapX = ((mouseX - panX - rect.width/2) / currentZoom);
+        const mapY = ((mouseY - panY - rect.height/2) / currentZoom);
+        
+        // Convert to grid coordinates
+        const gridSize = campaignSettings.gridSize || 50;
+        const gridX = Math.floor(mapX / gridSize);
+        const gridY = Math.floor(mapY / gridSize);
+        
+        // Add debug message to chat
+        addDebugMessageToChat(`Clicked grid coordinates: (${gridX}, ${gridY})`);
+      });
+      
+      // Mouse drag for panning (Roll20 style - right click drag)
+      viewport.addEventListener('mousedown', function(e) {
+        if (e.button === 2) { // Right mouse button
+          e.preventDefault();
+          isDragging = true;
+          lastMouseX = e.clientX;
+          lastMouseY = e.clientY;
+          viewport.style.cursor = 'grabbing';
+        }
+      });
+      
+      viewport.addEventListener('mousemove', function(e) {
+        if (isDragging) {
+          const deltaX = e.clientX - lastMouseX;
+          const deltaY = e.clientY - lastMouseY;
+          
+          panX += deltaX;
+          panY += deltaY;
+          
+          updateMapTransform();
+          
+          lastMouseX = e.clientX;
+          lastMouseY = e.clientY;
+        }
+        
+        // Update coordinates indicator
+        const rect = viewport.getBoundingClientRect();
+        const mouseX = e.clientX - rect.left;
+        const mouseY = e.clientY - rect.top;
+        
+        // Convert screen coordinates to map coordinates
+        const mapX = Math.round((mouseX - panX - rect.width/2) / currentZoom);
+        const mapY = Math.round((mouseY - panY - rect.height/2) / currentZoom);
+        
+        const coordsIndicator = document.getElementById('coordinates-indicator');
+        if (coordsIndicator) {
+          coordsIndicator.textContent = `X: ${mapX}, Y: ${mapY}`;
+        }
+      });
+      
+      viewport.addEventListener('mouseup', function(e) {
+        if (isDragging) {
+          isDragging = false;
+          updateCursor(); // Return to appropriate cursor
+        }
+      });
+      
+      viewport.addEventListener('mouseleave', function(e) {
+        if (isDragging) {
+          isDragging = false;
+          updateCursor(); // Return to appropriate cursor
+        }
+      });
+      
+      // Prevent context menu on right click
+      viewport.addEventListener('contextmenu', function(e) {
+        e.preventDefault();
+      });
+      
+      // Update cursor based on current tool
+      viewport.addEventListener('mouseenter', function() {
+        updateCursor();
+      });
+      
+      // Keyboard shortcuts
+      document.addEventListener('keydown', function(e) {
+        if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+          return; // Don't handle shortcuts when typing in inputs
+        }
+        
+        switch(e.key) {
+          case '+':
+          case '=':
+            e.preventDefault();
+            handleZoom('zoom-in');
+            break;
+          case '-':
+            e.preventDefault();
+            handleZoom('zoom-out');
+            break;
+          case '0':
+            e.preventDefault();
+            handleZoom('zoom-fit');
+            break;
+          case ' ':
+             e.preventDefault();
+             // Select tool (Roll20 style - space for select)
+             document.querySelector('[data-tool="select"]').click();
+             break;
+        }
+      });
+    }
+    
+    function updateCursor() {
+      const viewport = document.getElementById('map-viewport');
+      switch(currentTool) {
+        case 'draw':
+          viewport.style.cursor = 'crosshair';
+          break;
+        case 'measure':
+          viewport.style.cursor = 'crosshair';
+          break;
+        case 'token':
+          viewport.style.cursor = 'pointer';
+          break;
+        default:
+          viewport.style.cursor = 'grab'; // Roll20 style - always ready to pan
+      }
+    }
+    
+    // Load campaign info
+    async function loadCampaignInfo() {
+      try {
+        const user = localStorage.getItem('pfvtt_user') || sessionStorage.getItem('pfvtt_user');
+        const response = await fetch(`http://localhost:8080/api/campaigns?username=${encodeURIComponent(user)}`);
+        const data = await response.json();
+        
+        if (data.success && data.campaigns) {
+          const campaign = data.campaigns.find(c => c.id == campaignId);
+          if (campaign) {
+            document.getElementById('campaign-name').textContent = campaign.name;
+            document.getElementById('campaign-system').textContent = campaign.system || 'No system selected';
+          }
+        }
+      } catch (error) {
+        console.error('Failed to load campaign info:', error);
+      }
+    }
+    
+    // Load maps for current campaign
+    async function loadMaps() {
+      try {
+        const response = await fetch(`http://localhost:8080/api/maps?campaign_id=${campaignId}`);
+        const data = await response.json();
+        
+        if (data.success && data.maps) {
+          const mapsList = document.getElementById('maps-list');
+          if (mapsList) {
+            mapsList.innerHTML = '';
+            data.maps.forEach(map => {
+              const mapItem = document.createElement('li');
+              mapItem.className = 'item';
+              mapItem.innerHTML = `
+                <div class="item-name">${map.name}</div>
+                <div class="item-details">Map ID: ${map.id}</div>
+              `;
+              mapItem.addEventListener('click', () => loadMap(map.id));
+              mapsList.appendChild(mapItem);
+            });
+            
+            // Auto-load map based on session storage or first available
+            if (data.maps.length > 0 && !currentMapId) {
+              const savedMapId = sessionStorage.getItem('current_map_id');
+              let mapToLoad = null;
+              
+              // Try to find the saved map first
+              if (savedMapId) {
+                mapToLoad = data.maps.find(map => map.id == savedMapId);
+              }
+              
+              // If saved map not found, use first map
+              if (!mapToLoad) {
+                mapToLoad = data.maps[0];
+              }
+              
+              loadMap(mapToLoad.id);
+              
+              // Mark the loaded map as selected
+              const mapItems = mapsList.querySelectorAll('.item');
+              mapItems.forEach(item => {
+                const mapId = item.querySelector('.item-details').textContent.split(': ')[1];
+                if (mapId == mapToLoad.id) {
+                  item.classList.add('selected');
+                }
+              });
+            }
+          }
+        }
+      } catch (error) {
+        console.error('Failed to load maps:', error);
+      }
+    }
+    
+    // Load a specific map
+    function loadMap(mapId) {
+      // Remove selection from all maps
+      document.querySelectorAll('#maps-list .item').forEach(item => {
+        item.classList.remove('selected');
+      });
+      
+      // Add selection to clicked map (only if called from click event)
+      if (event && event.target) {
+        event.target.closest('.item').classList.add('selected');
+      }
+      
+      console.log('Loading map:', mapId);
+      currentMapId = mapId;
+      
+      // Save selected map ID to session storage
+      sessionStorage.setItem('current_map_id', mapId);
+      
+      // Clear existing assets from all layers
+      clearAllLayers();
+      
+      // Load positioned assets for this map
+      loadMapAssets(mapId);
+    }
+    
+    // Clear all assets from map layers
+    function clearAllLayers() {
+      const layers = ['tokens', 'map', 'audio', 'props'];
+      layers.forEach(layerName => {
+        const layer = document.getElementById(`${layerName}-layer`);
+        if (layer) {
+          layer.innerHTML = '';
+        }
+      });
+    }
+    
+    // Load all positioned assets for a map
+    async function loadMapAssets(mapId) {
+      try {
+        console.log('Loading map assets for map ID:', mapId);
+        
+        // Ensure assets are loaded first
+        if (assets.length === 0) {
+          console.log('Assets array is empty, loading assets first...');
+          await loadAssets();
+        }
+        console.log('Assets loaded, total count:', assets.length);
+        
+        // Load tokens
+        console.log('Fetching tokens for map:', mapId);
+        const tokensResponse = await fetch(`/api/map-tokens?map_id=${mapId}`);
+        const tokensData = await tokensResponse.json();
+        console.log('Tokens response:', tokensData);
+        
+        if (tokensData.success && tokensData.tokens) {
+          console.log('Found', tokensData.tokens.length, 'tokens to display');
+          tokensData.tokens.forEach(token => {
+            console.log('Processing token:', token);
+            const assetData = {
+              assetId: token.asset_id,
+              assetType: 'token',
+              assetName: token.name || 'Token'
+            };
+            console.log('Creating visual element for token:', assetData);
+            // Convert grid coordinates to pixel coordinates
+            const gridSize = campaignSettings.gridSize || 50;
+            const pixelX = token.grid_x * gridSize;
+            const pixelY = token.grid_y * gridSize;
+            createVisualAssetElement(assetData, pixelX, pixelY, 'tokens');
+          });
+        } else {
+          console.log('No tokens found or request failed');
+        }
+        
+        // Load backgrounds
+        const backgroundsResponse = await fetch(`/api/map-backgrounds?map_id=${mapId}`);
+        const backgroundsData = await backgroundsResponse.json();
+        if (backgroundsData.success && backgroundsData.backgrounds) {
+          backgroundsData.backgrounds.forEach(bg => {
+            const assetData = {
+              assetId: bg.asset_id,
+              assetType: 'background',
+              assetName: 'Background'
+            };
+            // Convert grid coordinates to pixel coordinates
+            const gridSize = campaignSettings.gridSize || 50;
+            const pixelX = bg.grid_x * gridSize;
+            const pixelY = bg.grid_y * gridSize;
+            createVisualAssetElement(assetData, pixelX, pixelY, 'map');
+          });
+        }
+        
+        // Load audio
+        const audioResponse = await fetch(`/api/map-audio?map_id=${mapId}`);
+        const audioData = await audioResponse.json();
+        if (audioData.success && audioData.audio) {
+          audioData.audio.forEach(audio => {
+            const assetData = {
+              assetId: audio.asset_id,
+              assetType: 'audio',
+              assetName: 'Audio'
+            };
+            // Convert grid coordinates to pixel coordinates
+            const gridSize = campaignSettings.gridSize || 50;
+            const pixelX = audio.grid_x * gridSize;
+            const pixelY = audio.grid_y * gridSize;
+            createVisualAssetElement(assetData, pixelX, pixelY, 'audio');
+          });
+        }
+        
+        // Load props
+        const propsResponse = await fetch(`/api/map-props?map_id=${mapId}`);
+        const propsData = await propsResponse.json();
+        if (propsData.success && propsData.props) {
+          propsData.props.forEach(prop => {
+            const assetData = {
+              assetId: prop.asset_id,
+              assetType: 'props',
+              assetName: 'Prop'
+            };
+            // Convert grid coordinates to pixel coordinates
+            const gridSize = campaignSettings.gridSize || 50;
+            const pixelX = prop.grid_x * gridSize;
+            const pixelY = prop.grid_y * gridSize;
+            createVisualAssetElement(assetData, pixelX, pixelY, 'props');
+          });
+        }
+        
+      } catch (error) {
+        console.error('Failed to load map assets:', error);
+      }
+    }
+    
+    // Create new map
+    async function createNewMap() {
+      const mapName = prompt('Enter map name:');
+      if (!mapName) return;
+      
+      try {
+        const user = localStorage.getItem('pfvtt_user') || sessionStorage.getItem('pfvtt_user');
+        const response = await fetch('http://localhost:8080/api/maps', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            campaign_id: campaignId,
+            name: mapName,
+            data: {},
+            username: user
+          })
+        });
+        
+        const data = await response.json();
+        if (data.success) {
+          loadMaps(); // Reload maps list
+        } else {
+          alert('Failed to create map: ' + (data.error || 'Unknown error'));
+        }
+      } catch (error) {
+        console.error('Failed to create map:', error);
+        alert('Failed to create map');
+      }
+    }
+    
+    // Load scenes for current campaign
+    async function loadScenes() {
+      try {
+        const response = await fetch(`http://localhost:8080/api/scenes?campaign_id=${campaignId}`);
+        const data = await response.json();
+        
+        if (data && Array.isArray(data)) {
+          const scenesList = document.getElementById('scenes-list');
+          if (scenesList) {
+            scenesList.innerHTML = '';
+            data.forEach(scene => {
+              const sceneItem = document.createElement('li');
+              sceneItem.className = 'item';
+              sceneItem.innerHTML = `
+                <div class="item-name">${scene.name}</div>
+                <div class="item-details">Scene ID: ${scene.id}</div>
+              `;
+              sceneItem.addEventListener('click', () => loadScene(scene));
+              scenesList.appendChild(sceneItem);
+            });
+          }
+        }
+      } catch (error) {
+        console.error('Failed to load scenes:', error);
+      }
+    }
+    
+    // Load a specific scene
+    function loadScene(scene) {
+      // Remove selection from all scenes
+      document.querySelectorAll('#scenes-list .item').forEach(item => {
+        item.classList.remove('selected');
+      });
+      
+      // Add selection to clicked scene
+      event.target.closest('.item').classList.add('selected');
+      
+      console.log('Loading scene:', scene);
+      
+      // Reset map view
+      currentZoom = 1;
+      panX = 0;
+      panY = 0;
+      updateMapTransform();
+      
+      // Here you can add logic to load scene-specific content
+      // For example, background images, tokens, etc.
+    }
+    
+    // Scene management
+    async function createNewScene() {
+      const sceneName = prompt('Enter scene name:');
+      if (!sceneName) return;
+      
+      try {
+        const response = await fetch('http://localhost:8080/api/scenes', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            campaign_id: campaignId,
+            name: sceneName,
+            data: JSON.stringify({
+              background: null,
+              tokens: [],
+              lighting: [],
+              fog: []
+            })
+          })
+        });
+        
+        const data = await response.json();
+        if (data.success) {
+          loadScenes(); // Reload scenes list
+        } else {
+          alert('Failed to create scene: ' + (data.error || 'Unknown error'));
+        }
+      } catch (error) {
+        console.error('Failed to create scene:', error);
+        alert('Failed to create scene');
+      }
+    }
+    
+    // Asset management
+    let assets = [];
+    
+    async function loadAssets() {
+      try {
+        const response = await fetch(`http://localhost:8080/api/assets?campaign_id=${campaignId}`);
+        const data = await response.json();
+        if (data.success) {
+          assets = data.assets;
+          displayAssets();
+          return true;
+        }
+        return false;
+      } catch (error) {
+        console.error('Failed to load assets:', error);
+        return false;
+      }
+    }
+    
+    function displayAssets() {
+      const assetsList = document.querySelector('#assets-section .item-list');
+      const categorySelect = document.getElementById('asset-category-select');
+      const selectedCategory = categorySelect.value;
+      
+      assetsList.innerHTML = '';
+      
+      // Filter assets based on selected category
+      const filteredAssets = selectedCategory === 'all' 
+        ? assets 
+        : assets.filter(asset => {
+            if (selectedCategory === 'tokens') {
+              // Tokens are stored as 'image' type but in 'tokens' folder
+              return asset.type === 'image' && asset.file_url.includes('/tokens/');
+            } else if (selectedCategory === 'background') {
+              // Backgrounds are images in campaign folder
+              return asset.type === 'image' && asset.file_url.includes('/campaign');
+            } else if (selectedCategory === 'props') {
+              // Props are images but not in tokens or background folders
+              return asset.type === 'image' && asset.file_url.includes('/props');
+            }
+            return asset.type === selectedCategory;
+          });
+      
+      filteredAssets.forEach(asset => {
+        const li = document.createElement('li');
+        li.className = 'item';
+        li.draggable = true;
+        li.dataset.assetId = asset.id;
+        li.dataset.assetType = asset.type;
+        li.dataset.assetName = asset.name;
+        li.innerHTML = `
+          <div class="item-name">${asset.name}</div>
+          <div class="item-details">${asset.type} - ${formatFileSize(asset.file_size)}</div>
+          <div class="item-actions">
+            <button onclick="editAsset(${asset.id})" title="Edit">✏️</button>
+            <button onclick="deleteAsset(${asset.id})" title="Delete">🗑️</button>
+          </div>
+        `;
+        
+        // Add drag event listeners
+        li.addEventListener('dragstart', function(e) {
+          e.dataTransfer.setData('text/plain', JSON.stringify({
+            assetId: asset.id,
+            assetType: asset.type,
+            assetName: asset.name
+          }));
+          e.dataTransfer.effectAllowed = 'copy';
+        });
+        assetsList.appendChild(li);
+      });
+    }
+    
+    function uploadAsset() {
+      // Get selected category
+      const categorySelect = document.getElementById('asset-category-select');
+      const selectedCategory = categorySelect.value;
+      
+      // Prevent upload when "All" is selected
+      if (selectedCategory === 'all') {
+        alert('Please select a specific category before uploading assets.');
+        return;
+      }
+      
+      const input = document.createElement('input');
+      input.type = 'file';
+      
+      // Set file filter based on selected category
+      switch(selectedCategory) {
+        case 'tokens':
+          input.accept = '.png';
+          break;
+        case 'background':
+          input.accept = '.jpg,.jpeg,.png';
+          break;
+        case 'props':
+          input.accept = '.png';
+          break;
+        case 'audio':
+          input.accept = '.mp3,.wav,.ogg,.m4a,.aac';
+          break;
+        default:
+          input.accept = 'image/*,audio/*';
+      }
+      
+      input.onchange = async function(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+        
+        // First upload the file to get the URL
+        const uploadFormData = new FormData();
+        uploadFormData.append('file', file);
+        uploadFormData.append('user_id', userId);
+        uploadFormData.append('campaign_id', campaignId);
+        uploadFormData.append('upload_type', selectedCategory);
+        
+        try {
+          // Upload file first
+          const uploadResponse = await fetch('http://localhost:8080/api/upload', {
+            method: 'POST',
+            body: uploadFormData
+          });
+          
+          const uploadData = await uploadResponse.json();
+          if (!uploadData.success) {
+            alert('Failed to upload file: ' + (uploadData.error || 'Unknown error'));
+            return;
+          }
+          
+          // Then create asset record
+          const assetData = {
+            campaign_id: campaignId,
+            name: file.name,
+            type: file.type.startsWith('image/') ? 'image' : 'audio',
+            file_url: uploadData.url,
+            file_size: uploadData.size,
+            mime_type: file.type,
+            description: '',
+            tags: ''
+          };
+          
+          const assetResponse = await fetch('http://localhost:8080/api/assets', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(assetData)
+          });
+          
+          const assetResult = await assetResponse.json();
+          if (assetResult.success) {
+            loadAssets();
+          } else {
+            alert('Failed to create asset record: ' + (assetResult.error || 'Unknown error'));
+          }
+        } catch (error) {
+          console.error('Failed to upload asset:', error);
+          alert('Failed to upload asset');
+        }
+      };
+      input.click();
+    }
+    
+    async function editAsset(assetId) {
+      const asset = assets.find(a => a.id === assetId);
+      if (!asset) return;
+      
+      const newName = prompt('Enter new name:', asset.name);
+      if (!newName || newName === asset.name) return;
+      
+      try {
+        const response = await fetch(`http://localhost:8080/api/assets/${assetId}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            name: newName
+          })
+        });
+        
+        const data = await response.json();
+        if (data.success) {
+          loadAssets();
+        } else {
+          alert('Failed to update asset: ' + (data.error || 'Unknown error'));
+        }
+      } catch (error) {
+        console.error('Failed to update asset:', error);
+        alert('Failed to update asset');
+      }
+    }
+    
+    async function deleteAsset(assetId) {
+      if (!confirm('Are you sure you want to delete this asset?')) return;
+      
+      try {
+        const response = await fetch(`http://localhost:8080/api/assets/${assetId}`, {
+          method: 'DELETE'
+        });
+        
+        const data = await response.json();
+        if (data.success) {
+          loadAssets();
+        } else {
+          alert('Failed to delete asset: ' + (data.error || 'Unknown error'));
+        }
+      } catch (error) {
+        console.error('Failed to delete asset:', error);
+        alert('Failed to delete asset');
+      }
+    }
+    
+    function formatFileSize(bytes) {
+      if (bytes === 0) return '0 Bytes';
+      const k = 1024;
+      const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+      const i = Math.floor(Math.log(bytes) / Math.log(k));
+      return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+    
+    function addToken() {
+      alert('Active token management will be implemented in future updates. Use Assets > Tokens to upload token images.');
+    }
+    
+    function addJournalEntry() {
+      alert('Journal system will be implemented in future updates');
+    }
+    
+    function sendChatMessage() {
+      const input = document.getElementById('chat-input');
+      const message = input.value.trim();
+      if (!message) return;
+      
+      const chatMessages = document.getElementById('chat-messages');
+      const messageDiv = document.createElement('div');
+      messageDiv.style.cssText = 'margin-bottom: 10px; padding: 5px; background: #4a4a2a; border-radius: 3px;';
+      messageDiv.innerHTML = `<strong>You:</strong> ${message}`;
+      chatMessages.appendChild(messageDiv);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+      
+      input.value = '';
+    }
+    
+    function addDebugMessageToChat(message) {
+      const chatMessages = document.getElementById('chat-messages');
+      const messageDiv = document.createElement('div');
+      messageDiv.style.cssText = 'margin-bottom: 10px; padding: 5px; background: #2a4a4a; border-radius: 3px; border-left: 3px solid #00ff00;';
+      messageDiv.innerHTML = `<strong style="color: #00ff00;">[DEBUG]:</strong> ${message}`;
+      chatMessages.appendChild(messageDiv);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+    
+    // Campaign settings management
+    let campaignSettings = {
+      gridSize: 50,
+      gridColor: '#ffffff',
+      gridOpacity: 10
+    };
+    
+    async function loadCampaignSettings() {
+      try {
+        const response = await fetch(`http://localhost:8080/api/campaigns/${campaignId}/settings`);
+        const data = await response.json();
+        if (data.success && data.settings) {
+          campaignSettings = { ...campaignSettings, ...data.settings };
+          applySettings();
+        }
+      } catch (error) {
+        console.error('Failed to load campaign settings:', error);
+      }
+    }
+    
+    function applySettings() {
+      // Update UI controls
+      document.getElementById('grid-size').value = campaignSettings.gridSize;
+      document.getElementById('grid-color').value = campaignSettings.gridColor;
+      document.getElementById('grid-opacity').value = campaignSettings.gridOpacity;
+      
+      // Apply to map grid
+      const mapGrid = document.getElementById('map-grid');
+      mapGrid.style.backgroundSize = `${campaignSettings.gridSize}px ${campaignSettings.gridSize}px`;
+      
+      const opacity = campaignSettings.gridOpacity / 100;
+      const rgb = hexToRgb(campaignSettings.gridColor);
+      mapGrid.style.backgroundImage = `
+        linear-gradient(rgba(${rgb.r},${rgb.g},${rgb.b},${opacity}) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(${rgb.r},${rgb.g},${rgb.b},${opacity}) 1px, transparent 1px)
+      `;
+    }
+    
+    async function saveSettings() {
+      const gridSize = parseInt(document.getElementById('grid-size').value);
+      const gridColor = document.getElementById('grid-color').value;
+      const gridOpacity = parseInt(document.getElementById('grid-opacity').value);
+      
+      const settings = {
+        gridSize,
+        gridColor,
+        gridOpacity
+      };
+      
+      try {
+        const response = await fetch(`http://localhost:8080/api/campaigns/${campaignId}/settings`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ settings })
+        });
+        
+        const data = await response.json();
+        if (data.success) {
+          campaignSettings = settings;
+          applySettings();
+          alert('Settings saved successfully!');
+        } else {
+          alert('Failed to save settings: ' + (data.error || 'Unknown error'));
+        }
+      } catch (error) {
+        console.error('Failed to save settings:', error);
+        alert('Failed to save settings');
+      }
+    }
+    
+    function hexToRgb(hex) {
+      const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+      return result ? {
+        r: parseInt(result[1], 16),
+        g: parseInt(result[2], 16),
+        b: parseInt(result[3], 16)
+      } : null;
+    }
+    
+    // Help panel toggle
+    function toggleHelp() {
+      const helpPanel = document.getElementById('help-panel');
+      if (helpPanel.style.display === 'none') {
+        helpPanel.style.display = 'block';
+      } else {
+        helpPanel.style.display = 'none';
+      }
+    }
+    
+    // Chat input enter key support
+    document.getElementById('chat-input').addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        sendChatMessage();
+      }
+    });
+    
+    // Global userId variable
+    let userId;
+    
+    // Layer Management System
+    let currentLayer = 'tokens';
+    let layerVisibility = {
+      'map': true,
+      'walls': true,
+      'tokens': true,
+      'gm': true,
+      'audio': true,
+      'props': true
+    };
+
+    function initializeLayerSystem() {
+      const layerButtons = document.querySelectorAll('.layer-btn');
+      
+      layerButtons.forEach(button => {
+        button.addEventListener('click', function() {
+          const targetLayer = this.dataset.target;
+          const layerName = targetLayer.replace('-layer', '');
+          
+          // Set as active layer (exclusive selection)
+          setActiveLayer(layerName);
+        });
+        
+        // Right click to toggle visibility
+        button.addEventListener('contextmenu', function(e) {
+          e.preventDefault();
+          const targetLayer = this.dataset.target;
+          const layerName = targetLayer.replace('-layer', '');
+          
+          if (this.classList.contains('hidden')) {
+            showLayer(layerName);
+            this.classList.remove('hidden');
+          } else {
+            hideLayer(layerName);
+            this.classList.add('hidden');
+          }
+        });
+      });
+      
+      // Keyboard navigation for layers
+      document.addEventListener('keydown', function(e) {
+        if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+          return; // Don't interfere with text input
+        }
+        
+        switch(e.key) {
+          case '1':
+            setActiveLayer('map');
+            break;
+          case '2':
+            setActiveLayer('walls');
+            break;
+          case '3':
+            setActiveLayer('tokens');
+            break;
+          case '4':
+            setActiveLayer('gm');
+            break;
+          case '5':
+            setActiveLayer('audio');
+            break;
+          case '6':
+            setActiveLayer('props');
+            break;
+        }
+      });
+      
+      // Set tokens layer as default active
+      setActiveLayer('tokens');
+      
+      // Initialize drag and drop for layers
+      initializeLayerDropZones();
+    }
+    
+    function initializeLayerDropZones() {
+      const mapViewport = document.getElementById('map-viewport');
+      
+      mapViewport.addEventListener('dragover', function(e) {
+         e.preventDefault();
+         e.dataTransfer.dropEffect = 'copy';
+         mapViewport.classList.add('drag-over');
+       });
+       
+       mapViewport.addEventListener('dragleave', function(e) {
+         // Only remove drag-over if we're leaving the viewport entirely
+         if (!mapViewport.contains(e.relatedTarget)) {
+           mapViewport.classList.remove('drag-over');
+         }
+       });
+      
+      mapViewport.addEventListener('drop', function(e) {
+        e.preventDefault();
+        mapViewport.classList.remove('drag-over');
+        
+        try {
+         const data = JSON.parse(e.dataTransfer.getData('text/plain'));
+         const rect = mapViewport.getBoundingClientRect();
+         const mouseX = e.clientX - rect.left;
+         const mouseY = e.clientY - rect.top;
+         
+         // Convert screen coordinates to map coordinates (considering zoom and pan)
+         let mapX = ((mouseX - panX - rect.width/2) / currentZoom);
+         let mapY = ((mouseY - panY - rect.height/2) / currentZoom);
+         
+         // Convert to grid coordinates
+         const gridSize = campaignSettings.gridSize || 50;
+         const gridX = Math.floor(mapX / gridSize);
+         const gridY = Math.floor(mapY / gridSize);
+         
+         console.log(`Token dropped at screen (${mouseX}, ${mouseY}) -> map (${mapX.toFixed(2)}, ${mapY.toFixed(2)}) -> grid (${gridX}, ${gridY})`);
+         
+         // Calculate pixel position for visual display (grid coordinates * grid size)
+         const pixelX = gridX * gridSize;
+         const pixelY = gridY * gridSize;
+          
+          // Determine target layer based on asset type
+          let targetLayer;
+          switch(data.assetType.toLowerCase()) {
+            case 'token':
+              targetLayer = 'tokens';
+              break;
+            case 'background':
+              targetLayer = 'map';
+              break;
+            case 'audio':
+              targetLayer = 'audio';
+              break;
+            case 'props':
+              targetLayer = 'props';
+              break;
+            default:
+              targetLayer = currentLayer; // Use current active layer as fallback
+          }
+          
+          // Create asset on the appropriate layer
+          createAssetOnLayer(data, gridX, gridY, pixelX, pixelY, targetLayer);
+          
+        } catch (error) {
+          console.error('Error handling drop:', error);
+        }
+      });
+    }
+    
+    function createAssetOnLayer(assetData, gridX, gridY, pixelX, pixelY, targetLayer) {
+      const mapId = getCurrentMapId(); // You'll need to implement this
+      
+      // Prepare data for API call with grid coordinates
+      const payload = {
+        map_id: mapId,
+        asset_id: assetData.assetId,
+        grid_x: gridX,
+        grid_y: gridY,
+        grid_z: 0,
+        scale_x: 1.0,
+        scale_y: 1.0,
+        rotation: 0.0,
+        visible: true,
+        locked: false,
+        properties: {}
+      };
+      
+      // Add name for tokens
+      if (targetLayer === 'tokens') {
+        payload.name = assetData.assetName;
+      }
+      
+      // Add specific properties based on asset type
+      if (targetLayer === 'map') {
+        // Background-specific properties
+        payload.opacity = 1.0;
+        payload.blend_mode = 'normal';
+        payload.grid_width = 1;
+        payload.grid_height = 1;
+      } else if (targetLayer === 'audio') {
+        // Audio-specific properties
+        payload.volume = 1.0;
+        payload.loop = false;
+        payload.radius_grid = 2; // Default audio radius in grid units
+      } else if (targetLayer === 'props') {
+        // Props-specific properties
+        payload.interactive = true;
+        payload.grid_width = 1;
+        payload.grid_height = 1;
+      }
+      
+      // Determine API endpoint based on target layer
+      let apiEndpoint;
+      switch(targetLayer) {
+        case 'tokens':
+          apiEndpoint = '/api/map-tokens';
+          break;
+        case 'map':
+          apiEndpoint = '/api/map-backgrounds';
+          break;
+        case 'audio':
+          apiEndpoint = '/api/map-audio';
+          break;
+        case 'props':
+          apiEndpoint = '/api/map-props';
+          break;
+        default:
+          console.error('Unknown target layer:', targetLayer);
+          return;
+      }
+      
+      // Make API call to create asset on layer
+      fetch(apiEndpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          console.log(`Asset placed on ${targetLayer} layer:`, data);
+          // Optionally refresh the layer or add visual feedback
+          createVisualAssetElement(assetData, pixelX, pixelY, targetLayer);
+        } else {
+          console.error('Failed to place asset:', data.error);
+        }
+      })
+      .catch(error => {
+        console.error('Error placing asset:', error);
+      });
+    }
+    
+    async function createVisualAssetElement(assetData, x, y, targetLayer) {
+      const layerElement = document.getElementById(`${targetLayer}-layer`);
+      console.log('Target layer element:', layerElement);
+      if (!layerElement) {
+        console.error('Layer element not found for:', targetLayer);
+        return;
+      }
+      
+      // Find the asset in our assets array to get the file_url
+      const asset = assets.find(a => a.id == assetData.assetId);
+      console.log('Creating visual asset element:', {
+        assetData,
+        foundAsset: asset,
+        totalAssets: assets.length,
+        targetLayer,
+        position: { x, y }
+      });
+      
+      const assetElement = document.createElement('div');
+      assetElement.className = 'map-asset';
+      assetElement.style.position = 'absolute';
+      // Coordinates already include the offset from drop calculation
+      assetElement.style.left = parseFloat(x) + 'px';
+      assetElement.style.top = parseFloat(y) + 'px';
+      assetElement.style.cursor = 'move';
+      assetElement.title = `${assetData.assetType}: ${assetData.assetName}`;
+      
+      // Log the visual positioning for debugging
+      const gridSize = campaignSettings.gridSize || 50;
+      const visualCellX = Math.floor(parseFloat(x) / gridSize);
+      const visualCellY = Math.floor(parseFloat(y) / gridSize);
+      console.log(`Visual asset positioned at (${x}, ${y}) -> cell (${visualCellX}, ${visualCellY})`);
+      
+      // Create image element if asset has file_url and is an image
+      if (asset && asset.file_url && asset.type === 'image') {
+        const img = document.createElement('img');
+        // Ensure the URL is correctly formatted
+        let imageUrl = asset.file_url;
+        if (!imageUrl.startsWith('http')) {
+          // Remove leading slash if present to avoid double slashes
+          const cleanPath = imageUrl.startsWith('/') ? imageUrl.substring(1) : imageUrl;
+          imageUrl = `http://localhost:8080/${cleanPath}`;
+        }
+        img.src = imageUrl;
+        img.style.width = '100%';
+        img.style.height = '100%';
+        img.style.objectFit = 'cover';
+        img.style.borderRadius = 'inherit';
+        img.onload = function() {
+          console.log('Image loaded successfully:', imageUrl);
+        };
+        img.onerror = function() {
+          console.error('Failed to load image:', imageUrl);
+          // Fallback to text if image fails to load
+          assetElement.innerHTML = '';
+          assetElement.textContent = assetData.assetName;
+          assetElement.style.display = 'flex';
+          assetElement.style.alignItems = 'center';
+          assetElement.style.justifyContent = 'center';
+          assetElement.style.fontSize = '12px';
+          assetElement.style.color = '#007bff';
+        };
+        assetElement.appendChild(img);
+      } else {
+        // Fallback to text for non-image assets or when asset not found
+        assetElement.style.display = 'flex';
+        assetElement.style.alignItems = 'center';
+        assetElement.style.justifyContent = 'center';
+        assetElement.style.fontSize = '12px';
+        assetElement.style.color = '#007bff';
+        assetElement.style.backgroundColor = 'rgba(0, 123, 255, 0.1)';
+        
+        switch(assetData.assetType.toLowerCase()) {
+          case 'token':
+            assetElement.textContent = '👤';
+            break;
+          case 'background':
+            assetElement.textContent = '🗺️';
+            break;
+          case 'audio':
+            assetElement.textContent = '🔊';
+            break;
+          case 'props':
+            assetElement.textContent = '🎭';
+            break;
+          default:
+            assetElement.textContent = assetData.assetName;
+        }
+      }
+      
+      // Set size and styling based on asset type
+      switch(assetData.assetType.toLowerCase()) {
+        case 'token':
+          assetElement.style.width = '50px';
+          assetElement.style.height = '50px';
+          assetElement.style.borderRadius = '50%';
+          assetElement.style.border = '2px solid #28a745';
+          break;
+        case 'background':
+          assetElement.style.width = '100px';
+          assetElement.style.height = '100px';
+          assetElement.style.borderRadius = '4px';
+          assetElement.style.border = '2px solid #6f42c1';
+          break;
+        case 'audio':
+          assetElement.style.width = '40px';
+          assetElement.style.height = '40px';
+          assetElement.style.borderRadius = '50%';
+          assetElement.style.border = '2px solid #fd7e14';
+          break;
+        case 'props':
+          assetElement.style.width = '60px';
+          assetElement.style.height = '60px';
+          assetElement.style.borderRadius = '8px';
+          assetElement.style.border = '2px solid #20c997';
+          break;
+        default:
+          assetElement.style.width = '50px';
+          assetElement.style.height = '50px';
+          assetElement.style.borderRadius = '4px';
+          assetElement.style.border = '2px solid #007bff';
+      }
+      
+      layerElement.appendChild(assetElement);
+      console.log('Visual asset element added to layer:', {
+        elementAdded: assetElement,
+        layerChildren: layerElement.children.length,
+        layerName: targetLayer
+      });
+    }
+    
+    function getCurrentMapId() {
+      // Return the currently loaded map ID or fallback to URL parameter
+      if (currentMapId) {
+        return currentMapId;
+      }
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get('id') || '1'; // Default to 1 if not found
+    }
+    
+    function setActiveLayer(layerName) {
+      // Remove active class from all layers
+      document.querySelectorAll('.map-layer').forEach(layer => {
+        layer.classList.remove('active');
+      });
+      
+      // Remove active class from all layer buttons
+      document.querySelectorAll('.layer-btn').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      
+      // Set new active layer
+      const targetLayer = document.getElementById(layerName + '-layer');
+      if (targetLayer) {
+        targetLayer.classList.add('active');
+        currentLayer = layerName;
+        
+        // Set corresponding button as active
+        const targetButton = document.querySelector(`[data-target="${layerName}-layer"]`);
+        if (targetButton) {
+          targetButton.classList.add('active');
+        }
+      }
+    }
+    
+    function showLayer(layerName) {
+      const layer = document.getElementById(layerName + '-layer');
+      if (layer) {
+        layer.classList.remove('layer-hidden');
+        layerVisibility[layerName] = true;
+      }
+    }
+    
+    function hideLayer(layerName) {
+      const layer = document.getElementById(layerName + '-layer');
+      if (layer) {
+        layer.classList.add('layer-hidden');
+        layerVisibility[layerName] = false;
+      }
+    }
+    
+    function getCurrentLayer() {
+      return currentLayer;
+    }
+    
+    function isLayerVisible(layerName) {
+      return layerVisibility[layerName];
+    }
+    
+    // Initialize function
+    async function initialize() {
+      // Check login state
+      const user = localStorage.getItem('pfvtt_user') || sessionStorage.getItem('pfvtt_user');
+      if (!user) {
+        window.location.href = '/login';
+        return;
+      }
+      
+      // Get user ID
+      try {
+        const userIdResponse = await fetch(`http://localhost:8080/api/user_id?username=${encodeURIComponent(user)}`);
+        const userIdData = await userIdResponse.json();
+        if (userIdData.success) {
+          userId = userIdData.user_id;
+        } else {
+          console.error('Failed to get user ID:', userIdData.error);
+          alert('Failed to get user information');
+          return;
+        }
+      } catch (error) {
+        console.error('Error getting user ID:', error);
+        alert('Error getting user information');
+        return;
+      }
+      
+      // Initialize after getting userId
+      loadCampaignInfo();
+      loadMaps();
+      loadScenes();
+      loadAssets();
+      loadCampaignSettings();
+      
+      // Add event listener for asset category filter
+      const categorySelect = document.getElementById('asset-category-select');
+      const assetAddBtn = document.querySelector('#assets-section .add-btn');
+      
+      categorySelect.addEventListener('change', function() {
+        displayAssets();
+        
+        // Disable + button when "All" is selected
+        if (this.value === 'all') {
+          assetAddBtn.disabled = true;
+          assetAddBtn.style.opacity = '0.5';
+          assetAddBtn.style.cursor = 'not-allowed';
+          assetAddBtn.title = 'Select a specific category to upload assets';
+        } else {
+          assetAddBtn.disabled = false;
+          assetAddBtn.style.opacity = '1';
+          assetAddBtn.style.cursor = 'pointer';
+          assetAddBtn.title = 'Upload new asset';
+        }
+      });
+      
+      // Initialize button state
+      if (categorySelect.value === 'all') {
+        assetAddBtn.disabled = true;
+        assetAddBtn.style.opacity = '0.5';
+        assetAddBtn.style.cursor = 'not-allowed';
+        assetAddBtn.title = 'Select a specific category to upload assets';
+      }
+      initializeMapNavigation();
+      initializeLayerSystem();
+    }
+    
+    // Start initialization
+    initialize();
   </script>
 </body>
 </html>

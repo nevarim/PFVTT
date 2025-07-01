@@ -100,6 +100,17 @@ document.addEventListener('DOMContentLoaded', function() {
         if (data.success) {
           localStorage.setItem('pfvtt_user', username);
           sessionStorage.setItem('pfvtt_user', username);
+          // Get and store user_id
+          try {
+            const userIdRes = await fetch(`/api/user_id?username=${encodeURIComponent(username)}`);
+            const userIdData = await userIdRes.json();
+            if (userIdData.success && userIdData.user_id) {
+              sessionStorage.setItem('pfvtt_user_id', userIdData.user_id);
+              localStorage.setItem('pfvtt_user_id', userIdData.user_id);
+            }
+          } catch (err) {
+            console.error('Failed to get user_id:', err);
+          }
           window.location.href = '/campaigns';
         } else {
           showError(data.error || 'Login failed.');
@@ -129,6 +140,17 @@ document.addEventListener('DOMContentLoaded', function() {
         if (data.success) {
           localStorage.setItem('pfvtt_user', username);
           sessionStorage.setItem('pfvtt_user', username);
+          // Get and store user_id
+          try {
+            const userIdRes = await fetch(`/api/user_id?username=${encodeURIComponent(username)}`);
+            const userIdData = await userIdRes.json();
+            if (userIdData.success && userIdData.user_id) {
+              sessionStorage.setItem('pfvtt_user_id', userIdData.user_id);
+              localStorage.setItem('pfvtt_user_id', userIdData.user_id);
+            }
+          } catch (err) {
+            console.error('Failed to get user_id:', err);
+          }
           window.location.href = '/campaigns';
         } else {
           showError(data.error || 'Registration failed.');

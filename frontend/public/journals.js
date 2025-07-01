@@ -1,0 +1,203 @@
+let selectedJournalId = null;
+let journals = [];
+let currentCampaignId = null;
+
+// Get campaign ID from session storage
+function getCampaignIdFromSession() {
+  return sessionStorage.getItem('current_campaign_id');
+}
+
+// Initialize the page
+document.addEventListener('DOMContentLoaded', function() {
+  currentCampaignId = getCampaignIdFromSession();
+  if (!currentCampaignId) {
+    alert('No campaign selected');
+    window.location.href = '/campaigns';
+    return;
+  }
+  
+  loadCampaignInfo();
+  loadJournals();
+  
+  // Listen for campaign data updates
+  let lastUpdateCheck = sessionStorage.getItem('campaign_data_updated');
+  setInterval(() => {
+    const currentUpdate = sessionStorage.getItem('campaign_data_updated');
+    if (currentUpdate && currentUpdate !== lastUpdateCheck) {
+      lastUpdateCheck = currentUpdate;
+      loadCampaignInfo(); // Reload campaign info when data is updated
+    }
+  }, 1000);
+});
+
+// Load journals for the current campaign
+async function loadJournals() {
+  try {
+    const response = await fetch(`/api/journals?campaign_id=${currentCampaignId}`);
+    const data = await response.json();
+    if (data.success) {
+      journals = data.journals;
+      renderJournalList();
+    } else {
+      console.error('Failed to load journals:', data.error);
+    }
+  } catch (error) {
+    console.error('Error loading journals:', error);
+  }
+}
+
+// Render the journal list in the sidebar
+function renderJournalList() {
+  const journalList = document.getElementById('journalList');
+  journalList.innerHTML = '';
+  
+  if (journals.length === 0) {
+    journalList.innerHTML = '<li style="color: #aaa; text-align: center; padding: 20px;">No journals yet</li>';
+    return;
+  }
+  
+  journals.forEach(journal => {
+    const li = document.createElement('li');
+    li.className = 'journal-item';
+    li.onclick = () => selectJournal(journal.id);
+    
+    // Format date
+    const date = new Date(journal.created_at);
+    const formattedDate = date.toLocaleDateString();
+    
+    // Create preview of content (first 50 characters)
+    const preview = journal.content ? 
+      (journal.content.length > 50 ? journal.content.substring(0, 50) + '...' : journal.content) :
+      'No content';
+    
+    li.innerHTML = `
+      <div class="journal-title">${journal.title}</div>
+      <div class="journal-preview">${preview}</div>
+      <div class="journal-date">${formattedDate}</div>
+    `;
+    
+    journalList.appendChild(li);
+  });
+}
+
+// Select a journal and show its details
+function selectJournal(journalId) {
+  selectedJournalId = journalId;
+  
+  // Update visual selection
+  document.querySelectorAll('.journal-item').forEach(item => {
+    item.classList.remove('selected');
+  });
+  
+  const selectedItem = document.querySelector(`[onclick="selectJournal(${journalId})"]`);
+  if (selectedItem) {
+    selectedItem.classList.add('selected');
+  }
+  
+  // Show journal details
+  const journal = journals.find(j => j.id == journalId);
+  if (journal) {
+    showJournalSheet(journal);
+  }
+}
+
+// Show journal sheet with details
+function showJournalSheet(journal) {
+  const container = document.getElementById('journalsMain');
+  
+  // Format date
+  const date = new Date(journal.created_at);
+  const formattedDate = date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
+  
+  container.innerHTML = `
+    <div class="journal-sheet">
+      <div class="journal-header">
+        <div class="journal-icon">📖</div>
+        <div class="journal-info">
+          <h2>${journal.title}</h2>
+          <div class="journal-meta">Created: ${formattedDate}</div>
+        </div>
+      </div>
+      
+      <div class="journal-content">${journal.content || 'This journal entry is empty.'}</div>
+      
+      <div class="journal-actions">
+        <button class="btn btn-primary" onclick="editJournal(${journal.id})">Edit Journal</button>
+        <button class="btn btn-danger" onclick="deleteJournal(${journal.id})">Delete Journal</button>
+      </div>
+    </div>
+  `;
+}
+
+// Open create journal modal
+function openCreateModal() {
+  document.getElementById('createJournalModal').style.display = 'block';
+  document.getElementById('journalTitle').value = '';
+  document.getElementById('journalContent').value = '';
+}
+
+// Close create journal modal
+function closeCreateModal() {
+  document.getElementById('createJournalModal').style.display = 'none';
+}
+
+// Handle create journal form submission
+document.getElementById('createJournalForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  
+  const title = document.getElementById('journalTitle').value;
+  const content = document.getElementById('journalContent').value;
+  
+  if (!title.trim()) {
+    alert('Please enter a title for the journal');
+    return;
+  }
+  
+  try {
+    const response = await fetch('/api/journals', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        campaign_id: currentCampaignId,
+        title: title,
+        content: content
+      })
+    });
+    
+    const data = await response.json();
+    if (data.success) {
+      closeCreateModal();
+      loadJournals(); // Reload the journal list
+    } else {
+      alert('Failed to create journal: ' + (data.error || 'Unknown error'));
+    }
+  } catch (error) {
+    console.error('Error creating journal:', error);
+    alert('Error creating journal');
+  }
+});
+
+// Edit journal (placeholder - would need edit modal)
+function editJournal(journalId) {
+  alert('Edit functionality not yet implemented');
+}
+
+// Delete journal
+async function deleteJournal(journalId) {
+  if (!confirm('Are you sure you want to delete this journal? This action cannot be undone.')) {
+    return;
+  }
+  
+  // Note: Delete API endpoint would need to be implemented in backend
+  alert('Delete functionality not yet implemented in backend API');
+}
+
+// Close modal when clicking outside of it
+window.onclick = function(event) {
+  const modal = document.getElementById('createJournalModal');
+  if (event.target == modal) {
+    closeCreateModal();
+  }
+}

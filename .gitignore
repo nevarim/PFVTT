@@ -1,0 +1,43 @@
+# Environment variables
+.env
+
+# Database credentials
+config.dart
+
+# Node modules
+node_modules/
+
+# Dart build files
+build/
+.dart_tool/
+.packages
+pubspec.lock
+
+# IDE files
+.vscode/
+.idea/
+*.iml
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Upload directories
+uploads/
+temp/
+
+# Backup files
+*.bak
+*.backup
+
+# Cache
+.cache/
+
+# Runtime files
+*.pid
+*.seed
+*.pid.lock
