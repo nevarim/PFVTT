@@ -1313,19 +1313,20 @@ Future<void> main(List<String> arguments) async {
             if (pathSegments.length >= 5) {
               // Handle both old and new path structures
               String filePath;
+              String filename;
               if (pathSegments[1] == 'campaign' && pathSegments.length >= 6) {
                 // New structure: /images/campaign/category/userId/campaignId/filename
                 final category = pathSegments[2]; // tokens, backgrounds, audio, props
                 final userId = pathSegments[3];
                 final campaignId = pathSegments[4];
-                final filename = pathSegments.sublist(5).join('/');
+                filename = pathSegments.sublist(5).join('/');
                 filePath = 'images/campaign/$category/$userId/$campaignId/$filename';
               } else {
                 // Old structure: /images/type/userId/campaignId/filename
                 final imageType = pathSegments[1];
                 final userId = pathSegments[2];
                 final campaignId = pathSegments[3];
-                final filename = pathSegments.sublist(4).join('/');
+                filename = pathSegments.sublist(4).join('/');
                 filePath = 'images/$imageType/$userId/$campaignId/$filename';
               }
               final file = File(filePath);

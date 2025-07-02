@@ -946,7 +946,11 @@
         const tool = this.dataset.tool;
         
         if (tool === 'zoom-in' || tool === 'zoom-out' || tool === 'zoom-fit') {
-          handleZoom(tool);
+          const viewport = document.getElementById('map-viewport');
+          const rect = viewport.getBoundingClientRect();
+          const centerX = rect.width / 2;
+          const centerY = rect.height / 2;
+          handleZoom(tool, centerX, centerY);
           return;
         }
         
@@ -1040,21 +1044,75 @@
       
       // Click to show grid coordinates in chat (debug feature)
       viewport.addEventListener('click', function(e) {
+        // Skip if clicking on a token or other interactive element
+        if (e.target.classList.contains('map-asset') || e.target.closest('.map-asset')) {
+          return;
+        }
+        
         const rect = viewport.getBoundingClientRect();
         const mouseX = e.clientX - rect.left;
         const mouseY = e.clientY - rect.top;
         
-        // Convert screen coordinates to map coordinates (considering zoom and pan)
-        const mapX = ((mouseX - panX - rect.width/2) / currentZoom);
-        const mapY = ((mouseY - panY - rect.height/2) / currentZoom);
+        // Convert screen coordinates to map coordinates using Roll20-style coordinate system
+        const mapX = (mouseX - panX) / currentZoom;
+        const mapY = (mouseY - panY) / currentZoom;
         
-        // Convert to grid coordinates
+        // Convert to grid coordinates with proper snapping
         const gridSize = campaignSettings.gridSize || 50;
         const gridX = Math.floor(mapX / gridSize);
         const gridY = Math.floor(mapY / gridSize);
         
+        // Calculate pixel position (center of grid cell like Roll20)
+        const pixelX = gridX * gridSize + gridSize / 2;
+        const pixelY = gridY * gridSize + gridSize / 2;
+        
+        // Debug output to console
+        console.log(`=== CLICK DEBUG ===`);
+        console.log(`Mouse: (${mouseX}, ${mouseY})`);
+        console.log(`Pan: (${panX}, ${panY})`);
+        console.log(`Zoom: ${currentZoom}`);
+        console.log(`Map coordinates: (${Math.round(mapX)}, ${Math.round(mapY)})`);
+        console.log(`Grid coordinates: (${gridX}, ${gridY})`);
+        console.log(`Pixel coordinates (center): (${pixelX}, ${pixelY})`);
+        console.log(`==================`);
+        
         // Add debug message to chat
         addDebugMessageToChat(`Clicked grid coordinates: (${gridX}, ${gridY})`);
+      });
+      
+      // Also add click handler directly to mapGrid for better coverage
+      mapGrid.addEventListener('click', function(e) {
+        // Skip if clicking on a token or other interactive element
+        if (e.target.classList.contains('map-asset') || e.target.closest('.map-asset')) {
+          return;
+        }
+        
+        const rect = viewport.getBoundingClientRect();
+        const mouseX = e.clientX - rect.left;
+        const mouseY = e.clientY - rect.top;
+        
+        // Convert screen coordinates to map coordinates using Roll20-style coordinate system
+        const mapX = (mouseX - panX) / currentZoom;
+        const mapY = (mouseY - panY) / currentZoom;
+        
+        // Convert to grid coordinates with proper snapping
+        const gridSize = campaignSettings.gridSize || 50;
+        const gridX = Math.floor(mapX / gridSize);
+        const gridY = Math.floor(mapY / gridSize);
+        
+        // Calculate pixel position (center of grid cell like Roll20)
+        const pixelX = gridX * gridSize + gridSize / 2;
+        const pixelY = gridY * gridSize + gridSize / 2;
+        
+        // Debug output to console
+        console.log(`=== MAPGRID CLICK DEBUG ===`);
+        console.log(`Mouse: (${mouseX}, ${mouseY})`);
+        console.log(`Pan: (${panX}, ${panY})`);
+        console.log(`Zoom: ${currentZoom}`);
+        console.log(`Map coordinates: (${Math.round(mapX)}, ${Math.round(mapY)})`);
+        console.log(`Grid coordinates: (${gridX}, ${gridY})`);
+        console.log(`Pixel coordinates (center): (${pixelX}, ${pixelY})`);
+        console.log(`===========================`);
       });
       
       // Mouse drag for panning (Roll20 style - right click drag)
@@ -1087,13 +1145,18 @@
         const mouseX = e.clientX - rect.left;
         const mouseY = e.clientY - rect.top;
         
-        // Convert screen coordinates to map coordinates
-        const mapX = Math.round((mouseX - panX - rect.width/2) / currentZoom);
-        const mapY = Math.round((mouseY - panY - rect.height/2) / currentZoom);
+        // Convert screen coordinates to map coordinates using Roll20-style coordinate system
+        const mapX = (mouseX - panX) / currentZoom;
+        const mapY = (mouseY - panY) / currentZoom;
+        
+        // Convert to grid coordinates with proper snapping
+        const gridSize = campaignSettings.gridSize || 50;
+        const gridX = Math.floor(mapX / gridSize);
+        const gridY = Math.floor(mapY / gridSize);
         
         const coordsIndicator = document.getElementById('coordinates-indicator');
         if (coordsIndicator) {
-          coordsIndicator.textContent = `X: ${mapX}, Y: ${mapY}`;
+          coordsIndicator.textContent = `Map: ${Math.round(mapX)}, ${Math.round(mapY)} | Grid: ${gridX}, ${gridY}`;
         }
       });
       
@@ -1131,11 +1194,19 @@
           case '+':
           case '=':
             e.preventDefault();
-            handleZoom('zoom-in');
+            // Get current mouse position for zoom centering
+            const rect = viewport.getBoundingClientRect();
+            const centerX = rect.width / 2;
+            const centerY = rect.height / 2;
+            handleZoom('zoom-in', centerX, centerY);
             break;
           case '-':
             e.preventDefault();
-            handleZoom('zoom-out');
+            // Get current mouse position for zoom centering
+            const rect2 = viewport.getBoundingClientRect();
+            const centerX2 = rect2.width / 2;
+            const centerY2 = rect2.height / 2;
+            handleZoom('zoom-out', centerX2, centerY2);
             break;
           case '0':
             e.preventDefault();
@@ -1300,15 +1371,13 @@
             console.log('Processing token:', token);
             const assetData = {
               assetId: token.asset_id,
+              tokenId: token.id,
               assetType: 'token',
               assetName: token.name || 'Token'
             };
             console.log('Creating visual element for token:', assetData);
-            // Convert grid coordinates to pixel coordinates
-            const gridSize = campaignSettings.gridSize || 50;
-            const pixelX = token.grid_x * gridSize;
-            const pixelY = token.grid_y * gridSize;
-            createVisualAssetElement(assetData, pixelX, pixelY, 'tokens');
+            // Pass grid coordinates directly to the visual element function
+            createVisualAssetElement(assetData, token.grid_x, token.grid_y, 'tokens');
           });
         } else {
           console.log('No tokens found or request failed');
@@ -1324,11 +1393,8 @@
               assetType: 'background',
               assetName: 'Background'
             };
-            // Convert grid coordinates to pixel coordinates
-            const gridSize = campaignSettings.gridSize || 50;
-            const pixelX = bg.grid_x * gridSize;
-            const pixelY = bg.grid_y * gridSize;
-            createVisualAssetElement(assetData, pixelX, pixelY, 'map');
+            // Pass grid coordinates directly to the visual element function
+            createVisualAssetElement(assetData, bg.grid_x, bg.grid_y, 'map');
           });
         }
         
@@ -1342,11 +1408,8 @@
               assetType: 'audio',
               assetName: 'Audio'
             };
-            // Convert grid coordinates to pixel coordinates
-            const gridSize = campaignSettings.gridSize || 50;
-            const pixelX = audio.grid_x * gridSize;
-            const pixelY = audio.grid_y * gridSize;
-            createVisualAssetElement(assetData, pixelX, pixelY, 'audio');
+            // Pass grid coordinates directly to the visual element function
+            createVisualAssetElement(assetData, audio.grid_x, audio.grid_y, 'audio');
           });
         }
         
@@ -1360,11 +1423,8 @@
               assetType: 'props',
               assetName: 'Prop'
             };
-            // Convert grid coordinates to pixel coordinates
-            const gridSize = campaignSettings.gridSize || 50;
-            const pixelX = prop.grid_x * gridSize;
-            const pixelY = prop.grid_y * gridSize;
-            createVisualAssetElement(assetData, pixelX, pixelY, 'props');
+            // Pass grid coordinates directly to the visual element function
+            createVisualAssetElement(assetData, prop.grid_x, prop.grid_y, 'props');
           });
         }
         
@@ -1519,17 +1579,12 @@
       const filteredAssets = selectedCategory === 'all' 
         ? assets 
         : assets.filter(asset => {
-            if (selectedCategory === 'tokens') {
-              // Tokens are stored as 'image' type but in 'tokens' folder
-              return asset.type === 'image' && asset.file_url.includes('/tokens/');
-            } else if (selectedCategory === 'background') {
-              // Backgrounds are images in campaign folder
-              return asset.type === 'image' && asset.file_url.includes('/campaign');
-            } else if (selectedCategory === 'props') {
-              // Props are images but not in tokens or background folders
-              return asset.type === 'image' && asset.file_url.includes('/props');
+            if (selectedCategory === 'background') {
+              // Backgrounds are stored as 'backgrounds' category
+              return asset.category === 'backgrounds';
+            } else {
+              return asset.category === selectedCategory;
             }
-            return asset.type === selectedCategory;
           });
       
       filteredAssets.forEach(asset => {
@@ -1537,11 +1592,11 @@
         li.className = 'item';
         li.draggable = true;
         li.dataset.assetId = asset.id;
-        li.dataset.assetType = asset.type;
+        li.dataset.assetType = asset.category;
         li.dataset.assetName = asset.name;
         li.innerHTML = `
           <div class="item-name">${asset.name}</div>
-          <div class="item-details">${asset.type} - ${formatFileSize(asset.file_size)}</div>
+          <div class="item-details">${asset.category} - ${formatFileSize(asset.file_size)}</div>
           <div class="item-actions">
             <button onclick="editAsset(${asset.id})" title="Edit">✏️</button>
             <button onclick="deleteAsset(${asset.id})" title="Delete">🗑️</button>
@@ -1552,7 +1607,7 @@
         li.addEventListener('dragstart', function(e) {
           e.dataTransfer.setData('text/plain', JSON.stringify({
             assetId: asset.id,
-            assetType: asset.type,
+            assetType: asset.category,
             assetName: asset.name
           }));
           e.dataTransfer.effectAllowed = 'copy';
@@ -1621,7 +1676,7 @@
           const assetData = {
             campaign_id: campaignId,
             name: file.name,
-            type: file.type.startsWith('image/') ? 'image' : 'audio',
+            category: selectedCategory,
             file_url: uploadData.url,
             file_size: uploadData.size,
             mime_type: file.type,
@@ -1678,6 +1733,86 @@
       } catch (error) {
         console.error('Failed to update asset:', error);
         alert('Failed to update asset');
+      }
+    }
+
+    async function editTokenName(assetData, assetElement) {
+      const currentName = assetData.assetName || 'Token';
+      const newName = prompt('Inserisci il nuovo nome del token:', currentName);
+      if (!newName || newName === currentName) return;
+      
+      try {
+        let tokenId = assetData.tokenId;
+        
+        // If tokenId is not available, find it from the map tokens
+        if (!tokenId) {
+          const mapId = getCurrentMapId();
+          const tokensResponse = await fetch(`/api/map-tokens?map_id=${mapId}`);
+          const tokensData = await tokensResponse.json();
+          
+          if (tokensData.success && tokensData.tokens) {
+            const token = tokensData.tokens.find(t => t.asset_id == assetData.assetId);
+            if (!token) {
+              alert('Token non trovato nel database');
+              return;
+            }
+            tokenId = token.id;
+          } else {
+            alert('Errore nel recupero dei token dalla mappa');
+            return;
+          }
+        }
+        
+        // Update the asset name in the assets table
+        const assetResponse = await fetch(`http://localhost:8080/api/assets/${assetData.assetId}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            name: newName
+          })
+        });
+        
+        const assetResult = await assetResponse.json();
+        if (!assetResult.success) {
+          alert('Errore nell\'aggiornamento dell\'asset: ' + (assetResult.error || 'Errore sconosciuto'));
+          return;
+        }
+        
+        // Update the token name in map_tokens table
+        const tokenResponse = await fetch(`http://localhost:8080/api/map-tokens/${tokenId}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            name: newName
+          })
+        });
+        
+        const tokenData = await tokenResponse.json();
+        if (tokenData.success) {
+          // Update the visual element
+          assetData.assetName = newName;
+          assetElement.title = `${assetData.assetType}: ${newName}`;
+          
+          // Update the assets array
+          const asset = assets.find(a => a.id == assetData.assetId);
+          if (asset) {
+            asset.name = newName;
+          }
+          
+          // Refresh the assets display
+          displayAssets();
+          
+          alert('Nome del token aggiornato con successo!');
+        } else {
+          alert('Asset aggiornato ma errore nell\'aggiornamento del token sulla mappa: ' + (tokenData.error || 'Errore sconosciuto'));
+        }
+      } catch (error) {
+        console.error('Errore nell\'aggiornamento del token:', error);
+        alert('Errore nell\'aggiornamento del token');
       }
     }
     
@@ -1938,24 +2073,34 @@
         
         try {
          const data = JSON.parse(e.dataTransfer.getData('text/plain'));
-         const rect = mapViewport.getBoundingClientRect();
+         const viewport = document.getElementById('map-viewport');
+         const rect = viewport.getBoundingClientRect();
          const mouseX = e.clientX - rect.left;
          const mouseY = e.clientY - rect.top;
          
-         // Convert screen coordinates to map coordinates (considering zoom and pan)
-         let mapX = ((mouseX - panX - rect.width/2) / currentZoom);
-         let mapY = ((mouseY - panY - rect.height/2) / currentZoom);
+         // Convert screen coordinates to map coordinates using Roll20-style coordinate system
+         // This accounts for pan and zoom transformations consistently
+         const mapX = (mouseX - panX) / currentZoom;
+         const mapY = (mouseY - panY) / currentZoom;
          
-         // Convert to grid coordinates
+         // Convert to grid coordinates with proper snapping
          const gridSize = campaignSettings.gridSize || 50;
          const gridX = Math.floor(mapX / gridSize);
          const gridY = Math.floor(mapY / gridSize);
          
-         console.log(`Token dropped at screen (${mouseX}, ${mouseY}) -> map (${mapX.toFixed(2)}, ${mapY.toFixed(2)}) -> grid (${gridX}, ${gridY})`);
+         // Calculate pixel position for visual display (center of grid cell)
+         // Roll20 centers tokens in grid cells, so we add half grid size
+         // Note: The grid offset is handled in createVisualAssetElement for positioning
+         const pixelX = gridX * gridSize + gridSize / 2;
+         const pixelY = gridY * gridSize + gridSize / 2;
          
-         // Calculate pixel position for visual display (grid coordinates * grid size)
-         const pixelX = gridX * gridSize;
-         const pixelY = gridY * gridSize;
+         console.log(`=== TOKEN DROP DEBUG ===`);
+         console.log(`Cella target (dove l'utente vuole rilasciare): Grid (${gridX}, ${gridY})`);
+         console.log(`Coordinate schermo: (${mouseX}, ${mouseY})`);
+         console.log(`Coordinate mappa: (${mapX.toFixed(2)}, ${mapY.toFixed(2)})`);
+         console.log(`Pan values: panX=${panX}, panY=${panY}, zoom=${currentZoom}`);
+         console.log(`Pixel calcolati: (${pixelX}, ${pixelY})`);
+         console.log(`========================`);
           
           // Determine target layer based on asset type
           let targetLayer;
@@ -2060,7 +2205,7 @@
         if (data.success) {
           console.log(`Asset placed on ${targetLayer} layer:`, data);
           // Optionally refresh the layer or add visual feedback
-          createVisualAssetElement(assetData, pixelX, pixelY, targetLayer);
+          createVisualAssetElement(assetData, gridX, gridY, targetLayer);
         } else {
           console.error('Failed to place asset:', data.error);
         }
@@ -2070,7 +2215,7 @@
       });
     }
     
-    async function createVisualAssetElement(assetData, x, y, targetLayer) {
+    async function createVisualAssetElement(assetData, gridX, gridY, targetLayer) {
       const layerElement = document.getElementById(`${targetLayer}-layer`);
       console.log('Target layer element:', layerElement);
       if (!layerElement) {
@@ -2085,26 +2230,40 @@
         foundAsset: asset,
         totalAssets: assets.length,
         targetLayer,
-        position: { x, y }
+        gridPosition: { gridX, gridY }
       });
       
       const assetElement = document.createElement('div');
       assetElement.className = 'map-asset';
       assetElement.style.position = 'absolute';
-      // Coordinates already include the offset from drop calculation
-      assetElement.style.left = parseFloat(x) + 'px';
-      assetElement.style.top = parseFloat(y) + 'px';
+      
+      // Calculate pixel position from grid coordinates using Roll20-style centering
+      const gridSize = campaignSettings.gridSize || 50;
+      
+      // Position token at center of grid cell like Roll20
+      // Coordinates are calculated consistently with drop and click handlers
+      const pixelX = gridX * gridSize + gridSize / 2;
+      const pixelY = gridY * gridSize + gridSize / 2;
+      
+      // Position relative to the map grid coordinate system
+      assetElement.style.left = pixelX + 'px';
+      assetElement.style.top = pixelY + 'px';
+      assetElement.style.position = 'absolute';
+      
+      // Center the token image within its position
+      assetElement.style.transform = 'translate(-50%, -50%)';
       assetElement.style.cursor = 'move';
       assetElement.title = `${assetData.assetType}: ${assetData.assetName}`;
+      // Ensure the element is positioned relative to the grid coordinate system
+      assetElement.style.transformOrigin = 'top left';
       
       // Log the visual positioning for debugging
-      const gridSize = campaignSettings.gridSize || 50;
-      const visualCellX = Math.floor(parseFloat(x) / gridSize);
-      const visualCellY = Math.floor(parseFloat(y) / gridSize);
-      console.log(`Visual asset positioned at (${x}, ${y}) -> cell (${visualCellX}, ${visualCellY})`);
+      console.log(`=== VISUAL ASSET CREATION ===`);
+      console.log(`Token effettivamente posizionato a: Grid (${gridX}, ${gridY}) -> Pixel (${pixelX}, ${pixelY})`);
+      console.log(`==============================`);
       
-      // Create image element if asset has file_url and is an image
-      if (asset && asset.file_url && asset.type === 'image') {
+      // Create image element if asset has file_url and is an image category
+      if (asset && asset.file_url && ['tokens', 'backgrounds', 'props'].includes(asset.category)) {
         const img = document.createElement('img');
         // Ensure the URL is correctly formatted
         let imageUrl = asset.file_url;
@@ -2193,6 +2352,14 @@
           assetElement.style.border = '2px solid #007bff';
       }
       
+      // Add context menu for tokens to enable editing
+      if (assetData.assetType.toLowerCase() === 'token') {
+        assetElement.addEventListener('contextmenu', function(e) {
+          e.preventDefault();
+          editTokenName(assetData, assetElement);
+        });
+      }
+
       layerElement.appendChild(assetElement);
       console.log('Visual asset element added to layer:', {
         elementAdded: assetElement,
