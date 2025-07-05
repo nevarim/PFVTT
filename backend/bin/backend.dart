@@ -1698,6 +1698,78 @@ Future<void> main(List<String> arguments) async {
             jsonEncode({'success': true, 'token_id': result.insertId}),
           );
           await request.response.close();
+        } else if (request.uri.path.startsWith('/api/map-tokens/') &&
+            request.method == 'PUT') {
+          // Update map token
+          final pathParts = request.uri.path.split('/');
+          final tokenId = pathParts[3];
+          final body = await utf8.decoder.bind(request).join();
+          final params = jsonDecode(body);
+
+          List<String> updateFields = [];
+          List<dynamic> updateValues = [];
+
+          if (params['name'] != null) {
+            updateFields.add('name = ?');
+            updateValues.add(params['name']);
+          }
+          if (params['grid_x'] != null) {
+            updateFields.add('grid_x = ?');
+            updateValues.add(params['grid_x']);
+          }
+          if (params['grid_y'] != null) {
+            updateFields.add('grid_y = ?');
+            updateValues.add(params['grid_y']);
+          }
+          if (params['grid_z'] != null) {
+            updateFields.add('grid_z = ?');
+            updateValues.add(params['grid_z']);
+          }
+          if (params['scale_x'] != null) {
+            updateFields.add('scale_x = ?');
+            updateValues.add(params['scale_x']);
+          }
+          if (params['scale_y'] != null) {
+            updateFields.add('scale_y = ?');
+            updateValues.add(params['scale_y']);
+          }
+          if (params['rotation'] != null) {
+            updateFields.add('rotation = ?');
+            updateValues.add(params['rotation']);
+          }
+          if (params['visible'] != null) {
+            updateFields.add('visible = ?');
+            updateValues.add(params['visible']);
+          }
+          if (params['locked'] != null) {
+            updateFields.add('locked = ?');
+            updateValues.add(params['locked']);
+          }
+          if (params['properties'] != null) {
+            updateFields.add('properties = ?');
+            updateValues.add(jsonEncode(params['properties']));
+          }
+
+          if (updateFields.isEmpty) {
+            request.response.statusCode = 400;
+            request.response.headers.contentType = ContentType.json;
+            request.response.write(
+              jsonEncode({'success': false, 'error': 'No fields to update'}),
+            );
+            await request.response.close();
+            return;
+          }
+
+          updateFields.add('updated_at = NOW()');
+          updateValues.add(tokenId);
+          await _connectionPool.query(
+            'UPDATE map_tokens SET ${updateFields.join(', ')} WHERE id = ?',
+            updateValues,
+          );
+
+          request.response.headers.contentType = ContentType.json;
+          request.response.write(jsonEncode({'success': true}));
+          await request.response.close();
         }
         // Map Backgrounds API
         else if (request.uri.path == '/api/map-backgrounds' &&

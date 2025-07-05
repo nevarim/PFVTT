@@ -416,6 +416,17 @@ app.post('/api/map-tokens', async (req, res) => {
   }
 });
 
+app.put('/api/map-tokens/:id', async (req, res) => {
+  try {
+    const response = await axios.put(`http://localhost:8080/api/map-tokens/${req.params.id}`, req.body, {
+      headers: { 'Content-Type': 'application/json' }
+    });
+    res.json(response.data);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to update token' });
+  }
+});
+
 app.get('/api/map-backgrounds', async (req, res) => {
   try {
     let url = 'http://localhost:8080/api/map-backgrounds';
