@@ -51,6 +51,28 @@ async function loadCampaigns() {
           const campaignId = this.getAttribute('data-id');
           // Save campaign ID in session storage for map page
           sessionStorage.setItem('current_campaign_id', campaignId);
+          
+          // Debug log before navigation
+          console.log('CAMPAIGNS.JS: Navigating to map with campaign ID:', campaignId);
+          console.log('CAMPAIGNS.JS: Current user in storage:', localStorage.getItem('pfvtt_user') || sessionStorage.getItem('pfvtt_user'));
+          
+          // Send debug log to backend
+          fetch('/api/debug_log', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              message: 'CAMPAIGNS.JS: Navigating to map page',
+              data: {
+                campaignId: campaignId,
+                user: localStorage.getItem('pfvtt_user') || sessionStorage.getItem('pfvtt_user'),
+                localStorage: localStorage.getItem('pfvtt_user'),
+                sessionStorage: sessionStorage.getItem('pfvtt_user'),
+                timestamp: new Date().toISOString(),
+                location: 'campaigns.js click handler'
+              }
+            })
+          }).catch(err => console.error('Failed to send debug log:', err));
+          
           window.location.href = '/map';
         });
       });

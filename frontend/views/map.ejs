@@ -1,7 +1,9 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>PFVTT - Campaign Manager</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PFVTT - Virtual Tabletop</title>
   <link rel="stylesheet" href="/style.css">
   <style>
     * {
@@ -15,57 +17,124 @@
       background: #1a1a1a;
       color: #fff;
       overflow: hidden;
+      user-select: none;
     }
     
-    .campaign-interface {
+    /* Main Layout */
+    .vtt-interface {
       display: flex;
       height: 100vh;
       width: 100vw;
     }
     
-    /* Left Sidebar */
-    .left-sidebar {
-      width: 280px;
-      background: #2c2c2c;
-      border-right: 1px solid #444;
+    /* Top Navigation Bar */
+    .top-nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 50px;
+      background: linear-gradient(135deg, #2c3e50, #34495e);
+      border-bottom: 2px solid #3498db;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      z-index: 1000;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    }
+    
+    .nav-left {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+    
+    .logo {
+      font-size: 20px;
+      font-weight: bold;
+      color: #3498db;
+    }
+    
+    .campaign-info {
       display: flex;
       flex-direction: column;
-      overflow: hidden;
     }
     
-    .campaign-header {
-      padding: 15px;
-      background: #333;
-      border-bottom: 1px solid #444;
-    }
-    
-    .campaign-title {
-      font-size: 18px;
-      font-weight: bold;
-      margin-bottom: 5px;
+    .campaign-name {
+      font-size: 14px;
+      font-weight: 600;
     }
     
     .campaign-system {
+      font-size: 11px;
+      color: #bdc3c7;
+    }
+    
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    
+    .nav-btn {
+      background: rgba(52, 152, 219, 0.2);
+      border: 1px solid #3498db;
+      color: #fff;
+      padding: 6px 12px;
+      border-radius: 4px;
+      cursor: pointer;
       font-size: 12px;
-      color: #aaa;
+      transition: all 0.3s ease;
+    }
+    
+    .nav-btn:hover {
+      background: #3498db;
+      transform: translateY(-1px);
+    }
+    
+    /* Left Sidebar */
+    .left-sidebar {
+      width: 300px;
+      background: linear-gradient(180deg, #2c3e50, #34495e);
+      border-right: 2px solid #3498db;
+      display: flex;
+      flex-direction: column;
+      margin-top: 50px;
+      box-shadow: 2px 0 10px rgba(0,0,0,0.2);
+    }
+    
+    .sidebar-header {
+      padding: 15px;
+      background: rgba(52, 152, 219, 0.1);
+      border-bottom: 1px solid #3498db;
+    }
+    
+    .sidebar-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #3498db;
+      margin-bottom: 5px;
     }
     
     .sidebar-tabs {
       display: flex;
-      background: #2a2a2a;
-      border-bottom: 1px solid #444;
+      background: rgba(0,0,0,0.2);
+      border-bottom: 1px solid #3498db;
     }
     
     .sidebar-tab {
       flex: 1;
-      padding: 10px 5px;
+      padding: 12px 8px;
       text-align: center;
-      background: #2a2a2a;
+      background: transparent;
       border: none;
-      color: #ccc;
+      color: #bdc3c7;
       cursor: pointer;
       font-size: 11px;
-      border-right: 1px solid #444;
+      font-weight: 500;
+      border-right: 1px solid rgba(52, 152, 219, 0.3);
+      transition: all 0.3s ease;
     }
     
     .sidebar-tab:last-child {
@@ -73,18 +142,20 @@
     }
     
     .sidebar-tab.active {
-      background: #0066cc;
+      background: #3498db;
       color: white;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
     }
     
     .sidebar-tab:hover:not(.active) {
-      background: #333;
+      background: rgba(52, 152, 219, 0.2);
+      color: #fff;
     }
     
     .sidebar-content {
       flex: 1;
       overflow-y: auto;
-      padding: 10px;
+      padding: 15px;
     }
     
     .content-section {
@@ -95,175 +166,123 @@
       display: block;
     }
     
-    /* Main Canvas Area */
+    /* Main Canvas */
     .main-canvas {
       flex: 1;
       position: relative;
       background: #1a1a1a;
+      margin-top: 50px;
       overflow: hidden;
     }
     
+    /* Toolbar */
     .canvas-toolbar {
       position: absolute;
-      top: 10px;
-      left: 10px;
-      z-index: 1000;
+      top: 15px;
+      left: 15px;
+      z-index: 900;
       display: flex;
-      gap: 5px;
+      gap: 10px;
     }
     
     .tool-group {
       display: flex;
-      background: rgba(44, 44, 44, 0.9);
-      border-radius: 5px;
-      padding: 5px;
-      gap: 2px;
+      background: linear-gradient(135deg, rgba(44, 62, 80, 0.95), rgba(52, 73, 94, 0.95));
+      border-radius: 8px;
+      padding: 8px;
+      gap: 4px;
+      border: 1px solid rgba(52, 152, 219, 0.3);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
     }
     
     .tool-btn {
-      width: 35px;
-      height: 35px;
-      background: #444;
-      border: none;
-      border-radius: 3px;
-      color: #ccc;
+      width: 40px;
+      height: 40px;
+      background: rgba(52, 152, 219, 0.1);
+      border: 1px solid rgba(52, 152, 219, 0.3);
+      border-radius: 6px;
+      color: #bdc3c7;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 14px;
+      font-size: 16px;
+      transition: all 0.3s ease;
+      position: relative;
     }
     
     .tool-btn:hover {
-      background: #555;
+      background: rgba(52, 152, 219, 0.3);
+      color: #fff;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
     }
     
     .tool-btn.active {
-      background: #0066cc;
+      background: #3498db;
       color: white;
+      border-color: #2980b9;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
     }
     
-    .map-ui-overlay {
+    .tool-btn::after {
+      content: attr(title);
       position: absolute;
-      top: 10px;
-      right: 10px;
+      bottom: -30px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,0.9);
+      color: white;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      white-space: nowrap;
+      opacity: 0;
       pointer-events: none;
-      z-index: 10;
+      transition: opacity 0.3s;
     }
     
-    .zoom-indicator, .coordinates-indicator, .help-toggle {
-        background: rgba(0, 0, 0, 0.7);
-        color: white;
-        padding: 4px 8px;
-        border-radius: 4px;
-        font-size: 12px;
-        margin-bottom: 5px;
-        font-family: monospace;
-      }
-      
-      .help-toggle {
-        cursor: pointer;
-        pointer-events: auto;
-        text-align: center;
-        width: 20px;
-        font-weight: bold;
-      }
-      
-      .help-toggle:hover {
-        background: rgba(0, 0, 0, 0.9);
-      }
-      
-      .help-panel {
-        position: absolute;
-        top: 10px;
-        left: 10px;
-        background: rgba(0, 0, 0, 0.9);
-        color: white;
-        border-radius: 8px;
-        padding: 0;
-        max-width: 300px;
-        z-index: 20;
-        border: 1px solid #555;
-      }
-      
-      .help-header {
-        background: #333;
-        padding: 10px;
-        border-radius: 8px 8px 0 0;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        font-weight: bold;
-      }
-      
-      .help-header button {
-        background: none;
-        border: none;
-        color: white;
-        font-size: 16px;
-        cursor: pointer;
-        padding: 0;
-        width: 20px;
-        height: 20px;
-      }
-      
-      .help-content {
-        padding: 15px;
-      }
-      
-      .help-section {
-        margin-bottom: 15px;
-      }
-      
-      .help-section:last-child {
-        margin-bottom: 0;
-      }
-      
-      .help-section h4 {
-        margin: 0 0 8px 0;
-        color: #4a90e2;
-        font-size: 14px;
-      }
-      
-      .help-section ul {
-        margin: 0;
-        padding-left: 15px;
-        font-size: 12px;
-        line-height: 1.4;
-      }
-      
-      .help-section li {
-        margin-bottom: 4px;
-      }
+    .tool-btn:hover::after {
+      opacity: 1;
+    }
     
+    /* Map Viewport */
     .map-viewport {
       width: 100%;
       height: 100%;
       position: relative;
       overflow: hidden;
-      background: #1a1a1a;
-      cursor: default;
-      user-select: none;
-      min-height: 600px;
+      background: radial-gradient(circle at center, #2c3e50, #1a1a1a);
+      cursor: grab;
+    }
+    
+    .map-viewport:active {
+      cursor: grabbing;
+    }
+    
+    .map-container {
+      position: absolute;
+      width: 4000px;
+      height: 4000px;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      transform-origin: center;
     }
     
     .map-grid {
       position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 2000px;
-      height: 2000px;
-      margin-left: -1000px;
-      margin-top: -1000px;
-      background-color: #2a2a2a;
+      width: 100%;
+      height: 100%;
+      background-color: #2c3e50;
       background-image: 
-        linear-gradient(rgba(255,255,255,0.15) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255,255,255,0.15) 1px, transparent 1px);
+        linear-gradient(rgba(52, 152, 219, 0.2) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(52, 152, 219, 0.2) 1px, transparent 1px);
       background-size: 50px 50px;
-      transform-origin: 0 0;
+      opacity: 0.7;
     }
     
-    /* Map Layers System */
+    /* Layer System */
     .map-layer {
       position: absolute;
       top: 0;
@@ -277,158 +296,145 @@
       pointer-events: auto;
     }
     
-    #map-layer {
-      z-index: 1;
-    }
+    #background-layer { z-index: 1; }
+    #map-layer { z-index: 2; }
+    #walls-layer { z-index: 3; }
+    #tokens-layer { z-index: 4; }
+    #effects-layer { z-index: 5; }
+    #ui-layer { z-index: 6; }
     
-    #walls-layer {
-      z-index: 2;
-    }
-    
-    #tokens-layer {
-      z-index: 3;
-    }
-    
-    #gm-layer {
-      z-index: 4;
-      opacity: 0.7;
-    }
-
-    #audio-layer {
-      z-index: 5;
-      opacity: 0.8;
-    }
-
-    #props-layer {
-      z-index: 6;
-      opacity: 0.9;
-    }
-
     .layer-hidden {
       display: none !important;
-    }
-    
-    /* Map Assets */
-    .map-asset {
-      user-select: none;
-      transition: all 0.2s ease;
-    }
-    
-    .map-asset:hover {
-      transform: scale(1.05);
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-    }
-    
-    /* Drag and Drop Visual Feedback */
-    .map-viewport.drag-over {
-      background-color: rgba(0, 123, 255, 0.1);
-      border: 2px dashed #007bff;
-    }
-    
-    /* Asset List Items Draggable */
-    .assets-list .item[draggable="true"] {
-      cursor: grab;
-    }
-    
-    .assets-list .item[draggable="true"]:active {
-      cursor: grabbing;
     }
     
     /* Layer Controls */
     .layer-controls {
       position: absolute;
-      bottom: 10px;
-      left: 10px;
-      background: rgba(44, 44, 44, 0.9);
-      border-radius: 5px;
-      padding: 8px;
+      bottom: 15px;
+      left: 15px;
+      background: linear-gradient(135deg, rgba(44, 62, 80, 0.95), rgba(52, 73, 94, 0.95));
+      border-radius: 8px;
+      padding: 10px;
       display: flex;
-      gap: 5px;
-      z-index: 1000;
+      gap: 6px;
+      z-index: 900;
+      border: 1px solid rgba(52, 152, 219, 0.3);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
     }
     
     .layer-btn {
-      width: 30px;
-      height: 30px;
-      background: #444;
-      border: none;
-      border-radius: 3px;
-      color: #ccc;
+      width: 35px;
+      height: 35px;
+      background: rgba(52, 152, 219, 0.1);
+      border: 1px solid rgba(52, 152, 219, 0.3);
+      border-radius: 6px;
+      color: #bdc3c7;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 12px;
+      font-size: 14px;
+      transition: all 0.3s ease;
       position: relative;
     }
     
     .layer-btn:hover {
-      background: #555;
+      background: rgba(52, 152, 219, 0.3);
+      color: #fff;
+      transform: translateY(-2px);
     }
     
     .layer-btn.active {
-      background: #0066cc;
+      background: #3498db;
       color: white;
-      border: 2px solid #4da6ff;
-      box-shadow: 0 0 8px rgba(77, 166, 255, 0.5);
-      transform: scale(1.1);
+      border-color: #2980b9;
+      box-shadow: 0 0 10px rgba(52, 152, 219, 0.5);
     }
-
+    
     .layer-btn.hidden {
       opacity: 0.3;
     }
-
-    .layer-btn {
-      transition: all 0.2s ease;
-    }
     
-    .layer-btn::after {
-      content: attr(data-layer);
+    /* UI Overlays */
+    .map-ui-overlay {
       position: absolute;
-      bottom: -20px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: rgba(0, 0, 0, 0.8);
-      color: white;
-      padding: 2px 6px;
-      border-radius: 3px;
-      font-size: 10px;
-      white-space: nowrap;
-      opacity: 0;
+      top: 15px;
+      right: 15px;
       pointer-events: none;
-      transition: opacity 0.2s;
+      z-index: 900;
     }
     
-    .layer-btn:hover::after {
-      opacity: 1;
+    .ui-indicator {
+      background: linear-gradient(135deg, rgba(44, 62, 80, 0.9), rgba(52, 73, 94, 0.9));
+      color: white;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      margin-bottom: 8px;
+      font-family: 'Courier New', monospace;
+      border: 1px solid rgba(52, 152, 219, 0.3);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+    
+    .help-toggle {
+      cursor: pointer;
+      pointer-events: auto;
+      text-align: center;
+      width: 30px;
+      height: 30px;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+    }
+    
+    .help-toggle:hover {
+      background: #3498db;
+      transform: scale(1.1);
     }
     
     /* Right Panel */
     .right-panel {
-      width: 300px;
-      background: #2c2c2c;
-      border-left: 1px solid #444;
+      width: 320px;
+      background: linear-gradient(180deg, #2c3e50, #34495e);
+      border-left: 2px solid #3498db;
       display: flex;
       flex-direction: column;
-      overflow: hidden;
+      margin-top: 50px;
+      box-shadow: -2px 0 10px rgba(0,0,0,0.2);
+    }
+    
+    .panel-header {
+      padding: 15px;
+      background: rgba(52, 152, 219, 0.1);
+      border-bottom: 1px solid #3498db;
+    }
+    
+    .panel-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #3498db;
     }
     
     .panel-tabs {
       display: flex;
-      background: #2a2a2a;
-      border-bottom: 1px solid #444;
+      background: rgba(0,0,0,0.2);
+      border-bottom: 1px solid #3498db;
     }
     
     .panel-tab {
       flex: 1;
-      padding: 10px 5px;
+      padding: 12px 8px;
       text-align: center;
-      background: #2a2a2a;
+      background: transparent;
       border: none;
-      color: #ccc;
+      color: #bdc3c7;
       cursor: pointer;
       font-size: 11px;
-      border-right: 1px solid #444;
+      font-weight: 500;
+      border-right: 1px solid rgba(52, 152, 219, 0.3);
+      transition: all 0.3s ease;
     }
     
     .panel-tab:last-child {
@@ -436,14 +442,19 @@
     }
     
     .panel-tab.active {
-      background: #0066cc;
+      background: #3498db;
       color: white;
+    }
+    
+    .panel-tab:hover:not(.active) {
+      background: rgba(52, 152, 219, 0.2);
+      color: #fff;
     }
     
     .panel-content {
       flex: 1;
       overflow-y: auto;
-      padding: 10px;
+      padding: 15px;
     }
     
     .panel-section {
@@ -460,192 +471,457 @@
     }
     
     .item {
-      background: #333;
-      margin: 5px 0;
-      padding: 8px;
-      border-radius: 4px;
+      background: linear-gradient(135deg, rgba(52, 152, 219, 0.1), rgba(41, 128, 185, 0.1));
+      margin: 8px 0;
+      padding: 12px;
+      border-radius: 8px;
       cursor: pointer;
-      border: 1px solid transparent;
+      border: 1px solid rgba(52, 152, 219, 0.3);
+      transition: all 0.3s ease;
     }
     
     .item:hover {
-      background: #3a3a3a;
-      border-color: #555;
+      background: linear-gradient(135deg, rgba(52, 152, 219, 0.2), rgba(41, 128, 185, 0.2));
+      border-color: #3498db;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
     }
     
     .item.selected {
-      border-color: #0066cc;
-      background: #2a4a6a;
-    }
-    
-    .item.selected {
-      background: #4a90e2;
+      border-color: #3498db;
+      background: linear-gradient(135deg, #3498db, #2980b9);
       color: white;
+      box-shadow: 0 0 15px rgba(52, 152, 219, 0.4);
     }
     
     .item-name {
-      font-weight: bold;
-      margin-bottom: 3px;
+      font-weight: 600;
+      margin-bottom: 4px;
+      font-size: 13px;
     }
     
     .item-details {
       font-size: 11px;
-      color: #999;
+      color: #bdc3c7;
+      opacity: 0.8;
+    }
+    
+    .item.selected .item-details {
+      color: rgba(255,255,255,0.9);
     }
     
     .item-actions {
       display: flex;
-      gap: 5px;
-      margin-top: 5px;
+      gap: 6px;
+      margin-top: 8px;
     }
     
     .item-actions button {
-      background: #444;
-      border: none;
-      color: #ccc;
-      padding: 2px 6px;
-      border-radius: 3px;
+      background: rgba(52, 152, 219, 0.2);
+      border: 1px solid rgba(52, 152, 219, 0.4);
+      color: #bdc3c7;
+      padding: 4px 8px;
+      border-radius: 4px;
       cursor: pointer;
-      font-size: 12px;
+      font-size: 11px;
+      transition: all 0.3s ease;
     }
     
     .item-actions button:hover {
-      background: #555;
+      background: #3498db;
+      color: white;
     }
     
+    /* Drag and Drop Styles */
+    .item {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .drag-handle {
+      color: #7f8c8d;
+      font-size: 16px;
+      cursor: grab;
+      padding: 4px;
+      border-radius: 4px;
+      transition: all 0.3s ease;
+      user-select: none;
+      line-height: 1;
+    }
+    
+    .drag-handle:hover {
+      color: #3498db;
+      background: rgba(52, 152, 219, 0.1);
+    }
+    
+    .drag-handle:active {
+      cursor: grabbing;
+    }
+    
+    .item-content {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: grab;
+    }
+    
+    .item-content:active {
+      cursor: grabbing;
+    }
+    
+    .item-icon {
+      font-size: 18px;
+      width: 24px;
+      text-align: center;
+      opacity: 0.8;
+    }
+    
+    .item-info {
+      flex: 1;
+    }
+    
+    .item.dragging {
+      opacity: 0.5;
+      transform: scale(0.95);
+      border-color: #3498db;
+      box-shadow: 0 0 20px rgba(52, 152, 219, 0.3);
+    }
+    
+    .item-actions {
+       margin-top: 0;
+       margin-left: auto;
+     }
+     
+     /* Map Drag Over Effect */
+     #map-viewport.drag-over {
+       border: 3px dashed #3498db;
+       background: rgba(52, 152, 219, 0.1);
+     }
+     
+     #map-viewport.drag-over::after {
+       content: 'Drop token here to place on map';
+       position: absolute;
+       top: 50%;
+       left: 50%;
+       transform: translate(-50%, -50%);
+       background: rgba(0, 0, 0, 0.8);
+       color: #3498db;
+       padding: 12px 20px;
+       border-radius: 8px;
+       font-size: 14px;
+       font-weight: 600;
+       pointer-events: none;
+       z-index: 1000;
+       border: 2px solid #3498db;
+     }
+     
+     /* Notification Styles */
+     .notification {
+       position: fixed;
+       top: 20px;
+       right: 20px;
+       padding: 12px 20px;
+       border-radius: 8px;
+       color: white;
+       font-weight: 600;
+       z-index: 10000;
+       animation: slideIn 0.3s ease;
+       max-width: 300px;
+       box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+     }
+     
+     .notification.success {
+       background: linear-gradient(135deg, #27ae60, #2ecc71);
+     }
+     
+     .notification.warning {
+       background: linear-gradient(135deg, #f39c12, #e67e22);
+     }
+     
+     .notification.error {
+       background: linear-gradient(135deg, #e74c3c, #c0392b);
+     }
+     
+     @keyframes slideIn {
+       from {
+         transform: translateX(100%);
+         opacity: 0;
+       }
+       to {
+         transform: translateX(0);
+         opacity: 1;
+       }
+     }
+    
+    /* Form Elements */
     .btn {
-      background: #444;
+      background: linear-gradient(135deg, #3498db, #2980b9);
       color: white;
       border: none;
-      padding: 8px 12px;
-      border-radius: 3px;
+      padding: 10px 16px;
+      border-radius: 6px;
       cursor: pointer;
       font-size: 12px;
-      margin: 2px;
+      font-weight: 500;
+      margin: 4px;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
     }
     
     .btn:hover {
-      background: #555;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
     }
     
-    .btn.primary {
-      background: #0066cc;
-    }
-    
-    .btn.primary:hover {
-      background: #0077dd;
+    .btn.secondary {
+      background: linear-gradient(135deg, #95a5a6, #7f8c8d);
     }
     
     .btn.danger {
-      background: #cc3333;
-    }
-    
-    .btn.danger:hover {
-      background: #dd4444;
+      background: linear-gradient(135deg, #e74c3c, #c0392b);
     }
     
     .input-group {
-      margin: 10px 0;
+      margin: 12px 0;
+      position: relative;
     }
     
     .input-group label {
       display: block;
-      margin-bottom: 5px;
+      margin-bottom: 8px;
       font-size: 12px;
-      color: #ccc;
+      color: #ecf0f1;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
     
-    .input-group input, .input-group select, .input-group textarea {
+    .input-group input, .input-group textarea {
       width: 100%;
-      padding: 6px;
-      background: #333;
-      border: 1px solid #555;
-      border-radius: 3px;
+      padding: 10px 14px;
+      background: rgba(52, 152, 219, 0.08);
+      border: 1px solid rgba(52, 152, 219, 0.25);
+      border-radius: 8px;
       color: white;
-      font-size: 12px;
+      font-size: 13px;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .input-group select {
+      width: 100%;
+      padding: 10px 14px;
+      background: linear-gradient(135deg, rgba(52, 152, 219, 0.12), rgba(41, 128, 185, 0.08));
+      border: 1px solid rgba(52, 152, 219, 0.3);
+      border-radius: 8px;
+      color: white;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      appearance: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      background-image: url('data:image/svg+xml;utf8,<svg fill="%23ecf0f1" height="16" viewBox="0 0 20 20" width="16" xmlns="http://www.w3.org/2000/svg"><path d="M7.293 7.293a1 1 0 011.414 0L10 8.586l1.293-1.293a1 1 0 111.414 1.414l-2 2a1 1 0 01-1.414 0l-2-2a1 1 0 010-1.414z"/></svg>');
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      padding-right: 40px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    .input-group select:hover {
+      background: linear-gradient(135deg, rgba(52, 152, 219, 0.18), rgba(41, 128, 185, 0.12));
+      border-color: rgba(52, 152, 219, 0.5);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(52, 152, 219, 0.15);
     }
     
     .input-group input:focus, .input-group select:focus, .input-group textarea:focus {
       outline: none;
-      border-color: #0066cc;
+      border-color: #3498db;
+      background: rgba(52, 152, 219, 0.15);
+      box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2), 0 4px 12px rgba(52, 152, 219, 0.15);
+      transform: translateY(-1px);
     }
     
-    .back-button {
-      position: absolute;
-      bottom: 20px;
-      right: 20px;
-      z-index: 1001;
-      background: rgba(102, 102, 102, 0.9);
-      color: white;
+    .input-group select option {
+      background: #2c3e50;
+      color: #ecf0f1;
+      padding: 8px 12px;
       border: none;
-      padding: 10px 15px;
-      border-radius: 5px;
-      cursor: pointer;
-      font-size: 12px;
     }
     
-    .back-button:hover {
-      background: rgba(119, 119, 119, 0.9);
+    .input-group select option:hover {
+      background: #34495e;
     }
     
     .search-box {
       width: 100%;
-      padding: 6px;
-      background: #333;
-      border: 1px solid #555;
-      border-radius: 3px;
+      padding: 8px 12px;
+      background: rgba(52, 152, 219, 0.1);
+      border: 1px solid rgba(52, 152, 219, 0.3);
+      border-radius: 6px;
       color: white;
       font-size: 12px;
-      margin-bottom: 10px;
+      margin-bottom: 12px;
+      transition: all 0.3s ease;
+    }
+    
+    .search-box:focus {
+      outline: none;
+      border-color: #3498db;
+      box-shadow: 0 0 8px rgba(52, 152, 219, 0.3);
     }
     
     .section-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 10px;
-      padding-bottom: 5px;
-      border-bottom: 1px solid #444;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid rgba(52, 152, 219, 0.3);
     }
     
     .section-title {
       font-size: 14px;
-      font-weight: bold;
+      font-weight: 600;
+      color: #3498db;
     }
     
     .add-btn {
-      background: #0066cc;
+      background: linear-gradient(135deg, #27ae60, #229954);
       color: white;
       border: none;
-      width: 20px;
-      height: 20px;
-      border-radius: 3px;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
       cursor: pointer;
-      font-size: 12px;
+      font-size: 14px;
+      font-weight: bold;
       display: flex;
       align-items: center;
       justify-content: center;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
     }
     
     .add-btn:hover {
-      background: #0077dd;
+      transform: scale(1.1);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+    
+    /* Map Asset Styles */
+    .map-asset {
+      position: absolute;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      user-select: none;
+      border-radius: 4px;
+    }
+    
+    .map-asset:hover {
+      transform: translate(-50%, -50%) scale(1.05);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+      border-color: rgba(255, 255, 255, 0.6) !important;
+    }
+    
+    .map-asset.selected {
+      border-color: #3498db !important;
+      box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.5);
+    }
+    
+    .token-preview {
+      position: absolute;
+      cursor: pointer;
+      user-select: none;
+      pointer-events: none;
+    }
+    
+    /* Animations */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    @keyframes pulse {
+      0% { transform: translate(-50%, -50%) scale(1); }
+      50% { transform: translate(-50%, -50%) scale(1.1); }
+      100% { transform: translate(-50%, -50%) scale(1); }
+    }
+    
+    .content-section.active {
+      animation: fadeIn 0.3s ease;
+    }
+    
+    .panel-section.active {
+      animation: fadeIn 0.3s ease;
+    }
+    
+    /* Responsive Design */
+    @media (max-width: 1200px) {
+      .left-sidebar {
+        width: 250px;
+      }
+      .right-panel {
+        width: 280px;
+      }
+    }
+    
+    @media (max-width: 900px) {
+      .left-sidebar, .right-panel {
+        position: fixed;
+        height: calc(100vh - 50px);
+        z-index: 1001;
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+      }
+      
+      .right-panel {
+        right: 0;
+        transform: translateX(100%);
+      }
+      
+      .left-sidebar.open {
+        transform: translateX(0);
+      }
+      
+      .right-panel.open {
+        transform: translateX(0);
+      }
     }
   </style>
 </head>
 <body>
-  <div class="campaign-interface">
+  <!-- Top Navigation -->
+  <nav class="top-nav">
+    <div class="nav-left">
+      <div class="logo">PFVTT</div>
+      <div class="campaign-info">
+        <div class="campaign-name" id="campaign-name">Loading Campaign...</div>
+        <div class="campaign-system" id="campaign-system">Pathfinder 2E</div>
+      </div>
+    </div>
+    <div class="nav-right">
+      <button class="nav-btn" onclick="saveMap()">💾 Save</button>
+      <button class="nav-btn" onclick="toggleFullscreen()">⛶ Fullscreen</button>
+      <button class="nav-btn" onclick="showSettings()">⚙️ Settings</button>
+      <button class="nav-btn" onclick="window.location.href='/campaigns'">← Campaigns</button>
+    </div>
+  </nav>
+
+  <div class="vtt-interface">
     <!-- Left Sidebar -->
-    <div class="left-sidebar">
-      <div class="campaign-header">
-        <div class="campaign-title" id="campaign-name">Loading...</div>
-        <div class="campaign-system" id="campaign-system">Loading system...</div>
+    <aside class="left-sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-title">Campaign Assets</div>
       </div>
       
       <div class="sidebar-tabs">
         <button class="sidebar-tab active" data-tab="maps">Maps</button>
-        <button class="sidebar-tab" data-tab="scenes">Scenes</button>
         <button class="sidebar-tab" data-tab="assets">Assets</button>
-        <button class="sidebar-tab" data-tab="settings">Settings</button>
+        <button class="sidebar-tab" data-tab="library">Library</button>
       </div>
       
       <div class="sidebar-content">
@@ -653,7 +929,7 @@
         <div class="content-section active" id="maps-section">
           <div class="section-header">
             <span class="section-title">Maps</span>
-            <button class="add-btn" onclick="createNewMap()">+</button>
+            <button class="add-btn" onclick="createNewMap()" title="Create New Map">+</button>
           </div>
           <input type="text" class="search-box" placeholder="Search maps..." id="maps-search">
           <ul class="item-list" id="maps-list">
@@ -661,51 +937,137 @@
           </ul>
         </div>
         
-        <!-- Scenes Section -->
-        <div class="content-section" id="scenes-section">
-          <div class="section-header">
-            <span class="section-title">Scenes</span>
-            <button class="add-btn" onclick="createNewScene()">+</button>
-          </div>
-          <input type="text" class="search-box" placeholder="Search scenes...">
-          <ul class="item-list" id="scenes-list">
-            <!-- Scenes will be loaded here -->
-          </ul>
-        </div>
         
         <!-- Assets Section -->
         <div class="content-section" id="assets-section">
           <div class="section-header">
             <span class="section-title">Assets</span>
-            <button class="add-btn" onclick="uploadAsset()">+</button>
+            <button class="add-btn" onclick="uploadAsset()" title="Upload Asset">+</button>
           </div>
           <input type="text" class="search-box" placeholder="Search assets...">
           <div class="input-group">
-            <label>Asset Categories</label>
+            <label>Category</label>
             <select id="asset-category-select">
-              <option value="all">All</option>
+              <option value="all">All Categories</option>
               <option value="tokens">Tokens</option>
-              <option value="background">Backgrounds</option>
+              <option value="backgrounds">Backgrounds</option>
               <option value="props">Props</option>
               <option value="audio">Audio</option>
             </select>
           </div>
-          <ul class="item-list">
-            <li class="item">
-              <div class="item-name">Goblin Token</div>
-              <div class="item-details">32x32px</div>
-            </li>
-            <li class="item">
-              <div class="item-name">Dungeon Tiles</div>
-              <div class="item-details">Tileset</div>
-            </li>
+          <ul class="item-list" id="assets-list">
+            <!-- Assets will be loaded here -->
           </ul>
         </div>
         
-        <!-- Settings Section -->
-        <div class="content-section" id="settings-section">
+        <!-- Library Section -->
+        <div class="content-section" id="library-section">
           <div class="section-header">
-            <span class="section-title">Campaign Settings</span>
+            <span class="section-title">Library</span>
+          </div>
+          <div class="item">
+            <div class="item-name">Spell Templates</div>
+            <div class="item-details">Area effect templates</div>
+          </div>
+          <div class="item">
+            <div class="item-name">Status Effects</div>
+            <div class="item-details">Condition markers</div>
+          </div>
+          <div class="item">
+            <div class="item-name">Dice Roller</div>
+            <div class="item-details">Virtual dice</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Canvas -->
+    <main class="main-canvas">
+      <!-- Toolbar -->
+      <div class="canvas-toolbar">
+        <div class="tool-group">
+          <button class="tool-btn active" data-tool="select" title="Select Tool">⚬</button>
+          <button class="tool-btn" data-tool="move" title="Pan Tool">✋</button>
+          <button class="tool-btn" data-tool="measure" title="Measure Tool">📏</button>
+        </div>
+        
+        <div class="tool-group">
+          <button class="tool-btn" data-tool="draw" title="Draw Tool">✏️</button>
+          <button class="tool-btn" data-tool="erase" title="Erase Tool">🧽</button>
+          <button class="tool-btn" data-tool="text" title="Text Tool">📝</button>
+        </div>
+        
+        <div class="tool-group">
+          <button class="tool-btn" data-tool="token" title="Add Token">👤</button>
+          <button class="tool-btn" data-tool="light" title="Lighting">💡</button>
+          <button class="tool-btn" data-tool="fog" title="Fog of War">🌫️</button>
+        </div>
+        
+        <div class="tool-group">
+          <button class="tool-btn" data-tool="zoom-in" title="Zoom In">🔍+</button>
+          <button class="tool-btn" data-tool="zoom-out" title="Zoom Out">🔍-</button>
+          <button class="tool-btn" data-tool="zoom-fit" title="Fit to Screen">⚏</button>
+        </div>
+      </div>
+      
+      <!-- Map Viewport -->
+      <div class="map-viewport" id="map-viewport">
+        <div class="map-container" id="map-container">
+          <div class="map-grid" id="map-grid"></div>
+          
+          <!-- Layer System -->
+          <div class="map-layer" id="background-layer" data-layer="background"></div>
+          <div class="map-layer active" id="map-layer" data-layer="map"></div>
+          <div class="map-layer" id="walls-layer" data-layer="walls"></div>
+          <div class="map-layer" id="tokens-layer" data-layer="tokens"></div>
+          <div class="map-layer" id="effects-layer" data-layer="effects"></div>
+          <div class="map-layer" id="ui-layer" data-layer="ui"></div>
+        </div>
+      </div>
+      
+      <!-- Layer Controls -->
+      <div class="layer-controls">
+        <button class="layer-btn" data-layer="background" data-target="background-layer" title="Background Layer">🖼️</button>
+        <button class="layer-btn active" data-layer="map" data-target="map-layer" title="Map Layer">🗺️</button>
+        <button class="layer-btn" data-layer="walls" data-target="walls-layer" title="Walls & Lighting">🧱</button>
+        <button class="layer-btn" data-layer="tokens" data-target="tokens-layer" title="Tokens Layer">👤</button>
+        <button class="layer-btn" data-layer="effects" data-target="effects-layer" title="Effects Layer">✨</button>
+        <button class="layer-btn" data-layer="ui" data-target="ui-layer" title="UI Layer">🎛️</button>
+      </div>
+      
+      <!-- UI Overlays -->
+      <div class="map-ui-overlay">
+        <div class="ui-indicator" id="zoom-indicator">100%</div>
+        <div class="ui-indicator" id="coordinates-indicator">X: 0, Y: 0</div>
+        <div class="ui-indicator help-toggle" id="help-toggle" onclick="toggleHelp()" title="Help">?</div>
+      </div>
+    </main>
+
+    <!-- Right Panel -->
+    <aside class="right-panel">
+      <div class="panel-header">
+        <div class="panel-title">Properties</div>
+      </div>
+      
+      <div class="panel-tabs">
+        <button class="panel-tab active" data-panel="properties">Properties</button>
+        <button class="panel-tab" data-panel="layers">Layers</button>
+        <button class="panel-tab" data-panel="journal">Journal</button>
+        <button class="panel-tab" data-panel="chat">Chat</button>
+      </div>
+      
+      <div class="panel-content">
+        <!-- Properties Panel -->
+        <div class="panel-section active" id="properties-panel">
+          <div class="section-header">
+            <span class="section-title">Selection</span>
+          </div>
+          <div id="selection-properties">
+            <p style="color: #bdc3c7; font-style: italic;">No object selected</p>
+          </div>
+          
+          <div class="section-header" style="margin-top: 20px;">
+            <span class="section-title">Map Settings</span>
           </div>
           <div class="input-group">
             <label>Grid Size</label>
@@ -717,170 +1079,55 @@
             </select>
           </div>
           <div class="input-group">
-            <label>Grid Color</label>
-            <input type="color" value="#ffffff" id="grid-color">
-          </div>
-          <div class="input-group">
             <label>Grid Opacity</label>
-            <input type="range" min="0" max="100" value="10" id="grid-opacity">
+            <input type="range" min="0" max="100" value="70" id="grid-opacity">
           </div>
-          <button class="btn primary" onclick="saveSettings()">Save Settings</button>
-        </div>
-      </div>
-    </div>
-    
-    <!-- Main Canvas -->
-    <div class="main-canvas">
-      <button class="back-button" onclick="window.location.href='/campaigns'">← Back to Campaigns</button>
-      
-      <div class="canvas-toolbar">
-        <div class="tool-group">
-          <button class="tool-btn active" data-tool="select" title="Select">⚬</button>
-          <button class="tool-btn" data-tool="move" title="Move">✋</button>
-          <button class="tool-btn" data-tool="draw" title="Draw">✏</button>
-          <button class="tool-btn" data-tool="measure" title="Measure">📏</button>
+          <button class="btn" onclick="applyGridSettings()">Apply Settings</button>
         </div>
         
-        <div class="tool-group">
-          <button class="tool-btn" data-tool="token" title="Add Token">👤</button>
-          <button class="tool-btn" data-tool="light" title="Lighting">💡</button>
-          <button class="tool-btn" data-tool="fog" title="Fog of War">🌫</button>
-        </div>
-        
-        <div class="tool-group">
-          <button class="tool-btn" data-tool="zoom-in" title="Zoom In">+</button>
-          <button class="tool-btn" data-tool="zoom-out" title="Zoom Out">-</button>
-          <button class="tool-btn" data-tool="zoom-fit" title="Fit to Screen">⚏</button>
-        </div>
-      </div>
-      
-      <div class="map-viewport" id="map-viewport">
-        <div class="map-grid" id="map-grid">
-          <!-- Layer system like Roll20 -->
-          <div class="map-layer" id="map-layer" data-layer="map">
-            <!-- Background images and map content -->
-          </div>
-          <div class="map-layer" id="walls-layer" data-layer="walls">
-            <!-- Walls, doors, and lighting objects -->
-          </div>
-          <div class="map-layer" id="tokens-layer" data-layer="tokens">
-            <!-- Player tokens and NPCs -->
-          </div>
-          <div class="map-layer" id="gm-layer" data-layer="gm">
-            <!-- GM-only content, notes, hidden objects -->
-          </div>
-          <div class="map-layer" id="audio-layer" data-layer="audio">
-            <!-- Audio sources and ambient sounds -->
-          </div>
-          <div class="map-layer" id="props-layer" data-layer="props">
-            <!-- Props and decorative objects -->
-          </div>
-        </div>
-        
-        <!-- Layer Controls -->
-         <div class="layer-controls">
-           <button class="layer-btn active" data-layer="Map" data-target="map-layer" title="Map Layer">🗺️</button>
-           <button class="layer-btn active" data-layer="Walls" data-target="walls-layer" title="Walls & Lighting">🧱</button>
-           <button class="layer-btn active" data-layer="Tokens" data-target="tokens-layer" title="Tokens Layer">👤</button>
-           <button class="layer-btn active" data-layer="GM" data-target="gm-layer" title="GM Layer">👁️</button>
-           <button class="layer-btn active" data-layer="Audio" data-target="audio-layer" title="Audio Layer">🔊</button>
-           <button class="layer-btn active" data-layer="Props" data-target="props-layer" title="Props Layer">🎭</button>
-         </div>
-        
-        <!-- Map UI Overlays -->
-        <div class="map-ui-overlay">
-          <div class="zoom-indicator" id="zoom-indicator">100%</div>
-          <div class="coordinates-indicator" id="coordinates-indicator">X: 0, Y: 0</div>
-          <div class="help-toggle" id="help-toggle" onclick="toggleHelp()">?</div>
-        </div>
-        
-        <!-- Help Panel -->
-        <div class="help-panel" id="help-panel" style="display: none;">
-          <div class="help-header">
-            <span>Navigation Help</span>
-            <button onclick="toggleHelp()">×</button>
-          </div>
-          <div class="help-content">
-            <div class="help-section">
-               <h4>Mouse Controls (Roll20 Style):</h4>
-               <ul>
-                 <li><strong>Mouse Wheel:</strong> Zoom in/out</li>
-                 <li><strong>Right Click + Drag:</strong> Pan map</li>
-                 <li><strong>Left Click:</strong> Select/interact with elements</li>
-               </ul>
-             </div>
-            <div class="help-section">
-              <h4>Keyboard Shortcuts:</h4>
-              <ul>
-                <li><strong>+ / =:</strong> Zoom in</li>
-                <li><strong>-:</strong> Zoom out</li>
-                <li><strong>0:</strong> Fit to screen</li>
-                <li><strong>Space:</strong> Select tool</li>
-                <li><strong>1:</strong> Select Map layer</li>
-                <li><strong>2:</strong> Select Walls layer</li>
-                <li><strong>3:</strong> Select Tokens layer</li>
-                <li><strong>4:</strong> Select GM layer</li>
-                <li><strong>5:</strong> Select Audio layer</li>
-                <li><strong>6:</strong> Select Props layer</li>
-              </ul>
-            </div>
-            <div class="help-section">
-              <h4>Layer System (Roll20 Style):</h4>
-              <ul>
-                <li><strong>🗺️ Map:</strong> Background images and terrain</li>
-                <li><strong>🧱 Walls:</strong> Walls, doors, and lighting</li>
-                <li><strong>👤 Tokens:</strong> Player characters and NPCs</li>
-                <li><strong>👁️ GM:</strong> GM-only notes and objects</li>
-                <li><strong>🔊 Audio:</strong> Sound effects and ambient audio</li>
-                <li><strong>🎭 Props:</strong> Decorative objects and props</li>
-                <li><strong>Left Click:</strong> Select active layer (exclusive)</li>
-                <li><strong>Right Click:</strong> Toggle layer visibility</li>
-                <li><strong>Keys 1-6:</strong> Quick layer selection</li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    
-    <!-- Right Panel -->
-    <div class="right-panel">
-      <div class="panel-tabs">
-        <button class="panel-tab active" data-panel="tokens">Tokens</button>
-        <button class="panel-tab" data-panel="journal">Journal</button>
-        <button class="panel-tab" data-panel="chat">Chat</button>
-      </div>
-      
-      <div class="panel-content">
-        <!-- Tokens Panel -->
-        <div class="panel-section active" id="tokens-panel">
+        <!-- Layers Panel -->
+        <div class="panel-section" id="layers-panel">
           <div class="section-header">
-            <span class="section-title">Tokens</span>
-            <button class="add-btn" onclick="addToken()">+</button>
+            <span class="section-title">Layer Management</span>
           </div>
-          <input type="text" class="search-box" placeholder="Search tokens...">
-          <ul class="item-list" id="tokens-list">
-            <!-- Active tokens on the map will appear here -->
-          </ul>
+          <div class="item">
+            <div class="item-name">Background</div>
+            <div class="item-actions">
+              <button onclick="toggleLayerVisibility('background')">👁️</button>
+              <button onclick="lockLayer('background')">🔒</button>
+            </div>
+          </div>
+          <div class="item">
+            <div class="item-name">Map</div>
+            <div class="item-actions">
+              <button onclick="toggleLayerVisibility('map')">👁️</button>
+              <button onclick="lockLayer('map')">🔒</button>
+            </div>
+          </div>
+          <div class="item">
+            <div class="item-name">Walls</div>
+            <div class="item-actions">
+              <button onclick="toggleLayerVisibility('walls')">👁️</button>
+              <button onclick="lockLayer('walls')">🔒</button>
+            </div>
+          </div>
+          <div class="item">
+            <div class="item-name">Tokens</div>
+            <div class="item-actions">
+              <button onclick="toggleLayerVisibility('tokens')">👁️</button>
+              <button onclick="lockLayer('tokens')">🔒</button>
+            </div>
+          </div>
         </div>
         
         <!-- Journal Panel -->
         <div class="panel-section" id="journal-panel">
           <div class="section-header">
-            <span class="section-title">Journal</span>
-            <button class="add-btn" onclick="addJournalEntry()">+</button>
+            <span class="section-title">Session Notes</span>
+            <button class="add-btn" onclick="addNote()" title="Add Note">+</button>
           </div>
-          <input type="text" class="search-box" placeholder="Search journal...">
-          <ul class="item-list">
-            <li class="item">
-              <div class="item-name">Session Notes</div>
-              <div class="item-details">Last updated: Today</div>
-            </li>
-            <li class="item">
-              <div class="item-name">NPC: Tavern Keeper</div>
-              <div class="item-details">Character sheet</div>
-            </li>
-          </ul>
+          <textarea placeholder="Add your session notes here..." style="width: 100%; height: 200px; resize: vertical;"></textarea>
+          <button class="btn" style="margin-top: 10px;">Save Notes</button>
         </div>
         
         <!-- Chat Panel -->
@@ -888,237 +1135,378 @@
           <div class="section-header">
             <span class="section-title">Chat</span>
           </div>
-          <div id="chat-messages" style="height: 300px; overflow-y: auto; background: #1a1a1a; padding: 10px; border-radius: 3px; margin-bottom: 10px;">
-            <div style="margin-bottom: 10px; padding: 5px; background: #333; border-radius: 3px;">
-              <strong>GM:</strong> Welcome to the campaign!
-            </div>
-            <div style="margin-bottom: 10px; padding: 5px; background: #2a4a2a; border-radius: 3px;">
-              <strong>Player1:</strong> Ready to start!
-            </div>
+          <div id="chat-messages" style="height: 300px; overflow-y: auto; border: 1px solid rgba(52, 152, 219, 0.3); border-radius: 6px; padding: 10px; margin-bottom: 10px;">
+            <div style="color: #bdc3c7; font-style: italic;">Chat system coming soon...</div>
           </div>
-          <div style="display: flex; gap: 5px;">
-            <input type="text" id="chat-input" placeholder="Type a message..." style="flex: 1; padding: 6px; background: #333; border: 1px solid #555; border-radius: 3px; color: white;">
-            <button class="btn primary" onclick="sendChatMessage()">Send</button>
+          <div style="display: flex; gap: 8px;">
+            <input type="text" placeholder="Type a message..." style="flex: 1;">
+            <button class="btn">Send</button>
           </div>
         </div>
       </div>
-    </div>
+    </aside>
   </div>
-  
+
   <script>
-    // Get campaign ID from session storage
-    const campaignId = sessionStorage.getItem('current_campaign_id');
+    // Global Variables
+    let currentTool = 'select';
+    let currentLayer = 'map';
+    let currentMapId = null;
+    let userId = null;
+    let campaignId = null;
+    let zoomLevel = 1;
+    let panX = 0;
+    let panY = 0;
+    let isDragging = false;
+    let lastMouseX = 0;
+    let lastMouseY = 0;
     
-    if (!campaignId) {
-      alert('No campaign selected');
-      window.location.href = '/campaigns';
+    // Layer visibility state
+    const layerVisibility = {
+      background: true,
+      map: true,
+      walls: true,
+      tokens: true,
+      effects: true,
+      ui: true
+    };
+    
+    // Initialize the application
+    document.addEventListener('DOMContentLoaded', function() {
+      initializeVTT();
+    });
+    
+    // Get campaign ID from session storage
+    function getCampaignIdFromSession() {
+      return sessionStorage.getItem('current_campaign_id');
     }
     
-    // Tab switching for sidebar
-    document.querySelectorAll('.sidebar-tab').forEach(tab => {
-      tab.addEventListener('click', function() {
-        // Remove active class from all tabs and sections
-        document.querySelectorAll('.sidebar-tab').forEach(t => t.classList.remove('active'));
-        document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
-        
-        // Add active class to clicked tab and corresponding section
-        this.classList.add('active');
-        document.getElementById(this.dataset.tab + '-section').classList.add('active');
-      });
-    });
+    // Helper functions for upload
+    function getCurrentUserId() {
+      return userId;
+    }
     
-    // Tab switching for right panel
-    document.querySelectorAll('.panel-tab').forEach(tab => {
-      tab.addEventListener('click', function() {
-        // Remove active class from all tabs and sections
-        document.querySelectorAll('.panel-tab').forEach(t => t.classList.remove('active'));
-        document.querySelectorAll('.panel-section').forEach(s => s.classList.remove('active'));
+    function getCurrentCampaignId() {
+      return campaignId;
+    }
+
+    async function initializeVTT() {
+      try {
+        console.log('Initializing PFVTT...');
         
-        // Add active class to clicked tab and corresponding section
-        this.classList.add('active');
-        document.getElementById(this.dataset.panel + '-panel').classList.add('active');
-      });
-    });
-    
-    // Tool selection
-    document.querySelectorAll('.tool-btn').forEach(btn => {
-      btn.addEventListener('click', function() {
-        const tool = this.dataset.tool;
-        
-        if (tool === 'zoom-in' || tool === 'zoom-out' || tool === 'zoom-fit') {
-          const viewport = document.getElementById('map-viewport');
-          const rect = viewport.getBoundingClientRect();
-          const centerX = rect.width / 2;
-          const centerY = rect.height / 2;
-          handleZoom(tool, centerX, centerY);
+        // Check authentication
+        const user = localStorage.getItem('pfvtt_user') || sessionStorage.getItem('pfvtt_user');
+        if (!user) {
+          window.location.href = '/login';
           return;
         }
         
-        // Remove active class from all tools
-        document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'));
-        // Add active class to clicked tool
-        this.classList.add('active');
+        // Get campaign ID from session storage
+        campaignId = getCampaignIdFromSession();
+        if (!campaignId) {
+          alert('No campaign selected');
+          window.location.href = '/campaigns';
+          return;
+        }
         
-        // Update current tool and cursor
-        currentTool = tool;
-        updateCursor();
+        // Get user ID
+        await getUserId(user);
         
-        // Save current tool in session
-        sessionStorage.setItem('current_map_tool', tool);
+        // Initialize components
+        await Promise.all([
+          loadCampaignInfo(),
+          loadMaps(),
+          loadAssets()
+        ]);
+        
+        // Setup event listeners
+        setupEventListeners();
+        setupMapNavigation();
+        setupLayerSystem();
+        
+        // Listen for campaign data updates
+        let lastUpdateCheck = sessionStorage.getItem('campaign_data_updated');
+        setInterval(() => {
+          const currentUpdate = sessionStorage.getItem('campaign_data_updated');
+          if (currentUpdate && currentUpdate !== lastUpdateCheck) {
+            lastUpdateCheck = currentUpdate;
+            loadCampaignInfo(); // Reload campaign info when data is updated
+          }
+        }, 1000);
+        
+        console.log('PFVTT initialized successfully');
+        
+      } catch (error) {
+        console.error('Failed to initialize PFVTT:', error);
+        alert('Failed to initialize the virtual tabletop: ' + error.message);
+      }
+    }
+    
+    async function getUserId(username) {
+      try {
+        const response = await fetch(`/api/user_id?username=${encodeURIComponent(username)}`);
+        const data = await response.json();
+        if (data.success) {
+          userId = data.user_id;
+        } else {
+          throw new Error(data.error || 'Failed to get user ID');
+        }
+      } catch (error) {
+        console.error('Error getting user ID:', error);
+        throw error;
+      }
+    }
+    
+    async function loadCampaignInfo() {
+      try {
+        const response = await fetch(`/api/campaigns/${campaignId}`);
+        const data = await response.json();
+        if (data.success && data.campaign) {
+          document.getElementById('campaign-name').textContent = data.campaign.name;
+          document.getElementById('campaign-system').textContent = data.campaign.system || 'Pathfinder 2E';
+        }
+      } catch (error) {
+        console.error('Error loading campaign info:', error);
+      }
+    }
+    
+    async function loadMaps() {
+      try {
+        const response = await fetch(`/api/maps?campaign_id=${campaignId}`);
+        const data = await response.json();
+        if (data.success) {
+          displayMaps(data.maps || []);
+        }
+      } catch (error) {
+        console.error('Error loading maps:', error);
+      }
+    }
+    
+    function displayMaps(maps) {
+      const mapsList = document.getElementById('maps-list');
+      mapsList.innerHTML = '';
+      
+      maps.forEach(map => {
+        const li = document.createElement('li');
+        li.className = 'item';
+        li.dataset.mapId = map.id;
+        
+        // Add selected class if this is the current map
+        if (currentMapId && currentMapId == map.id) {
+          li.classList.add('selected');
+        }
+        
+        li.innerHTML = `
+          <div class="item-name">${map.name}</div>
+          <div class="item-details">Created: ${new Date(map.created_at).toLocaleDateString()}</div>
+          <div class="item-actions">
+            <button onclick="loadMap('${map.id}')">Select</button>
+            <button onclick="editMap('${map.id}')">Edit</button>
+            <button onclick="deleteMap('${map.id}')">Delete</button>
+          </div>
+        `;
+        
+        // Add click handler for selection
+        li.addEventListener('click', function(e) {
+          // Don't trigger selection if clicking on buttons
+          if (e.target.tagName !== 'BUTTON') {
+            loadMap(map.id);
+          }
+        });
+        
+        mapsList.appendChild(li);
       });
-    });
+    } 
     
-    // Enhanced map navigation functionality
-    let currentZoom = 1;
-      let panX = 0;
-      let panY = 0;
-      let isDragging = false;
-      let lastMouseX = 0;
-      let lastMouseY = 0;
-      let currentTool = 'select';
-      let currentMapId = sessionStorage.getItem('current_map_id') || null;
+    function getCategoryIcon(category) {
+      const icons = {
+        'tokens': '🎭',
+        'backgrounds': '🖼️',
+        'audio': '🔊',
+        'props': '📦'
+      };
+      return icons[category] || '📄';
+    }
     
-    function handleZoom(action, mouseX = null, mouseY = null) {
-      const mapGrid = document.getElementById('map-grid');
-      const viewport = document.getElementById('map-viewport');
-      
-      const oldZoom = currentZoom;
-      
-      switch(action) {
-        case 'zoom-in':
-          currentZoom = Math.min(currentZoom * 1.2, 5);
-          break;
-        case 'zoom-out':
-          currentZoom = Math.max(currentZoom / 1.2, 0.1);
-          break;
-        case 'zoom-fit':
-          currentZoom = 1;
-          panX = 0;
-          panY = 0;
-          break;
+    function formatFileSize(bytes) {
+      if (bytes === 0) return '0 B';
+      const k = 1024;
+      const sizes = ['B', 'KB', 'MB', 'GB'];
+      const i = Math.floor(Math.log(bytes) / Math.log(k));
+      return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+    }
+    
+    
+    async function loadAssets() {
+      try {
+        const response = await fetch(`/api/assets?campaign_id=${campaignId}`);
+        const data = await response.json();
+        if (data.success) {
+          window.currentAssets = data.assets || [];
+          displayAssets(window.currentAssets);
+        }
+      } catch (error) {
+        console.error('Error loading assets:', error);
       }
+    }
+    
+    function displayAssets(assets) {
+      const assetsList = document.getElementById('assets-list');
+      assetsList.innerHTML = '';
       
-      // Zoom towards mouse position if provided
-      if (mouseX !== null && mouseY !== null && action !== 'zoom-fit') {
-        const rect = viewport.getBoundingClientRect();
-        const centerX = rect.width / 2;
-        const centerY = rect.height / 2;
+      const categoryFilter = document.getElementById('asset-category-select').value;
+      const filteredAssets = categoryFilter === 'all' ? assets : assets.filter(asset => asset.category === categoryFilter);
+      
+      filteredAssets.forEach(asset => {
+        const li = document.createElement('li');
+        li.className = 'item';
         
-        const zoomFactor = currentZoom / oldZoom;
-        panX = (panX - (mouseX - centerX)) * zoomFactor + (mouseX - centerX);
-        panY = (panY - (mouseY - centerY)) * zoomFactor + (mouseY - centerY);
-      }
-      
-      updateMapTransform();
+        // Create drag handle for tokens (similar to Roll20's approach)
+        const dragHandle = asset.category === 'tokens' ? '<div class="drag-handle" title="Drag to place token on map">⋮⋮</div>' : '';
+        
+        li.innerHTML = `
+          ${dragHandle}
+          <div class="item-content" ${asset.category === 'tokens' ? 'draggable="true"' : 'draggable="true"'}>
+            <div class="item-icon">${getCategoryIcon(asset.category)}</div>
+            <div class="item-info">
+              <div class="item-name">${asset.name}</div>
+              <div class="item-details">${asset.category} • ${(asset.file_size ? formatFileSize(asset.file_size) : 'Unknown size')}</div>
+            </div>
+          </div>
+          <div class="item-actions">
+            <button onclick="previewAsset('${asset.id}')" title="Preview asset">👁️</button>
+            <button onclick="deleteAsset('${asset.id}')" title="Delete asset">🗑️</button>
+          </div>
+        `;
+        
+        // Add drag and drop functionality to the draggable element
+        const draggableElement = li.querySelector('[draggable="true"]');
+        if (draggableElement) {
+          draggableElement.addEventListener('dragstart', function(e) {
+            e.dataTransfer.setData('text/plain', JSON.stringify({
+              type: 'asset',
+              id: asset.id,
+              name: asset.name,
+              file_url: asset.file_url,
+              category: asset.category
+            }));
+            
+            // Add visual feedback during drag
+            li.classList.add('dragging');
+            
+            // Set custom drag image for tokens
+            if (asset.category === 'tokens') {
+              const dragImage = document.createElement('div');
+              dragImage.innerHTML = `🎭 ${asset.name}`;
+              dragImage.style.cssText = `
+                position: absolute;
+                top: -1000px;
+                background: rgba(0, 0, 0, 0.8);
+                color: white;
+                padding: 8px 12px;
+                border-radius: 4px;
+                font-size: 14px;
+                white-space: nowrap;
+              `;
+              document.body.appendChild(dragImage);
+              e.dataTransfer.setDragImage(dragImage, 50, 20);
+              
+              // Clean up drag image after a short delay
+              setTimeout(() => {
+                if (document.body.contains(dragImage)) {
+                  document.body.removeChild(dragImage);
+                }
+              }, 100);
+            }
+          });
+          
+          draggableElement.addEventListener('dragend', function(e) {
+            li.classList.remove('dragging');
+          });
+        }
+        
+        assetsList.appendChild(li);
+      });
     }
     
-    function updateMapTransform() {
-      const mapGrid = document.getElementById('map-grid');
-      mapGrid.style.transform = `translate(${panX}px, ${panY}px) scale(${currentZoom})`;
+    function setupEventListeners() {
+      // Sidebar tabs
+      document.querySelectorAll('.sidebar-tab').forEach(tab => {
+        tab.addEventListener('click', function() {
+          document.querySelectorAll('.sidebar-tab').forEach(t => t.classList.remove('active'));
+          document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+          
+          this.classList.add('active');
+          document.getElementById(this.dataset.tab + '-section').classList.add('active');
+          
+          // Reload data when switching to maps tab
+          if (this.dataset.tab === 'maps') {
+            loadMaps();
+          } else if (this.dataset.tab === 'assets') {
+            loadAssets();
+          }
+        });
+      });
       
-      // Update zoom indicator
-      const zoomIndicator = document.getElementById('zoom-indicator');
-      if (zoomIndicator) {
-        zoomIndicator.textContent = Math.round(currentZoom * 100) + '%';
-      }
+      // Panel tabs
+      document.querySelectorAll('.panel-tab').forEach(tab => {
+        tab.addEventListener('click', function() {
+          document.querySelectorAll('.panel-tab').forEach(t => t.classList.remove('active'));
+          document.querySelectorAll('.panel-section').forEach(s => s.classList.remove('active'));
+          
+          this.classList.add('active');
+          document.getElementById(this.dataset.panel + '-panel').classList.add('active');
+        });
+      });
+      
+      // Tool buttons
+      document.querySelectorAll('.tool-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+          selectTool(this.dataset.tool);
+        });
+      });
+      
+      // Layer buttons
+      document.querySelectorAll('.layer-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+          setActiveLayer(this.dataset.layer);
+        });
+      });
+      
+      // Asset category filter
+      document.getElementById('asset-category-select').addEventListener('change', function() {
+        // Re-filter and display current assets instead of reloading
+        if (window.currentAssets) {
+          displayAssets(window.currentAssets);
+        } else {
+          loadAssets();
+        }
+      });
     }
     
-    // Initialize map navigation
-    function initializeMapNavigation() {
+    function setupMapNavigation() {
       const viewport = document.getElementById('map-viewport');
-      const mapGrid = document.getElementById('map-grid');
+      const container = document.getElementById('map-container');
       
       // Mouse wheel zoom
       viewport.addEventListener('wheel', function(e) {
         e.preventDefault();
-        const rect = viewport.getBoundingClientRect();
-        const mouseX = e.clientX - rect.left;
-        const mouseY = e.clientY - rect.top;
-        
-        if (e.deltaY < 0) {
-          handleZoom('zoom-in', mouseX, mouseY);
-        } else {
-          handleZoom('zoom-out', mouseX, mouseY);
-        }
-      });
-      
-      // Click to show grid coordinates in chat (debug feature)
-      viewport.addEventListener('click', function(e) {
-        // Skip if clicking on a token or other interactive element
-        if (e.target.classList.contains('map-asset') || e.target.closest('.map-asset')) {
-          return;
-        }
         
         const rect = viewport.getBoundingClientRect();
         const mouseX = e.clientX - rect.left;
         const mouseY = e.clientY - rect.top;
         
-        // Convert screen coordinates to map coordinates using Roll20-style coordinate system
-        const mapX = (mouseX - panX) / currentZoom;
-        const mapY = (mouseY - panY) / currentZoom;
+        const zoomFactor = e.deltaY > 0 ? 0.9 : 1.1;
+        zoomLevel *= zoomFactor;
+        zoomLevel = Math.max(0.1, Math.min(5, zoomLevel));
         
-        // Convert to grid coordinates with proper snapping
-        const gridSize = campaignSettings.gridSize || 50;
-        const gridX = Math.floor(mapX / gridSize);
-        const gridY = Math.floor(mapY / gridSize);
-        
-        // Calculate pixel position (center of grid cell like Roll20)
-        const pixelX = gridX * gridSize + gridSize / 2;
-        const pixelY = gridY * gridSize + gridSize / 2;
-        
-        // Debug output to console
-        console.log(`=== CLICK DEBUG ===`);
-        console.log(`Mouse: (${mouseX}, ${mouseY})`);
-        console.log(`Pan: (${panX}, ${panY})`);
-        console.log(`Zoom: ${currentZoom}`);
-        console.log(`Map coordinates: (${Math.round(mapX)}, ${Math.round(mapY)})`);
-        console.log(`Grid coordinates: (${gridX}, ${gridY})`);
-        console.log(`Pixel coordinates (center): (${pixelX}, ${pixelY})`);
-        console.log(`==================`);
-        
-        // Add debug message to chat
-        addDebugMessageToChat(`Clicked grid coordinates: (${gridX}, ${gridY})`);
+        updateMapTransform();
+        updateZoomIndicator();
       });
       
-      // Also add click handler directly to mapGrid for better coverage
-      mapGrid.addEventListener('click', function(e) {
-        // Skip if clicking on a token or other interactive element
-        if (e.target.classList.contains('map-asset') || e.target.closest('.map-asset')) {
-          return;
-        }
-        
-        const rect = viewport.getBoundingClientRect();
-        const mouseX = e.clientX - rect.left;
-        const mouseY = e.clientY - rect.top;
-        
-        // Convert screen coordinates to map coordinates using Roll20-style coordinate system
-        const mapX = (mouseX - panX) / currentZoom;
-        const mapY = (mouseY - panY) / currentZoom;
-        
-        // Convert to grid coordinates with proper snapping
-        const gridSize = campaignSettings.gridSize || 50;
-        const gridX = Math.floor(mapX / gridSize);
-        const gridY = Math.floor(mapY / gridSize);
-        
-        // Calculate pixel position (center of grid cell like Roll20)
-        const pixelX = gridX * gridSize + gridSize / 2;
-        const pixelY = gridY * gridSize + gridSize / 2;
-        
-        // Debug output to console
-        console.log(`=== MAPGRID CLICK DEBUG ===`);
-        console.log(`Mouse: (${mouseX}, ${mouseY})`);
-        console.log(`Pan: (${panX}, ${panY})`);
-        console.log(`Zoom: ${currentZoom}`);
-        console.log(`Map coordinates: (${Math.round(mapX)}, ${Math.round(mapY)})`);
-        console.log(`Grid coordinates: (${gridX}, ${gridY})`);
-        console.log(`Pixel coordinates (center): (${pixelX}, ${pixelY})`);
-        console.log(`===========================`);
-      });
-      
-      // Mouse drag for panning (Roll20 style - right click drag)
+      // Mouse drag panning
       viewport.addEventListener('mousedown', function(e) {
-        if (e.button === 2) { // Right mouse button
-          e.preventDefault();
+        if (e.button === 2 || currentTool === 'move') { // Right click or move tool
           isDragging = true;
           lastMouseX = e.clientX;
           lastMouseY = e.clientY;
@@ -1126,7 +1514,7 @@
         }
       });
       
-      viewport.addEventListener('mousemove', function(e) {
+      document.addEventListener('mousemove', function(e) {
         if (isDragging) {
           const deltaX = e.clientX - lastMouseX;
           const deltaY = e.clientY - lastMouseY;
@@ -1135,42 +1523,17 @@
           panY += deltaY;
           
           updateMapTransform();
+          updateCoordinatesIndicator(e);
           
           lastMouseX = e.clientX;
           lastMouseY = e.clientY;
         }
-        
-        // Update coordinates indicator
-        const rect = viewport.getBoundingClientRect();
-        const mouseX = e.clientX - rect.left;
-        const mouseY = e.clientY - rect.top;
-        
-        // Convert screen coordinates to map coordinates using Roll20-style coordinate system
-        const mapX = (mouseX - panX) / currentZoom;
-        const mapY = (mouseY - panY) / currentZoom;
-        
-        // Convert to grid coordinates with proper snapping
-        const gridSize = campaignSettings.gridSize || 50;
-        const gridX = Math.floor(mapX / gridSize);
-        const gridY = Math.floor(mapY / gridSize);
-        
-        const coordsIndicator = document.getElementById('coordinates-indicator');
-        if (coordsIndicator) {
-          coordsIndicator.textContent = `Map: ${Math.round(mapX)}, ${Math.round(mapY)} | Grid: ${gridX}, ${gridY}`;
-        }
       });
       
-      viewport.addEventListener('mouseup', function(e) {
+      document.addEventListener('mouseup', function() {
         if (isDragging) {
           isDragging = false;
-          updateCursor(); // Return to appropriate cursor
-        }
-      });
-      
-      viewport.addEventListener('mouseleave', function(e) {
-        if (isDragging) {
-          isDragging = false;
-          updateCursor(); // Return to appropriate cursor
+          viewport.style.cursor = currentTool === 'move' ? 'move' : 'grab';
         }
       });
       
@@ -1179,512 +1542,353 @@
         e.preventDefault();
       });
       
-      // Update cursor based on current tool
-      viewport.addEventListener('mouseenter', function() {
-        updateCursor();
+      // Update coordinates on mouse move
+      viewport.addEventListener('mousemove', function(e) {
+        if (!isDragging) {
+          updateCoordinatesIndicator(e);
+        }
       });
       
-      // Keyboard shortcuts
-      document.addEventListener('keydown', function(e) {
-        if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
-          return; // Don't handle shortcuts when typing in inputs
-        }
+      // Setup drag and drop for assets
+      viewport.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'copy';
         
-        switch(e.key) {
-          case '+':
-          case '=':
-            e.preventDefault();
-            // Get current mouse position for zoom centering
-            const rect = viewport.getBoundingClientRect();
-            const centerX = rect.width / 2;
-            const centerY = rect.height / 2;
-            handleZoom('zoom-in', centerX, centerY);
-            break;
-          case '-':
-            e.preventDefault();
-            // Get current mouse position for zoom centering
-            const rect2 = viewport.getBoundingClientRect();
-            const centerX2 = rect2.width / 2;
-            const centerY2 = rect2.height / 2;
-            handleZoom('zoom-out', centerX2, centerY2);
-            break;
-          case '0':
-            e.preventDefault();
-            handleZoom('zoom-fit');
-            break;
-          case ' ':
-             e.preventDefault();
-             // Select tool (Roll20 style - space for select)
-             document.querySelector('[data-tool="select"]').click();
-             break;
+        // Add visual feedback for valid drop zone
+        if (!viewport.classList.contains('drag-over')) {
+          viewport.classList.add('drag-over');
         }
       });
+      
+      viewport.addEventListener('dragleave', function(e) {
+        // Remove visual feedback when leaving drop zone
+        if (!viewport.contains(e.relatedTarget)) {
+          viewport.classList.remove('drag-over');
+        }
+      });
+      
+      viewport.addEventListener('drop', function(e) {
+        e.preventDefault();
+        viewport.classList.remove('drag-over');
+        
+        // Check if a map is selected
+        if (!currentMapId) {
+          showNotification('Please select a map first before placing assets.', 'warning');
+          return;
+        }
+        
+        try {
+          const data = JSON.parse(e.dataTransfer.getData('text/plain'));
+          if (data.type === 'asset') {
+            const rect = viewport.getBoundingClientRect();
+            const pixelX = (e.clientX - rect.left - panX) / zoomLevel;
+            const pixelY = (e.clientY - rect.top - panY) / zoomLevel;
+            
+            // Convert pixel coordinates to grid coordinates
+            const gridCoords = pixelToGridCoordinates(pixelX, pixelY);
+            
+            console.log('Drop coordinates:', {
+              pixel: { x: pixelX, y: pixelY },
+              grid: gridCoords
+            });
+            
+            // Show placement preview for tokens
+            if (data.category === 'tokens') {
+              showTokenPlacementPreview(data, gridCoords.x, gridCoords.y);
+            } else {
+              placeAssetOnMap(data, gridCoords.x, gridCoords.y);
+            }
+          }
+        } catch (error) {
+          console.error('Error handling drop:', error);
+          showNotification('Error placing asset on map', 'error');
+        }
+      });
+    }
+    
+    function setupLayerSystem() {
+      // Set initial active layer
+      setActiveLayer('map');
+    }
+    
+    function selectTool(tool) {
+      // Handle zoom tools
+      if (tool === 'zoom-in' || tool === 'zoom-out' || tool === 'zoom-fit') {
+        handleZoomTool(tool);
+        return;
+      }
+      
+      // Remove active class from all tools
+      document.querySelectorAll('.tool-btn').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      
+      // Add active class to selected tool
+      const selectedTool = document.querySelector(`[data-tool="${tool}"]`);
+      if (selectedTool) {
+        selectedTool.classList.add('active');
+      }
+      
+      currentTool = tool;
+      updateCursor();
+      
+      console.log('Selected tool:', tool);
+    }
+    
+    function handleZoomTool(tool) {
+      const viewport = document.getElementById('map-viewport');
+      const rect = viewport.getBoundingClientRect();
+      const centerX = rect.width / 2;
+      const centerY = rect.height / 2;
+      
+      switch(tool) {
+        case 'zoom-in':
+          zoomLevel *= 1.2;
+          break;
+        case 'zoom-out':
+          zoomLevel *= 0.8;
+          break;
+        case 'zoom-fit':
+          zoomLevel = 1;
+          panX = 0;
+          panY = 0;
+          break;
+      }
+      
+      zoomLevel = Math.max(0.1, Math.min(5, zoomLevel));
+      updateMapTransform();
+      updateZoomIndicator();
+    }
+    
+    function setActiveLayer(layerName) {
+      // Remove active class from all layers and buttons
+      document.querySelectorAll('.map-layer').forEach(layer => {
+        layer.classList.remove('active');
+      });
+      document.querySelectorAll('.layer-btn').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      
+      // Set new active layer
+      const targetLayer = document.getElementById(layerName + '-layer');
+      const targetButton = document.querySelector(`[data-layer="${layerName}"]`);
+      
+      if (targetLayer && targetButton) {
+        targetLayer.classList.add('active');
+        targetButton.classList.add('active');
+        currentLayer = layerName;
+        
+        console.log('Active layer set to:', layerName);
+      }
     }
     
     function updateCursor() {
       const viewport = document.getElementById('map-viewport');
-      switch(currentTool) {
-        case 'draw':
-          viewport.style.cursor = 'crosshair';
-          break;
-        case 'measure':
-          viewport.style.cursor = 'crosshair';
-          break;
-        case 'token':
-          viewport.style.cursor = 'pointer';
-          break;
-        default:
-          viewport.style.cursor = 'grab'; // Roll20 style - always ready to pan
+      const cursors = {
+        'select': 'grab',
+        'move': 'move',
+        'measure': 'crosshair',
+        'draw': 'crosshair',
+        'erase': 'crosshair',
+        'text': 'text',
+        'token': 'pointer',
+        'light': 'pointer',
+        'fog': 'pointer'
+      };
+      
+      viewport.style.cursor = cursors[currentTool] || 'grab';
+    }
+    
+    function updateMapTransform() {
+      const container = document.getElementById('map-container');
+      container.style.transform = `translate(calc(-50% + ${panX}px), calc(-50% + ${panY}px)) scale(${zoomLevel})`;
+    }
+    
+    function updateZoomIndicator() {
+      const indicator = document.getElementById('zoom-indicator');
+      indicator.textContent = Math.round(zoomLevel * 100) + '%';
+    }
+    
+    function updateCoordinatesIndicator(e) {
+      const viewport = document.getElementById('map-viewport');
+      const rect = viewport.getBoundingClientRect();
+      const pixelX = Math.round((e.clientX - rect.left - panX) / zoomLevel);
+      const pixelY = Math.round((e.clientY - rect.top - panY) / zoomLevel);
+      
+      // Convert to grid coordinates
+      const gridCoords = pixelToGridCoordinates(pixelX, pixelY);
+      
+      const indicator = document.getElementById('coordinates-indicator');
+      indicator.textContent = `X: ${pixelX}, Y: ${pixelY} | Grid: ${gridCoords.x}, ${gridCoords.y}`;
+    }
+    
+    // Utility Functions
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen();
+      } else {
+        document.exitFullscreen();
       }
     }
     
-    // Load campaign info
-    async function loadCampaignInfo() {
-      try {
-        const user = localStorage.getItem('pfvtt_user') || sessionStorage.getItem('pfvtt_user');
-        const response = await fetch(`http://localhost:8080/api/campaigns?username=${encodeURIComponent(user)}`);
-        const data = await response.json();
-        
-        if (data.success && data.campaigns) {
-          const campaign = data.campaigns.find(c => c.id == campaignId);
-          if (campaign) {
-            document.getElementById('campaign-name').textContent = campaign.name;
-            document.getElementById('campaign-system').textContent = campaign.system || 'No system selected';
-          }
-        }
-      } catch (error) {
-        console.error('Failed to load campaign info:', error);
-      }
+    function saveMap() {
+      // Implement map saving logic
+      console.log('Saving map...');
+      alert('Map saved successfully!');
     }
     
-    // Load maps for current campaign
-    async function loadMaps() {
-      try {
-        const response = await fetch(`http://localhost:8080/api/maps?campaign_id=${campaignId}`);
-        const data = await response.json();
-        
-        if (data.success && data.maps) {
-          const mapsList = document.getElementById('maps-list');
-          if (mapsList) {
-            mapsList.innerHTML = '';
-            data.maps.forEach(map => {
-              const mapItem = document.createElement('li');
-              mapItem.className = 'item';
-              mapItem.innerHTML = `
-                <div class="item-name">${map.name}</div>
-                <div class="item-details">Map ID: ${map.id}</div>
-              `;
-              mapItem.addEventListener('click', () => loadMap(map.id));
-              mapsList.appendChild(mapItem);
-            });
-            
-            // Auto-load map based on session storage or first available
-            if (data.maps.length > 0 && !currentMapId) {
-              const savedMapId = sessionStorage.getItem('current_map_id');
-              let mapToLoad = null;
-              
-              // Try to find the saved map first
-              if (savedMapId) {
-                mapToLoad = data.maps.find(map => map.id == savedMapId);
-              }
-              
-              // If saved map not found, use first map
-              if (!mapToLoad) {
-                mapToLoad = data.maps[0];
-              }
-              
-              loadMap(mapToLoad.id);
-              
-              // Mark the loaded map as selected
-              const mapItems = mapsList.querySelectorAll('.item');
-              mapItems.forEach(item => {
-                const mapId = item.querySelector('.item-details').textContent.split(': ')[1];
-                if (mapId == mapToLoad.id) {
-                  item.classList.add('selected');
-                }
-              });
-            }
-          }
-        }
-      } catch (error) {
-        console.error('Failed to load maps:', error);
-      }
+    function showSettings() {
+      // Implement settings modal
+      console.log('Opening settings...');
     }
     
-    // Load a specific map
-    function loadMap(mapId) {
-      // Remove selection from all maps
-      document.querySelectorAll('#maps-list .item').forEach(item => {
-        item.classList.remove('selected');
-      });
-      
-      // Add selection to clicked map (only if called from click event)
-      if (event && event.target) {
-        event.target.closest('.item').classList.add('selected');
-      }
-      
-      console.log('Loading map:', mapId);
-      currentMapId = mapId;
-      
-      // Save selected map ID to session storage
-      sessionStorage.setItem('current_map_id', mapId);
-      
-      // Clear existing assets from all layers
-      clearAllLayers();
-      
-      // Load positioned assets for this map
-      loadMapAssets(mapId);
+    function toggleHelp() {
+      // Implement help panel
+      console.log('Toggling help...');
     }
     
-    // Clear all assets from map layers
-    function clearAllLayers() {
-      const layers = ['tokens', 'map', 'audio', 'props'];
-      layers.forEach(layerName => {
-        const layer = document.getElementById(`${layerName}-layer`);
-        if (layer) {
-          layer.innerHTML = '';
-        }
-      });
-    }
-    
-    // Load all positioned assets for a map
-    async function loadMapAssets(mapId) {
-      try {
-        console.log('Loading map assets for map ID:', mapId);
-        
-        // Ensure assets are loaded first
-        if (assets.length === 0) {
-          console.log('Assets array is empty, loading assets first...');
-          await loadAssets();
-        }
-        console.log('Assets loaded, total count:', assets.length);
-        
-        // Load tokens
-        console.log('Fetching tokens for map:', mapId);
-        const tokensResponse = await fetch(`/api/map-tokens?map_id=${mapId}`);
-        const tokensData = await tokensResponse.json();
-        console.log('Tokens response:', tokensData);
-        
-        if (tokensData.success && tokensData.tokens) {
-          console.log('Found', tokensData.tokens.length, 'tokens to display');
-          tokensData.tokens.forEach(token => {
-            console.log('Processing token:', token);
-            const assetData = {
-              assetId: token.asset_id,
-              tokenId: token.id,
-              assetType: 'token',
-              assetName: token.name || 'Token'
-            };
-            console.log('Creating visual element for token:', assetData);
-            // Pass grid coordinates directly to the visual element function
-            createVisualAssetElement(assetData, token.grid_x, token.grid_y, 'tokens');
-          });
-        } else {
-          console.log('No tokens found or request failed');
-        }
-        
-        // Load backgrounds
-        const backgroundsResponse = await fetch(`/api/map-backgrounds?map_id=${mapId}`);
-        const backgroundsData = await backgroundsResponse.json();
-        if (backgroundsData.success && backgroundsData.backgrounds) {
-          backgroundsData.backgrounds.forEach(bg => {
-            const assetData = {
-              assetId: bg.asset_id,
-              assetType: 'background',
-              assetName: 'Background'
-            };
-            // Pass grid coordinates directly to the visual element function
-            createVisualAssetElement(assetData, bg.grid_x, bg.grid_y, 'map');
-          });
-        }
-        
-        // Load audio
-        const audioResponse = await fetch(`/api/map-audio?map_id=${mapId}`);
-        const audioData = await audioResponse.json();
-        if (audioData.success && audioData.audio) {
-          audioData.audio.forEach(audio => {
-            const assetData = {
-              assetId: audio.asset_id,
-              assetType: 'audio',
-              assetName: 'Audio'
-            };
-            // Pass grid coordinates directly to the visual element function
-            createVisualAssetElement(assetData, audio.grid_x, audio.grid_y, 'audio');
-          });
-        }
-        
-        // Load props
-        const propsResponse = await fetch(`/api/map-props?map_id=${mapId}`);
-        const propsData = await propsResponse.json();
-        if (propsData.success && propsData.props) {
-          propsData.props.forEach(prop => {
-            const assetData = {
-              assetId: prop.asset_id,
-              assetType: 'props',
-              assetName: 'Prop'
-            };
-            // Pass grid coordinates directly to the visual element function
-            createVisualAssetElement(assetData, prop.grid_x, prop.grid_y, 'props');
-          });
-        }
-        
-      } catch (error) {
-        console.error('Failed to load map assets:', error);
-      }
-    }
-    
-    // Create new map
     async function createNewMap() {
-      const mapName = prompt('Enter map name:');
-      if (!mapName) return;
-      
-      try {
-        const user = localStorage.getItem('pfvtt_user') || sessionStorage.getItem('pfvtt_user');
-        const response = await fetch('http://localhost:8080/api/maps', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            campaign_id: campaignId,
-            name: mapName,
-            data: {},
-            username: user
-          })
-        });
-        
-        const data = await response.json();
-        if (data.success) {
-          loadMaps(); // Reload maps list
-        } else {
-          alert('Failed to create map: ' + (data.error || 'Unknown error'));
-        }
-      } catch (error) {
-        console.error('Failed to create map:', error);
-        alert('Failed to create map');
-      }
-    }
-    
-    // Load scenes for current campaign
-    async function loadScenes() {
-      try {
-        const response = await fetch(`http://localhost:8080/api/scenes?campaign_id=${campaignId}`);
-        const data = await response.json();
-        
-        if (data && Array.isArray(data)) {
-          const scenesList = document.getElementById('scenes-list');
-          if (scenesList) {
-            scenesList.innerHTML = '';
-            data.forEach(scene => {
-              const sceneItem = document.createElement('li');
-              sceneItem.className = 'item';
-              sceneItem.innerHTML = `
-                <div class="item-name">${scene.name}</div>
-                <div class="item-details">Scene ID: ${scene.id}</div>
-              `;
-              sceneItem.addEventListener('click', () => loadScene(scene));
-              scenesList.appendChild(sceneItem);
-            });
-          }
-        }
-      } catch (error) {
-        console.error('Failed to load scenes:', error);
-      }
-    }
-    
-    // Load a specific scene
-    function loadScene(scene) {
-      // Remove selection from all scenes
-      document.querySelectorAll('#scenes-list .item').forEach(item => {
-        item.classList.remove('selected');
-      });
-      
-      // Add selection to clicked scene
-      event.target.closest('.item').classList.add('selected');
-      
-      console.log('Loading scene:', scene);
-      
-      // Reset map view
-      currentZoom = 1;
-      panX = 0;
-      panY = 0;
-      updateMapTransform();
-      
-      // Here you can add logic to load scene-specific content
-      // For example, background images, tokens, etc.
-    }
-    
-    // Scene management
-    async function createNewScene() {
-      const sceneName = prompt('Enter scene name:');
-      if (!sceneName) return;
-      
-      try {
-        const response = await fetch('http://localhost:8080/api/scenes', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            campaign_id: campaignId,
-            name: sceneName,
-            data: JSON.stringify({
-              background: null,
-              tokens: [],
-              lighting: [],
-              fog: []
+      const name = prompt('Enter map name:');
+      if (name && name.trim()) {
+        try {
+          const user = localStorage.getItem('pfvtt_user') || sessionStorage.getItem('pfvtt_user');
+          const response = await fetch('/api/maps', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              name: name.trim(),
+              campaign_id: campaignId,
+              username: user,
+              data: {
+                width: 1000,
+                height: 1000,
+                background_color: '#ffffff'
+              }
             })
-          })
-        });
-        
-        const data = await response.json();
-        if (data.success) {
-          loadScenes(); // Reload scenes list
-        } else {
-          alert('Failed to create scene: ' + (data.error || 'Unknown error'));
-        }
-      } catch (error) {
-        console.error('Failed to create scene:', error);
-        alert('Failed to create scene');
-      }
-    }
-    
-    // Asset management
-    let assets = [];
-    
-    async function loadAssets() {
-      try {
-        const response = await fetch(`http://localhost:8080/api/assets?campaign_id=${campaignId}`);
-        const data = await response.json();
-        if (data.success) {
-          assets = data.assets;
-          displayAssets();
-          return true;
-        }
-        return false;
-      } catch (error) {
-        console.error('Failed to load assets:', error);
-        return false;
-      }
-    }
-    
-    function displayAssets() {
-      const assetsList = document.querySelector('#assets-section .item-list');
-      const categorySelect = document.getElementById('asset-category-select');
-      const selectedCategory = categorySelect.value;
-      
-      assetsList.innerHTML = '';
-      
-      // Filter assets based on selected category
-      const filteredAssets = selectedCategory === 'all' 
-        ? assets 
-        : assets.filter(asset => {
-            if (selectedCategory === 'background') {
-              // Backgrounds are stored as 'backgrounds' category
-              return asset.category === 'backgrounds';
-            } else {
-              return asset.category === selectedCategory;
-            }
           });
-      
-      filteredAssets.forEach(asset => {
-        const li = document.createElement('li');
-        li.className = 'item';
-        li.draggable = true;
-        li.dataset.assetId = asset.id;
-        li.dataset.assetType = asset.category;
-        li.dataset.assetName = asset.name;
-        li.innerHTML = `
-          <div class="item-name">${asset.name}</div>
-          <div class="item-details">${asset.category} - ${formatFileSize(asset.file_size)}</div>
-          <div class="item-actions">
-            <button onclick="editAsset(${asset.id})" title="Edit">✏️</button>
-            <button onclick="deleteAsset(${asset.id})" title="Delete">🗑️</button>
-          </div>
-        `;
-        
-        // Add drag event listeners
-        li.addEventListener('dragstart', function(e) {
-          e.dataTransfer.setData('text/plain', JSON.stringify({
-            assetId: asset.id,
-            assetType: asset.category,
-            assetName: asset.name
-          }));
-          e.dataTransfer.effectAllowed = 'copy';
-        });
-        assetsList.appendChild(li);
-      });
+          
+          const result = await response.json();
+          if (result.success) {
+            console.log('Map created successfully:', result.map_id);
+            // Reload the maps list to show the new map
+            await loadMaps();
+          } else {
+            alert('Failed to create map: ' + (result.error || 'Unknown error'));
+          }
+        } catch (error) {
+          console.error('Error creating map:', error);
+          alert('Error creating map. Please try again.');
+        }
+      }
     }
     
-    function uploadAsset() {
-      // Get selected category
-      const categorySelect = document.getElementById('asset-category-select');
-      const selectedCategory = categorySelect.value;
-      
-      // Prevent upload when "All" is selected
-      if (selectedCategory === 'all') {
-        alert('Please select a specific category before uploading assets.');
+
+    async function uploadAsset() {
+      const category = document.getElementById('asset-category-select').value;
+      if (category === 'all') {
+        alert('Please select a specific category first.');
         return;
       }
       
       const input = document.createElement('input');
       input.type = 'file';
       
-      // Set file filter based on selected category
-      switch(selectedCategory) {
-        case 'tokens':
-          input.accept = '.png';
-          break;
-        case 'background':
-          input.accept = '.jpg,.jpeg,.png';
-          break;
-        case 'props':
-          input.accept = '.png';
-          break;
-        case 'audio':
-          input.accept = '.mp3,.wav,.ogg,.m4a,.aac';
-          break;
-        default:
-          input.accept = 'image/*,audio/*';
-      }
+      // Set accept attribute based on category
+      const acceptTypes = {
+        'tokens': '.png',
+        'props': '.png', 
+        'backgrounds': 'image/*',
+        'audio': 'audio/*'
+      };
+      input.accept = acceptTypes[category] || 'image/*,audio/*';
+      input.multiple = false;
       
       input.onchange = async function(e) {
         const file = e.target.files[0];
         if (!file) return;
         
-        // First upload the file to get the URL
-        const uploadFormData = new FormData();
-        uploadFormData.append('file', file);
-        uploadFormData.append('user_id', userId);
-        uploadFormData.append('campaign_id', campaignId);
-        uploadFormData.append('upload_type', selectedCategory);
+        // Validate file size (max 10MB)
+        const maxSize = 10 * 1024 * 1024; // 10MB
+        if (file.size > maxSize) {
+          alert('File size must be less than 10MB');
+          return;
+        }
+        
+        // Validate file type based on category requirements
+        const allowedTypes = {
+          'tokens': ['image/png'],
+          'props': ['image/png'],
+          'backgrounds': ['image/jpeg', 'image/png', 'image/gif', 'image/webp'],
+          'audio': ['audio/mpeg', 'audio/wav', 'audio/ogg', 'audio/mp3', 'audio/mp4']
+        };
+        
+        if (!allowedTypes[category] || !allowedTypes[category].includes(file.type)) {
+          const categoryRequirements = {
+            'tokens': 'PNG files only',
+            'props': 'PNG files only',
+            'backgrounds': 'Image files (JPEG, PNG, GIF, WebP)',
+            'audio': 'Audio files (MP3, WAV, OGG)'
+          };
+          alert(`Invalid file type for ${category}. ${categoryRequirements[category] || 'Please select a valid file.'}`); 
+          return;
+        }
         
         try {
-          // Upload file first
-          const uploadResponse = await fetch('http://localhost:8080/api/upload', {
+          // Show loading indicator
+          const loadingDiv = document.createElement('div');
+          loadingDiv.id = 'upload-loading';
+          loadingDiv.style.cssText = `
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(44, 62, 80, 0.95);
+            color: white;
+            padding: 20px 30px;
+            border-radius: 8px;
+            z-index: 10000;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+          `;
+          loadingDiv.innerHTML = `
+            <div style="margin-bottom: 10px;">📤</div>
+            <div>Uploading ${file.name}...</div>
+            <div style="margin-top: 10px; font-size: 12px; color: #bdc3c7;">Please wait</div>
+          `;
+          document.body.appendChild(loadingDiv);
+          
+          // Create FormData for file upload
+          const formData = new FormData();
+          formData.append('file', file);
+          formData.append('user_id', getCurrentUserId());
+          formData.append('campaign_id', getCurrentCampaignId());
+          formData.append('upload_type', category); // Use category as upload_type
+          
+          // First upload the file
+          const uploadResponse = await fetch('/api/upload', {
             method: 'POST',
-            body: uploadFormData
+            body: formData
           });
           
-          const uploadData = await uploadResponse.json();
-          if (!uploadData.success) {
-            alert('Failed to upload file: ' + (uploadData.error || 'Unknown error'));
-            return;
+          const uploadResult = await uploadResponse.json();
+          if (!uploadResult.success) {
+            throw new Error(uploadResult.error || 'Upload failed');
           }
           
-          // Then create asset record
+          // Then create the asset record
           const assetData = {
-            campaign_id: campaignId,
-            name: file.name,
-            category: selectedCategory,
-            file_url: uploadData.url,
-            file_size: uploadData.size,
+            campaign_id: getCurrentCampaignId(),
+            name: file.name.split('.')[0],
+            category: category,
+            file_url: uploadResult.url,
+            file_size: uploadResult.size,
             mime_type: file.type,
-            description: '',
-            tags: ''
+            description: ''
           };
-          
-          const assetResponse = await fetch('http://localhost:8080/api/assets', {
+        
+          const response = await fetch('/api/assets', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json'
@@ -1692,807 +1896,726 @@
             body: JSON.stringify(assetData)
           });
           
-          const assetResult = await assetResponse.json();
-          if (assetResult.success) {
-            loadAssets();
+          const result = await response.json();
+          
+          // Remove loading indicator
+          document.body.removeChild(loadingDiv);
+          
+          if (result.success) {
+            console.log('Asset uploaded successfully:', result.asset_id);
+            await loadAssets(); // Reload assets list
+            
+            // Show success message
+            const successDiv = document.createElement('div');
+            successDiv.style.cssText = `
+              position: fixed;
+              top: 20px;
+              right: 20px;
+              background: linear-gradient(135deg, #27ae60, #229954);
+              color: white;
+              padding: 15px 20px;
+              border-radius: 8px;
+              z-index: 10000;
+              box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+              animation: slideIn 0.3s ease;
+            `;
+            successDiv.innerHTML = `✅ Asset uploaded successfully!`;
+            document.body.appendChild(successDiv);
+            
+            // Remove success message after 3 seconds
+            setTimeout(() => {
+              if (document.body.contains(successDiv)) {
+                document.body.removeChild(successDiv);
+              }
+            }, 3000);
+            
           } else {
-            alert('Failed to create asset record: ' + (assetResult.error || 'Unknown error'));
+            alert('Failed to upload asset: ' + (result.error || 'Unknown error'));
           }
+          
         } catch (error) {
-          console.error('Failed to upload asset:', error);
-          alert('Failed to upload asset');
+          // Remove loading indicator if it exists
+          const loadingDiv = document.getElementById('upload-loading');
+          if (loadingDiv) {
+            document.body.removeChild(loadingDiv);
+          }
+          
+          console.error('Error uploading asset:', error);
+          alert('Error uploading asset. Please try again.');
         }
       };
+      
       input.click();
     }
     
-    async function editAsset(assetId) {
-      const asset = assets.find(a => a.id === assetId);
-      if (!asset) return;
+    function loadMap(mapId) {
+      console.log('Loading map:', mapId);
       
-      const newName = prompt('Enter new name:', asset.name);
-      if (!newName || newName === asset.name) return;
+      // Remove selection from all maps
+      document.querySelectorAll('#maps-list .item').forEach(item => {
+        item.classList.remove('selected');
+      });
       
-      try {
-        const response = await fetch(`http://localhost:8080/api/assets/${assetId}`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            name: newName
-          })
-        });
-        
-        const data = await response.json();
-        if (data.success) {
-          loadAssets();
-        } else {
-          alert('Failed to update asset: ' + (data.error || 'Unknown error'));
+      // Add selection to the clicked map
+      const selectedMapItem = document.querySelector(`#maps-list .item[data-map-id="${mapId}"]`);
+      if (selectedMapItem) {
+        selectedMapItem.classList.add('selected');
+      }
+      
+      // Set current map ID
+      currentMapId = mapId;
+      
+      // Update UI to show selected map
+      console.log('Map selected:', mapId);
+      
+      // Load existing assets on the map
+      loadMapAssets(mapId);
+    }
+    
+    async function editMap(mapId) {
+      const newName = prompt('Enter new map name:');
+      if (newName && newName.trim()) {
+        try {
+          const response = await fetch(`/api/maps/${mapId}`, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              name: newName.trim()
+            })
+          });
+          
+          const result = await response.json();
+          if (result.success) {
+            console.log('Map updated successfully:', mapId);
+            // Reload the maps list to show the updated map
+            await loadMaps();
+          } else {
+            alert('Failed to update map: ' + (result.error || 'Unknown error'));
+          }
+        } catch (error) {
+          console.error('Error updating map:', error);
+          alert('Error updating map. Please try again.');
         }
-      } catch (error) {
-        console.error('Failed to update asset:', error);
-        alert('Failed to update asset');
       }
     }
-
-    async function editTokenName(assetData, assetElement) {
-      const currentName = assetData.assetName || 'Token';
-      const newName = prompt('Inserisci il nuovo nome del token:', currentName);
-      if (!newName || newName === currentName) return;
-      
-      try {
-        let tokenId = assetData.tokenId;
-        
-        // If tokenId is not available, find it from the map tokens
-        if (!tokenId) {
-          const mapId = getCurrentMapId();
-          const tokensResponse = await fetch(`/api/map-tokens?map_id=${mapId}`);
-          const tokensData = await tokensResponse.json();
+    
+    async function deleteMap(mapId) {
+      if (confirm('Are you sure you want to delete this map?')) {
+        try {
+          const response = await fetch(`/api/maps/${mapId}`, {
+            method: 'DELETE'
+          });
           
-          if (tokensData.success && tokensData.tokens) {
-            const token = tokensData.tokens.find(t => t.asset_id == assetData.assetId);
-            if (!token) {
-              alert('Token non trovato nel database');
-              return;
-            }
-            tokenId = token.id;
+          const result = await response.json();
+          if (result.success) {
+            console.log('Map deleted successfully:', mapId);
+            // Reload the maps list to remove the deleted map
+            await loadMaps();
           } else {
-            alert('Errore nel recupero dei token dalla mappa');
-            return;
+            alert('Failed to delete map: ' + (result.error || 'Unknown error'));
           }
+        } catch (error) {
+          console.error('Error deleting map:', error);
+          alert('Error deleting map. Please try again.');
+        }
+      }
+    }
+    
+
+    async function previewAsset(assetId) {
+      try {
+        // Find the asset in the current assets list
+        const assetsList = document.getElementById('assets-list');
+        const assetItems = assetsList.querySelectorAll('.item');
+        let assetData = null;
+        
+        // Get asset data from the DOM or fetch from API
+        const response = await fetch(`/api/assets?campaign_id=${campaignId}`);
+        const result = await response.json();
+        
+        if (result.success) {
+          assetData = result.assets.find(asset => asset.id === assetId);
         }
         
-        // Update the asset name in the assets table
-        const assetResponse = await fetch(`http://localhost:8080/api/assets/${assetData.assetId}`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            name: newName
-          })
-        });
-        
-        const assetResult = await assetResponse.json();
-        if (!assetResult.success) {
-          alert('Errore nell\'aggiornamento dell\'asset: ' + (assetResult.error || 'Errore sconosciuto'));
+        if (!assetData) {
+          alert('Asset not found');
           return;
         }
         
-        // Update the token name in map_tokens table
-        const tokenResponse = await fetch(`http://localhost:8080/api/map-tokens/${tokenId}`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            name: newName
-          })
+        // Create preview modal
+        const modal = document.createElement('div');
+        modal.style.cssText = `
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: rgba(0, 0, 0, 0.8);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          z-index: 10000;
+          cursor: pointer;
+        `;
+        
+        let content = '';
+        if (assetData.mime_type && assetData.mime_type.startsWith('image/')) {
+          content = `<img src="${assetData.file_url}" style="max-width: 90vw; max-height: 90vh; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.5);" alt="${assetData.name}">`;
+        } else if (assetData.mime_type && assetData.mime_type.startsWith('audio/')) {
+          content = `
+            <div style="background: #2c3e50; padding: 30px; border-radius: 12px; text-align: center; color: white; min-width: 300px;">
+              <h3 style="margin: 0 0 20px 0; color: #ecf0f1;">${assetData.name}</h3>
+              <audio controls style="width: 100%; margin-bottom: 15px;">
+                <source src="${assetData.file_url}" type="${assetData.mime_type}">
+                Your browser does not support the audio element.
+              </audio>
+              <p style="margin: 0; color: #bdc3c7; font-size: 14px;">Category: ${assetData.category}</p>
+            </div>
+          `;
+        } else {
+          content = `
+            <div style="background: #2c3e50; padding: 30px; border-radius: 12px; text-align: center; color: white; min-width: 300px;">
+              <h3 style="margin: 0 0 15px 0; color: #ecf0f1;">${assetData.name}</h3>
+              <p style="margin: 0 0 10px 0; color: #bdc3c7;">Category: ${assetData.category}</p>
+              <p style="margin: 0; color: #bdc3c7; font-size: 14px;">File type: ${assetData.mime_type || 'Unknown'}</p>
+            </div>
+          `;
+        }
+        
+        modal.innerHTML = content;
+        
+        // Close modal on click
+        modal.addEventListener('click', () => {
+          document.body.removeChild(modal);
         });
         
-        const tokenData = await tokenResponse.json();
-        if (tokenData.success) {
-          // Update the visual element
-          assetData.assetName = newName;
-          assetElement.title = `${assetData.assetType}: ${newName}`;
-          
-          // Update the assets array
-          const asset = assets.find(a => a.id == assetData.assetId);
-          if (asset) {
-            asset.name = newName;
-          }
-          
-          // Refresh the assets display
-          displayAssets();
-          
-          alert('Nome del token aggiornato con successo!');
-        } else {
-          alert('Asset aggiornato ma errore nell\'aggiornamento del token sulla mappa: ' + (tokenData.error || 'Errore sconosciuto'));
-        }
+        document.body.appendChild(modal);
+        
       } catch (error) {
-        console.error('Errore nell\'aggiornamento del token:', error);
-        alert('Errore nell\'aggiornamento del token');
+        console.error('Error previewing asset:', error);
+        alert('Error previewing asset. Please try again.');
       }
     }
     
     async function deleteAsset(assetId) {
-      if (!confirm('Are you sure you want to delete this asset?')) return;
+      if (confirm('Are you sure you want to delete this asset? This action cannot be undone.')) {
+        try {
+          const response = await fetch(`/api/assets/${assetId}`, {
+            method: 'DELETE'
+          });
+          
+          const result = await response.json();
+          
+          if (result.success) {
+            console.log('Asset deleted successfully:', assetId);
+            await loadAssets(); // Reload assets list
+          } else {
+            alert('Failed to delete asset: ' + (result.error || 'Unknown error'));
+          }
+        } catch (error) {
+          console.error('Error deleting asset:', error);
+          alert('Error deleting asset. Please try again.');
+        }
+      }
+    }
+    
+    async function loadMapAssets(mapId) {
+      console.log('Loading assets for map:', mapId);
+      
+      // Clear existing assets from all layers
+      clearMapAssets();
       
       try {
-        const response = await fetch(`http://localhost:8080/api/assets/${assetId}`, {
-          method: 'DELETE'
-        });
+        // Load all types of assets in parallel
+        await Promise.all([
+          loadMapTokens(mapId),
+          loadMapProps(mapId),
+          loadMapBackgrounds(mapId),
+          loadMapAudio(mapId)
+        ]);
         
-        const data = await response.json();
-        if (data.success) {
-          loadAssets();
+        console.log('All map assets loaded successfully');
+      } catch (error) {
+        console.error('Error loading map assets:', error);
+        showNotification('Error loading map assets', 'error');
+      }
+    }
+    
+    function clearMapAssets() {
+      // Clear all asset elements from map layers
+      const layers = ['tokens-layer', 'background-layer', 'effects-layer'];
+      layers.forEach(layerId => {
+        const layer = document.getElementById(layerId);
+        if (layer) {
+          // Remove all map-asset elements
+          const assets = layer.querySelectorAll('.map-asset');
+          assets.forEach(asset => asset.remove());
+        }
+      });
+    }
+    
+    async function loadMapTokens(mapId) {
+      try {
+        const response = await fetch(`/api/map-tokens?map_id=${mapId}`);
+        const result = await response.json();
+        
+        if (result.success && result.tokens) {
+          result.tokens.forEach(token => {
+            // Create asset data object compatible with createAssetElement
+            const assetData = {
+              id: token.asset_id,
+              name: token.name,
+              file_url: token.file_url || `/images/${token.asset_id}`,
+              category: 'tokens'
+            };
+            
+            // Create API result object
+            const apiResult = {
+              token_id: token.id
+            };
+            
+            // Create visual element using grid coordinates
+            createAssetElement(assetData, token.grid_x, token.grid_y, apiResult);
+          });
+          
+          console.log(`Loaded ${result.tokens.length} tokens`);
+        }
+      } catch (error) {
+        console.error('Error loading map tokens:', error);
+      }
+    }
+    
+    async function loadMapProps(mapId) {
+      try {
+        const response = await fetch(`/api/map-props?map_id=${mapId}`);
+        const result = await response.json();
+        
+        if (result.success && result.props) {
+          result.props.forEach(prop => {
+            // Create asset data object compatible with createAssetElement
+            const assetData = {
+              id: prop.asset_id,
+              name: prop.name,
+              file_url: prop.file_url || `/images/${prop.asset_id}`,
+              category: 'props'
+            };
+            
+            // Create API result object
+            const apiResult = {
+              prop_id: prop.id
+            };
+            
+            // Create visual element using grid coordinates
+            createAssetElement(assetData, prop.grid_x, prop.grid_y, apiResult);
+          });
+          
+          console.log(`Loaded ${result.props.length} props`);
+        }
+      } catch (error) {
+        console.error('Error loading map props:', error);
+      }
+    }
+    
+    async function loadMapBackgrounds(mapId) {
+      try {
+        const response = await fetch(`/api/map-backgrounds?map_id=${mapId}`);
+        const result = await response.json();
+        
+        if (result.success && result.backgrounds) {
+          result.backgrounds.forEach(background => {
+            // Create asset data object compatible with createAssetElement
+            const assetData = {
+              id: background.asset_id,
+              name: background.name,
+              file_url: background.file_url || `/images/${background.asset_id}`,
+              category: 'backgrounds'
+            };
+            
+            // Create API result object
+            const apiResult = {
+              background_id: background.id
+            };
+            
+            // Create visual element using grid coordinates
+            createAssetElement(assetData, background.grid_x, background.grid_y, apiResult);
+          });
+          
+          console.log(`Loaded ${result.backgrounds.length} backgrounds`);
+        }
+      } catch (error) {
+        console.error('Error loading map backgrounds:', error);
+      }
+    }
+    
+    async function loadMapAudio(mapId) {
+      try {
+        const response = await fetch(`/api/map-audio?map_id=${mapId}`);
+        const result = await response.json();
+        
+        if (result.success && result.audio) {
+          result.audio.forEach(audio => {
+            // Create asset data object compatible with createAssetElement
+            const assetData = {
+              id: audio.asset_id,
+              name: audio.name,
+              file_url: audio.file_url || `/images/${audio.asset_id}`,
+              category: 'audio'
+            };
+            
+            // Create API result object
+            const apiResult = {
+              audio_id: audio.id
+            };
+            
+            // Create visual element using grid coordinates
+            createAssetElement(assetData, audio.grid_x, audio.grid_y, apiResult);
+          });
+          
+          console.log(`Loaded ${result.audio.length} audio assets`);
+        }
+      } catch (error) {
+        console.error('Error loading map audio:', error);
+      }
+    }
+    
+    function toggleLayerVisibility(layerName) {
+      const layer = document.getElementById(layerName + '-layer');
+      if (layer) {
+        layerVisibility[layerName] = !layerVisibility[layerName];
+        if (layerVisibility[layerName]) {
+          layer.classList.remove('layer-hidden');
         } else {
-          alert('Failed to delete asset: ' + (data.error || 'Unknown error'));
+          layer.classList.add('layer-hidden');
         }
-      } catch (error) {
-        console.error('Failed to delete asset:', error);
-        alert('Failed to delete asset');
+        console.log('Layer', layerName, 'visibility:', layerVisibility[layerName]);
       }
     }
     
-    function formatFileSize(bytes) {
-      if (bytes === 0) return '0 Bytes';
-      const k = 1024;
-      const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-      const i = Math.floor(Math.log(bytes) / Math.log(k));
-      return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    function lockLayer(layerName) {
+      console.log('Toggling lock for layer:', layerName);
+      // Implement layer locking logic
     }
     
-    function addToken() {
-      alert('Active token management will be implemented in future updates. Use Assets > Tokens to upload token images.');
-    }
-    
-    function addJournalEntry() {
-      alert('Journal system will be implemented in future updates');
-    }
-    
-    function sendChatMessage() {
-      const input = document.getElementById('chat-input');
-      const message = input.value.trim();
-      if (!message) return;
+    function applyGridSettings() {
+      const gridSize = document.getElementById('grid-size').value;
+      const gridOpacity = document.getElementById('grid-opacity').value;
       
-      const chatMessages = document.getElementById('chat-messages');
-      const messageDiv = document.createElement('div');
-      messageDiv.style.cssText = 'margin-bottom: 10px; padding: 5px; background: #4a4a2a; border-radius: 3px;';
-      messageDiv.innerHTML = `<strong>You:</strong> ${message}`;
-      chatMessages.appendChild(messageDiv);
-      chatMessages.scrollTop = chatMessages.scrollHeight;
+      const grid = document.getElementById('map-grid');
+      grid.style.backgroundSize = `${gridSize}px ${gridSize}px`;
+      grid.style.opacity = gridOpacity / 100;
       
-      input.value = '';
+      console.log('Applied grid settings:', { size: gridSize, opacity: gridOpacity });
     }
     
-    function addDebugMessageToChat(message) {
-      const chatMessages = document.getElementById('chat-messages');
-      const messageDiv = document.createElement('div');
-      messageDiv.style.cssText = 'margin-bottom: 10px; padding: 5px; background: #2a4a4a; border-radius: 3px; border-left: 3px solid #00ff00;';
-      messageDiv.innerHTML = `<strong style="color: #00ff00;">[DEBUG]:</strong> ${message}`;
-      chatMessages.appendChild(messageDiv);
-      chatMessages.scrollTop = chatMessages.scrollHeight;
+    function getGridSize() {
+      return parseInt(document.getElementById('grid-size').value) || 50;
     }
     
-    // Campaign settings management
-    let campaignSettings = {
-      gridSize: 50,
-      gridColor: '#ffffff',
-      gridOpacity: 10
-    };
+    function pixelToGridCoordinates(pixelX, pixelY) {
+      const gridSize = getGridSize();
+      
+      // Snap to grid center
+      const gridX = Math.round(pixelX / gridSize);
+      const gridY = Math.round(pixelY / gridSize);
+      
+      return { x: gridX, y: gridY };
+    }
     
-    async function loadCampaignSettings() {
+    function gridToPixelCoordinates(gridX, gridY) {
+      const gridSize = getGridSize();
+      
+      // Convert grid coordinates to pixel coordinates (center of grid cell)
+      const pixelX = gridX * gridSize;
+      const pixelY = gridY * gridSize;
+      
+      return { x: pixelX, y: pixelY };
+    }
+    
+    function addNote() {
+      console.log('Adding new note...');
+      // Implement note adding logic
+    }
+    
+    async function placeAssetOnMap(assetData, x, y) {
+      console.log('Placing asset on map:', {
+        assetData: assetData,
+        x: x,
+        y: y,
+        currentMapId: currentMapId
+      });
+      
       try {
-        const response = await fetch(`http://localhost:8080/api/campaigns/${campaignId}/settings`);
-        const data = await response.json();
-        if (data.success && data.settings) {
-          campaignSettings = { ...campaignSettings, ...data.settings };
-          applySettings();
+        let endpoint = '';
+        let requestBody = {
+          map_id: currentMapId,
+          asset_id: assetData.id,
+          name: assetData.name,
+          grid_x: x,
+          grid_y: y
+        };
+        
+        console.log('Request body:', requestBody);
+        
+        // Determine endpoint and add category-specific properties
+        switch(assetData.category) {
+          case 'tokens':
+            endpoint = '/api/map-tokens';
+            requestBody.scale_x = 1.0;
+            requestBody.scale_y = 1.0;
+            requestBody.rotation = 0.0;
+            break;
+          case 'props':
+            endpoint = '/api/map-props';
+            requestBody.grid_width = 1; // Default grid width
+            requestBody.grid_height = 1; // Default grid height
+            requestBody.scale_x = 1.0;
+            requestBody.scale_y = 1.0;
+            requestBody.rotation = 0.0;
+            break;
+          case 'backgrounds':
+            endpoint = '/api/map-backgrounds';
+            requestBody.grid_width = 1; // Default grid width
+            requestBody.grid_height = 1; // Default grid height
+            requestBody.scale_x = 1.0;
+            requestBody.scale_y = 1.0;
+            requestBody.rotation = 0.0;
+            break;
+          case 'audio':
+            endpoint = '/api/map-audio';
+            requestBody.volume = 1.0;
+            requestBody.loop_audio = false;
+            requestBody.auto_play = false;
+            requestBody.radius_grid = 0; // Global audio
+            break;
+          default:
+            console.error('Unknown asset category:', assetData.category);
+            alert('Cannot place this type of asset on the map.');
+            return;
         }
-      } catch (error) {
-        console.error('Failed to load campaign settings:', error);
-      }
-    }
-    
-    function applySettings() {
-      // Update UI controls
-      document.getElementById('grid-size').value = campaignSettings.gridSize;
-      document.getElementById('grid-color').value = campaignSettings.gridColor;
-      document.getElementById('grid-opacity').value = campaignSettings.gridOpacity;
-      
-      // Apply to map grid
-      const mapGrid = document.getElementById('map-grid');
-      mapGrid.style.backgroundSize = `${campaignSettings.gridSize}px ${campaignSettings.gridSize}px`;
-      
-      const opacity = campaignSettings.gridOpacity / 100;
-      const rgb = hexToRgb(campaignSettings.gridColor);
-      mapGrid.style.backgroundImage = `
-        linear-gradient(rgba(${rgb.r},${rgb.g},${rgb.b},${opacity}) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(${rgb.r},${rgb.g},${rgb.b},${opacity}) 1px, transparent 1px)
-      `;
-    }
-    
-    async function saveSettings() {
-      const gridSize = parseInt(document.getElementById('grid-size').value);
-      const gridColor = document.getElementById('grid-color').value;
-      const gridOpacity = parseInt(document.getElementById('grid-opacity').value);
-      
-      const settings = {
-        gridSize,
-        gridColor,
-        gridOpacity
-      };
-      
-      try {
-        const response = await fetch(`http://localhost:8080/api/campaigns/${campaignId}/settings`, {
-          method: 'PUT',
+        
+        const response = await fetch(endpoint, {
+          method: 'POST',
           headers: {
             'Content-Type': 'application/json'
           },
-          body: JSON.stringify({ settings })
+          body: JSON.stringify(requestBody)
         });
         
-        const data = await response.json();
-        if (data.success) {
-          campaignSettings = settings;
-          applySettings();
-          alert('Settings saved successfully!');
+        const result = await response.json();
+        
+        if (result.success) {
+          console.log(`${assetData.category} placed successfully:`, result);
+          // Create visual representation on the map
+          createAssetElement(assetData, x, y, result);
         } else {
-          alert('Failed to save settings: ' + (data.error || 'Unknown error'));
+          alert(`Failed to place ${assetData.category}: ` + (result.error || 'Unknown error'));
         }
+        
       } catch (error) {
-        console.error('Failed to save settings:', error);
-        alert('Failed to save settings');
+        console.error('Error placing asset on map:', error);
+        alert('Error placing asset. Please try again.');
       }
     }
     
-    function hexToRgb(hex) {
-      const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-      return result ? {
-        r: parseInt(result[1], 16),
-        g: parseInt(result[2], 16),
-        b: parseInt(result[3], 16)
-      } : null;
-    }
-    
-    // Help panel toggle
-    function toggleHelp() {
-      const helpPanel = document.getElementById('help-panel');
-      if (helpPanel.style.display === 'none') {
-        helpPanel.style.display = 'block';
-      } else {
-        helpPanel.style.display = 'none';
-      }
-    }
-    
-    // Chat input enter key support
-    document.getElementById('chat-input').addEventListener('keypress', function(e) {
-      if (e.key === 'Enter') {
-        sendChatMessage();
-      }
-    });
-    
-    // Global userId variable
-    let userId;
-    
-    // Layer Management System
-    let currentLayer = 'tokens';
-    let layerVisibility = {
-      'map': true,
-      'walls': true,
-      'tokens': true,
-      'gm': true,
-      'audio': true,
-      'props': true
-    };
-
-    function initializeLayerSystem() {
-      const layerButtons = document.querySelectorAll('.layer-btn');
+    function createAssetElement(assetData, gridX, gridY, apiResult) {
+      console.log('Creating asset element:', assetData, 'at grid position:', gridX, gridY);
+      console.log('API result:', apiResult);
       
-      layerButtons.forEach(button => {
-        button.addEventListener('click', function() {
-          const targetLayer = this.dataset.target;
-          const layerName = targetLayer.replace('-layer', '');
-          
-          // Set as active layer (exclusive selection)
-          setActiveLayer(layerName);
-        });
-        
-        // Right click to toggle visibility
-        button.addEventListener('contextmenu', function(e) {
-          e.preventDefault();
-          const targetLayer = this.dataset.target;
-          const layerName = targetLayer.replace('-layer', '');
-          
-          if (this.classList.contains('hidden')) {
-            showLayer(layerName);
-            this.classList.remove('hidden');
-          } else {
-            hideLayer(layerName);
-            this.classList.add('hidden');
-          }
-        });
+      // Convert grid coordinates to pixel coordinates for visual positioning
+      const pixelCoords = gridToPixelCoordinates(gridX, gridY);
+      const gridSize = getGridSize();
+      
+      console.log('Positioning asset:', {
+        grid: { x: gridX, y: gridY },
+        pixel: pixelCoords,
+        gridSize: gridSize
       });
       
-      // Keyboard navigation for layers
-      document.addEventListener('keydown', function(e) {
-        if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
-          return; // Don't interfere with text input
-        }
-        
-        switch(e.key) {
-          case '1':
-            setActiveLayer('map');
-            break;
-          case '2':
-            setActiveLayer('walls');
-            break;
-          case '3':
-            setActiveLayer('tokens');
-            break;
-          case '4':
-            setActiveLayer('gm');
-            break;
-          case '5':
-            setActiveLayer('audio');
-            break;
-          case '6':
-            setActiveLayer('props');
-            break;
-        }
-      });
-      
-      // Set tokens layer as default active
-      setActiveLayer('tokens');
-      
-      // Initialize drag and drop for layers
-      initializeLayerDropZones();
-    }
-    
-    function initializeLayerDropZones() {
-      const mapViewport = document.getElementById('map-viewport');
-      
-      mapViewport.addEventListener('dragover', function(e) {
-         e.preventDefault();
-         e.dataTransfer.dropEffect = 'copy';
-         mapViewport.classList.add('drag-over');
-       });
-       
-       mapViewport.addEventListener('dragleave', function(e) {
-         // Only remove drag-over if we're leaving the viewport entirely
-         if (!mapViewport.contains(e.relatedTarget)) {
-           mapViewport.classList.remove('drag-over');
-         }
-       });
-      
-      mapViewport.addEventListener('drop', function(e) {
-        e.preventDefault();
-        mapViewport.classList.remove('drag-over');
-        
-        try {
-         const data = JSON.parse(e.dataTransfer.getData('text/plain'));
-         const viewport = document.getElementById('map-viewport');
-         const rect = viewport.getBoundingClientRect();
-         const mouseX = e.clientX - rect.left;
-         const mouseY = e.clientY - rect.top;
-         
-         // Convert screen coordinates to map coordinates using Roll20-style coordinate system
-         // This accounts for pan and zoom transformations consistently
-         const mapX = (mouseX - panX) / currentZoom;
-         const mapY = (mouseY - panY) / currentZoom;
-         
-         // Convert to grid coordinates with proper snapping
-         const gridSize = campaignSettings.gridSize || 50;
-         const gridX = Math.floor(mapX / gridSize);
-         const gridY = Math.floor(mapY / gridSize);
-         
-         // Calculate pixel position for visual display (center of grid cell)
-         // Roll20 centers tokens in grid cells, so we add half grid size
-         // Note: The grid offset is handled in createVisualAssetElement for positioning
-         const pixelX = gridX * gridSize + gridSize / 2;
-         const pixelY = gridY * gridSize + gridSize / 2;
-         
-         console.log(`=== TOKEN DROP DEBUG ===`);
-         console.log(`Cella target (dove l'utente vuole rilasciare): Grid (${gridX}, ${gridY})`);
-         console.log(`Coordinate schermo: (${mouseX}, ${mouseY})`);
-         console.log(`Coordinate mappa: (${mapX.toFixed(2)}, ${mapY.toFixed(2)})`);
-         console.log(`Pan values: panX=${panX}, panY=${panY}, zoom=${currentZoom}`);
-         console.log(`Pixel calcolati: (${pixelX}, ${pixelY})`);
-         console.log(`========================`);
-          
-          // Determine target layer based on asset type
-          let targetLayer;
-          switch(data.assetType.toLowerCase()) {
-            case 'token':
-              targetLayer = 'tokens';
-              break;
-            case 'background':
-              targetLayer = 'map';
-              break;
-            case 'audio':
-              targetLayer = 'audio';
-              break;
-            case 'props':
-              targetLayer = 'props';
-              break;
-            default:
-              targetLayer = currentLayer; // Use current active layer as fallback
-          }
-          
-          // Create asset on the appropriate layer
-          createAssetOnLayer(data, gridX, gridY, pixelX, pixelY, targetLayer);
-          
-        } catch (error) {
-          console.error('Error handling drop:', error);
-        }
-      });
-    }
-    
-    function createAssetOnLayer(assetData, gridX, gridY, pixelX, pixelY, targetLayer) {
-      const mapId = getCurrentMapId(); // You'll need to implement this
-      
-      // Prepare data for API call with grid coordinates
-      const payload = {
-        map_id: mapId,
-        asset_id: assetData.assetId,
-        grid_x: gridX,
-        grid_y: gridY,
-        grid_z: 0,
-        scale_x: 1.0,
-        scale_y: 1.0,
-        rotation: 0.0,
-        visible: true,
-        locked: false,
-        properties: {}
+      // Map asset categories to correct layer IDs
+      const layerMapping = {
+        'tokens': 'tokens-layer',
+        'props': 'tokens-layer', // Props go on tokens layer
+        'backgrounds': 'background-layer',
+        'audio': 'effects-layer'
       };
       
-      // Add name for tokens
-      if (targetLayer === 'tokens') {
-        payload.name = assetData.assetName;
-      }
+      const layerId = layerMapping[assetData.category] || 'tokens-layer';
+      const targetLayer = document.getElementById(layerId);
       
-      // Add specific properties based on asset type
-      if (targetLayer === 'map') {
-        // Background-specific properties
-        payload.opacity = 1.0;
-        payload.blend_mode = 'normal';
-        payload.grid_width = 1;
-        payload.grid_height = 1;
-      } else if (targetLayer === 'audio') {
-        // Audio-specific properties
-        payload.volume = 1.0;
-        payload.loop = false;
-        payload.radius_grid = 2; // Default audio radius in grid units
-      } else if (targetLayer === 'props') {
-        // Props-specific properties
-        payload.interactive = true;
-        payload.grid_width = 1;
-        payload.grid_height = 1;
-      }
-      
-      // Determine API endpoint based on target layer
-      let apiEndpoint;
-      switch(targetLayer) {
-        case 'tokens':
-          apiEndpoint = '/api/map-tokens';
-          break;
-        case 'map':
-          apiEndpoint = '/api/map-backgrounds';
-          break;
-        case 'audio':
-          apiEndpoint = '/api/map-audio';
-          break;
-        case 'props':
-          apiEndpoint = '/api/map-props';
-          break;
-        default:
-          console.error('Unknown target layer:', targetLayer);
-          return;
-      }
-      
-      // Make API call to create asset on layer
-      fetch(apiEndpoint, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(payload)
-      })
-      .then(response => response.json())
-      .then(data => {
-        if (data.success) {
-          console.log(`Asset placed on ${targetLayer} layer:`, data);
-          // Optionally refresh the layer or add visual feedback
-          createVisualAssetElement(assetData, gridX, gridY, targetLayer);
-        } else {
-          console.error('Failed to place asset:', data.error);
-        }
-      })
-      .catch(error => {
-        console.error('Error placing asset:', error);
+      console.log('Target layer mapping:', {
+        category: assetData.category,
+        layerId: layerId,
+        layerFound: !!targetLayer
       });
-    }
-    
-    async function createVisualAssetElement(assetData, gridX, gridY, targetLayer) {
-      const layerElement = document.getElementById(`${targetLayer}-layer`);
-      console.log('Target layer element:', layerElement);
-      if (!layerElement) {
-        console.error('Layer element not found for:', targetLayer);
+      
+      if (!targetLayer) {
+        console.error('No target layer found for category:', assetData.category, 'layerId:', layerId);
         return;
       }
       
-      // Find the asset in our assets array to get the file_url
-      const asset = assets.find(a => a.id == assetData.assetId);
-      console.log('Creating visual asset element:', {
-        assetData,
-        foundAsset: asset,
-        totalAssets: assets.length,
-        targetLayer,
-        gridPosition: { gridX, gridY }
+      const element = document.createElement('div');
+      element.className = 'map-asset';
+      
+      // Size the asset to fit the grid cell
+      const assetSize = Math.max(gridSize * 0.8, 30); // 80% of grid size, minimum 30px
+      
+      element.style.cssText = `
+        position: absolute;
+        left: ${pixelCoords.x}px;
+        top: ${pixelCoords.y}px;
+        width: ${assetSize}px;
+        height: ${assetSize}px;
+        background-image: url('${assetData.file_url}');
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: center;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        border-radius: 4px;
+        cursor: pointer;
+        transform: translate(-50%, -50%);
+        z-index: 1;
+      `;
+      
+      element.title = assetData.name;
+      element.dataset.assetId = assetData.id;
+      element.dataset.gridX = gridX;
+      element.dataset.gridY = gridY;
+      element.dataset.mapAssetId = apiResult.token_id || apiResult.prop_id || apiResult.background_id || apiResult.audio_id;
+      
+      // Add click handler for selection/editing
+      element.addEventListener('click', function(e) {
+        e.stopPropagation();
+        console.log('Asset clicked:', assetData.name);
+        // TODO: Implement asset selection and editing
       });
       
-      const assetElement = document.createElement('div');
-      assetElement.className = 'map-asset';
-      assetElement.style.position = 'absolute';
+      targetLayer.appendChild(element);
+      console.log('Asset element added to layer:', element);
+    }
+    
+    // Notification system
+    function showNotification(message, type = 'info') {
+      const notification = document.createElement('div');
+      notification.className = `notification ${type}`;
+      notification.textContent = message;
       
-      // Calculate pixel position from grid coordinates using Roll20-style centering
-      const gridSize = campaignSettings.gridSize || 50;
+      document.body.appendChild(notification);
       
-      // Position token at center of grid cell like Roll20
-      // Coordinates are calculated consistently with drop and click handlers
-      const pixelX = gridX * gridSize + gridSize / 2;
-      const pixelY = gridY * gridSize + gridSize / 2;
-      
-      // Position relative to the map grid coordinate system
-      assetElement.style.left = pixelX + 'px';
-      assetElement.style.top = pixelY + 'px';
-      assetElement.style.position = 'absolute';
-      
-      // Center the token image within its position
-      assetElement.style.transform = 'translate(-50%, -50%)';
-      assetElement.style.cursor = 'move';
-      assetElement.title = `${assetData.assetType}: ${assetData.assetName}`;
-      // Ensure the element is positioned relative to the grid coordinate system
-      assetElement.style.transformOrigin = 'top left';
-      
-      // Log the visual positioning for debugging
-      console.log(`=== VISUAL ASSET CREATION ===`);
-      console.log(`Token effettivamente posizionato a: Grid (${gridX}, ${gridY}) -> Pixel (${pixelX}, ${pixelY})`);
-      console.log(`==============================`);
-      
-      // Create image element if asset has file_url and is an image category
-      if (asset && asset.file_url && ['tokens', 'backgrounds', 'props'].includes(asset.category)) {
-        const img = document.createElement('img');
-        // Ensure the URL is correctly formatted
-        let imageUrl = asset.file_url;
-        if (!imageUrl.startsWith('http')) {
-          // Remove leading slash if present to avoid double slashes
-          const cleanPath = imageUrl.startsWith('/') ? imageUrl.substring(1) : imageUrl;
-          imageUrl = `http://localhost:8080/${cleanPath}`;
+      // Auto remove after 3 seconds
+      setTimeout(() => {
+        if (notification.parentNode) {
+          notification.parentNode.removeChild(notification);
         }
-        img.src = imageUrl;
-        img.style.width = '100%';
-        img.style.height = '100%';
-        img.style.objectFit = 'cover';
-        img.style.borderRadius = 'inherit';
-        img.onload = function() {
-          console.log('Image loaded successfully:', imageUrl);
-        };
-        img.onerror = function() {
-          console.error('Failed to load image:', imageUrl);
-          // Fallback to text if image fails to load
-          assetElement.innerHTML = '';
-          assetElement.textContent = assetData.assetName;
-          assetElement.style.display = 'flex';
-          assetElement.style.alignItems = 'center';
-          assetElement.style.justifyContent = 'center';
-          assetElement.style.fontSize = '12px';
-          assetElement.style.color = '#007bff';
-        };
-        assetElement.appendChild(img);
+      }, 3000);
+    }
+    
+    // Token placement preview
+    function showTokenPlacementPreview(tokenData, gridX, gridY) {
+      // Convert grid coordinates to pixel coordinates for visual positioning
+      const pixelCoords = gridToPixelCoordinates(gridX, gridY);
+      const gridSize = getGridSize();
+      const assetSize = Math.max(gridSize * 0.8, 30);
+      
+      // Create preview element
+      const preview = document.createElement('div');
+      preview.className = 'token-preview';
+      preview.style.position = 'absolute';
+      preview.style.left = pixelCoords.x + 'px';
+      preview.style.top = pixelCoords.y + 'px';
+      preview.style.width = assetSize + 'px';
+      preview.style.height = assetSize + 'px';
+      preview.style.backgroundImage = `url(${tokenData.file_url})`;
+      preview.style.backgroundSize = 'cover';
+      preview.style.backgroundPosition = 'center';
+      preview.style.border = '3px solid #e74c3c';
+      preview.style.borderRadius = '50%';
+      preview.style.opacity = '0.8';
+      preview.style.zIndex = '200';
+      preview.style.animation = 'pulse 1s infinite';
+      preview.style.transform = 'translate(-50%, -50%)';
+      
+      // Add pulse animation style if not exists
+      if (!document.querySelector('#pulse-animation')) {
+        const style = document.createElement('style');
+        style.id = 'pulse-animation';
+        style.textContent = `
+          @keyframes pulse {
+            0% { transform: translate(-50%, -50%) scale(1); }
+            50% { transform: translate(-50%, -50%) scale(1.1); }
+            100% { transform: translate(-50%, -50%) scale(1); }
+          }
+        `;
+        document.head.appendChild(style);
+      }
+      
+      const viewport = document.getElementById('map-viewport');
+      viewport.appendChild(preview);
+      
+      // Show confirmation dialog
+      const confirmed = confirm(`Place token "${tokenData.name}" at this position?`);
+      
+      if (confirmed) {
+        // Remove preview and place actual token
+        viewport.removeChild(preview);
+        placeAssetOnMap(tokenData, gridX, gridY);
+        showNotification(`Token "${tokenData.name}" placed successfully!`, 'success');
       } else {
-        // Fallback to text for non-image assets or when asset not found
-        assetElement.style.display = 'flex';
-        assetElement.style.alignItems = 'center';
-        assetElement.style.justifyContent = 'center';
-        assetElement.style.fontSize = '12px';
-        assetElement.style.color = '#007bff';
-        assetElement.style.backgroundColor = 'rgba(0, 123, 255, 0.1)';
-        
-        switch(assetData.assetType.toLowerCase()) {
-          case 'token':
-            assetElement.textContent = '👤';
+        // Just remove preview
+        viewport.removeChild(preview);
+      }
+    }
+    
+    // Keyboard shortcuts
+    document.addEventListener('keydown', function(e) {
+      if (e.ctrlKey || e.metaKey) {
+        switch(e.key) {
+          case 's':
+            e.preventDefault();
+            saveMap();
             break;
-          case 'background':
-            assetElement.textContent = '🗺️';
+          case '=':
+          case '+':
+            e.preventDefault();
+            handleZoomTool('zoom-in');
             break;
-          case 'audio':
-            assetElement.textContent = '🔊';
+          case '-':
+            e.preventDefault();
+            handleZoomTool('zoom-out');
             break;
-          case 'props':
-            assetElement.textContent = '🎭';
+          case '0':
+            e.preventDefault();
+            handleZoomTool('zoom-fit');
             break;
-          default:
-            assetElement.textContent = assetData.assetName;
+        }
+      } else {
+        switch(e.key) {
+          case ' ':
+            e.preventDefault();
+            selectTool('select');
+            break;
+          case '1':
+            setActiveLayer('background');
+            break;
+          case '2':
+            setActiveLayer('map');
+            break;
+          case '3':
+            setActiveLayer('walls');
+            break;
+          case '4':
+            setActiveLayer('tokens');
+            break;
+          case '5':
+            setActiveLayer('effects');
+            break;
+          case '6':
+            setActiveLayer('ui');
+            break;
         }
       }
-      
-      // Set size and styling based on asset type
-      switch(assetData.assetType.toLowerCase()) {
-        case 'token':
-          assetElement.style.width = '50px';
-          assetElement.style.height = '50px';
-          assetElement.style.borderRadius = '50%';
-          assetElement.style.border = '2px solid #28a745';
-          break;
-        case 'background':
-          assetElement.style.width = '100px';
-          assetElement.style.height = '100px';
-          assetElement.style.borderRadius = '4px';
-          assetElement.style.border = '2px solid #6f42c1';
-          break;
-        case 'audio':
-          assetElement.style.width = '40px';
-          assetElement.style.height = '40px';
-          assetElement.style.borderRadius = '50%';
-          assetElement.style.border = '2px solid #fd7e14';
-          break;
-        case 'props':
-          assetElement.style.width = '60px';
-          assetElement.style.height = '60px';
-          assetElement.style.borderRadius = '8px';
-          assetElement.style.border = '2px solid #20c997';
-          break;
-        default:
-          assetElement.style.width = '50px';
-          assetElement.style.height = '50px';
-          assetElement.style.borderRadius = '4px';
-          assetElement.style.border = '2px solid #007bff';
-      }
-      
-      // Add context menu for tokens to enable editing
-      if (assetData.assetType.toLowerCase() === 'token') {
-        assetElement.addEventListener('contextmenu', function(e) {
-          e.preventDefault();
-          editTokenName(assetData, assetElement);
-        });
-      }
-
-      layerElement.appendChild(assetElement);
-      console.log('Visual asset element added to layer:', {
-        elementAdded: assetElement,
-        layerChildren: layerElement.children.length,
-        layerName: targetLayer
-      });
-    }
-    
-    function getCurrentMapId() {
-      // Return the currently loaded map ID or fallback to URL parameter
-      if (currentMapId) {
-        return currentMapId;
-      }
-      const urlParams = new URLSearchParams(window.location.search);
-      return urlParams.get('id') || '1'; // Default to 1 if not found
-    }
-    
-    function setActiveLayer(layerName) {
-      // Remove active class from all layers
-      document.querySelectorAll('.map-layer').forEach(layer => {
-        layer.classList.remove('active');
-      });
-      
-      // Remove active class from all layer buttons
-      document.querySelectorAll('.layer-btn').forEach(btn => {
-        btn.classList.remove('active');
-      });
-      
-      // Set new active layer
-      const targetLayer = document.getElementById(layerName + '-layer');
-      if (targetLayer) {
-        targetLayer.classList.add('active');
-        currentLayer = layerName;
-        
-        // Set corresponding button as active
-        const targetButton = document.querySelector(`[data-target="${layerName}-layer"]`);
-        if (targetButton) {
-          targetButton.classList.add('active');
-        }
-      }
-    }
-    
-    function showLayer(layerName) {
-      const layer = document.getElementById(layerName + '-layer');
-      if (layer) {
-        layer.classList.remove('layer-hidden');
-        layerVisibility[layerName] = true;
-      }
-    }
-    
-    function hideLayer(layerName) {
-      const layer = document.getElementById(layerName + '-layer');
-      if (layer) {
-        layer.classList.add('layer-hidden');
-        layerVisibility[layerName] = false;
-      }
-    }
-    
-    function getCurrentLayer() {
-      return currentLayer;
-    }
-    
-    function isLayerVisible(layerName) {
-      return layerVisibility[layerName];
-    }
-    
-    // Initialize function
-    async function initialize() {
-      // Check login state
-      const user = localStorage.getItem('pfvtt_user') || sessionStorage.getItem('pfvtt_user');
-      if (!user) {
-        window.location.href = '/login';
-        return;
-      }
-      
-      // Get user ID
-      try {
-        const userIdResponse = await fetch(`http://localhost:8080/api/user_id?username=${encodeURIComponent(user)}`);
-        const userIdData = await userIdResponse.json();
-        if (userIdData.success) {
-          userId = userIdData.user_id;
-        } else {
-          console.error('Failed to get user ID:', userIdData.error);
-          alert('Failed to get user information');
-          return;
-        }
-      } catch (error) {
-        console.error('Error getting user ID:', error);
-        alert('Error getting user information');
-        return;
-      }
-      
-      // Initialize after getting userId
-      loadCampaignInfo();
-      loadMaps();
-      loadScenes();
-      loadAssets();
-      loadCampaignSettings();
-      
-      // Add event listener for asset category filter
-      const categorySelect = document.getElementById('asset-category-select');
-      const assetAddBtn = document.querySelector('#assets-section .add-btn');
-      
-      categorySelect.addEventListener('change', function() {
-        displayAssets();
-        
-        // Disable + button when "All" is selected
-        if (this.value === 'all') {
-          assetAddBtn.disabled = true;
-          assetAddBtn.style.opacity = '0.5';
-          assetAddBtn.style.cursor = 'not-allowed';
-          assetAddBtn.title = 'Select a specific category to upload assets';
-        } else {
-          assetAddBtn.disabled = false;
-          assetAddBtn.style.opacity = '1';
-          assetAddBtn.style.cursor = 'pointer';
-          assetAddBtn.title = 'Upload new asset';
-        }
-      });
-      
-      // Initialize button state
-      if (categorySelect.value === 'all') {
-        assetAddBtn.disabled = true;
-        assetAddBtn.style.opacity = '0.5';
-        assetAddBtn.style.cursor = 'not-allowed';
-        assetAddBtn.title = 'Select a specific category to upload assets';
-      }
-      initializeMapNavigation();
-      initializeLayerSystem();
-    }
-    
-    // Start initialization
-    initialize();
+    });
   </script>
 </body>
 </html>

@@ -14,6 +14,7 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 // Serve images from backend/images directory
 app.use('/backend/images', express.static(path.join(__dirname, '..', 'backend', 'images')));
+app.use('/images', express.static(path.join(__dirname, '..', 'backend', 'images')));
 
 let loggedIn = false;
 
@@ -149,6 +150,105 @@ app.get('/api/map', async (req, res) => {
   }
 });
 
+// Maps API proxies
+app.get('/api/maps', async (req, res) => {
+  try {
+    let url = 'http://localhost:8080/api/maps';
+    if (req.query.campaign_id) {
+      url += `?campaign_id=${encodeURIComponent(req.query.campaign_id)}`;
+    }
+    const response = await axios.get(url);
+    res.json(response.data);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch maps' });
+  }
+});
+
+app.get('/api/maps/:id', async (req, res) => {
+  try {
+    const response = await axios.get(`http://localhost:8080/api/maps/${req.params.id}`);
+    res.json(response.data);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch map' });
+  }
+});
+
+app.post('/api/maps', async (req, res) => {
+  try {
+    const response = await axios.post('http://localhost:8080/api/maps', req.body, {
+      headers: { 'Content-Type': 'application/json' }
+    });
+    res.json(response.data);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to create map' });
+  }
+});
+
+app.put('/api/maps/:id', async (req, res) => {
+  try {
+    const response = await axios.put(`http://localhost:8080/api/maps/${req.params.id}`, req.body, {
+      headers: { 'Content-Type': 'application/json' }
+    });
+    res.json(response.data);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to update map' });
+  }
+});
+
+app.delete('/api/maps/:id', async (req, res) => {
+  try {
+    const response = await axios.delete(`http://localhost:8080/api/maps/${req.params.id}`);
+    res.json(response.data);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to delete map' });
+  }
+});
+
+// Scenes API proxies
+app.get('/api/scenes', async (req, res) => {
+  try {
+    let url = 'http://localhost:8080/api/scenes';
+    if (req.query.campaign_id) {
+      url += `?campaign_id=${encodeURIComponent(req.query.campaign_id)}`;
+    }
+    const response = await axios.get(url);
+    res.json(response.data);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch scenes' });
+  }
+});
+
+app.post('/api/scenes', async (req, res) => {
+  try {
+    const response = await axios.post('http://localhost:8080/api/scenes', req.body, {
+      headers: { 'Content-Type': 'application/json' }
+    });
+    res.json(response.data);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to create scene' });
+  }
+});
+
+app.put('/api/scenes/:id', async (req, res) => {
+  try {
+    const response = await axios.put(`http://localhost:8080/api/scenes/${req.params.id}`, req.body, {
+      headers: { 'Content-Type': 'application/json' }
+    });
+    res.json(response.data);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to update scene' });
+  }
+});
+
+app.delete('/api/scenes/:id', async (req, res) => {
+  try {
+    const response = await axios.delete(`http://localhost:8080/api/scenes/${req.params.id}`);
+    res.json(response.data);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to delete scene' });
+  }
+});
+
 // Proxy GET and POST requests for campaigns to the Dart backend
 app.get('/api/campaigns', async (req, res) => {
   try {
@@ -160,6 +260,16 @@ app.get('/api/campaigns', async (req, res) => {
     res.json(response.data);
   } catch (err) {
     res.status(500).json({ error: 'Failed to fetch campaigns' });
+  }
+});
+
+// Get single campaign
+app.get('/api/campaigns/:id', async (req, res) => {
+  try {
+    const response = await axios.get(`http://localhost:8080/campaigns/${req.params.id}`);
+    res.json(response.data);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch campaign' });
   }
 });
 
@@ -264,6 +374,20 @@ app.post('/api/reset_password', async (req, res) => {
 
 app.post('/logout', (req, res) => {
   loggedIn = false;
+  res.json({ success: true });
+});
+
+// Debug endpoint to check session status
+app.get('/api/debug/session', (req, res) => {
+  res.json({
+    loggedIn: loggedIn,
+    timestamp: new Date().toISOString()
+  });
+});
+
+// Debug log endpoint
+app.post('/api/debug_log', (req, res) => {
+  console.log('DEBUG LOG:', req.body);
   res.json({ success: true });
 });
 
@@ -408,7 +532,7 @@ app.delete('/api/assets/:id', async (req, res) => {
     res.status(500).json({ error: 'Failed to delete asset' });
   }
 });
-app.post('/api/upload', upload.single('image'), async (req, res) => {
+app.post('/api/upload', upload.single('file'), async (req, res) => {
   const logMsg = `UPLOAD: ${req.file ? req.file.originalname : 'No file'} - user_id:${req.body.user_id} campaign_id:${req.body.campaign_id}\n`;
   fs.appendFileSync('frontend.log', logMsg);
   console.log(logMsg);
@@ -416,11 +540,11 @@ app.post('/api/upload', upload.single('image'), async (req, res) => {
     const FormData = require('form-data');
     const form = new FormData();
     if (req.file) {
-      form.append('image', req.file.buffer, req.file.originalname || 'image.png');
+      form.append('file', req.file.buffer, req.file.originalname || 'file.png');
     }
-    if (req.body.crop) form.append('crop', req.body.crop);
     if (req.body.user_id) form.append('user_id', req.body.user_id);
     if (req.body.campaign_id) form.append('campaign_id', req.body.campaign_id);
+    if (req.body.upload_type) form.append('upload_type', req.body.upload_type);
     console.log(`UPLOAD: Forwarding to backend...`);
     const response = await axios.post('http://localhost:8080/api/upload', form, {
       headers: form.getHeaders(),

@@ -211,29 +211,8 @@ Future<void> main(List<String> arguments) async {
           await request.response.close();
         } else if (request.uri.path == '/register' &&
             request.method == 'POST') {
-        } else if (request.uri.path == '/api/reset_password' &&
-            request.method == 'POST') {
           String content = await utf8.decoder.bind(request).join();
-          Map<String, dynamic> params = jsonDecode(content);
-          final user = params['user'];
-          request.response.headers.contentType = ContentType.json;
-          if (user == null || user.toString().trim().isEmpty) {
-            request.response.write(
-              jsonEncode({
-                'success': false,
-                'message': 'Missing username or email.',
-              }),
-            );
-          } else {
-            // Mock password reset response
-            request.response.write(
-              jsonEncode({
-                'success': true,
-                'message': 'Reset request received (mock).',
-              }),
-            );
-          }
-          await request.response.close();
+          Map<String, String> params = {};
           if (request.headers.contentType?.mimeType == 'application/json') {
             params = Map<String, String>.from(jsonDecode(content));
           } else {
@@ -270,6 +249,29 @@ Future<void> main(List<String> arguments) async {
           );
           request.response.headers.contentType = ContentType.json;
           request.response.write(jsonEncode({'success': true}));
+          await request.response.close();
+        } else if (request.uri.path == '/api/reset_password' &&
+            request.method == 'POST') {
+          String content = await utf8.decoder.bind(request).join();
+          Map<String, dynamic> params = jsonDecode(content);
+          final user = params['user'];
+          request.response.headers.contentType = ContentType.json;
+          if (user == null || user.toString().trim().isEmpty) {
+            request.response.write(
+              jsonEncode({
+                'success': false,
+                'message': 'Missing username or email.',
+              }),
+            );
+          } else {
+            // Mock password reset response
+            request.response.write(
+              jsonEncode({
+                'success': true,
+                'message': 'Reset request received (mock).',
+              }),
+            );
+          }
           await request.response.close();
         } else if (request.uri.path == '/map' ||
             request.uri.path == '/api/maps') {
@@ -377,6 +379,105 @@ Future<void> main(List<String> arguments) async {
             request.response.write(jsonEncode({'success': true}));
             await request.response.close();
           }
+        } else if ((request.uri.path.startsWith('/maps/') ||
+                request.uri.path.startsWith('/api/maps/')) &&
+            request.method == 'GET') {
+          // Get single map by ID
+          final pathParts = request.uri.path.split('/');
+          final mapId = request.uri.path.startsWith('/api/')
+              ? pathParts[3]
+              : pathParts[2];
+
+          var results = await _connectionPool.query(
+            'SELECT id, name, data, created_by, created_at FROM maps WHERE id = ?',
+            [mapId],
+          );
+          if (results.isEmpty) {
+            request.response.statusCode = 404;
+            request.response.headers.contentType = ContentType.json;
+            request.response.write(
+              jsonEncode({'success': false, 'error': 'Map not found'}),
+            );
+            await request.response.close();
+            return;
+          }
+
+          var row = results.first;
+          String mapDataStr = row[2]?.toString() ?? '{}';
+          String createdAtStr = '';
+          try {
+            createdAtStr = row[4]?.toString() ?? '';
+          } catch (e) {
+            createdAtStr = 'Unknown';
+          }
+
+          Map<String, dynamic> map = {
+            'id': row[0],
+            'name': row[1]?.toString() ?? '',
+            'data': mapDataStr,
+            'created_by': row[3]?.toString() ?? '',
+            'created_at': createdAtStr,
+          };
+
+          request.response.headers.contentType = ContentType.json;
+          request.response.write(jsonEncode({'success': true, 'map': map}));
+          await request.response.close();
+        } else if ((request.uri.path.startsWith('/maps/') ||
+                request.uri.path.startsWith('/api/maps/')) &&
+            request.method == 'PUT') {
+          // Update map
+          final pathParts = request.uri.path.split('/');
+          final mapId = request.uri.path.startsWith('/api/')
+              ? pathParts[3]
+              : pathParts[2];
+          final body = await utf8.decoder.bind(request).join();
+          final params = jsonDecode(body);
+
+          List<String> updateFields = [];
+          List<dynamic> updateValues = [];
+
+          if (params['name'] != null) {
+            updateFields.add('name = ?');
+            updateValues.add(params['name']);
+          }
+          if (params['data'] != null) {
+            updateFields.add('data = ?');
+            updateValues.add(jsonEncode(params['data']));
+          }
+
+          if (updateFields.isEmpty) {
+            request.response.statusCode = 400;
+            request.response.headers.contentType = ContentType.json;
+            request.response.write(
+              jsonEncode({'success': false, 'error': 'No fields to update'}),
+            );
+            await request.response.close();
+            return;
+          }
+
+          updateValues.add(mapId);
+          await _connectionPool.query(
+            'UPDATE maps SET ${updateFields.join(', ')} WHERE id = ?',
+            updateValues,
+          );
+
+          request.response.headers.contentType = ContentType.json;
+          request.response.write(jsonEncode({'success': true}));
+          await request.response.close();
+        } else if ((request.uri.path.startsWith('/maps/') ||
+                request.uri.path.startsWith('/api/maps/')) &&
+            request.method == 'DELETE') {
+          // Delete map
+          final pathParts = request.uri.path.split('/');
+          final mapId = request.uri.path.startsWith('/api/')
+              ? pathParts[3]
+              : pathParts[2];
+
+          await _connectionPool.query('DELETE FROM maps WHERE id = ?', [mapId]);
+
+          request.response.headers.contentType = ContentType.json;
+          request.response.write(jsonEncode({'success': true}));
+          await request.response.close();
         } else if (request.uri.path == '/assets' ||
             request.uri.path == '/api/assets') {
           if (request.method == 'GET') {
@@ -642,8 +743,9 @@ Future<void> main(List<String> arguments) async {
               request.response.headers.contentType = ContentType.json;
               request.response.write(jsonEncode(rules));
             } catch (e, stack) {
-              print('Error in /api/rules: \$e');
-              print(stack);
+              print('Error in GET /api/rules: $e');
+              print('Stack trace: $stack');
+              stdout.flush();
               request.response.statusCode = HttpStatus.internalServerError;
               request.response.headers.contentType = ContentType.json;
               request.response.write(
@@ -878,8 +980,9 @@ Future<void> main(List<String> arguments) async {
             );
             await request.response.close();
           } catch (e, stack) {
-            print('Error in GET /campaigns: \$e');
-            print(stack);
+            print('Error in GET /campaigns: $e');
+            print('Stack trace: $stack');
+            stdout.flush();
             request.response.statusCode = HttpStatus.internalServerError;
             request.response.headers.contentType = ContentType.json;
             request.response.write(
@@ -887,6 +990,57 @@ Future<void> main(List<String> arguments) async {
             );
             await request.response.close();
           }
+        } else if ((request.uri.path.startsWith('/campaigns/') ||
+                request.uri.path.startsWith('/api/campaigns/')) &&
+            request.method == 'GET' &&
+            !request.uri.path.endsWith('/settings')) {
+          // Get single campaign by ID
+          final pathParts = request.uri.path.split('/');
+          final campaignId = request.uri.path.startsWith('/api/')
+              ? pathParts[3]
+              : pathParts[2];
+
+          var results = await _connectionPool.query(
+            'SELECT c.id, c.name, c.description, c.game_rules_id, c.image_url, c.created_at, gr.system FROM campaigns c LEFT JOIN game_rules gr ON c.game_rules_id = gr.id WHERE c.id = ?',
+            [campaignId],
+          );
+          if (results.isEmpty) {
+            request.response.statusCode = 404;
+            request.response.headers.contentType = ContentType.json;
+            request.response.write(
+              jsonEncode({'success': false, 'error': 'Campaign not found'}),
+            );
+            await request.response.close();
+            return;
+          }
+
+          var row = results.first;
+          var imageUrlValue = row[4];
+          if (imageUrlValue is Blob) {
+            imageUrlValue = utf8.decode(imageUrlValue.toBytes());
+          } else if (imageUrlValue is List<int>) {
+            imageUrlValue = utf8.decode(imageUrlValue);
+          } else if (imageUrlValue is String) {
+            // already a string, do nothing
+          } else if (imageUrlValue != null) {
+            imageUrlValue = imageUrlValue.toString();
+          }
+
+          Map<String, dynamic> campaign = {
+            'id': row[0],
+            'name': row[1]?.toString(),
+            'description': row[2]?.toString(),
+            'game_rules_id': row[3],
+            'image_url': imageUrlValue,
+            'created_at': row[5]?.toString(),
+            'system': row[6]?.toString(),
+          };
+
+          request.response.headers.contentType = ContentType.json;
+          request.response.write(
+            jsonEncode({'success': true, 'campaign': campaign}),
+          );
+          await request.response.close();
         } else if (request.uri.path == '/campaigns/delete' &&
             request.method == 'POST') {
           // Delete a campaign by id for the user
@@ -1053,6 +1207,55 @@ Future<void> main(List<String> arguments) async {
             'INSERT INTO scenes (campaign_id, name, data) VALUES (?, ?, ?)',
             [campaignId, name, jsonEncode(data)],
           );
+          request.response.headers.contentType = ContentType.json;
+          request.response.write(jsonEncode({'success': true}));
+          await request.response.close();
+        } else if ((request.uri.path.startsWith('/scenes/') ||
+                request.uri.path.startsWith('/api/scenes/')) &&
+            request.method == 'PUT') {
+          // Update scene
+          final pathParts = request.uri.path.split('/');
+          final sceneId = request.uri.path.startsWith('/api/')
+              ? pathParts[3]
+              : pathParts[2];
+
+          String content = await utf8.decoder.bind(request).join();
+          Map<String, dynamic> params = jsonDecode(content);
+          final name = params['name'];
+          final data = params['data'];
+
+          if (name == null) {
+            request.response.statusCode = HttpStatus.badRequest;
+            request.response.headers.contentType = ContentType.json;
+            request.response.write(
+              jsonEncode({'success': false, 'error': 'Missing name'}),
+            );
+            await request.response.close();
+            return;
+          }
+
+          await _connectionPool.query(
+            'UPDATE scenes SET name = ?, data = ? WHERE id = ?',
+            [name, jsonEncode(data), sceneId],
+          );
+
+          request.response.headers.contentType = ContentType.json;
+          request.response.write(jsonEncode({'success': true}));
+          await request.response.close();
+        } else if ((request.uri.path.startsWith('/scenes/') ||
+                request.uri.path.startsWith('/api/scenes/')) &&
+            request.method == 'DELETE') {
+          // Delete scene
+          final pathParts = request.uri.path.split('/');
+          final sceneId = request.uri.path.startsWith('/api/')
+              ? pathParts[3]
+              : pathParts[2];
+
+          await _connectionPool.query(
+            'DELETE FROM scenes WHERE id = ?',
+            [sceneId],
+          );
+
           request.response.headers.contentType = ContentType.json;
           request.response.write(jsonEncode({'success': true}));
           await request.response.close();
