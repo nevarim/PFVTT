@@ -1,0 +1,38 @@
+{
+  "name": "",
+  "race": "",
+  "class": "",
+  "background": "",
+  "alignment": "",
+  "level": 1,
+  "experience_points": 0,
+  "ability_scores": {
+    "strength": 10,
+    "dexterity": 10,
+    "constitution": 10,
+    "intelligence": 10,
+    "wisdom": 10,
+    "charisma": 10
+  },
+  "skills": [],
+  "feats": [],
+  "equipment": [],
+  "spells": [],
+  "features_traits": [],
+  "proficiencies_languages": [],
+  "hit_points": {
+    "max": 10,
+    "current": 10,
+    "temporary": 0
+  },
+  "armor_class": 10,
+  "initiative": 0,
+  "speed": 30,
+  "saving_throws": [],
+  "spellcasting": {
+    "class": "",
+    "spell_slots": {},
+    "prepared_spells": []
+  },
+  "notes": ""
+}

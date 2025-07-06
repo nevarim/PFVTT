@@ -25,6 +25,7 @@ Open two terminals:
 **Terminal 1: Backend**
 ```sh
 cd backend
+dart pub get
 dart run bin/backend.dart
 ```
 

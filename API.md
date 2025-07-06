@@ -483,12 +483,13 @@ This ensures optimal database performance under load and prevents connection exh
 ### GET /rules (or /api/rules)
 - Description: Get all game rules.
 - Response (JSON):
-  - Array of {id, system, rules_json}
+  - Array of {id, system, folder_name, rules_json}
 
 ### POST /api/rules
 - Description: Add a new game rule.
 - Request Body (JSON):
   - system: string
+  - folder_name: string (optional, corresponds to game system folder)
   - rules_json: string
 - Response (JSON):
   - success: boolean
@@ -499,6 +500,7 @@ This ensures optimal database performance under load and prevents connection exh
 - Request Body (JSON):
   - id: int
   - system: string
+  - folder_name: string (optional, corresponds to game system folder)
   - rules_json: string
 - Response (JSON):
   - success: boolean
@@ -511,6 +513,40 @@ This ensures optimal database performance under load and prevents connection exh
 - Response (JSON):
   - success: boolean
   - error: string (if failed)
+
+## Game Systems (Dynamic)
+
+### GET /api/game-systems
+- Description: Get all available game systems with their folder information.
+- Response (JSON):
+  - success: boolean
+  - game_systems: array of {id, system, folder_name, rules_json}
+  - error: string (if failed)
+
+### GET /api/game-systems/:folder
+- Description: Get specific game system data by folder name.
+- Path Parameter:
+  - folder: string (game system folder name, e.g., "pathfinder_1e", "dnd_5e")
+- Query Parameters:
+  - type: string (optional, default "character_sheet")
+    - "character_sheet": Get character sheet template
+    - "metadata": Get game system metadata
+    - "classes", "races", "abilities", etc.: Get specific game data files
+- Response (JSON):
+  - success: boolean
+  - data: object (requested game system data)
+  - error: string (if failed)
+
+#### Available Game System Folders:
+- `dnd_5e`: Dungeons & Dragons 5th Edition
+- `pathfinder_1e`: Pathfinder 1st Edition
+- `pathfinder_2e`: Pathfinder 2nd Edition
+- `dnd_35e`: Dungeons & Dragons 3.5 Edition
+
+#### Example Requests:
+- `GET /api/game-systems/pathfinder_1e?type=character_sheet`: Get Pathfinder 1e character sheet template
+- `GET /api/game-systems/dnd_5e?type=classes`: Get D&D 5e classes data
+- `GET /api/game-systems/pathfinder_2e?type=metadata`: Get Pathfinder 2e metadata
 
 ### POST `/api/reset_password`
 Mock implementation for password reset functionality.

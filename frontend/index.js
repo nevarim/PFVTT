@@ -196,6 +196,72 @@ app.put('/api/maps/:id', async (req, res) => {
 });
 
 app.delete('/api/maps/:id', async (req, res) => {
+
+// === TOKEN SHEETS API PROXY ===
+app.get('/api/token-sheets', async (req, res) => {
+  try {
+    let url = 'http://localhost:8080/api/token-sheets';
+    if (req.query.map_id) {
+      url += `?map_id=${encodeURIComponent(req.query.map_id)}`;
+    }
+    const response = await axios.get(url);
+    res.json(response.data);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch token sheets' });
+  }
+});
+
+app.get('/api/token-sheets/:id', async (req, res) => {
+  try {
+    const response = await axios.get(`http://localhost:8080/api/token-sheets/${req.params.id}`);
+    res.json(response.data);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch token sheet' });
+  }
+});
+
+app.post('/api/token-sheets', async (req, res) => {
+  try {
+    const response = await axios.post('http://localhost:8080/api/token-sheets', req.body, {
+      headers: { 'Content-Type': 'application/json' }
+    });
+    res.json(response.data);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to create token sheet' });
+  }
+});
+
+app.put('/api/token-sheets/:id', async (req, res) => {
+  try {
+    const response = await axios.put(`http://localhost:8080/api/token-sheets/${req.params.id}`, req.body, {
+      headers: { 'Content-Type': 'application/json' }
+    });
+    res.json(response.data);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to update token sheet' });
+  }
+});
+
+app.delete('/api/token-sheets/:id', async (req, res) => {
+  try {
+    const response = await axios.delete(`http://localhost:8080/api/token-sheets/${req.params.id}`);
+    res.json(response.data);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to delete token sheet' });
+  }
+});
+
+app.post('/api/token-sheets/auto-create', async (req, res) => {
+  try {
+    const response = await axios.post('http://localhost:8080/api/token-sheets/auto-create', req.body, {
+      headers: { 'Content-Type': 'application/json' }
+    });
+    res.json(response.data);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to auto-create token sheet' });
+  }
+});
+
   try {
     const response = await axios.delete(`http://localhost:8080/api/maps/${req.params.id}`);
     res.json(response.data);
@@ -327,6 +393,29 @@ app.get('/api/user_id', async (req, res) => {
     res.json(response.data);
   } catch (err) {
     res.status(500).json({ error: 'Failed to fetch user_id from backend' });
+  }
+});
+
+// === GAME SYSTEMS API PROXY ===
+app.get('/api/game-systems', async (req, res) => {
+  try {
+    const response = await axios.get('http://localhost:8080/api/game-systems');
+    res.json(response.data);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch game systems' });
+  }
+});
+
+app.get('/api/game-systems/:folder', async (req, res) => {
+  try {
+    let url = `http://localhost:8080/api/game-systems/${req.params.folder}`;
+    if (req.query.type) {
+      url += `?type=${encodeURIComponent(req.query.type)}`;
+    }
+    const response = await axios.get(url);
+    res.json(response.data);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch game system data' });
   }
 });
 app.post('/api/rules', async (req, res) => {

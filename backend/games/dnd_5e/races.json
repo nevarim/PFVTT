@@ -1,0 +1,222 @@
+{
+  "dragonborn": {
+    "name": "Dragonborn",
+    "ability_score_increase": {
+      "strength": 2,
+      "charisma": 1
+    },
+    "size": "Medium",
+    "speed": 30,
+    "traits": [
+      "Draconic Ancestry",
+      "Breath Weapon",
+      "Damage Resistance"
+    ],
+    "languages": ["Common", "Draconic"],
+    "description": "Born of dragons, as their name proclaims, the dragonborn walk proudly through a world that greets them with fearful incomprehension."
+  },
+  "dwarf": {
+    "name": "Dwarf",
+    "ability_score_increase": {
+      "constitution": 2
+    },
+    "size": "Medium",
+    "speed": 25,
+    "traits": [
+      "Darkvision",
+      "Dwarven Resilience",
+      "Dwarven Combat Training",
+      "Stonecunning"
+    ],
+    "languages": ["Common", "Dwarvish"],
+    "description": "Bold and hardy, dwarves are known as skilled warriors, miners, and workers of stone and metal.",
+    "subraces": {
+      "hill_dwarf": {
+        "name": "Hill Dwarf",
+        "ability_score_increase": {
+          "wisdom": 1
+        },
+        "traits": ["Dwarven Toughness"]
+      },
+      "mountain_dwarf": {
+        "name": "Mountain Dwarf",
+        "ability_score_increase": {
+          "strength": 2
+        },
+        "traits": ["Armor Proficiency"]
+      }
+    }
+  },
+  "elf": {
+    "name": "Elf",
+    "ability_score_increase": {
+      "dexterity": 2
+    },
+    "size": "Medium",
+    "speed": 30,
+    "traits": [
+      "Darkvision",
+      "Keen Senses",
+      "Fey Ancestry",
+      "Trance"
+    ],
+    "languages": ["Common", "Elvish"],
+    "description": "Elves are a magical people of otherworldly grace, living in the world but not entirely part of it.",
+    "subraces": {
+      "high_elf": {
+        "name": "High Elf",
+        "ability_score_increase": {
+          "intelligence": 1
+        },
+        "traits": ["Elf Weapon Training", "Cantrip", "Extra Language"]
+      },
+      "wood_elf": {
+        "name": "Wood Elf",
+        "ability_score_increase": {
+          "wisdom": 1
+        },
+        "traits": ["Elf Weapon Training", "Fleet of Foot", "Mask of the Wild"]
+      },
+      "dark_elf": {
+        "name": "Dark Elf (Drow)",
+        "ability_score_increase": {
+          "charisma": 1
+        },
+        "traits": ["Superior Darkvision", "Sunlight Sensitivity", "Drow Magic", "Drow Weapon Training"]
+      }
+    }
+  },
+  "gnome": {
+    "name": "Gnome",
+    "ability_score_increase": {
+      "intelligence": 2
+    },
+    "size": "Small",
+    "speed": 25,
+    "traits": [
+      "Darkvision",
+      "Gnome Cunning"
+    ],
+    "languages": ["Common", "Gnomish"],
+    "description": "A gnome's energy and enthusiasm for living shines through every inch of his or her tiny body.",
+    "subraces": {
+      "forest_gnome": {
+        "name": "Forest Gnome",
+        "ability_score_increase": {
+          "dexterity": 1
+        },
+        "traits": ["Natural Illusionist", "Speak with Small Beasts"]
+      },
+      "rock_gnome": {
+        "name": "Rock Gnome",
+        "ability_score_increase": {
+          "constitution": 1
+        },
+        "traits": ["Artificer's Lore", "Tinker"]
+      }
+    }
+  },
+  "half_elf": {
+    "name": "Half-Elf",
+    "ability_score_increase": {
+      "charisma": 2,
+      "choice": 2
+    },
+    "size": "Medium",
+    "speed": 30,
+    "traits": [
+      "Darkvision",
+      "Fey Ancestry",
+      "Skill Versatility"
+    ],
+    "languages": ["Common", "Elvish", "One extra language"],
+    "description": "Walking in two worlds but truly belonging to neither, half-elves combine what some say are the best qualities of their elf and human parents."
+  },
+  "half_orc": {
+    "name": "Half-Orc",
+    "ability_score_increase": {
+      "strength": 2,
+      "constitution": 1
+    },
+    "size": "Medium",
+    "speed": 30,
+    "traits": [
+      "Darkvision",
+      "Menacing",
+      "Relentless Endurance",
+      "Savage Attacks"
+    ],
+    "languages": ["Common", "Orc"],
+    "description": "Whether united under the leadership of a mighty warlock or having fought to a standstill after years of conflict, orc and human communities sometimes form alliances."
+  },
+  "halfling": {
+    "name": "Halfling",
+    "ability_score_increase": {
+      "dexterity": 2
+    },
+    "size": "Small",
+    "speed": 25,
+    "traits": [
+      "Lucky",
+      "Brave",
+      "Halfling Nimbleness"
+    ],
+    "languages": ["Common", "Halfling"],
+    "description": "The comforts of home are the goals of most halflings' lives: a place to settle in peace and quiet, far from marauding monsters and clashing armies.",
+    "subraces": {
+      "lightfoot": {
+        "name": "Lightfoot",
+        "ability_score_increase": {
+          "charisma": 1
+        },
+        "traits": ["Naturally Stealthy"]
+      },
+      "stout": {
+        "name": "Stout",
+        "ability_score_increase": {
+          "constitution": 1
+        },
+        "traits": ["Stout Resilience"]
+      }
+    }
+  },
+  "human": {
+    "name": "Human",
+    "ability_score_increase": {
+      "all": 1
+    },
+    "size": "Medium",
+    "speed": 30,
+    "traits": [
+      "Extra Language",
+      "Extra Skill"
+    ],
+    "languages": ["Common", "One extra language"],
+    "description": "In the reckonings of most worlds, humans are the youngest of the common races, late to arrive on the world scene and short-lived in comparison to dwarves, elves, and dragons.",
+    "variants": {
+      "variant_human": {
+        "name": "Variant Human",
+        "ability_score_increase": {
+          "choice": 2
+        },
+        "traits": ["Extra Skill", "Feat"]
+      }
+    }
+  },
+  "tiefling": {
+    "name": "Tiefling",
+    "ability_score_increase": {
+      "intelligence": 1,
+      "charisma": 2
+    },
+    "size": "Medium",
+    "speed": 30,
+    "traits": [
+      "Darkvision",
+      "Hellish Resistance",
+      "Infernal Legacy"
+    ],
+    "languages": ["Common", "Infernal"],
+    "description": "To be greeted with stares and whispers, to suffer violence and insult on the street, to see mistrust and fear in every eye: this is the lot of the tiefling."
+  }
+}

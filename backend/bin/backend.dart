@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'dart:async';
 import 'package:mysql1/mysql1.dart';
 import 'package:bcrypt/bcrypt.dart';
+import '../sheet_templates.dart';
+import '../game_system_manager.dart';
 
 // MySQL Connection Pool
 class MySqlConnectionPool {
@@ -439,31 +441,218 @@ Future<void> main(List<String> arguments) async {
           if (params['name'] != null) {
             updateFields.add('name = ?');
             updateValues.add(params['name']);
-          }
-          if (params['data'] != null) {
-            updateFields.add('data = ?');
-            updateValues.add(jsonEncode(params['data']));
-          }
-
-          if (updateFields.isEmpty) {
+        }
+        // === TOKEN SHEETS API ===
+        else if (request.uri.path == '/api/token-sheets' && request.method == 'GET') {
+          // List all token sheets for a map (by map_id)
+          final mapId = request.uri.queryParameters['map_id'];
+          if (mapId == null) {
             request.response.statusCode = 400;
             request.response.headers.contentType = ContentType.json;
-            request.response.write(
-              jsonEncode({'success': false, 'error': 'No fields to update'}),
-            );
+            request.response.write(jsonEncode({'success': false, 'error': 'Missing map_id'}));
             await request.response.close();
             return;
           }
-
-          updateValues.add(mapId);
-          await _connectionPool.query(
-            'UPDATE maps SET ${updateFields.join(', ')} WHERE id = ?',
-            updateValues,
+          var results = await _connectionPool.query(
+            'SELECT ts.id, ts.map_token_id, ts.actor_id, ts.sheet_json, ts.created_at, ts.updated_at, mt.name as token_name FROM token_sheets ts JOIN map_tokens mt ON ts.map_token_id = mt.id WHERE mt.map_id = ?',
+            [mapId],
           );
-
+          List<Map<String, dynamic>> sheets = [];
+          for (var row in results) {
+            sheets.add({
+              'id': row[0],
+              'map_token_id': row[1],
+              'actor_id': row[2],
+              'sheet_json': row[3],
+              'created_at': row[4]?.toString() ?? '',
+              'updated_at': row[5]?.toString() ?? '',
+              'token_name': row[6]?.toString() ?? '',
+            });
+          }
+          request.response.headers.contentType = ContentType.json;
+          request.response.write(jsonEncode({'success': true, 'sheets': sheets}));
+          await request.response.close();
+          return;
+        }
+        else if (request.uri.path == '/api/token-sheets' && request.method == 'POST') {
+          // Create a new token sheet
+          final body = await utf8.decoder.bind(request).join();
+          final params = jsonDecode(body);
+          final mapTokenId = params['map_token_id'];
+          final actorId = params['actor_id'];
+          final sheetJson = params['sheet_json'];
+          if (mapTokenId == null || sheetJson == null) {
+            request.response.statusCode = 400;
+            request.response.headers.contentType = ContentType.json;
+            request.response.write(jsonEncode({'success': false, 'error': 'Missing map_token_id or sheet_json'}));
+            await request.response.close();
+            return;
+          }
+          var result = await _connectionPool.query(
+            'INSERT INTO token_sheets (map_token_id, actor_id, sheet_json) VALUES (?, ?, ?)',
+            [mapTokenId, actorId, jsonEncode(sheetJson)],
+          );
+          request.response.headers.contentType = ContentType.json;
+          request.response.write(jsonEncode({'success': true, 'id': result.insertId}));
+          await request.response.close();
+          return;
+        }
+        else if (request.uri.path.startsWith('/api/token-sheets/') && request.method == 'GET') {
+          // Get a single token sheet by ID
+          final id = request.uri.path.split('/').last;
+          var results = await _connectionPool.query(
+            'SELECT id, map_token_id, actor_id, sheet_json, created_at, updated_at FROM token_sheets WHERE id = ?',
+            [id],
+          );
+          if (results.isEmpty) {
+            request.response.statusCode = 404;
+            request.response.headers.contentType = ContentType.json;
+            request.response.write(jsonEncode({'success': false, 'error': 'Token sheet not found'}));
+            await request.response.close();
+            return;
+          }
+          var row = results.first;
+          request.response.headers.contentType = ContentType.json;
+          request.response.write(jsonEncode({
+            'success': true,
+            'sheet': {
+              'id': row[0],
+              'map_token_id': row[1],
+              'actor_id': row[2],
+              'sheet_json': row[3],
+              'created_at': row[4]?.toString() ?? '',
+              'updated_at': row[5]?.toString() ?? ''
+            }
+          }));
+          await request.response.close();
+          return;
+        }
+        else if (request.uri.path.startsWith('/api/token-sheets/') && request.method == 'PUT') {
+          // Update a token sheet by ID
+          final id = request.uri.path.split('/').last;
+          final body = await utf8.decoder.bind(request).join();
+          final params = jsonDecode(body);
+          final sheetJson = params['sheet_json'];
+          final actorId = params['actor_id'];
+          if (sheetJson == null) {
+            request.response.statusCode = 400;
+            request.response.headers.contentType = ContentType.json;
+            request.response.write(jsonEncode({'success': false, 'error': 'Missing sheet_json'}));
+            await request.response.close();
+            return;
+          }
+          await _connectionPool.query(
+            'UPDATE token_sheets SET sheet_json = ?, actor_id = ? WHERE id = ?',
+            [jsonEncode(sheetJson), actorId, id],
+          );
           request.response.headers.contentType = ContentType.json;
           request.response.write(jsonEncode({'success': true}));
           await request.response.close();
+          return;
+        }
+        else if (request.uri.path.startsWith('/api/token-sheets/') && request.method == 'DELETE') {
+          // Delete a token sheet by ID
+          final id = request.uri.path.split('/').last;
+          await _connectionPool.query('DELETE FROM token_sheets WHERE id = ?', [id]);
+          request.response.headers.contentType = ContentType.json;
+          request.response.write(jsonEncode({'success': true}));
+          await request.response.close();
+          return;
+        }
+        else if (request.uri.path == '/api/token-sheets/auto-create' && request.method == 'POST') {
+          // Auto-create a token sheet based on campaign game rules
+          final body = await utf8.decoder.bind(request).join();
+          final params = jsonDecode(body);
+          final mapTokenId = params['map_token_id'];
+          final tokenName = params['token_name'] ?? 'Token';
+          
+          if (mapTokenId == null) {
+            request.response.statusCode = 400;
+            request.response.headers.contentType = ContentType.json;
+            request.response.write(jsonEncode({'success': false, 'error': 'Missing map_token_id'}));
+            await request.response.close();
+            return;
+          }
+          
+          try {
+            // Get campaign and game rules for this token
+            var tokenResults = await _connectionPool.query(
+              'SELECT mt.map_id, m.campaign_id FROM map_tokens mt JOIN maps m ON mt.map_id = m.id WHERE mt.id = ?',
+              [mapTokenId],
+            );
+            
+            if (tokenResults.isEmpty) {
+              request.response.statusCode = 404;
+              request.response.headers.contentType = ContentType.json;
+              request.response.write(jsonEncode({'success': false, 'error': 'Token not found'}));
+              await request.response.close();
+              return;
+            }
+            
+            final campaignId = tokenResults.first[1];
+            
+            // Check if token already has a sheet
+            var existingSheetResults = await _connectionPool.query(
+              'SELECT id FROM token_sheets WHERE map_token_id = ?',
+              [mapTokenId],
+            );
+            
+            if (existingSheetResults.isNotEmpty) {
+              request.response.statusCode = 409;
+              request.response.headers.contentType = ContentType.json;
+              request.response.write(jsonEncode({
+                'success': false, 
+                'error': 'Token already has a sheet',
+                'existing_sheet_id': existingSheetResults.first[0]
+              }));
+              await request.response.close();
+              return;
+            }
+            
+            // Get a connection for the SheetTemplates call
+            final conn = await _connectionPool._getConnection();
+            try {
+              // Generate template based on campaign's game system
+              Map<String, dynamic> sheetTemplate = await SheetTemplates.getCharacterSheetTemplate(conn, campaignId);
+              
+              // Set the character name from token name
+              if (sheetTemplate.containsKey('name')) {
+                sheetTemplate['name'] = tokenName;
+              }
+              
+              // Create the token sheet
+              var result = await _connectionPool.query(
+                'INSERT INTO token_sheets (map_token_id, actor_id, sheet_json) VALUES (?, ?, ?)',
+                [mapTokenId, null, jsonEncode(sheetTemplate)],
+              );
+              
+              request.response.headers.contentType = ContentType.json;
+              request.response.write(jsonEncode({
+                'success': true, 
+                'id': result.insertId,
+                'system': sheetTemplate['system'] ?? 'Generic',
+                'sheet_json': sheetTemplate
+              }));
+              await request.response.close();
+              return;
+            } finally {
+              _connectionPool._releaseConnection(conn);
+            }
+
+            
+          } catch (e, stack) {
+            print('Error in auto-create token sheet: $e');
+            print(stack);
+            request.response.statusCode = HttpStatus.internalServerError;
+            request.response.headers.contentType = ContentType.json;
+            request.response.write(jsonEncode({
+              'success': false, 
+              'error': 'Failed to create token sheet: ${e.toString()}'
+            }));
+            await request.response.close();
+            return;
+          }
+        }
         } else if ((request.uri.path.startsWith('/maps/') ||
                 request.uri.path.startsWith('/api/maps/')) &&
             request.method == 'DELETE') {
@@ -720,11 +909,11 @@ Future<void> main(List<String> arguments) async {
           if (request.method == 'GET') {
             try {
               var results = await _connectionPool.query(
-                'SELECT id, system, rules_json FROM game_rules',
+                'SELECT id, system, folder_name, rules_json FROM game_rules',
               );
               List<Map<String, dynamic>> rules = [];
               for (var row in results) {
-                var rulesJsonValue = row[2];
+                var rulesJsonValue = row[3];
                 if (rulesJsonValue is Blob) {
                   rulesJsonValue = utf8.decode(rulesJsonValue.toBytes());
                 } else if (rulesJsonValue is List<int>) {
@@ -737,6 +926,7 @@ Future<void> main(List<String> arguments) async {
                 rules.add({
                   "id": row[0],
                   "system": row[1],
+                  "folder_name": row[2],
                   "rules_json": rulesJsonValue,
                 });
               }
@@ -759,6 +949,7 @@ Future<void> main(List<String> arguments) async {
               String content = await utf8.decoder.bind(request).join();
               Map<String, dynamic> params = jsonDecode(content);
               final system = params['system'];
+              final folderName = params['folder_name'];
               final rulesJson = params['rules_json'];
               if (system == null || rulesJson == null) {
                 request.response.statusCode = HttpStatus.badRequest;
@@ -773,8 +964,8 @@ Future<void> main(List<String> arguments) async {
                 return;
               }
               await _connectionPool.query(
-                'INSERT INTO game_rules (system, rules_json) VALUES (?, ?)',
-                [system, rulesJson],
+                'INSERT INTO game_rules (system, folder_name, rules_json) VALUES (?, ?, ?)',
+                [system, folderName, rulesJson],
               );
               request.response.headers.contentType = ContentType.json;
               request.response.write(jsonEncode({'success': true}));
@@ -796,6 +987,7 @@ Future<void> main(List<String> arguments) async {
               Map<String, dynamic> params = jsonDecode(content);
               final id = params['id'];
               final system = params['system'];
+              final folderName = params['folder_name'];
               final rulesJson = params['rules_json'];
               if (id == null || system == null || rulesJson == null) {
                 request.response.statusCode = HttpStatus.badRequest;
@@ -810,8 +1002,8 @@ Future<void> main(List<String> arguments) async {
                 return;
               }
               await _connectionPool.query(
-                'UPDATE game_rules SET system = ?, rules_json = ? WHERE id = ?',
-                [system, rulesJson, id],
+                'UPDATE game_rules SET system = ?, folder_name = ?, rules_json = ? WHERE id = ?',
+                [system, folderName, rulesJson, id],
               );
               request.response.headers.contentType = ContentType.json;
               request.response.write(jsonEncode({'success': true}));
@@ -863,6 +1055,83 @@ Future<void> main(List<String> arguments) async {
             request.response.write('Method not allowed');
             await request.response.close();
           }
+        } else if (request.uri.path == '/api/game-systems' && request.method == 'GET') {
+          // Get all available game systems
+          try {
+            final conn = await _connectionPool._getConnection();
+            try {
+              final gameSystems = await GameSystemManager.getAvailableGameSystems(conn);
+              request.response.headers.contentType = ContentType.json;
+              request.response.write(jsonEncode({
+                'success': true,
+                'game_systems': gameSystems
+              }));
+            } finally {
+              _connectionPool._releaseConnection(conn);
+            }
+          } catch (e, stack) {
+            print('Error in GET /api/game-systems: $e');
+            print(stack);
+            request.response.statusCode = HttpStatus.internalServerError;
+            request.response.headers.contentType = ContentType.json;
+            request.response.write(jsonEncode({
+              'success': false,
+              'error': e.toString()
+            }));
+          }
+          await request.response.close();
+        } else if (request.uri.path.startsWith('/api/game-systems/') && request.method == 'GET') {
+          // Get specific game system data
+          try {
+            final pathParts = request.uri.path.split('/');
+            if (pathParts.length < 4) {
+              request.response.statusCode = HttpStatus.badRequest;
+              request.response.headers.contentType = ContentType.json;
+              request.response.write(jsonEncode({
+                'success': false,
+                'error': 'Invalid path format'
+              }));
+              await request.response.close();
+              return;
+            }
+            
+            final folderName = pathParts[3];
+            final dataType = request.uri.queryParameters['type'] ?? 'character_sheet';
+            
+            Map<String, dynamic>? gameData;
+            if (dataType == 'character_sheet') {
+              gameData = await GameSystemManager.getCharacterSheetTemplate(folderName);
+            } else if (dataType == 'metadata') {
+              gameData = await GameSystemManager.getGameMetadata(folderName);
+            } else {
+              gameData = await GameSystemManager.getGameData(folderName, dataType);
+            }
+            
+            if (gameData == null) {
+              request.response.statusCode = HttpStatus.notFound;
+              request.response.headers.contentType = ContentType.json;
+              request.response.write(jsonEncode({
+                'success': false,
+                'error': 'Game system data not found'
+              }));
+            } else {
+              request.response.headers.contentType = ContentType.json;
+              request.response.write(jsonEncode({
+                'success': true,
+                'data': gameData
+              }));
+            }
+          } catch (e, stack) {
+            print('Error in GET /api/game-systems/[folder]: $e');
+            print(stack);
+            request.response.statusCode = HttpStatus.internalServerError;
+            request.response.headers.contentType = ContentType.json;
+            request.response.write(jsonEncode({
+              'success': false,
+              'error': e.toString()
+            }));
+          }
+          await request.response.close();
         } else if ((request.uri.path == '/campaigns' ||
                 request.uri.path == '/api/campaigns') &&
             request.method == 'POST') {

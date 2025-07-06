@@ -844,13 +844,32 @@
         <!-- Tokens Panel -->
         <div class="panel-section active" id="tokens-panel">
           <div class="section-header">
-            <span class="section-title">Tokens</span>
-            <button class="add-btn" onclick="addToken()">+</button>
+            <span class="section-title">Active Tokens</span>
           </div>
-          <input type="text" class="search-box" placeholder="Search tokens...">
+          <input type="text" class="search-box" placeholder="Search active tokens...">
           <ul class="item-list" id="tokens-list">
-            <!-- Active tokens on the map will appear here -->
+            <!-- Active tokens on the map will appear here dynamically -->
           </ul>
+          <!-- Token Sheet Modal -->
+          <div id="token-sheet-modal" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); background:#222; color:white; border-radius:8px; box-shadow:0 4px 24px rgba(0,0,0,0.7); z-index:10001; min-width:400px; max-width:600px; max-height:80vh; overflow-y:auto; padding:24px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+              <span id="token-sheet-modal-title" style="font-size:18px; font-weight:bold;">Token Sheet</span>
+              <button onclick="closeTokenSheetModal()" style="background:none; border:none; color:white; font-size:20px; cursor:pointer;">×</button>
+            </div>
+            <form id="token-sheet-form" onsubmit="saveTokenSheet(event)">
+              <input type="hidden" id="token-sheet-id">
+              <input type="hidden" id="token-sheet-token-id">
+              <div class="input-group">
+                <label for="token-sheet-name">Name</label>
+                <input type="text" id="token-sheet-name" required style="width:100%; background:#333; color:white; border:1px solid #555; border-radius:3px; padding:6px;">
+              </div>
+              <!-- Dynamic content will be inserted here -->
+              <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:18px;">
+                <button type="button" onclick="deleteTokenSheet()" id="token-sheet-delete-btn" style="background:#c0392b; color:white; border:none; border-radius:3px; padding:6px 14px; display:none;">Delete</button>
+                <button type="submit" style="background:#0066cc; color:white; border:none; border-radius:3px; padding:6px 14px;">Save</button>
+              </div>
+            </form>
+          </div>
         </div>
         
         <!-- Journal Panel -->
@@ -897,6 +916,342 @@
   <script>
     // ===== PFVTT MAP SYSTEM - ENHANCED VERSION =====
     // Robust error handling and validation
+    // ===== TOKEN SHEET LOGIC =====
+    async function loadActiveTokensAndSheets() {
+      const mapId = MapState.getCurrentMapId();
+      if (!mapId) {
+        Logger.warn('No map ID available for loading tokens');
+        return;
+      }
+      
+      try {
+        Logger.info(`Loading tokens for map ID: ${mapId}`);
+        
+        // Load tokens
+        const tokensRes = await fetch(`/api/map-tokens?map_id=${encodeURIComponent(mapId)}`);
+        if (!tokensRes.ok) {
+          throw new Error(`Failed to fetch tokens: ${tokensRes.status} ${tokensRes.statusText}`);
+        }
+        
+        const tokensText = await tokensRes.text();
+        Logger.debug('Tokens response text:', tokensText);
+        
+        let tokensData;
+        try {
+          tokensData = JSON.parse(tokensText);
+        } catch (parseError) {
+          Logger.error('Failed to parse tokens JSON response', parseError);
+          Logger.error('Response text was:', tokensText);
+          throw new Error('Invalid JSON response from tokens endpoint');
+        }
+        
+        const tokens = tokensData.tokens || [];
+        Logger.info(`Loaded ${tokens.length} tokens`);
+        
+        // Load token sheets
+        const sheetsRes = await fetch(`/api/token-sheets?map_id=${encodeURIComponent(mapId)}`);
+        if (!sheetsRes.ok) {
+          throw new Error(`Failed to fetch token sheets: ${sheetsRes.status} ${sheetsRes.statusText}`);
+        }
+        
+        const sheetsText = await sheetsRes.text();
+        Logger.debug('Sheets response text:', sheetsText);
+        
+        let sheetsData;
+        try {
+          sheetsData = JSON.parse(sheetsText);
+        } catch (parseError) {
+          Logger.error('Failed to parse sheets JSON response', parseError);
+          Logger.error('Response text was:', sheetsText);
+          throw new Error('Invalid JSON response from token sheets endpoint');
+        }
+        
+        const sheets = sheetsData.sheets || [];
+        Logger.info(`Loaded ${sheets.length} token sheets`);
+        
+        // Update UI
+        const list = document.getElementById('tokens-list');
+        if (!list) {
+          Logger.error('tokens-list element not found');
+          return;
+        }
+        
+        list.innerHTML = '';
+        
+        if (tokens.length === 0) {
+          const li = document.createElement('li');
+          li.className = 'item';
+          li.innerHTML = `<div class='item-name' style='color: #999; font-style: italic;'>No tokens on this map</div>`;
+          list.appendChild(li);
+        } else {
+          tokens.forEach(token => {
+            const li = document.createElement('li');
+            li.className = 'item';
+            const tokenSheet = sheets.find(s => s.map_token_id === token.id) || null;
+            li.innerHTML = `<div class='item-name'>${escapeHtml(token.name||'Token')}</div><div class='item-details'><button style='background:#444; color:white; border:none; border-radius:3px; padding:2px 8px; cursor:pointer;' onclick='openTokenSheetModal(${JSON.stringify(token)}, ${JSON.stringify(tokenSheet)})'>Sheet</button></div>`;
+            list.appendChild(li);
+          });
+        }
+        
+        Logger.info('Tokens and sheets loaded successfully');
+        
+      } catch (e) { 
+        Logger.error('Failed to load tokens or sheets', e);
+        
+        // Show user-friendly message in the tokens list
+        const list = document.getElementById('tokens-list');
+        if (list) {
+          list.innerHTML = `<li class='item'><div class='item-name' style='color: #dc3545;'>Error loading tokens</div><div class='item-details' style='color: #999; font-size: 11px;'>${escapeHtml(e.message)}</div></li>`;
+        }
+      }
+    }
+    async function openTokenSheetModal(token, sheet) {
+      // If no sheet exists, auto-create one based on campaign game rules
+      if (!sheet) {
+        try {
+          Logger.info(`Auto-creating sheet for token ${token.id} (${token.name})`);
+          
+          const response = await fetch('/api/token-sheets/auto-create', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+              map_token_id: token.id,
+              token_name: token.name || 'Token'
+            })
+          });
+          
+          if (response.ok) {
+            const result = await response.json();
+            if (result.success) {
+              Logger.info(`Auto-created sheet with ID ${result.id} for system: ${result.system}`);
+              
+              // Create a sheet object with the new data
+              sheet = {
+                id: result.id,
+                map_token_id: token.id,
+                sheet_json: result.sheet_json,
+                system: result.system
+              };
+              
+              // Refresh the tokens list to show the new sheet
+              loadActiveTokensAndSheets();
+            } else {
+              Logger.error('Failed to auto-create sheet:', result.error);
+              alert('Failed to create character sheet: ' + result.error);
+              return;
+            }
+          } else if (response.status === 409) {
+            // Sheet already exists, reload and try again
+            Logger.info('Sheet already exists, reloading...');
+            await loadActiveTokensAndSheets();
+            return;
+          } else {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+          }
+        } catch (error) {
+          Logger.error('Error auto-creating sheet:', error);
+          alert('Failed to create character sheet: ' + error.message);
+          return;
+        }
+      }
+      
+      document.getElementById('token-sheet-modal').style.display = 'block';
+      document.getElementById('token-sheet-modal-title').textContent = sheet ? 'Edit Token Sheet' : 'Create Token Sheet';
+      document.getElementById('token-sheet-id').value = sheet ? sheet.id : '';
+      document.getElementById('token-sheet-token-id').value = token.id;
+      
+      // Parse sheet_json if it exists
+      let sheetData = {};
+      if (sheet && sheet.sheet_json) {
+        try {
+          sheetData = typeof sheet.sheet_json === 'string' ? JSON.parse(sheet.sheet_json) : sheet.sheet_json;
+        } catch (e) {
+          Logger.warn('Failed to parse sheet JSON', e);
+        }
+      }
+      
+      // Display the sheet in a more user-friendly format
+      displayDynamicSheet(sheetData, token, sheet ? sheet.system : null);
+      
+      document.getElementById('token-sheet-delete-btn').style.display = sheet ? 'inline-block' : 'none';
+    }
+    function closeTokenSheetModal() {
+      document.getElementById('token-sheet-modal').style.display = 'none';
+    }
+    async function saveTokenSheet(e) {
+      e.preventDefault();
+      const id = document.getElementById('token-sheet-id').value;
+      const token_id = document.getElementById('token-sheet-token-id').value;
+      const name = document.getElementById('token-sheet-name').value;
+      const map_id = MapState.getCurrentMapId();
+      
+      // Collect data from dynamic form fields
+      const sheetJson = { name: name };
+      
+      // Check if we have dynamic fields (system-specific sheet)
+      const dynamicContainer = document.querySelector('.dynamic-sheet-content');
+      if (dynamicContainer) {
+        // Collect all data-field inputs
+        const fieldInputs = dynamicContainer.querySelectorAll('[data-field]');
+        
+        fieldInputs.forEach(input => {
+          const fieldPath = input.getAttribute('data-field');
+          const value = input.type === 'number' ? (parseFloat(input.value) || 0) : input.value;
+          
+          // Set nested object properties (e.g., "attributes.strength")
+          const pathParts = fieldPath.split('.');
+          let current = sheetJson;
+          
+          for (let i = 0; i < pathParts.length - 1; i++) {
+            if (!current[pathParts[i]]) {
+              current[pathParts[i]] = {};
+            }
+            current = current[pathParts[i]];
+          }
+          
+          current[pathParts[pathParts.length - 1]] = value;
+        });
+      } else {
+        // Fallback to content field for generic sheets
+        const contentField = document.getElementById('token-sheet-content');
+        if (contentField) {
+          sheetJson.content = contentField.value;
+        }
+      }
+      
+      try {
+        if (id) {
+          await fetch(`/api/token-sheets/${id}`, {method:'PUT', headers:{'Content-Type':'application/json'}, body:JSON.stringify({sheet_json: sheetJson, actor_id: null})});
+        } else {
+          await fetch(`/api/token-sheets`, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({map_token_id: token_id, actor_id: null, sheet_json: sheetJson})});
+        }
+        closeTokenSheetModal();
+        loadActiveTokensAndSheets();
+      } catch (e) { Logger.error('Failed to save token sheet', e); }
+    }
+    async function deleteTokenSheet() {
+      const id = document.getElementById('token-sheet-id').value;
+      if (!id) return;
+      if (!confirm('Delete this token sheet?')) return;
+      try {
+        await fetch(`/api/token-sheets/${id}`, {method:'DELETE'});
+        closeTokenSheetModal();
+        loadActiveTokensAndSheets();
+      } catch (e) { Logger.error('Failed to delete token sheet', e); }
+    }
+    function escapeHtml(str) {
+      return String(str).replace(/[&<>\"]/g, function(s) { return ({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;'})[s]; });
+    }
+    
+    function displayDynamicSheet(sheetData, token, system) {
+      const nameField = document.getElementById('token-sheet-name');
+      const contentField = document.getElementById('token-sheet-content');
+      
+      // Set the character name
+      nameField.value = sheetData.name || token.name || 'Token';
+      
+      // Create dynamic form based on system
+      const formContainer = document.getElementById('token-sheet-form');
+      
+      // Remove existing dynamic content (keep hidden fields and name field)
+      const existingDynamic = formContainer.querySelector('.dynamic-sheet-content');
+      if (existingDynamic) {
+        existingDynamic.remove();
+      }
+      
+      // Create dynamic content container
+      const dynamicContainer = document.createElement('div');
+      dynamicContainer.className = 'dynamic-sheet-content';
+      
+      if (system && sheetData.attributes) {
+        // Display system-specific fields
+        dynamicContainer.innerHTML = createSystemSpecificForm(sheetData, system);
+      } else {
+        // Fallback to generic content field
+        dynamicContainer.innerHTML = `
+          <div class="input-group">
+            <label for="token-sheet-content">Content</label>
+            <textarea id="token-sheet-content" rows="8" style="width:100%; background:#333; color:white; border:1px solid #555; border-radius:3px; padding:6px;">${escapeHtml(sheetData.content || '')}</textarea>
+          </div>
+        `;
+      }
+      
+      // Insert dynamic content after the name field
+      const nameGroup = nameField.closest('.input-group');
+      nameGroup.parentNode.insertBefore(dynamicContainer, nameGroup.nextSibling);
+    }
+    
+    function createSystemSpecificForm(sheetData, system) {
+      let html = '';
+      
+      // Add system indicator
+      html += `<div style="margin-bottom: 12px; padding: 6px; background: #444; border-radius: 3px; font-size: 12px; color: #ccc;">System: ${escapeHtml(system)}</div>`;
+      
+      if (sheetData.attributes) {
+        // Core attributes section
+        html += '<div style="margin-bottom: 16px;"><h4 style="margin: 0 0 8px 0; color: #fff; font-size: 14px;">Attributes</h4>';
+        html += '<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">';
+        
+        Object.entries(sheetData.attributes).forEach(([key, value]) => {
+          const displayName = key.charAt(0).toUpperCase() + key.slice(1);
+          html += `
+            <div class="input-group" style="margin-bottom: 4px;">
+              <label style="font-size: 12px; color: #ccc;">${escapeHtml(displayName)}</label>
+              <input type="number" data-field="attributes.${escapeHtml(key)}" value="${escapeHtml(value)}" style="width:100%; background:#333; color:white; border:1px solid #555; border-radius:3px; padding:4px; font-size: 12px;">
+            </div>
+          `;
+        });
+        
+        html += '</div></div>';
+      }
+      
+      if (sheetData.skills && Object.keys(sheetData.skills).length > 0) {
+        // Skills section
+        html += '<div style="margin-bottom: 16px;"><h4 style="margin: 0 0 8px 0; color: #fff; font-size: 14px;">Skills</h4>';
+        html += '<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 4px;">';
+        
+        Object.entries(sheetData.skills).forEach(([key, value]) => {
+          const displayName = key.charAt(0).toUpperCase() + key.slice(1).replace(/([A-Z])/g, ' $1');
+          html += `
+            <div style="display: flex; align-items: center; gap: 4px;">
+              <label style="font-size: 11px; color: #ccc; flex: 1;">${escapeHtml(displayName)}</label>
+              <input type="number" data-field="skills.${escapeHtml(key)}" value="${escapeHtml(value)}" style="width:50px; background:#333; color:white; border:1px solid #555; border-radius:3px; padding:2px; font-size: 11px;">
+            </div>
+          `;
+        });
+        
+        html += '</div></div>';
+      }
+      
+      if (sheetData.combat) {
+        // Combat stats section
+        html += '<div style="margin-bottom: 16px;"><h4 style="margin: 0 0 8px 0; color: #fff; font-size: 14px;">Combat</h4>';
+        html += '<div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px;">';
+        
+        Object.entries(sheetData.combat).forEach(([key, value]) => {
+          const displayName = key.charAt(0).toUpperCase() + key.slice(1).replace(/([A-Z])/g, ' $1');
+          html += `
+            <div class="input-group" style="margin-bottom: 4px;">
+              <label style="font-size: 12px; color: #ccc;">${escapeHtml(displayName)}</label>
+              <input type="number" data-field="combat.${escapeHtml(key)}" value="${escapeHtml(value)}" style="width:100%; background:#333; color:white; border:1px solid #555; border-radius:3px; padding:4px; font-size: 12px;">
+            </div>
+          `;
+        });
+        
+        html += '</div></div>';
+      }
+      
+      // Notes section
+      html += `
+        <div class="input-group">
+          <label style="font-size: 12px; color: #ccc;">Notes</label>
+          <textarea data-field="notes" rows="4" style="width:100%; background:#333; color:white; border:1px solid #555; border-radius:3px; padding:6px; font-size: 12px;">${escapeHtml(sheetData.notes || '')}</textarea>
+        </div>
+      `;
+      
+      return html;
+    }
+
     
     // Global state management with validation
     const MapState = {
@@ -2478,6 +2833,9 @@
         // Load positioned assets for this map
         await loadMapAssets(mapId);
         
+        // Update active tokens list for the selected map
+        loadActiveTokensAndSheets();
+        
         Logger.debug('Map loaded successfully', { mapId });
         
       } catch (error) {
@@ -2627,6 +2985,12 @@
       if (!mapName) return;
       
       try {
+        const campaignId = MapState.getCampaignId();
+        if (!campaignId) {
+          alert('Error: Campaign ID not found. Please reload the page.');
+          return;
+        }
+        
         const user = localStorage.getItem('pfvtt_user') || sessionStorage.getItem('pfvtt_user');
         const response = await fetch('http://localhost:8080/api/maps', {
           method: 'POST',
@@ -4346,6 +4710,10 @@
               createVisualAssetElement(assetData, gridX, gridY, targetLayer);
             } else {
               Logger.warn('createVisualAssetElement function not available');
+            }
+            // Update active tokens list if a token was added
+            if (targetLayer === 'tokens' || targetLayer === 'gm') {
+              loadActiveTokensAndSheets();
             }
           } else {
             const errorMsg = data?.error || 'Unknown error occurred';

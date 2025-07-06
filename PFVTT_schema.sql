@@ -11,34 +11,13 @@ CREATE TABLE IF NOT EXISTS users (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-
 INSERT INTO users (username, password_hash) VALUES ('nevarim', '$2b$10$rDbVvjR8dwKjGegbVJw2tuTWtQDQHWJe6M6VrQ2ofGeBXf9jJQpoC');
-
--- Game sessions table
-CREATE TABLE IF NOT EXISTS sessions (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  user_id INT NOT NULL,
-  session_token VARCHAR(255) NOT NULL UNIQUE,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (user_id) REFERENCES users(id)
-);
-
--- Maps table
-CREATE TABLE IF NOT EXISTS maps (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  campaign_id INT NOT NULL,
-  name VARCHAR(100) NOT NULL,
-  data TEXT DEFAULT '{}',
-  created_by INT DEFAULT NULL,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (campaign_id) REFERENCES campaigns(id),
-  FOREIGN KEY (created_by) REFERENCES users(id)
-);
 
 -- Game rules table
 CREATE TABLE IF NOT EXISTS game_rules (
   id INT AUTO_INCREMENT PRIMARY KEY,
   system VARCHAR(50) NOT NULL, -- e.g., Pathfinder, D&D 5.0
+  folder_name VARCHAR(50) NOT NULL, -- folder name in backend/games/
   rules_json TEXT NOT NULL
 );
 
@@ -55,6 +34,27 @@ CREATE TABLE IF NOT EXISTS campaigns (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (user_id) REFERENCES users(id),
   FOREIGN KEY (game_rules_id) REFERENCES game_rules(id)
+);
+
+-- Maps table
+CREATE TABLE IF NOT EXISTS maps (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  campaign_id INT NOT NULL,
+  name VARCHAR(100) NOT NULL,
+  data TEXT DEFAULT '{}',
+  created_by INT DEFAULT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (campaign_id) REFERENCES campaigns(id),
+  FOREIGN KEY (created_by) REFERENCES users(id)
+);
+
+-- Game sessions table
+CREATE TABLE IF NOT EXISTS sessions (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NOT NULL,
+  session_token VARCHAR(255) NOT NULL UNIQUE,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
 -- Actors table
@@ -183,6 +183,18 @@ CREATE TABLE IF NOT EXISTS map_audio (
   INDEX idx_grid_position (map_id, grid_x, grid_y, grid_z)
 );
 
+-- Token sheets table - links map tokens to a generic sheet (JSON)
+CREATE TABLE IF NOT EXISTS token_sheets (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  map_token_id INT NOT NULL,
+  actor_id INT DEFAULT NULL, -- Optional: link to actors table for reusable sheets
+  sheet_json JSON NOT NULL, -- The sheet data (system-agnostic)
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  FOREIGN KEY (map_token_id) REFERENCES map_tokens(id) ON DELETE CASCADE,
+  FOREIGN KEY (actor_id) REFERENCES actors(id) ON DELETE SET NULL
+);
+
 -- Map props table - references campaign assets
 CREATE TABLE IF NOT EXISTS map_props (
   id INT AUTO_INCREMENT PRIMARY KEY,
@@ -207,11 +219,11 @@ CREATE TABLE IF NOT EXISTS map_props (
   INDEX idx_grid_position (map_id, grid_x, grid_y, grid_z)
 );
 
-INSERT INTO game_rules (system, rules_json) VALUES
-  ('D&D 5e', '{"description": "Dungeons & Dragons 5th Edition core rules."}'),
-  ('Pathfinder', '{"description": "Pathfinder 1st Edition core rules."}'),
-  ('Pathfinder 2', '{"description": "Pathfinder 2nd Edition core rules."}'),
-  ('D&D 3.5', '{"description": "Dungeons & Dragons 3.5 Edition core rules."}');
+INSERT INTO game_rules (system, folder_name, rules_json) VALUES
+  ('D&D 5e', 'dnd_5e', '{"description": "Dungeons & Dragons 5th Edition core rules."}'),
+  ('Pathfinder', 'pathfinder_1e', '{"description": "Pathfinder 1st Edition core rules."}'),
+  ('Pathfinder 2', 'pathfinder_2e', '{"description": "Pathfinder 2nd Edition core rules."}'),
+  ('D&D 3.5', 'dnd_35e', '{"description": "Dungeons & Dragons 3.5 Edition core rules."}');
 
 -- Sample data for testing
 INSERT INTO campaigns (user_id, name, description, game_rules_id) VALUES

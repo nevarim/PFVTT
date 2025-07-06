@@ -1,0 +1,119 @@
+{
+  "artificer": {
+    "name": "Artificer",
+    "hit_die": "d8",
+    "primary_ability": "Intelligence",
+    "saving_throw_proficiencies": ["Constitution", "Intelligence"],
+    "spellcasting_ability": "Intelligence",
+    "spellcasting_type": "half_caster",
+    "description": "Masters of invention, artificers use ingenuity and magic to unlock extraordinary capabilities in objects."
+  },
+  "barbarian": {
+    "name": "Barbarian",
+    "hit_die": "d12",
+    "primary_ability": "Strength",
+    "saving_throw_proficiencies": ["Strength", "Constitution"],
+    "spellcasting_ability": null,
+    "spellcasting_type": "none",
+    "description": "A fierce warrior of primitive background who can enter a battle rage."
+  },
+  "bard": {
+    "name": "Bard",
+    "hit_die": "d8",
+    "primary_ability": "Charisma",
+    "saving_throw_proficiencies": ["Dexterity", "Charisma"],
+    "spellcasting_ability": "Charisma",
+    "spellcasting_type": "full_caster",
+    "description": "A master of song, speech, and the magic they contain."
+  },
+  "cleric": {
+    "name": "Cleric",
+    "hit_die": "d8",
+    "primary_ability": "Wisdom",
+    "saving_throw_proficiencies": ["Wisdom", "Charisma"],
+    "spellcasting_ability": "Wisdom",
+    "spellcasting_type": "full_caster",
+    "description": "A priestly champion who wields divine magic in service of a higher power."
+  },
+  "druid": {
+    "name": "Druid",
+    "hit_die": "d8",
+    "primary_ability": "Wisdom",
+    "saving_throw_proficiencies": ["Intelligence", "Wisdom"],
+    "spellcasting_ability": "Wisdom",
+    "spellcasting_type": "full_caster",
+    "description": "A priest of the Old Faith, wielding the elemental forces of nature and transforming into animal forms."
+  },
+  "fighter": {
+    "name": "Fighter",
+    "hit_die": "d10",
+    "primary_ability": "Strength or Dexterity",
+    "saving_throw_proficiencies": ["Strength", "Constitution"],
+    "spellcasting_ability": null,
+    "spellcasting_type": "none",
+    "description": "A master of martial combat, skilled with a variety of weapons and armor."
+  },
+  "monk": {
+    "name": "Monk",
+    "hit_die": "d8",
+    "primary_ability": "Dexterity & Wisdom",
+    "saving_throw_proficiencies": ["Strength", "Dexterity"],
+    "spellcasting_ability": null,
+    "spellcasting_type": "none",
+    "description": "A master of martial arts, harnessing the power of the body in pursuit of physical and spiritual perfection."
+  },
+  "paladin": {
+    "name": "Paladin",
+    "hit_die": "d10",
+    "primary_ability": "Strength & Charisma",
+    "saving_throw_proficiencies": ["Wisdom", "Charisma"],
+    "spellcasting_ability": "Charisma",
+    "spellcasting_type": "half_caster",
+    "description": "A holy warrior bound to a sacred oath."
+  },
+  "ranger": {
+    "name": "Ranger",
+    "hit_die": "d10",
+    "primary_ability": "Dexterity & Wisdom",
+    "saving_throw_proficiencies": ["Strength", "Dexterity"],
+    "spellcasting_ability": "Wisdom",
+    "spellcasting_type": "half_caster",
+    "description": "A warrior of the wilderness, skilled in tracking, survival, and combat."
+  },
+  "rogue": {
+    "name": "Rogue",
+    "hit_die": "d8",
+    "primary_ability": "Dexterity",
+    "saving_throw_proficiencies": ["Dexterity", "Intelligence"],
+    "spellcasting_ability": null,
+    "spellcasting_type": "none",
+    "description": "A scoundrel who uses stealth and trickery to overcome obstacles."
+  },
+  "sorcerer": {
+    "name": "Sorcerer",
+    "hit_die": "d6",
+    "primary_ability": "Charisma",
+    "saving_throw_proficiencies": ["Constitution", "Charisma"],
+    "spellcasting_ability": "Charisma",
+    "spellcasting_type": "full_caster",
+    "description": "A spellcaster who draws on inherent magic from a gift or bloodline."
+  },
+  "warlock": {
+    "name": "Warlock",
+    "hit_die": "d8",
+    "primary_ability": "Charisma",
+    "saving_throw_proficiencies": ["Wisdom", "Charisma"],
+    "spellcasting_ability": "Charisma",
+    "spellcasting_type": "pact_caster",
+    "description": "A wielder of magic that is derived from a bargain with an extraplanar entity."
+  },
+  "wizard": {
+    "name": "Wizard",
+    "hit_die": "d6",
+    "primary_ability": "Intelligence",
+    "saving_throw_proficiencies": ["Intelligence", "Wisdom"],
+    "spellcasting_ability": "Intelligence",
+    "spellcasting_type": "full_caster",
+    "description": "A scholarly magic-user capable of manipulating the structures of spells to suit their needs."
+  }
+}

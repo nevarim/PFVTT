@@ -41,3 +41,4 @@ temp/
 *.pid
 *.seed
 *.pid.lock
+backend/images/campaign/tokens*

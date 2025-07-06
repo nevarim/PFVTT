@@ -14,7 +14,10 @@
   - [x] MySQL connection with pooling
   - [x] User authentication system
   - [x] Campaign management API
-  - [x] Game rules management API
+  - [x] Game rules management API (with folder_name support)
+  - [x] Dynamic game systems API
+    - [x] GET /api/game-systems (list all systems)
+    - [x] GET /api/game-systems/:folder (get system data)
   - [x] Map data API
   - [x] Actors API
   - [x] Scenes API
@@ -170,12 +173,17 @@
 ## Future Enhancements
 
 ### Game Systems Support
-- [ ] D&D 3.0 rules integration
-- [ ] D&D 3.5 rules integration
-- [ ] D&D 4.0 rules integration
-- [ ] D&D 5.0 rules integration
-- [ ] Pathfinder rules integration
-- [ ] Pathfinder 2 rules integration
+- [x] **Dynamic Game System Management** (COMPLETED)
+  - [x] Folder-based game system organization
+  - [x] JSON-based character sheet templates
+  - [x] Database integration with `folder_name` field
+  - [x] API endpoints for game system data retrieval
+  - [x] Frontend integration with dynamic dropdowns
+- [x] D&D 3.5 rules integration (via games/dnd_35e folder)
+- [x] D&D 5.0 rules integration (via games/dnd_5e folder)
+- [x] Pathfinder rules integration (via games/pathfinder_1e folder)
+- [x] Pathfinder 2 rules integration (via games/pathfinder_2e folder)
+- [ ] Additional game systems (easily extensible via folder structure)
 - [ ] Starfinder rules integration
 
 ### Advanced Features

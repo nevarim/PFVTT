@@ -9,16 +9,31 @@
   <div class="rules-container">
     <table id="rules-table">
       <thead>
-        <tr><th>ID</th><th>System</th><th>Description</th><th>Actions</th></tr>
+        <tr><th>ID</th><th>System</th><th>Folder Name</th><th>Description</th><th>Actions</th></tr>
       </thead>
       <tbody>
         <!-- Rules will be dynamically loaded here -->
       </tbody>
     </table>
+    
+    <div class="game-systems-info">
+      <h2>Available Game Systems</h2>
+      <div id="game-systems-list">
+        <!-- Game systems will be loaded here -->
+      </div>
+    </div>
+    
     <h2>Add / Edit Rule</h2>
     <form id="rule-form">
       <input type="hidden" id="rule-id" />
       <input type="text" id="rule-system" placeholder="System (e.g., D&D 5e)" required />
+      <select id="rule-folder" required>
+        <option value="">Select Game System Folder</option>
+        <option value="dnd_5e">D&D 5e</option>
+        <option value="pathfinder_1e">Pathfinder 1e</option>
+        <option value="pathfinder_2e">Pathfinder 2e</option>
+        <option value="dnd_35e">D&D 3.5e</option>
+      </select>
       <input type="text" id="rule-description" placeholder="Description" required />
       <button type="submit">Save Rule</button>
       <button type="button" id="cancel-edit" style="display:none;">Cancel</button>
