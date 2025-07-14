@@ -1,0 +1,235 @@
+{
+  "0_level": {
+    "dancing_lights": {
+      "name": "Dancing Lights",
+      "level": 0,
+      "school": "Evocation",
+      "casting_time": "1 standard action",
+      "range": "Medium (100 ft. + 10 ft./level)",
+      "duration": "1 minute",
+      "description": "You create up to four lights that resemble lanterns or torches (and cast that amount of light), or up to four glowing spheres of light (which look like will-o'-wisps)."
+    },
+    "detect_magic": {
+      "name": "Detect Magic",
+      "level": 0,
+      "school": "Divination",
+      "casting_time": "1 standard action",
+      "range": "60 ft.",
+      "duration": "Concentration, up to 1 minute/level",
+      "description": "You detect magical auras. The amount of information revealed depends on how long you study a particular area or subject."
+    },
+    "ghost_sound": {
+      "name": "Ghost Sound",
+      "level": 0,
+      "school": "Illusion",
+      "casting_time": "1 standard action",
+      "range": "Close (25 ft. + 5 ft./2 levels)",
+      "duration": "1 round/level",
+      "description": "You create a volume of sound that rises, recedes, approaches, or remains at a fixed place."
+    },
+    "mage_hand": {
+      "name": "Mage Hand",
+      "level": 0,
+      "school": "Transmutation",
+      "casting_time": "1 standard action",
+      "range": "Close (25 ft. + 5 ft./2 levels)",
+      "duration": "Concentration",
+      "description": "You point your finger at an object and can lift it and move it at will from a distance."
+    },
+    "telepathic_message": {
+      "name": "Telepathic Message",
+      "level": 0,
+      "school": "Enchantment",
+      "casting_time": "1 standard action",
+      "range": "Medium (100 ft. + 10 ft./level)",
+      "duration": "10 minutes/level",
+      "description": "You can mentally communicate with any other creature within range that has a language."
+    }
+  },
+  "1st_level": {
+    "charm_person": {
+      "name": "Charm Person",
+      "level": 1,
+      "school": "Enchantment",
+      "casting_time": "1 standard action",
+      "range": "Close (25 ft. + 5 ft./2 levels)",
+      "duration": "1 hour/level",
+      "description": "This charm makes a humanoid creature regard you as its trusted friend and ally."
+    },
+    "command": {
+      "name": "Command",
+      "level": 1,
+      "school": "Enchantment",
+      "casting_time": "1 standard action",
+      "range": "Close (25 ft. + 5 ft./2 levels)",
+      "duration": "1 round",
+      "description": "You give the subject a single command, which it obeys to the best of its ability at its earliest opportunity."
+    },
+    "comprehend_languages": {
+      "name": "Comprehend Languages",
+      "level": 1,
+      "school": "Divination",
+      "casting_time": "1 standard action",
+      "range": "Personal",
+      "duration": "10 minutes/level",
+      "description": "You can understand the spoken words of creatures or read otherwise incomprehensible written messages."
+    },
+    "detect_thoughts": {
+      "name": "Detect Thoughts",
+      "level": 1,
+      "school": "Divination",
+      "casting_time": "1 standard action",
+      "range": "60 ft.",
+      "duration": "Concentration, up to 1 minute/level",
+      "description": "You detect surface thoughts. The amount of information revealed depends on how long you study a particular area or subject."
+    },
+    "disguise_self": {
+      "name": "Disguise Self",
+      "level": 1,
+      "school": "Illusion",
+      "casting_time": "1 standard action",
+      "range": "Personal",
+      "duration": "10 minutes/level",
+      "description": "You make yourself—including clothing, armor, weapons, and equipment—look different."
+    },
+    "identify": {
+      "name": "Identify",
+      "level": 1,
+      "school": "Divination",
+      "casting_time": "1 standard action",
+      "range": "Touch",
+      "duration": "Instantaneous",
+      "description": "This spell functions as detect magic, except that it gives you a +10 enhancement bonus to Mysticism checks to identify the properties and command words of magic items in your possession."
+    },
+    "magic_missile": {
+      "name": "Magic Missile",
+      "level": 1,
+      "school": "Evocation",
+      "casting_time": "1 standard action",
+      "range": "Medium (100 ft. + 10 ft./level)",
+      "duration": "Instantaneous",
+      "description": "You fire two missiles of magical energy that strike their targets, dealing 1d4+1 force damage each."
+    },
+    "mystic_cure": {
+      "name": "Mystic Cure",
+      "level": 1,
+      "school": "Conjuration",
+      "casting_time": "1 standard action",
+      "range": "Touch",
+      "duration": "Instantaneous",
+      "description": "You channel positive energy that cures 1d8 + your Wisdom modifier Hit Points of damage to the target."
+    }
+  },
+  "2nd_level": {
+    "augury": {
+      "name": "Augury",
+      "level": 2,
+      "school": "Divination",
+      "casting_time": "1 minute",
+      "range": "Personal",
+      "duration": "Instantaneous",
+      "description": "An augury can tell you whether a particular action will bring good or bad results for you in the immediate future."
+    },
+    "fog_cloud": {
+      "name": "Fog Cloud",
+      "level": 2,
+      "school": "Conjuration",
+      "casting_time": "1 standard action",
+      "range": "Medium (100 ft. + 10 ft./level)",
+      "duration": "10 minutes/level",
+      "description": "A bank of fog billows out from the point you designate. The fog obscures all sight, including darkvision, beyond 5 feet."
+    },
+    "hold_person": {
+      "name": "Hold Person",
+      "level": 2,
+      "school": "Enchantment",
+      "casting_time": "1 standard action",
+      "range": "Medium (100 ft. + 10 ft./level)",
+      "duration": "1 round/level",
+      "description": "The subject becomes paralyzed and freezes in place. It is aware and breathes normally but cannot take any actions."
+    },
+    "invisibility": {
+      "name": "Invisibility",
+      "level": 2,
+      "school": "Illusion",
+      "casting_time": "1 standard action",
+      "range": "Touch",
+      "duration": "1 minute/level",
+      "description": "The creature or object touched becomes invisible, vanishing from sight, even from darkvision."
+    },
+    "make_whole": {
+      "name": "Make Whole",
+      "level": 2,
+      "school": "Transmutation",
+      "casting_time": "10 minutes",
+      "range": "Close (25 ft. + 5 ft./2 levels)",
+      "duration": "Instantaneous",
+      "description": "This spell functions as mending, except that it completely repairs an object made of any substance."
+    },
+    "mirror_image": {
+      "name": "Mirror Image",
+      "level": 2,
+      "school": "Illusion",
+      "casting_time": "1 standard action",
+      "range": "Personal",
+      "duration": "1 minute/level",
+      "description": "Several illusory duplicates of you pop into being, making it difficult for enemies to know which target to attack."
+    }
+  },
+  "3rd_level": {
+    "clairaudience_clairvoyance": {
+      "name": "Clairaudience/Clairvoyance",
+      "level": 3,
+      "school": "Divination",
+      "casting_time": "10 minutes",
+      "range": "Long (400 ft. + 40 ft./level)",
+      "duration": "1 minute/level",
+      "description": "You create an invisible magical sensor at a specific location that enables you to hear or see (your choice) almost as if you were there."
+    },
+    "dispel_magic": {
+      "name": "Dispel Magic",
+      "level": 3,
+      "school": "Abjuration",
+      "casting_time": "1 standard action",
+      "range": "Medium (100 ft. + 10 ft./level)",
+      "duration": "Instantaneous",
+      "description": "You can use dispel magic to end one ongoing spell that has been cast on a creature or object."
+    },
+    "explosive_blast": {
+      "name": "Explosive Blast",
+      "level": 3,
+      "school": "Evocation",
+      "casting_time": "1 standard action",
+      "range": "Long (400 ft. + 40 ft./level)",
+      "duration": "Instantaneous",
+      "description": "You magically transform a piece of ammunition into an explosive projectile."
+    },
+    "fireball": {
+      "name": "Fireball",
+      "level": 3,
+      "school": "Evocation",
+      "casting_time": "1 standard action",
+      "range": "Long (400 ft. + 40 ft./level)",
+      "duration": "Instantaneous",
+      "description": "A glowing, pea-sized bead streaks from your pointing digit and, unless it impacts upon a material body or solid barrier prior to attaining the prescribed range, blossoms into the fireball at that point."
+    },
+    "haste": {
+      "name": "Haste",
+      "level": 3,
+      "school": "Transmutation",
+      "casting_time": "1 standard action",
+      "range": "Close (25 ft. + 5 ft./2 levels)",
+      "duration": "1 round/level",
+      "description": "The transmuted creature moves and acts more quickly than normal. This extra speed has several effects."
+    },
+    "slow": {
+      "name": "Slow",
+      "level": 3,
+      "school": "Transmutation",
+      "casting_time": "1 standard action",
+      "range": "Close (25 ft. + 5 ft./2 levels)",
+      "duration": "1 round/level",
+      "description": "An affected creature moves and acts more slowly than normal. Slowed creatures can take only a single move action or standard action each turn."
+    }
+  }
+}

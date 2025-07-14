@@ -1,1 +1,239 @@
-{}
+{
+  "base_classes": {
+    "barbarian": {
+      "name": "Barbarian",
+      "hit_die": "d12",
+      "skill_points": "4 + Int modifier",
+      "primary_ability": "Strength",
+      "saving_throws": {
+        "good": ["Fortitude"],
+        "poor": ["Reflex", "Will"]
+      },
+      "base_attack_bonus": "Full",
+      "spellcaster": false,
+      "description": "A fierce warrior of primitive background who can enter a battle rage."
+    },
+    "bard": {
+      "name": "Bard",
+      "hit_die": "d8",
+      "skill_points": "6 + Int modifier",
+      "primary_ability": "Charisma",
+      "saving_throws": {
+        "good": ["Reflex", "Will"],
+        "poor": ["Fortitude"]
+      },
+      "base_attack_bonus": "3/4",
+      "spellcaster": true,
+      "spell_type": "Arcane",
+      "description": "A performer whose music works magic—a wandering jack-of-all-trades."
+    },
+    "cleric": {
+      "name": "Cleric",
+      "hit_die": "d8",
+      "skill_points": "2 + Int modifier",
+      "primary_ability": "Wisdom",
+      "saving_throws": {
+        "good": ["Fortitude", "Will"],
+        "poor": ["Reflex"]
+      },
+      "base_attack_bonus": "3/4",
+      "spellcaster": true,
+      "spell_type": "Divine",
+      "description": "A devout follower of a deity who can work divine magic."
+    },
+    "druid": {
+      "name": "Druid",
+      "hit_die": "d8",
+      "skill_points": "4 + Int modifier",
+      "primary_ability": "Wisdom",
+      "saving_throws": {
+        "good": ["Fortitude", "Will"],
+        "poor": ["Reflex"]
+      },
+      "base_attack_bonus": "3/4",
+      "spellcaster": true,
+      "spell_type": "Divine",
+      "description": "One who draws power from nature itself or a nature deity."
+    },
+    "fighter": {
+      "name": "Fighter",
+      "hit_die": "d10",
+      "skill_points": "2 + Int modifier",
+      "primary_ability": "Strength or Dexterity",
+      "saving_throws": {
+        "good": ["Fortitude"],
+        "poor": ["Reflex", "Will"]
+      },
+      "base_attack_bonus": "Full",
+      "spellcaster": false,
+      "description": "A master of martial combat, skilled with a variety of weapons and armor."
+    },
+    "monk": {
+      "name": "Monk",
+      "hit_die": "d8",
+      "skill_points": "4 + Int modifier",
+      "primary_ability": "Dexterity and Wisdom",
+      "saving_throws": {
+        "good": ["Fortitude", "Reflex", "Will"],
+        "poor": []
+      },
+      "base_attack_bonus": "3/4",
+      "spellcaster": false,
+      "description": "A master of martial arts, harnessing inner power through discipline."
+    },
+    "paladin": {
+      "name": "Paladin",
+      "hit_die": "d10",
+      "skill_points": "2 + Int modifier",
+      "primary_ability": "Charisma",
+      "saving_throws": {
+        "good": ["Fortitude", "Will"],
+        "poor": ["Reflex"]
+      },
+      "base_attack_bonus": "Full",
+      "spellcaster": true,
+      "spell_type": "Divine",
+      "description": "A holy warrior dedicated to good and law."
+    },
+    "ranger": {
+      "name": "Ranger",
+      "hit_die": "d10",
+      "skill_points": "6 + Int modifier",
+      "primary_ability": "Dexterity and Wisdom",
+      "saving_throws": {
+        "good": ["Fortitude", "Reflex"],
+        "poor": ["Will"]
+      },
+      "base_attack_bonus": "Full",
+      "spellcaster": true,
+      "spell_type": "Divine",
+      "description": "A skilled hunter and tracker who lives on the edges of civilization."
+    },
+    "rogue": {
+      "name": "Rogue",
+      "hit_die": "d8",
+      "skill_points": "8 + Int modifier",
+      "primary_ability": "Dexterity",
+      "saving_throws": {
+        "good": ["Reflex"],
+        "poor": ["Fortitude", "Will"]
+      },
+      "base_attack_bonus": "3/4",
+      "spellcaster": false,
+      "description": "A scoundrel who uses stealth and trickery to get the upper hand."
+    },
+    "sorcerer": {
+      "name": "Sorcerer",
+      "hit_die": "d6",
+      "skill_points": "2 + Int modifier",
+      "primary_ability": "Charisma",
+      "saving_throws": {
+        "good": ["Will"],
+        "poor": ["Fortitude", "Reflex"]
+      },
+      "base_attack_bonus": "1/2",
+      "spellcaster": true,
+      "spell_type": "Arcane",
+      "description": "A spellcaster with inborn magical ability."
+    },
+    "wizard": {
+      "name": "Wizard",
+      "hit_die": "d6",
+      "skill_points": "2 + Int modifier",
+      "primary_ability": "Intelligence",
+      "saving_throws": {
+        "good": ["Will"],
+        "poor": ["Fortitude", "Reflex"]
+      },
+      "base_attack_bonus": "1/2",
+      "spellcaster": true,
+      "spell_type": "Arcane",
+      "description": "A potent spellcaster schooled in the arcane arts."
+    }
+  },
+  "advanced_classes": {
+    "alchemist": {
+      "name": "Alchemist",
+      "hit_die": "d8",
+      "skill_points": "4 + Int modifier",
+      "primary_ability": "Intelligence",
+      "saving_throws": {
+        "good": ["Fortitude", "Reflex"],
+        "poor": ["Will"]
+      },
+      "base_attack_bonus": "3/4",
+      "spellcaster": true,
+      "spell_type": "Extracts",
+      "description": "A creator of alchemical items and mutagens."
+    },
+    "cavalier": {
+      "name": "Cavalier",
+      "hit_die": "d10",
+      "skill_points": "4 + Int modifier",
+      "primary_ability": "Strength",
+      "saving_throws": {
+        "good": ["Fortitude", "Will"],
+        "poor": ["Reflex"]
+      },
+      "base_attack_bonus": "Full",
+      "spellcaster": false,
+      "description": "A mounted warrior sworn to a cause, order, or ideal."
+    },
+    "inquisitor": {
+      "name": "Inquisitor",
+      "hit_die": "d8",
+      "skill_points": "6 + Int modifier",
+      "primary_ability": "Wisdom",
+      "saving_throws": {
+        "good": ["Fortitude", "Will"],
+        "poor": ["Reflex"]
+      },
+      "base_attack_bonus": "3/4",
+      "spellcaster": true,
+      "spell_type": "Divine",
+      "description": "A divine agent, rooting out enemies of the faith."
+    },
+    "oracle": {
+      "name": "Oracle",
+      "hit_die": "d8",
+      "skill_points": "4 + Int modifier",
+      "primary_ability": "Charisma",
+      "saving_throws": {
+        "good": ["Will"],
+        "poor": ["Fortitude", "Reflex"]
+      },
+      "base_attack_bonus": "3/4",
+      "spellcaster": true,
+      "spell_type": "Divine",
+      "description": "A divine spellcaster cursed or blessed by the gods."
+    },
+    "summoner": {
+      "name": "Summoner",
+      "hit_die": "d8",
+      "skill_points": "2 + Int modifier",
+      "primary_ability": "Charisma",
+      "saving_throws": {
+        "good": ["Will"],
+        "poor": ["Fortitude", "Reflex"]
+      },
+      "base_attack_bonus": "3/4",
+      "spellcaster": true,
+      "spell_type": "Arcane",
+      "description": "A spellcaster who conjures monsters and focuses on summoning."
+    },
+    "witch": {
+      "name": "Witch",
+      "hit_die": "d6",
+      "skill_points": "2 + Int modifier",
+      "primary_ability": "Intelligence",
+      "saving_throws": {
+        "good": ["Will"],
+        "poor": ["Fortitude", "Reflex"]
+      },
+      "base_attack_bonus": "1/2",
+      "spellcaster": true,
+      "spell_type": "Arcane",
+      "description": "A spellcaster who draws power from a patron and uses hexes."
+    }
+  }
+}

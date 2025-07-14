@@ -1,0 +1,131 @@
+{
+  "acrobatics": {
+    "name": "Acrobatics",
+    "ability": "Dexterity",
+    "armor_check_penalty": true,
+    "description": "You can keep your balance while traversing narrow or treacherous surfaces, escape from restraints, and tumble to avoid attacks."
+  },
+  "athletics": {
+    "name": "Athletics",
+    "ability": "Strength",
+    "armor_check_penalty": true,
+    "description": "You can scale vertical surfaces, leap over obstacles, and swim."
+  },
+  "bluff": {
+    "name": "Bluff",
+    "ability": "Charisma",
+    "armor_check_penalty": false,
+    "description": "You can use words and actions to misdirect your enemies' attention, allowing you to attempt tricks and feints in combat."
+  },
+  "computers": {
+    "name": "Computers",
+    "ability": "Intelligence",
+    "armor_check_penalty": false,
+    "trained_only": true,
+    "description": "You can operate, manipulate, and hack into computer systems."
+  },
+  "culture": {
+    "name": "Culture",
+    "ability": "Intelligence",
+    "armor_check_penalty": false,
+    "trained_only": true,
+    "description": "You are a student of the vast number of known cultures in the galaxy."
+  },
+  "diplomacy": {
+    "name": "Diplomacy",
+    "ability": "Charisma",
+    "armor_check_penalty": false,
+    "description": "You can persuade others to agree with your arguments, resolve differences, and gather valuable information or rumors from people."
+  },
+  "disguise": {
+    "name": "Disguise",
+    "ability": "Charisma",
+    "armor_check_penalty": false,
+    "description": "You are able to change your appearance to blend in and deceive others."
+  },
+  "engineering": {
+    "name": "Engineering",
+    "ability": "Intelligence",
+    "armor_check_penalty": false,
+    "trained_only": true,
+    "description": "You can identify, build, repair, or disable technological devices."
+  },
+  "intimidate": {
+    "name": "Intimidate",
+    "ability": "Charisma",
+    "armor_check_penalty": false,
+    "description": "You can rattle your foes or bully them to do what you want with verbal threats or displays of prowess."
+  },
+  "life_science": {
+    "name": "Life Science",
+    "ability": "Intelligence",
+    "armor_check_penalty": false,
+    "trained_only": true,
+    "description": "You are educated in the scientific study of living things, from the smallest organisms to the largest biological systems."
+  },
+  "medicine": {
+    "name": "Medicine",
+    "ability": "Intelligence",
+    "armor_check_penalty": false,
+    "trained_only": true,
+    "description": "You have knowledge of the biology of many species and can treat a number of different types of wounds and ailments."
+  },
+  "mysticism": {
+    "name": "Mysticism",
+    "ability": "Wisdom",
+    "armor_check_penalty": false,
+    "trained_only": true,
+    "description": "You are educated in the fields of magic, religion, the planes, and spellcasting, and you can use this knowledge to cast spells or identify magical effects."
+  },
+  "perception": {
+    "name": "Perception",
+    "ability": "Wisdom",
+    "armor_check_penalty": false,
+    "description": "You can use all of your senses (hearing, taste, touch, sight, and smell) to notice danger, pick out details, and search for hidden objects or creatures."
+  },
+  "physical_science": {
+    "name": "Physical Science",
+    "ability": "Intelligence",
+    "armor_check_penalty": false,
+    "trained_only": true,
+    "description": "You are educated in the scientific study of non-living systems, from the tiniest atoms to the largest celestial bodies."
+  },
+  "piloting": {
+    "name": "Piloting",
+    "ability": "Dexterity",
+    "armor_check_penalty": false,
+    "description": "You know how to drive and pilot vehicles and starships."
+  },
+  "profession": {
+    "name": "Profession",
+    "ability": "Charisma, Intelligence, or Wisdom",
+    "armor_check_penalty": false,
+    "trained_only": true,
+    "description": "You are skilled in a specific job, specialty, or creative art."
+  },
+  "sense_motive": {
+    "name": "Sense Motive",
+    "ability": "Wisdom",
+    "armor_check_penalty": false,
+    "description": "You can detect falsehoods and gain glimpses of the true intentions of creatures with which you interact."
+  },
+  "sleight_of_hand": {
+    "name": "Sleight of Hand",
+    "ability": "Dexterity",
+    "armor_check_penalty": true,
+    "trained_only": true,
+    "description": "You can hide small objects, perform feats of legerdemain, pick pockets, and perform other manual tricks."
+  },
+  "stealth": {
+    "name": "Stealth",
+    "ability": "Dexterity",
+    "armor_check_penalty": true,
+    "description": "You can stay hidden and move silently to avoid detection, allowing you to sneak past foes or strike from an unseen position."
+  },
+  "survival": {
+    "name": "Survival",
+    "ability": "Wisdom",
+    "armor_check_penalty": false,
+    "description": "You can survive in and make your way safely through almost any kind of wilderness, follow trails and tracks, deal with wild animals, and ride tamed ones."
+  }
+}

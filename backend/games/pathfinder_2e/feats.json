@@ -1,1 +1,124 @@
-{}
+{
+  "feats": [
+    {
+      "name": "Toughness",
+      "type": "General",
+      "level": 1,
+      "prerequisites": [],
+      "benefits": "Increase your maximum Hit Points by your level. The DC of recovery checks is equal to 9 + your dying condition value.",
+      "description": "You can withstand more punishment than most."
+    },
+    {
+      "name": "Fleet",
+      "type": "General",
+      "level": 1,
+      "prerequisites": [],
+      "benefits": "Your Speed increases by 5 feet.",
+      "description": "You move more quickly on foot."
+    },
+    {
+      "name": "Incredible Initiative",
+      "type": "General",
+      "level": 1,
+      "prerequisites": [],
+      "benefits": "You gain a +2 circumstance bonus to initiative rolls.",
+      "description": "You react more quickly than others can."
+    },
+    {
+      "name": "Shield Block",
+      "type": "General",
+      "level": 1,
+      "prerequisites": [],
+      "benefits": "You can use the Shield Block reaction.",
+      "description": "You can snap your shield into place to deflect a blow."
+    },
+    {
+      "name": "Power Attack",
+      "type": "Fighter",
+      "level": 1,
+      "prerequisites": [],
+      "benefits": "You make an attack that trades accuracy for damage.",
+      "description": "You unleash a particularly powerful attack that clobbers your foe but leaves you a bit unsteady."
+    },
+    {
+      "name": "Sudden Charge",
+      "type": "Fighter",
+      "level": 1,
+      "prerequisites": [],
+      "benefits": "You Stride twice and make a melee Strike.",
+      "description": "With a quick sprint, you dash up to your foe and swing."
+    },
+    {
+      "name": "Rage",
+      "type": "Barbarian",
+      "level": 1,
+      "prerequisites": [],
+      "benefits": "You can enter a rage as explored in the barbarian's Rage ability.",
+      "description": "You tap into your inner fury and begin raging."
+    },
+    {
+      "name": "Moment of Clarity",
+      "type": "Barbarian",
+      "level": 1,
+      "prerequisites": ["Rage"],
+      "benefits": "You can use actions with the concentrate trait while raging.",
+      "description": "You push back your rage for a moment in order to think clearly."
+    },
+    {
+      "name": "Cantrip Expansion",
+      "type": "Wizard",
+      "level": 1,
+      "prerequisites": [],
+      "benefits": "Add one additional cantrip from your spell list to your repertoire.",
+      "description": "You study a wider range of simple spells."
+    },
+    {
+      "name": "Familiar",
+      "type": "Wizard",
+      "level": 1,
+      "prerequisites": [],
+      "benefits": "You gain a familiar.",
+      "description": "An animal serves you and assists your spellcasting."
+    },
+    {
+      "name": "Sneak Attack",
+      "type": "Rogue",
+      "level": 1,
+      "prerequisites": [],
+      "benefits": "You deal additional precision damage when you have an advantage.",
+      "description": "You strike where it hurts most."
+    },
+    {
+      "name": "Nimble Dodge",
+      "type": "Rogue",
+      "level": 1,
+      "prerequisites": [],
+      "benefits": "You gain a +2 circumstance bonus to AC against one attack.",
+      "description": "You deftly dodge out of the way, gaining a +2 circumstance bonus to AC against one attack."
+    },
+    {
+      "name": "Inspire Courage",
+      "type": "Bard",
+      "level": 1,
+      "prerequisites": [],
+      "benefits": "You inspire your allies with words or music, granting them a bonus to attack rolls and damage.",
+      "description": "You inspire your allies to fight on despite their wounds."
+    },
+    {
+      "name": "Lingering Composition",
+      "type": "Bard",
+      "level": 1,
+      "prerequisites": [],
+      "benefits": "You can extend the duration of your compositions.",
+      "description": "By adding a flourish, you make your compositions last longer."
+    },
+    {
+      "name": "Wild Shape",
+      "type": "Druid",
+      "level": 1,
+      "prerequisites": [],
+      "benefits": "You can transform into an animal form.",
+      "description": "You are one with the wild, always changing and adapting to meet any challenge."
+    }
+  ]
+}

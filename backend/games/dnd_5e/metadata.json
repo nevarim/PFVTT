@@ -1,1 +1,24 @@
-{}
+{
+  "name": "Dungeons & Dragons 5th Edition",
+  "abbreviation": "D&D 5e",
+  "version": "5.0",
+  "publisher": "Wizards of the Coast",
+  "description": "The fifth edition of the world's greatest roleplaying game",
+  "core_mechanics": {
+    "dice_system": "d20",
+    "ability_scores": ["Strength", "Dexterity", "Constitution", "Intelligence", "Wisdom", "Charisma"],
+    "proficiency_bonus": "level_based",
+    "advantage_system": true
+  },
+  "character_creation": {
+    "starting_level": 1,
+    "max_level": 20,
+    "ability_score_generation": ["point_buy", "standard_array", "rolling"]
+  },
+  "supported_features": {
+    "multiclassing": true,
+    "feats": true,
+    "variant_rules": true,
+    "spellcasting": true
+  }
+}

@@ -1,0 +1,176 @@
+{
+  "name": "Monk",
+  "hit_die": 8,
+  "primary_ability": "Dexterity & Wisdom",
+  "saving_throw_proficiencies": ["Strength", "Dexterity"],
+  "skill_points_per_level": 2,
+  "class_skills": [
+    "Acrobatics", "Athletics", "History", "Insight", "Religion", "Stealth"
+  ],
+  "armor_proficiencies": [],
+  "weapon_proficiencies": ["Simple weapons", "Shortswords"],
+  "tool_proficiencies": ["One type of artisan's tools or one musical instrument"],
+  "is_spellcaster": false,
+  "levels": {
+    "1": {
+      "level": 1,
+      "proficiency_bonus": 2,
+      "features": ["Unarmored Defense", "Martial Arts"],
+      "martial_arts": "1d4",
+      "ki_points": 0,
+      "unarmored_movement": 0
+    },
+    "2": {
+      "level": 2,
+      "proficiency_bonus": 2,
+      "features": ["Ki", "Flurry of Blows", "Patient Defense", "Step of the Wind"],
+      "martial_arts": "1d4",
+      "ki_points": 2,
+      "unarmored_movement": 10
+    },
+    "3": {
+      "level": 3,
+      "proficiency_bonus": 2,
+      "features": ["Monastic Tradition", "Deflect Missiles"],
+      "martial_arts": "1d4",
+      "ki_points": 3,
+      "unarmored_movement": 10
+    },
+    "4": {
+      "level": 4,
+      "proficiency_bonus": 2,
+      "features": ["Ability Score Improvement", "Slow Fall"],
+      "martial_arts": "1d4",
+      "ki_points": 4,
+      "unarmored_movement": 10
+    },
+    "5": {
+      "level": 5,
+      "proficiency_bonus": 3,
+      "features": ["Extra Attack", "Stunning Strike"],
+      "martial_arts": "1d6",
+      "ki_points": 5,
+      "unarmored_movement": 10
+    },
+    "6": {
+      "level": 6,
+      "proficiency_bonus": 3,
+      "features": ["Ki-Empowered Strikes", "Monastic Tradition feature"],
+      "martial_arts": "1d6",
+      "ki_points": 6,
+      "unarmored_movement": 15
+    },
+    "7": {
+      "level": 7,
+      "proficiency_bonus": 3,
+      "features": ["Evasion", "Stillness of Mind"],
+      "martial_arts": "1d6",
+      "ki_points": 7,
+      "unarmored_movement": 15
+    },
+    "8": {
+      "level": 8,
+      "proficiency_bonus": 3,
+      "features": ["Ability Score Improvement"],
+      "martial_arts": "1d6",
+      "ki_points": 8,
+      "unarmored_movement": 15
+    },
+    "9": {
+      "level": 9,
+      "proficiency_bonus": 4,
+      "features": ["Unarmored Movement improvement"],
+      "martial_arts": "1d6",
+      "ki_points": 9,
+      "unarmored_movement": 15
+    },
+    "10": {
+      "level": 10,
+      "proficiency_bonus": 4,
+      "features": ["Purity of Body"],
+      "martial_arts": "1d6",
+      "ki_points": 10,
+      "unarmored_movement": 20
+    },
+    "11": {
+      "level": 11,
+      "proficiency_bonus": 4,
+      "features": ["Monastic Tradition feature"],
+      "martial_arts": "1d8",
+      "ki_points": 11,
+      "unarmored_movement": 20
+    },
+    "12": {
+      "level": 12,
+      "proficiency_bonus": 4,
+      "features": ["Ability Score Improvement"],
+      "martial_arts": "1d8",
+      "ki_points": 12,
+      "unarmored_movement": 20
+    },
+    "13": {
+      "level": 13,
+      "proficiency_bonus": 5,
+      "features": ["Tongue of the Sun and Moon"],
+      "martial_arts": "1d8",
+      "ki_points": 13,
+      "unarmored_movement": 20
+    },
+    "14": {
+      "level": 14,
+      "proficiency_bonus": 5,
+      "features": ["Diamond Soul"],
+      "martial_arts": "1d8",
+      "ki_points": 14,
+      "unarmored_movement": 25
+    },
+    "15": {
+      "level": 15,
+      "proficiency_bonus": 5,
+      "features": ["Timeless Body"],
+      "martial_arts": "1d8",
+      "ki_points": 15,
+      "unarmored_movement": 25
+    },
+    "16": {
+      "level": 16,
+      "proficiency_bonus": 5,
+      "features": ["Ability Score Improvement"],
+      "martial_arts": "1d8",
+      "ki_points": 16,
+      "unarmored_movement": 25
+    },
+    "17": {
+      "level": 17,
+      "proficiency_bonus": 6,
+      "features": ["Monastic Tradition feature"],
+      "martial_arts": "1d10",
+      "ki_points": 17,
+      "unarmored_movement": 25
+    },
+    "18": {
+      "level": 18,
+      "proficiency_bonus": 6,
+      "features": ["Empty Body"],
+      "martial_arts": "1d10",
+      "ki_points": 18,
+      "unarmored_movement": 30
+    },
+    "19": {
+      "level": 19,
+      "proficiency_bonus": 6,
+      "features": ["Ability Score Improvement"],
+      "martial_arts": "1d10",
+      "ki_points": 19,
+      "unarmored_movement": 30
+    },
+    "20": {
+      "level": 20,
+      "proficiency_bonus": 6,
+      "features": ["Perfect Self"],
+      "martial_arts": "1d10",
+      "ki_points": 20,
+      "unarmored_movement": 30
+    }
+  }
+}

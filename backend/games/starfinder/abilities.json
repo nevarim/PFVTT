@@ -1,0 +1,32 @@
+{
+  "strength": {
+    "name": "Strength",
+    "abbreviation": "Str",
+    "description": "Strength measures your character's muscle and physical power. This ability is important for those who engage in hand-to-hand (or melee) combat, such as soldiers. Strength also sets the maximum amount of equipment your character can carry."
+  },
+  "dexterity": {
+    "name": "Dexterity",
+    "abbreviation": "Dex",
+    "description": "Dexterity measures agility, reflexes, and balance. This ability is important for operatives, but it's also useful for characters who wear light or no armor or who want to be good pilots."
+  },
+  "constitution": {
+    "name": "Constitution",
+    "abbreviation": "Con",
+    "description": "Constitution represents your character's health and stamina. Constitution is important for all characters, especially those who fight in combat."
+  },
+  "intelligence": {
+    "name": "Intelligence",
+    "abbreviation": "Int",
+    "description": "Intelligence determines how well your character learns and reasons. This ability is important for technomancers because it affects their spellcasting ability. It's also important for anyone who wants to have a wide assortment of skills."
+  },
+  "wisdom": {
+    "name": "Wisdom",
+    "abbreviation": "Wis",
+    "description": "Wisdom describes a character's willpower, common sense, awareness, and intuition. Wisdom is important for mystics because it affects their spellcasting ability. It's also important for anyone who wants to be good at noticing things."
+  },
+  "charisma": {
+    "name": "Charisma",
+    "abbreviation": "Cha",
+    "description": "Charisma represents a character's personality, personal magnetism, ability to lead, and appearance. This ability represents actual strength of personality, not merely how one is perceived by others in a social setting."
+  }
+}

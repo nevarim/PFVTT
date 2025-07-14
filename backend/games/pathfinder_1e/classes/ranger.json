@@ -1,0 +1,214 @@
+{
+  "name": "Ranger",
+  "hit_die": "d10",
+  "skill_points": "6 + Int modifier",
+  "class_skills": [
+    "Climb (Str)",
+    "Craft (Int)",
+    "Handle Animal (Cha)",
+    "Heal (Wis)",
+    "Intimidate (Cha)",
+    "Knowledge (dungeoneering) (Int)",
+    "Knowledge (geography) (Int)",
+    "Knowledge (nature) (Int)",
+    "Perception (Wis)",
+    "Profession (Wis)",
+    "Ride (Dex)",
+    "Spellcraft (Int)",
+    "Stealth (Dex)",
+    "Survival (Wis)",
+    "Swim (Str)"
+  ],
+  "weapon_proficiencies": [
+    "All simple and martial weapons"
+  ],
+  "armor_proficiencies": [
+    "Light armor, medium armor, shields (except tower shields)"
+  ],
+  "spells_per_day": {
+    "4": {"1": 0},
+    "5": {"1": 0},
+    "6": {"1": 1},
+    "7": {"1": 1},
+    "8": {"1": 1, "2": 0},
+    "9": {"1": 2, "2": 0},
+    "10": {"1": 2, "2": 1},
+    "11": {"1": 2, "2": 1, "3": 0},
+    "12": {"1": 2, "2": 2, "3": 0},
+    "13": {"1": 3, "2": 2, "3": 1},
+    "14": {"1": 3, "2": 2, "3": 1, "4": 0},
+    "15": {"1": 3, "2": 2, "3": 2, "4": 0},
+    "16": {"1": 3, "2": 3, "3": 2, "4": 1},
+    "17": {"1": 4, "2": 3, "3": 2, "4": 1},
+    "18": {"1": 4, "2": 3, "3": 3, "4": 2},
+    "19": {"1": 4, "2": 4, "3": 3, "4": 2},
+    "20": {"1": 4, "2": 4, "3": 3, "4": 3}
+  },
+  "level_progression": {
+    "1": {
+      "base_attack_bonus": "+1",
+      "fort_save": "+2",
+      "ref_save": "+2",
+      "will_save": "+0",
+      "special": ["Favored enemy", "Track", "Wild empathy"],
+      "feats": 1
+    },
+    "2": {
+      "base_attack_bonus": "+2",
+      "fort_save": "+3",
+      "ref_save": "+3",
+      "will_save": "+0",
+      "special": ["Combat style feat"],
+      "feats": 0
+    },
+    "3": {
+      "base_attack_bonus": "+3",
+      "fort_save": "+3",
+      "ref_save": "+3",
+      "will_save": "+1",
+      "special": ["Endurance", "Favored terrain"],
+      "feats": 1
+    },
+    "4": {
+      "base_attack_bonus": "+4",
+      "fort_save": "+4",
+      "ref_save": "+4",
+      "will_save": "+1",
+      "special": ["Hunter's bond"],
+      "feats": 0,
+      "ability_score_improvement": 1
+    },
+    "5": {
+      "base_attack_bonus": "+5",
+      "fort_save": "+4",
+      "ref_save": "+4",
+      "will_save": "+1",
+      "special": ["Favored enemy"],
+      "feats": 1
+    },
+    "6": {
+      "base_attack_bonus": "+6/+1",
+      "fort_save": "+5",
+      "ref_save": "+5",
+      "will_save": "+2",
+      "special": ["Combat style feat"],
+      "feats": 0
+    },
+    "7": {
+      "base_attack_bonus": "+7/+2",
+      "fort_save": "+5",
+      "ref_save": "+5",
+      "will_save": "+2",
+      "special": ["Woodland stride"],
+      "feats": 1
+    },
+    "8": {
+      "base_attack_bonus": "+8/+3",
+      "fort_save": "+6",
+      "ref_save": "+6",
+      "will_save": "+2",
+      "special": ["Favored terrain", "Swift tracker"],
+      "feats": 0,
+      "ability_score_improvement": 1
+    },
+    "9": {
+      "base_attack_bonus": "+9/+4",
+      "fort_save": "+6",
+      "ref_save": "+6",
+      "will_save": "+3",
+      "special": ["Evasion"],
+      "feats": 1
+    },
+    "10": {
+      "base_attack_bonus": "+10/+5",
+      "fort_save": "+7",
+      "ref_save": "+7",
+      "will_save": "+3",
+      "special": ["Combat style feat", "Favored enemy"],
+      "feats": 0
+    },
+    "11": {
+      "base_attack_bonus": "+11/+6/+1",
+      "fort_save": "+7",
+      "ref_save": "+7",
+      "will_save": "+3",
+      "special": ["Quarry"],
+      "feats": 1
+    },
+    "12": {
+      "base_attack_bonus": "+12/+7/+2",
+      "fort_save": "+8",
+      "ref_save": "+8",
+      "will_save": "+4",
+      "special": ["Camouflage"],
+      "feats": 0,
+      "ability_score_improvement": 1
+    },
+    "13": {
+      "base_attack_bonus": "+13/+8/+3",
+      "fort_save": "+8",
+      "ref_save": "+8",
+      "will_save": "+4",
+      "special": ["Favored terrain"],
+      "feats": 1
+    },
+    "14": {
+      "base_attack_bonus": "+14/+9/+4",
+      "fort_save": "+9",
+      "ref_save": "+9",
+      "will_save": "+4",
+      "special": ["Combat style feat"],
+      "feats": 0
+    },
+    "15": {
+      "base_attack_bonus": "+15/+10/+5",
+      "fort_save": "+9",
+      "ref_save": "+9",
+      "will_save": "+5",
+      "special": ["Favored enemy"],
+      "feats": 1
+    },
+    "16": {
+      "base_attack_bonus": "+16/+11/+6/+1",
+      "fort_save": "+10",
+      "ref_save": "+10",
+      "will_save": "+5",
+      "special": ["Improved evasion"],
+      "feats": 0,
+      "ability_score_improvement": 1
+    },
+    "17": {
+      "base_attack_bonus": "+17/+12/+7/+2",
+      "fort_save": "+10",
+      "ref_save": "+10",
+      "will_save": "+5",
+      "special": ["Hide in plain sight"],
+      "feats": 1
+    },
+    "18": {
+      "base_attack_bonus": "+18/+13/+8/+3",
+      "fort_save": "+11",
+      "ref_save": "+11",
+      "will_save": "+6",
+      "special": ["Combat style feat", "Favored terrain"],
+      "feats": 0
+    },
+    "19": {
+      "base_attack_bonus": "+19/+14/+9/+4",
+      "fort_save": "+11",
+      "ref_save": "+11",
+      "will_save": "+6",
+      "special": ["Improved quarry"],
+      "feats": 1
+    },
+    "20": {
+      "base_attack_bonus": "+20/+15/+10/+5",
+      "fort_save": "+12",
+      "ref_save": "+12",
+      "will_save": "+6",
+      "special": ["Favored enemy", "Master hunter"],
+      "feats": 0,
+      "ability_score_improvement": 1
+    }
+  }
+}

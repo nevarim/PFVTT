@@ -1,1 +1,311 @@
-{}
+{
+  "alert": {
+    "name": "Alert",
+    "prerequisites": [],
+    "benefits": [
+      "+5 bonus to initiative",
+      "Can't be surprised while conscious",
+      "Other creatures don't gain advantage on attack rolls against you as a result of being unseen by you"
+    ],
+    "description": "Always on the lookout for danger, you gain the following benefits."
+  },
+  "athlete": {
+    "name": "Athlete",
+    "prerequisites": [],
+    "benefits": [
+      "Increase your Strength or Dexterity score by 1, to a maximum of 20",
+      "When you are prone, standing up uses only 5 feet of your movement",
+      "Climbing doesn't cost you extra movement",
+      "You can make a running long jump or a running high jump after moving only 5 feet on foot, rather than 10 feet"
+    ],
+    "description": "You have undergone extensive physical training to gain the following benefits."
+  },
+  "actor": {
+    "name": "Actor",
+    "prerequisites": [],
+    "benefits": [
+      "Increase your Charisma score by 1, to a maximum of 20",
+      "You have advantage on Charisma (Deception) and Charisma (Performance) checks when trying to pass yourself off as a different person",
+      "You can mimic the speech of another person or the sounds made by other creatures"
+    ],
+    "description": "Skilled at mimicry and dramatics, you gain the following benefits."
+  },
+  "charger": {
+    "name": "Charger",
+    "prerequisites": [],
+    "benefits": [
+      "When you use your action to Dash, you can use a bonus action to make one melee weapon attack or to shove a creature",
+      "If you move at least 10 feet in a straight line immediately before taking this bonus action, you either gain a +5 bonus to the attack's damage roll (if you chose to make a melee attack and hit) or push the target up to 10 feet away from you (if you chose to shove and you succeed)"
+    ],
+    "description": "You learn to charge into battle with devastating force."
+  },
+  "crossbow_expert": {
+    "name": "Crossbow Expert",
+    "prerequisites": [],
+    "benefits": [
+      "You ignore the loading quality of crossbows with which you are proficient",
+      "Being within 5 feet of a hostile creature doesn't impose disadvantage on your ranged attack rolls",
+      "When you use the Attack action and attack with a one-handed weapon, you can use a bonus action to attack with a hand crossbow you are holding"
+    ],
+    "description": "Thanks to extensive practice with the crossbow, you gain the following benefits."
+  },
+  "defensive_duelist": {
+    "name": "Defensive Duelist",
+    "prerequisites": ["Dexterity 13 or higher"],
+    "benefits": [
+      "When you are wielding a finesse weapon with which you are proficient and another creature hits you with a melee attack, you can use your reaction to add your proficiency bonus to your AC for that attack, potentially causing the attack to miss you"
+    ],
+    "description": "You learn to fend off strikes directed at you."
+  },
+  "dual_wielder": {
+    "name": "Dual Wielder",
+    "prerequisites": [],
+    "benefits": [
+      "You gain a +1 bonus to AC while you are wielding a separate melee weapon in each hand",
+      "You can use two-weapon fighting even when the one-handed melee weapons you are wielding aren't light",
+      "You can draw or stow two one-handed weapons when you would normally be able to draw or stow only one"
+    ],
+    "description": "You master fighting with two weapons, gaining the following benefits."
+  },
+  "dungeon_delver": {
+    "name": "Dungeon Delver",
+    "prerequisites": [],
+    "benefits": [
+      "You have advantage on Wisdom (Perception) and Intelligence (Investigation) checks made to detect the presence of secret doors",
+      "You have advantage on saving throws made to avoid or resist traps",
+      "You have resistance to the damage dealt by traps",
+      "Traveling at a fast pace doesn't impose the normal -5 penalty on your passive Wisdom (Perception) score"
+    ],
+    "description": "Alert to the hidden traps and secret doors found in many dungeons, you gain the following benefits."
+  },
+  "durable": {
+    "name": "Durable",
+    "prerequisites": [],
+    "benefits": [
+      "Increase your Constitution score by 1, to a maximum of 20",
+      "When you roll a Hit Die to regain hit points, the minimum number you roll on the die equals twice your Constitution modifier (minimum of 2)"
+    ],
+    "description": "Hardy and resilient, you gain the following benefits."
+  },
+  "elemental_adept": {
+    "name": "Elemental Adept",
+    "prerequisites": ["The ability to cast at least one spell"],
+    "benefits": [
+      "When you gain this feat, choose one of the following damage types: acid, cold, fire, lightning, or thunder",
+      "Spells you cast ignore resistance to damage of the chosen type",
+      "When you roll damage for a spell you cast that deals damage of the chosen type, you can treat any 1 on a damage die as a 2"
+    ],
+    "description": "When you gain this feat, choose one of the following damage types: acid, cold, fire, lightning, or thunder."
+  },
+  "fey_touched": {
+    "name": "Fey Touched",
+    "prerequisites": [],
+    "benefits": [
+      "Increase your Intelligence, Wisdom, or Charisma score by 1, to a maximum of 20",
+      "You learn the misty step spell and one 1st-level spell of your choice",
+      "You can cast each of these spells without expending a spell slot. Once you cast either spell in this way, you can't cast that spell in this way again until you finish a long rest"
+    ],
+    "description": "Your exposure to the Feywild's magic has changed you, granting you the following benefits."
+  },
+  "great_weapon_master": {
+    "name": "Great Weapon Master",
+    "prerequisites": [],
+    "benefits": [
+      "On your turn, when you score a critical hit with a melee weapon or reduce a creature to 0 hit points with one, you can make one melee weapon attack as a bonus action",
+      "Before you make a melee attack with a heavy weapon that you are proficient with, you can choose to take a -5 penalty to the attack roll. If the attack hits, you add +10 to the attack's damage"
+    ],
+    "description": "You've learned to put the weight of a weapon to your advantage, letting its momentum empower your strikes."
+  },
+  "healer": {
+    "name": "Healer",
+    "prerequisites": [],
+    "benefits": [
+      "When you use a healer's kit to stabilize a dying creature, that creature also regains 1 hit point",
+      "As an action, you can spend one use of a healer's kit to tend to a creature and restore 1d4 + 4 hit points to it, plus additional hit points equal to the creature's maximum number of Hit Dice"
+    ],
+    "description": "You are an able physician, allowing you to mend wounds quickly and get your allies back in the fight."
+  },
+  "lucky": {
+    "name": "Lucky",
+    "prerequisites": [],
+    "benefits": [
+      "You have 3 luck points. Whenever you make an attack roll, an ability check, or a saving throw, you can spend one luck point to roll an additional d20",
+      "You can choose to spend one of your luck points after you roll the die, but before the outcome is determined",
+      "You regain your expended luck points when you finish a long rest"
+    ],
+    "description": "You have inexplicable luck that seems to kick in at just the right moment."
+  },
+  "magic_initiate": {
+    "name": "Magic Initiate",
+    "prerequisites": [],
+    "benefits": [
+      "Choose a class: bard, cleric, druid, sorcerer, warlock, or wizard",
+      "You learn two cantrips of your choice from that class's spell list",
+      "You learn one 1st-level spell of your choice from that same list"
+    ],
+    "description": "Choose a class: bard, cleric, druid, sorcerer, warlock, or wizard. You learn two cantrips of your choice from that class's spell list."
+  },
+  "martial_adept": {
+    "name": "Martial Adept",
+    "prerequisites": [],
+    "benefits": [
+      "You learn two maneuvers of your choice from among those available to the Battle Master archetype in the fighter class",
+      "You gain one superiority die, which is a d6",
+      "This die is used to fuel your maneuvers. A superiority die is expended when you use it"
+    ],
+    "description": "You have martial training that allows you to perform special combat maneuvers."
+  },
+  "mobile": {
+    "name": "Mobile",
+    "prerequisites": [],
+    "benefits": [
+      "Your speed increases by 10 feet",
+      "When you use the Dash action, difficult terrain doesn't cost you extra movement on that turn",
+      "When you make a melee attack against a creature, you don't provoke opportunity attacks from that creature for the rest of the turn, whether you hit or not"
+    ],
+    "description": "You are exceptionally speedy and agile."
+  },
+  "observant": {
+    "name": "Observant",
+    "prerequisites": [],
+    "benefits": [
+      "Increase your Intelligence or Wisdom score by 1, to a maximum of 20",
+      "If you can see a creature's mouth and know the language, you can interpret what it's saying by reading its lips",
+      "You have a +5 bonus to your passive Perception and passive Investigation scores"
+    ],
+    "description": "Quick to notice details of your environment, you gain the following benefits."
+  },
+  "polearm_master": {
+    "name": "Polearm Master",
+    "prerequisites": [],
+    "benefits": [
+      "When you take the Attack action and attack with only a glaive, halberd, quarterstaff, or spear, you can use a bonus action to make a melee attack with the opposite end of the weapon",
+      "While you are wielding a glaive, halberd, pike, or quarterstaff, other creatures provoke an opportunity attack from you when they enter your reach"
+    ],
+    "description": "You can keep your enemies at bay with reach weapons."
+  },
+  "resilient": {
+    "name": "Resilient",
+    "prerequisites": [],
+    "benefits": [
+      "Choose one ability score. You gain the following benefits:",
+      "Increase the chosen ability score by 1, to a maximum of 20",
+      "You gain proficiency in saving throws using the chosen ability"
+    ],
+    "description": "Choose one ability score. You gain proficiency in saving throws using the chosen ability."
+  },
+  "ritual_caster": {
+    "name": "Ritual Caster",
+    "prerequisites": ["Intelligence or Wisdom 13 or higher"],
+    "benefits": [
+      "Choose one of the following classes: bard, cleric, druid, sorcerer, warlock, or wizard",
+      "You acquire a ritual book holding two 1st-level spells of your choice",
+      "Choose one of the following classes: bard, cleric, druid, sorcerer, warlock, or wizard. You must choose your spells from that class's spell list, and the spells you choose must have the ritual tag"
+    ],
+    "description": "You have learned a number of spells that you can cast as rituals."
+  },
+  "savage_attacker": {
+    "name": "Savage Attacker",
+    "prerequisites": [],
+    "benefits": [
+      "Once per turn when you roll damage for a melee weapon attack, you can reroll the weapon's damage dice and use either total"
+    ],
+    "description": "Once per turn when you roll damage for a melee weapon attack, you can reroll the weapon's damage dice and use either total."
+  },
+  "sentinel": {
+    "name": "Sentinel",
+    "prerequisites": [],
+    "benefits": [
+      "When you hit a creature with an opportunity attack, the creature's speed becomes 0 for the rest of the turn",
+      "Creatures provoke opportunity attacks from you even if they take the Disengage action before leaving your reach",
+      "When a creature within 5 feet of you makes an attack against a target other than you (and that target doesn't have this feat), you can use your reaction to make a melee weapon attack against the attacking creature"
+    ],
+    "description": "You have mastered techniques to take advantage of every drop in any enemy's guard."
+  },
+  "sharpshooter": {
+    "name": "Sharpshooter",
+    "prerequisites": [],
+    "benefits": [
+      "Attacking at long range doesn't impose disadvantage on your ranged weapon attack rolls",
+      "Your ranged weapon attacks ignore half cover and three-quarters cover",
+      "Before you make an attack with a ranged weapon that you are proficient with, you can choose to take a -5 penalty to the attack roll. If the attack hits, you add +10 to the attack's damage"
+    ],
+    "description": "You have mastered ranged weapons and can make shots that others find impossible."
+  },
+  "shield_master": {
+    "name": "Shield Master",
+    "prerequisites": [],
+    "benefits": [
+      "If you take the Attack action on your turn, you can use a bonus action to try to shove a creature within 5 feet of you with your shield",
+      "If you aren't incapacitated, you can add your shield's AC bonus to any Dexterity saving throw you make against a spell or other harmful effect that targets only you",
+      "If you are subjected to an effect that allows you to make a Dexterity saving throw to take only half damage, you can use your reaction to take no damage if you succeed on the saving throw, interposing your shield between yourself and the source of the effect"
+    ],
+    "description": "You use shields not just for protection but also for offense."
+  },
+  "skilled": {
+    "name": "Skilled",
+    "prerequisites": [],
+    "benefits": [
+      "You gain proficiency in any combination of three skills or tools of your choice"
+    ],
+    "description": "You gain proficiency in any combination of three skills or tools of your choice."
+  },
+  "skulker": {
+    "name": "Skulker",
+    "prerequisites": ["Dexterity 13 or higher"],
+    "benefits": [
+      "You can try to hide when you are lightly obscured from the creature from which you are hiding",
+      "When you are hidden from a creature and miss it with a ranged weapon attack, making the attack doesn't reveal your position",
+      "Dim light doesn't impose disadvantage on your Wisdom (Perception) checks relying on sight"
+    ],
+    "description": "You are expert at slinking through shadows."
+  },
+  "spell_sniper": {
+    "name": "Spell Sniper",
+    "prerequisites": ["The ability to cast at least one spell"],
+    "benefits": [
+      "When you cast a spell that requires you to make an attack roll, the spell's range is doubled",
+      "Your ranged spell attacks ignore half cover and three-quarters cover",
+      "You learn one cantrip that requires an attack roll"
+    ],
+    "description": "You have learned techniques to enhance your attacks with certain kinds of spells."
+  },
+  "tavern_brawler": {
+    "name": "Tavern Brawler",
+    "prerequisites": [],
+    "benefits": [
+      "Increase your Strength or Constitution score by 1, to a maximum of 20",
+      "You are proficient with improvised weapons",
+      "Your unarmed strike uses a d4 for damage",
+      "When you hit a creature with an unarmed strike or an improvised weapon on your turn, you can use a bonus action to attempt to grapple the target"
+    ],
+    "description": "Accustomed to rough-and-tumble fighting using whatever weapons happen to be at hand, you gain the following benefits."
+  },
+  "tough": {
+    "name": "Tough",
+    "prerequisites": [],
+    "benefits": [
+      "Your hit point maximum increases by an amount equal to twice your level when you gain this feat. Whenever you gain a level thereafter, your hit point maximum increases by an additional 2 hit points"
+    ],
+    "description": "Your hit point maximum increases by an amount equal to twice your level when you gain this feat."
+  },
+  "war_caster": {
+    "name": "War Caster",
+    "prerequisites": ["The ability to cast at least one spell"],
+    "benefits": [
+      "You have advantage on Constitution saving throws that you make to maintain your concentration on a spell when you take damage",
+      "You can perform the somatic components of spells even when you have weapons or a shield in one or both hands",
+      "When a hostile creature's movement provokes an opportunity attack from you, you can use your reaction to cast a spell at the creature, rather than making an opportunity attack"
+    ],
+    "description": "You have practiced casting spells in the midst of combat, learning techniques that grant you the following benefits."
+  },
+  "weapon_master": {
+    "name": "Weapon Master",
+    "prerequisites": [],
+    "benefits": [
+      "Increase your Strength or Dexterity score by 1, to a maximum of 20",
+      "You gain proficiency with four weapons of your choice. Each one must be a simple or a martial weapon"
+    ],
+    "description": "You have practiced extensively with a variety of weapons, gaining the following benefits."
+  }
+}

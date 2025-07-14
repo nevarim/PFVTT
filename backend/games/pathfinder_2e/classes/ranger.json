@@ -1,0 +1,216 @@
+{
+  "name": "Ranger",
+  "hit_die": 10,
+  "primary_ability": "Strength or Dexterity",
+  "saving_throw_proficiencies": ["Fortitude", "Reflex"],
+  "skill_points_per_level": 4,
+  "class_skills": [
+    "Athletics", "Crafting", "Intimidation", "Medicine", "Nature", "Stealth", "Survival"
+  ],
+  "armor_proficiencies": ["Unarmored", "Light armor", "Medium armor"],
+  "weapon_proficiencies": ["Simple weapons", "Martial weapons", "Unarmed attacks"],
+  "tool_proficiencies": [],
+  "is_spellcaster": false,
+  "levels": {
+    "1": {
+      "level": 1,
+      "proficiency_bonus": 2,
+      "features": ["Ancestry and Background", "Initial Proficiencies", "Hunt Prey", "Hunter's Edge", "Ranger Feat"],
+      "class_dc": "trained",
+      "perception": "expert",
+      "fortitude": "expert",
+      "reflex": "expert",
+      "will": "trained"
+    },
+    "2": {
+      "level": 2,
+      "proficiency_bonus": 2,
+      "features": ["Ranger Feat", "Skill Feat"],
+      "class_dc": "trained",
+      "perception": "expert",
+      "fortitude": "expert",
+      "reflex": "expert",
+      "will": "trained"
+    },
+    "3": {
+      "level": 3,
+      "proficiency_bonus": 2,
+      "features": ["General Feat", "Iron Will", "Skill Increase"],
+      "class_dc": "trained",
+      "perception": "expert",
+      "fortitude": "expert",
+      "reflex": "expert",
+      "will": "expert"
+    },
+    "4": {
+      "level": 4,
+      "proficiency_bonus": 2,
+      "features": ["Ranger Feat", "Skill Feat"],
+      "class_dc": "trained",
+      "perception": "expert",
+      "fortitude": "expert",
+      "reflex": "expert",
+      "will": "expert"
+    },
+    "5": {
+      "level": 5,
+      "proficiency_bonus": 3,
+      "features": ["Ancestry Feat", "Ranger Weapon Expertise", "Skill Increase", "Trackless Step"],
+      "class_dc": "expert",
+      "perception": "expert",
+      "fortitude": "expert",
+      "reflex": "expert",
+      "will": "expert"
+    },
+    "6": {
+      "level": 6,
+      "proficiency_bonus": 3,
+      "features": ["Ranger Feat", "Skill Feat"],
+      "class_dc": "expert",
+      "perception": "expert",
+      "fortitude": "expert",
+      "reflex": "expert",
+      "will": "expert"
+    },
+    "7": {
+      "level": 7,
+      "proficiency_bonus": 3,
+      "features": ["Evasion", "General Feat", "Skill Increase", "Vigilant Senses", "Weapon Specialization"],
+      "class_dc": "expert",
+      "perception": "master",
+      "fortitude": "expert",
+      "reflex": "master",
+      "will": "expert"
+    },
+    "8": {
+      "level": 8,
+      "proficiency_bonus": 3,
+      "features": ["Ranger Feat", "Skill Feat"],
+      "class_dc": "expert",
+      "perception": "master",
+      "fortitude": "expert",
+      "reflex": "master",
+      "will": "expert"
+    },
+    "9": {
+      "level": 9,
+      "proficiency_bonus": 4,
+      "features": ["Ancestry Feat", "Nature's Edge", "Ranger Expertise", "Skill Increase"],
+      "class_dc": "master",
+      "perception": "master",
+      "fortitude": "expert",
+      "reflex": "master",
+      "will": "expert"
+    },
+    "10": {
+      "level": 10,
+      "proficiency_bonus": 4,
+      "features": ["Ability Boosts", "Ranger Feat", "Skill Feat"],
+      "class_dc": "master",
+      "perception": "master",
+      "fortitude": "expert",
+      "reflex": "master",
+      "will": "expert"
+    },
+    "11": {
+      "level": 11,
+      "proficiency_bonus": 4,
+      "features": ["General Feat", "Juggernaut", "Medium Armor Expertise", "Skill Increase", "Wild Stride"],
+      "class_dc": "master",
+      "perception": "master",
+      "fortitude": "master",
+      "reflex": "master",
+      "will": "expert"
+    },
+    "12": {
+      "level": 12,
+      "proficiency_bonus": 4,
+      "features": ["Ranger Feat", "Skill Feat"],
+      "class_dc": "master",
+      "perception": "master",
+      "fortitude": "master",
+      "reflex": "master",
+      "will": "expert"
+    },
+    "13": {
+      "level": 13,
+      "proficiency_bonus": 5,
+      "features": ["Ancestry Feat", "Skill Increase", "Weapon Mastery"],
+      "class_dc": "master",
+      "perception": "master",
+      "fortitude": "master",
+      "reflex": "master",
+      "will": "expert"
+    },
+    "14": {
+      "level": 14,
+      "proficiency_bonus": 5,
+      "features": ["Ranger Feat", "Skill Feat"],
+      "class_dc": "master",
+      "perception": "master",
+      "fortitude": "master",
+      "reflex": "master",
+      "will": "expert"
+    },
+    "15": {
+      "level": 15,
+      "proficiency_bonus": 5,
+      "features": ["General Feat", "Greater Weapon Specialization", "Improved Evasion", "Incredible Senses", "Skill Increase"],
+      "class_dc": "master",
+      "perception": "legendary",
+      "fortitude": "master",
+      "reflex": "legendary",
+      "will": "expert"
+    },
+    "16": {
+      "level": 16,
+      "proficiency_bonus": 5,
+      "features": ["Ranger Feat", "Skill Feat"],
+      "class_dc": "master",
+      "perception": "legendary",
+      "fortitude": "master",
+      "reflex": "legendary",
+      "will": "expert"
+    },
+    "17": {
+      "level": 17,
+      "proficiency_bonus": 6,
+      "features": ["Ancestry Feat", "Masterful Hunter", "Skill Increase"],
+      "class_dc": "master",
+      "perception": "legendary",
+      "fortitude": "master",
+      "reflex": "legendary",
+      "will": "expert"
+    },
+    "18": {
+      "level": 18,
+      "proficiency_bonus": 6,
+      "features": ["Ranger Feat", "Skill Feat"],
+      "class_dc": "master",
+      "perception": "legendary",
+      "fortitude": "master",
+      "reflex": "legendary",
+      "will": "expert"
+    },
+    "19": {
+      "level": 19,
+      "proficiency_bonus": 6,
+      "features": ["General Feat", "Second Skin", "Skill Increase", "Swift Prey"],
+      "class_dc": "legendary",
+      "perception": "legendary",
+      "fortitude": "master",
+      "reflex": "legendary",
+      "will": "expert"
+    },
+    "20": {
+      "level": 20,
+      "proficiency_bonus": 6,
+      "features": ["Ability Boosts", "Ranger Feat", "Skill Feat"],
+      "class_dc": "legendary",
+      "perception": "legendary",
+      "fortitude": "master",
+      "reflex": "legendary",
+      "will": "expert"
+    }
+  }
+}

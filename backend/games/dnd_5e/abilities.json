@@ -2,43 +2,43 @@
   "strength": {
     "name": "Strength",
     "abbreviation": "STR",
-    "description": "Strength measures bodily power, athletic training, and the extent to which you can exert raw physical force.",
+    "description": "Measures bodily power, athletic training, and the extent to which you can exert raw physical force.",
     "skills": ["Athletics"],
-    "saving_throw_description": "A Strength saving throw can model any attempt to lift, push, pull, or break something, to force your body through a space, or to otherwise apply brute force to a situation."
+    "saving_throw": true
   },
   "dexterity": {
     "name": "Dexterity",
     "abbreviation": "DEX",
-    "description": "Dexterity measures agility, reflexes, and balance.",
+    "description": "Measures agility, reflexes, and balance.",
     "skills": ["Acrobatics", "Sleight of Hand", "Stealth"],
-    "saving_throw_description": "A Dexterity saving throw can model any attempt to move nimbly, quickly, or quietly, or to keep from falling on tricky footing."
+    "saving_throw": true
   },
   "constitution": {
     "name": "Constitution",
     "abbreviation": "CON",
-    "description": "Constitution measures health, stamina, and vital force.",
+    "description": "Measures health, stamina, and vital force.",
     "skills": [],
-    "saving_throw_description": "Constitution saving throws are uncommon, and no skills apply to Constitution checks, because the endurance this ability represents is largely passive rather than involving a specific effort on the part of a character or monster."
+    "saving_throw": true
   },
   "intelligence": {
     "name": "Intelligence",
     "abbreviation": "INT",
-    "description": "Intelligence measures reasoning ability, memory, and the ability to learn.",
+    "description": "Measures reasoning ability, memory, and analytical thinking.",
     "skills": ["Arcana", "History", "Investigation", "Nature", "Religion"],
-    "saving_throw_description": "An Intelligence saving throw comes into play when you need to draw on logic, education, memory, or deductive reasoning."
+    "saving_throw": true
   },
   "wisdom": {
     "name": "Wisdom",
     "abbreviation": "WIS",
-    "description": "Wisdom reflects how attuned you are to the world around you and represents perceptiveness and intuition.",
+    "description": "Reflects how attuned you are to the world around you and represents perceptiveness and intuition.",
     "skills": ["Animal Handling", "Insight", "Medicine", "Perception", "Survival"],
-    "saving_throw_description": "A Wisdom saving throw might reflect a struggle to resist a spell, a trap, or other effect that assaults or deceives your senses."
+    "saving_throw": true
   },
   "charisma": {
     "name": "Charisma",
     "abbreviation": "CHA",
-    "description": "Charisma measures your ability to interact effectively with others. It includes such factors as confidence and eloquence, and it can represent a charming or commanding personality.",
+    "description": "Measures your ability to interact effectively with others.",
     "skills": ["Deception", "Intimidation", "Performance", "Persuasion"],
-    "saving_throw_description": "A Charisma saving throw comes into play when you need to make a good impression, tell a convincing lie, or when you are wrestling with an effect that would subsume your personality or psyche."
+    "saving_throw": true
   }
 }

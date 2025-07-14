@@ -1,1 +1,230 @@
-{}
+{
+  "cantrips": [
+    {
+      "name": "Acid Splash",
+      "level": 0,
+      "school": "Evocation",
+      "casting_time": "2 actions",
+      "range": "30 feet",
+      "duration": "Instantaneous",
+      "components": "Somatic, Verbal",
+      "description": "You splash a glob of acid that deals 1d6 acid damage and 1 persistent acid damage to all creatures in a 5-foot burst."
+    },
+    {
+      "name": "Daze",
+      "level": 0,
+      "school": "Enchantment",
+      "casting_time": "2 actions",
+      "range": "60 feet",
+      "duration": "1 round",
+      "components": "Somatic, Verbal",
+      "description": "You cloud the target's mind; the target must attempt a Will save. The target is then temporarily immune for 1 minute."
+    },
+    {
+      "name": "Electric Arc",
+      "level": 0,
+      "school": "Evocation",
+      "casting_time": "2 actions",
+      "range": "30 feet",
+      "duration": "Instantaneous",
+      "components": "Somatic, Verbal",
+      "description": "An arc of lightning leaps from one target to another. You deal electricity damage equal to 1d4 + your spellcasting ability modifier."
+    },
+    {
+      "name": "Light",
+      "level": 0,
+      "school": "Evocation",
+      "casting_time": "2 actions",
+      "range": "Touch",
+      "duration": "Until the next time you make your daily preparations",
+      "components": "Somatic, Verbal",
+      "description": "The object glows, casting bright light in a 20-foot radius (and dim light for the next 20 feet) like a torch."
+    },
+    {
+      "name": "Mage Hand",
+      "level": 0,
+      "school": "Evocation",
+      "casting_time": "2 actions",
+      "range": "30 feet",
+      "duration": "Sustained up to 1 minute",
+      "components": "Somatic, Verbal",
+      "description": "You create a single magical hand, either invisible or ghostlike, that grasps the target object and moves it slowly up to 20 feet."
+    },
+    {
+      "name": "Prestidigitation",
+      "level": 0,
+      "school": "Evocation",
+      "casting_time": "2 actions",
+      "range": "10 feet",
+      "duration": "Sustained up to 1 minute",
+      "components": "Somatic, Verbal",
+      "description": "The simplest magic does your bidding. You can perform simple magical effects for as long as you Sustain the Spell."
+    },
+    {
+      "name": "Ray of Frost",
+      "level": 0,
+      "school": "Evocation",
+      "casting_time": "2 actions",
+      "range": "120 feet",
+      "duration": "Instantaneous",
+      "components": "Somatic, Verbal",
+      "description": "You blast an icy ray. Make a spell attack roll. The ray deals 1d4+1 cold damage."
+    },
+    {
+      "name": "Shield",
+      "level": 0,
+      "school": "Abjuration",
+      "casting_time": "1 action",
+      "range": "Self",
+      "duration": "Until the start of your next turn",
+      "components": "Verbal",
+      "description": "You raise a magical shield of force. This counts as using the Raise a Shield action, giving you a +1 circumstance bonus to AC."
+    }
+  ],
+  "level_1": [
+    {
+      "name": "Burning Hands",
+      "level": 1,
+      "school": "Evocation",
+      "casting_time": "2 actions",
+      "range": "15-foot cone",
+      "duration": "Instantaneous",
+      "components": "Somatic, Verbal",
+      "description": "Gouts of flame rush from your hands. You deal 2d6 fire damage to creatures in the area."
+    },
+    {
+      "name": "Charm",
+      "level": 1,
+      "school": "Enchantment",
+      "casting_time": "2 actions",
+      "range": "30 feet",
+      "duration": "1 hour",
+      "components": "Somatic, Verbal",
+      "description": "To the target, your words are honey and your visage seems bathed in a dreamy haze. It must attempt a Will save."
+    },
+    {
+      "name": "Heal",
+      "level": 1,
+      "school": "Necromancy",
+      "casting_time": "1 to 3 actions",
+      "range": "Varies",
+      "duration": "Instantaneous",
+      "components": "Somatic",
+      "description": "You channel positive energy to heal the living or damage the undead. If the target is a willing living creature, you restore 1d8 Hit Points."
+    },
+    {
+      "name": "Magic Missile",
+      "level": 1,
+      "school": "Evocation",
+      "casting_time": "1 to 3 actions",
+      "range": "120 feet",
+      "duration": "Instantaneous",
+      "components": "Somatic, Verbal",
+      "description": "You send a dart of force streaking toward a creature that you can see. It automatically hits and deals 1d4+1 force damage."
+    },
+    {
+      "name": "Sleep",
+      "level": 1,
+      "school": "Enchantment",
+      "casting_time": "3 actions",
+      "range": "30 feet",
+      "duration": "Until the next time you make your daily preparations",
+      "components": "Somatic, Verbal",
+      "description": "Each creature in the area becomes drowsy and might fall asleep. A creature that falls asleep from this spell doesn't fall prone."
+    },
+    {
+      "name": "True Strike",
+      "level": 1,
+      "school": "Divination",
+      "casting_time": "1 action",
+      "range": "Self",
+      "duration": "Until the end of your turn",
+      "components": "Verbal",
+      "description": "A glimpse into the future ensures your next blow strikes true. The next time you make an attack roll before the end of your turn, roll the attack twice and use the better result."
+    }
+  ],
+  "level_2": [
+    {
+      "name": "Blur",
+      "level": 2,
+      "school": "Illusion",
+      "casting_time": "2 actions",
+      "range": "Touch",
+      "duration": "1 minute",
+      "components": "Somatic, Verbal",
+      "description": "The target's form appears blurred. It becomes concealed. As normal for the concealed condition, creatures must attempt a DC 5 flat check when targeting the blurred creature with an attack, spell, or other effect."
+    },
+    {
+      "name": "Invisibility",
+      "level": 2,
+      "school": "Illusion",
+      "casting_time": "2 actions",
+      "range": "Touch",
+      "duration": "10 minutes",
+      "components": "Material, Somatic, Verbal",
+      "description": "Cloaked in illusion, the target becomes invisible. This makes it undetected to all creatures, though the creatures can attempt to find the target, making it hidden to them instead."
+    },
+    {
+      "name": "Mirror Image",
+      "level": 2,
+      "school": "Illusion",
+      "casting_time": "2 actions",
+      "range": "Self",
+      "duration": "1 minute",
+      "components": "Somatic, Verbal",
+      "description": "Three illusory images of you swirl about your space, potentially causing those who attack you to hit one of the images instead of you."
+    },
+    {
+      "name": "Scorching Ray",
+      "level": 2,
+      "school": "Evocation",
+      "casting_time": "2 actions",
+      "range": "120 feet",
+      "duration": "Instantaneous",
+      "components": "Somatic, Verbal",
+      "description": "You fire a ray of scorching flame. Make a spell attack roll against a single creature. On a hit, the target takes 2d6 fire damage."
+    },
+    {
+      "name": "Web",
+      "level": 2,
+      "school": "Conjuration",
+      "casting_time": "3 actions",
+      "range": "30 feet",
+      "duration": "1 minute",
+      "components": "Somatic, Verbal",
+      "description": "You create a sticky web in the area that impedes creatures' movement each time they try to move through it."
+    }
+  ],
+  "level_3": [
+    {
+      "name": "Fireball",
+      "level": 3,
+      "school": "Evocation",
+      "casting_time": "2 actions",
+      "range": "500 feet",
+      "duration": "Instantaneous",
+      "components": "Somatic, Verbal",
+      "description": "A roaring blast of fire appears at a spot you designate, dealing 6d6 fire damage."
+    },
+    {
+      "name": "Haste",
+      "level": 3,
+      "school": "Transmutation",
+      "casting_time": "2 actions",
+      "range": "30 feet",
+      "duration": "1 minute",
+      "components": "Somatic, Verbal",
+      "description": "Magic empowers the target to act faster. It gains the quickened condition and can use the extra action each turn only for Strike, Stride, or Step actions."
+    },
+    {
+      "name": "Lightning Bolt",
+      "level": 3,
+      "school": "Evocation",
+      "casting_time": "2 actions",
+      "range": "120-foot line",
+      "duration": "Instantaneous",
+      "components": "Somatic, Verbal",
+      "description": "A bolt of lightning strikes outward from your hand, dealing 4d12 electricity damage."
+    }
+  ]
+}

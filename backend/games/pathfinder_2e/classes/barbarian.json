@@ -1,0 +1,216 @@
+{
+  "name": "Barbarian",
+  "hit_die": 12,
+  "primary_ability": "Strength",
+  "saving_throw_proficiencies": ["Fortitude", "Will"],
+  "skill_points_per_level": 3,
+  "class_skills": [
+    "Acrobatics", "Athletics", "Intimidation", "Nature", "Survival"
+  ],
+  "armor_proficiencies": ["Unarmored", "Light armor", "Medium armor"],
+  "weapon_proficiencies": ["Simple weapons", "Martial weapons", "Unarmed attacks"],
+  "tool_proficiencies": [],
+  "is_spellcaster": false,
+  "levels": {
+    "1": {
+      "level": 1,
+      "proficiency_bonus": 2,
+      "features": ["Rage", "Instinct"],
+      "class_dc": "trained",
+      "perception": "expert",
+      "fortitude": "expert",
+      "reflex": "trained",
+      "will": "expert"
+    },
+    "2": {
+      "level": 2,
+      "proficiency_bonus": 2,
+      "features": ["Barbarian Feat", "Skill Feat"],
+      "class_dc": "trained",
+      "perception": "expert",
+      "fortitude": "expert",
+      "reflex": "trained",
+      "will": "expert"
+    },
+    "3": {
+      "level": 3,
+      "proficiency_bonus": 2,
+      "features": ["Deny Advantage", "General Feat", "Skill Increase"],
+      "class_dc": "trained",
+      "perception": "expert",
+      "fortitude": "expert",
+      "reflex": "expert",
+      "will": "expert"
+    },
+    "4": {
+      "level": 4,
+      "proficiency_bonus": 2,
+      "features": ["Barbarian Feat", "Skill Feat"],
+      "class_dc": "trained",
+      "perception": "expert",
+      "fortitude": "expert",
+      "reflex": "expert",
+      "will": "expert"
+    },
+    "5": {
+      "level": 5,
+      "proficiency_bonus": 3,
+      "features": ["Ancestry Feat", "Brutality", "Skill Increase"],
+      "class_dc": "expert",
+      "perception": "expert",
+      "fortitude": "expert",
+      "reflex": "expert",
+      "will": "expert"
+    },
+    "6": {
+      "level": 6,
+      "proficiency_bonus": 3,
+      "features": ["Barbarian Feat", "Skill Feat"],
+      "class_dc": "expert",
+      "perception": "expert",
+      "fortitude": "expert",
+      "reflex": "expert",
+      "will": "expert"
+    },
+    "7": {
+      "level": 7,
+      "proficiency_bonus": 3,
+      "features": ["General Feat", "Juggernaut", "Skill Increase", "Weapon Specialization"],
+      "class_dc": "expert",
+      "perception": "expert",
+      "fortitude": "master",
+      "reflex": "expert",
+      "will": "expert"
+    },
+    "8": {
+      "level": 8,
+      "proficiency_bonus": 3,
+      "features": ["Barbarian Feat", "Skill Feat"],
+      "class_dc": "expert",
+      "perception": "expert",
+      "fortitude": "master",
+      "reflex": "expert",
+      "will": "expert"
+    },
+    "9": {
+      "level": 9,
+      "proficiency_bonus": 4,
+      "features": ["Ancestry Feat", "Lightning Reflexes", "Raging Resistance", "Skill Increase"],
+      "class_dc": "expert",
+      "perception": "expert",
+      "fortitude": "master",
+      "reflex": "expert",
+      "will": "expert"
+    },
+    "10": {
+      "level": 10,
+      "proficiency_bonus": 4,
+      "features": ["Ability Boosts", "Barbarian Feat", "Skill Feat"],
+      "class_dc": "expert",
+      "perception": "expert",
+      "fortitude": "master",
+      "reflex": "expert",
+      "will": "expert"
+    },
+    "11": {
+      "level": 11,
+      "proficiency_bonus": 4,
+      "features": ["General Feat", "Mighty Rage", "Skill Increase"],
+      "class_dc": "master",
+      "perception": "expert",
+      "fortitude": "master",
+      "reflex": "expert",
+      "will": "expert"
+    },
+    "12": {
+      "level": 12,
+      "proficiency_bonus": 4,
+      "features": ["Barbarian Feat", "Skill Feat"],
+      "class_dc": "master",
+      "perception": "expert",
+      "fortitude": "master",
+      "reflex": "expert",
+      "will": "expert"
+    },
+    "13": {
+      "level": 13,
+      "proficiency_bonus": 5,
+      "features": ["Ancestry Feat", "Greater Juggernaut", "Medium Armor Expertise", "Skill Increase", "Weapon Fury"],
+      "class_dc": "master",
+      "perception": "expert",
+      "fortitude": "master",
+      "reflex": "expert",
+      "will": "expert"
+    },
+    "14": {
+      "level": 14,
+      "proficiency_bonus": 5,
+      "features": ["Barbarian Feat", "Skill Feat"],
+      "class_dc": "master",
+      "perception": "expert",
+      "fortitude": "master",
+      "reflex": "expert",
+      "will": "expert"
+    },
+    "15": {
+      "level": 15,
+      "proficiency_bonus": 5,
+      "features": ["General Feat", "Greater Weapon Specialization", "Indomitable Will", "Skill Increase"],
+      "class_dc": "master",
+      "perception": "expert",
+      "fortitude": "master",
+      "reflex": "expert",
+      "will": "master"
+    },
+    "16": {
+      "level": 16,
+      "proficiency_bonus": 5,
+      "features": ["Barbarian Feat", "Skill Feat"],
+      "class_dc": "master",
+      "perception": "expert",
+      "fortitude": "master",
+      "reflex": "expert",
+      "will": "master"
+    },
+    "17": {
+      "level": 17,
+      "proficiency_bonus": 6,
+      "features": ["Ancestry Feat", "Heightened Senses", "Quick Rage", "Skill Increase"],
+      "class_dc": "master",
+      "perception": "master",
+      "fortitude": "master",
+      "reflex": "expert",
+      "will": "master"
+    },
+    "18": {
+      "level": 18,
+      "proficiency_bonus": 6,
+      "features": ["Barbarian Feat", "Skill Feat"],
+      "class_dc": "master",
+      "perception": "master",
+      "fortitude": "master",
+      "reflex": "expert",
+      "will": "master"
+    },
+    "19": {
+      "level": 19,
+      "proficiency_bonus": 6,
+      "features": ["Armor of Fury", "Devastator", "General Feat", "Skill Increase"],
+      "class_dc": "legendary",
+      "perception": "master",
+      "fortitude": "master",
+      "reflex": "expert",
+      "will": "master"
+    },
+    "20": {
+      "level": 20,
+      "proficiency_bonus": 6,
+      "features": ["Ability Boosts", "Barbarian Feat", "Skill Feat"],
+      "class_dc": "legendary",
+      "perception": "master",
+      "fortitude": "master",
+      "reflex": "expert",
+      "will": "master"
+    }
+  }
+}

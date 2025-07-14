@@ -1,1 +1,230 @@
-{}
+{
+  "cantrips": [
+    {
+      "name": "Acid Splash",
+      "level": 0,
+      "school": "Conjuration",
+      "casting_time": "1 standard action",
+      "range": "Close (25 ft. + 5 ft./2 levels)",
+      "duration": "Instantaneous",
+      "components": "V, S",
+      "description": "You fire a small orb of acid at the target. You must succeed on a ranged touch attack to hit your target. The orb deals 1d3 points of acid damage."
+    },
+    {
+      "name": "Daze",
+      "level": 0,
+      "school": "Enchantment",
+      "casting_time": "1 standard action",
+      "range": "Close (25 ft. + 5 ft./2 levels)",
+      "duration": "1 round",
+      "components": "V, S, M",
+      "description": "This enchantment clouds the mind of a humanoid creature with 4 or fewer Hit Dice so that it takes no actions."
+    },
+    {
+      "name": "Detect Magic",
+      "level": 0,
+      "school": "Divination",
+      "casting_time": "1 standard action",
+      "range": "60 ft.",
+      "duration": "Concentration, up to 1 min./level (D)",
+      "components": "V, S",
+      "description": "You detect magical auras. The amount of information revealed depends on how long you study a particular area or subject."
+    },
+    {
+      "name": "Light",
+      "level": 0,
+      "school": "Evocation",
+      "casting_time": "1 standard action",
+      "range": "Touch",
+      "duration": "10 min./level (D)",
+      "components": "V, M/DF",
+      "description": "This spell causes an object to glow like a torch, shedding bright light in a 20-foot radius (and dim light for an additional 20 feet) from the point you touch."
+    },
+    {
+      "name": "Mage Hand",
+      "level": 0,
+      "school": "Transmutation",
+      "casting_time": "1 standard action",
+      "range": "Close (25 ft. + 5 ft./2 levels)",
+      "duration": "Concentration",
+      "components": "V, S",
+      "description": "You point your finger at an object and can lift it and move it at will from a distance. As a move action, you can propel the object as far as 15 feet in any direction, though the spell ends if the distance between you and the object ever exceeds the spell's range."
+    },
+    {
+      "name": "Prestidigitation",
+      "level": 0,
+      "school": "Universal",
+      "casting_time": "1 standard action",
+      "range": "10 ft.",
+      "duration": "1 hour",
+      "components": "V, S",
+      "description": "Prestidigitations are minor tricks that novice spellcasters use for practice. Once cast, a prestidigitation spell enables you to perform simple magical effects for 1 hour."
+    },
+    {
+      "name": "Ray of Frost",
+      "level": 0,
+      "school": "Evocation",
+      "casting_time": "1 standard action",
+      "range": "Close (25 ft. + 5 ft./2 levels)",
+      "duration": "Instantaneous",
+      "components": "V, S",
+      "description": "A ray of freezing air and ice projects from your pointing finger. You must succeed on a ranged touch attack with the ray to deal damage to a target. The ray deals 1d3 points of cold damage."
+    },
+    {
+      "name": "Read Magic",
+      "level": 0,
+      "school": "Divination",
+      "casting_time": "1 standard action",
+      "range": "Personal",
+      "duration": "10 min./level",
+      "components": "V, S, F",
+      "description": "By means of read magic, you can decipher magical inscriptions on objects—books, scrolls, weapons, and the like—that would otherwise be unintelligible."
+    }
+  ],
+  "level_1": [
+    {
+      "name": "Burning Hands",
+      "level": 1,
+      "school": "Evocation",
+      "casting_time": "1 standard action",
+      "range": "15 ft.",
+      "duration": "Instantaneous",
+      "components": "V, S",
+      "description": "A cone of searing flame shoots from your fingertips. Any creature in the area of the flames takes 1d4 points of fire damage per caster level (maximum 5d4)."
+    },
+    {
+      "name": "Charm Person",
+      "level": 1,
+      "school": "Enchantment",
+      "casting_time": "1 standard action",
+      "range": "Close (25 ft. + 5 ft./2 levels)",
+      "duration": "1 hour/level",
+      "components": "V, S",
+      "description": "This charm makes a humanoid creature regard you as its trusted friend and ally (treat the target's attitude as friendly)."
+    },
+    {
+      "name": "Cure Light Wounds",
+      "level": 1,
+      "school": "Conjuration",
+      "casting_time": "1 standard action",
+      "range": "Touch",
+      "duration": "Instantaneous",
+      "components": "V, S",
+      "description": "When laying your hand upon a living creature, you channel positive energy that cures 1d8 points of damage +1 point per caster level (maximum +5)."
+    },
+    {
+      "name": "Magic Missile",
+      "level": 1,
+      "school": "Evocation",
+      "casting_time": "1 standard action",
+      "range": "Medium (100 ft. + 10 ft./level)",
+      "duration": "Instantaneous",
+      "components": "V, S",
+      "description": "A missile of magical energy darts forth from your fingertip and strikes its target, dealing 1d4+1 points of force damage. The missile strikes unerringly, even if the target is in melee combat or has less than total cover or total concealment."
+    },
+    {
+      "name": "Shield",
+      "level": 1,
+      "school": "Abjuration",
+      "casting_time": "1 standard action",
+      "range": "Personal",
+      "duration": "1 min./level (D)",
+      "components": "V, S",
+      "description": "Shield creates an invisible, tower shield-sized mobile disk of force that hovers in front of you. It negates magic missile attacks directed at you."
+    },
+    {
+      "name": "Sleep",
+      "level": 1,
+      "school": "Enchantment",
+      "casting_time": "1 round",
+      "range": "Medium (100 ft. + 10 ft./level)",
+      "duration": "1 min./level",
+      "components": "V, S, M",
+      "description": "A sleep spell causes a magical slumber to come upon 4d4 Hit Dice of creatures. Creatures with the fewest HD are affected first."
+    }
+  ],
+  "level_2": [
+    {
+      "name": "Blur",
+      "level": 2,
+      "school": "Illusion",
+      "casting_time": "1 standard action",
+      "range": "Touch",
+      "duration": "1 min./level (D)",
+      "components": "V",
+      "description": "The subject's outline appears blurred, shifting and wavering. This distortion grants the subject concealment (20% miss chance)."
+    },
+    {
+      "name": "Invisibility",
+      "level": 2,
+      "school": "Illusion",
+      "casting_time": "1 standard action",
+      "range": "Personal or touch",
+      "duration": "1 min./level (D)",
+      "components": "V, S, M/DF",
+      "description": "The creature or object touched becomes invisible, vanishing from sight, even from darkvision. If the recipient is a creature carrying gear, that vanishes, too."
+    },
+    {
+      "name": "Mirror Image",
+      "level": 2,
+      "school": "Illusion",
+      "casting_time": "1 standard action",
+      "range": "Personal",
+      "duration": "1 min./level",
+      "components": "V, S",
+      "description": "Several illusory duplicates of you pop into being, making it difficult for enemies to know which target to attack. The figments stay near you and disappear when struck."
+    },
+    {
+      "name": "Scorching Ray",
+      "level": 2,
+      "school": "Evocation",
+      "casting_time": "1 standard action",
+      "range": "Close (25 ft. + 5 ft./2 levels)",
+      "duration": "Instantaneous",
+      "components": "V, S",
+      "description": "You blast your enemies with fiery rays. You may fire one ray, plus one additional ray for every four levels beyond 3rd (to a maximum of three rays at 11th level). Each ray requires a ranged touch attack to hit and deals 4d6 points of fire damage."
+    },
+    {
+      "name": "Web",
+      "level": 2,
+      "school": "Conjuration",
+      "casting_time": "1 standard action",
+      "range": "Medium (100 ft. + 10 ft./level)",
+      "duration": "10 min./level (D)",
+      "components": "V, S, M",
+      "description": "Web creates a many-layered mass of strong, sticky strands. These strands trap those caught in them. The strands are similar to spider webs but far larger and tougher."
+    }
+  ],
+  "level_3": [
+    {
+      "name": "Fireball",
+      "level": 3,
+      "school": "Evocation",
+      "casting_time": "1 standard action",
+      "range": "Long (400 ft. + 40 ft./level)",
+      "duration": "Instantaneous",
+      "components": "V, S, M",
+      "description": "A fireball spell is an explosion of flame that detonates with a low roar and deals 1d6 points of fire damage per caster level (maximum 10d6) to every creature within the area."
+    },
+    {
+      "name": "Haste",
+      "level": 3,
+      "school": "Transmutation",
+      "casting_time": "1 standard action",
+      "range": "Close (25 ft. + 5 ft./2 levels)",
+      "duration": "1 round/level",
+      "components": "V, S, M",
+      "description": "The transmuted creature moves and acts more quickly than normal. This extra speed has several effects."
+    },
+    {
+      "name": "Lightning Bolt",
+      "level": 3,
+      "school": "Evocation",
+      "casting_time": "1 standard action",
+      "range": "120 ft.",
+      "duration": "Instantaneous",
+      "components": "V, S, M",
+      "description": "You release a powerful stroke of electrical energy that deals 1d6 points of electricity damage per caster level (maximum 10d6) to each creature within its area."
+    }
+  ]
+}

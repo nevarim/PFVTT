@@ -1,0 +1,268 @@
+{
+  "name": "Cleric",
+  "hit_die": "d8",
+  "primary_ability": "Wisdom",
+  "saving_throw_proficiencies": ["Wisdom", "Charisma"],
+  "skill_proficiencies": {
+    "number": 2,
+    "choices": ["History", "Insight", "Medicine", "Persuasion", "Religion"]
+  },
+  "armor_proficiencies": ["Light armor", "Medium armor", "Shields"],
+  "weapon_proficiencies": ["Simple weapons"],
+  "spellcasting": {
+    "ability": "Wisdom",
+    "ritual_casting": true,
+    "spellcasting_focus": "Holy symbol"
+  },
+  "level_progression": {
+    "1": {
+      "proficiency_bonus": "+2",
+      "features": ["Spellcasting", "Divine Domain"],
+      "cantrips_known": 3,
+      "spell_slots": {
+        "1st": 2
+      },
+      "hit_points": "8 + Con modifier"
+    },
+    "2": {
+      "proficiency_bonus": "+2",
+      "features": ["Channel Divinity (1/rest)", "Divine Domain Feature"],
+      "cantrips_known": 3,
+      "spell_slots": {
+        "1st": 3
+      }
+    },
+    "3": {
+      "proficiency_bonus": "+2",
+      "features": [],
+      "cantrips_known": 3,
+      "spell_slots": {
+        "1st": 4,
+        "2nd": 2
+      }
+    },
+    "4": {
+      "proficiency_bonus": "+2",
+      "features": ["Ability Score Improvement"],
+      "cantrips_known": 4,
+      "spell_slots": {
+        "1st": 4,
+        "2nd": 3
+      }
+    },
+    "5": {
+      "proficiency_bonus": "+3",
+      "features": ["Destroy Undead (CR 1/2)"],
+      "cantrips_known": 4,
+      "spell_slots": {
+        "1st": 4,
+        "2nd": 3,
+        "3rd": 2
+      }
+    },
+    "6": {
+      "proficiency_bonus": "+3",
+      "features": ["Channel Divinity (2/rest)", "Divine Domain Feature"],
+      "cantrips_known": 4,
+      "spell_slots": {
+        "1st": 4,
+        "2nd": 3,
+        "3rd": 3
+      }
+    },
+    "7": {
+      "proficiency_bonus": "+3",
+      "features": [],
+      "cantrips_known": 4,
+      "spell_slots": {
+        "1st": 4,
+        "2nd": 3,
+        "3rd": 3,
+        "4th": 1
+      }
+    },
+    "8": {
+      "proficiency_bonus": "+3",
+      "features": ["Ability Score Improvement", "Destroy Undead (CR 1)", "Divine Domain Feature"],
+      "cantrips_known": 4,
+      "spell_slots": {
+        "1st": 4,
+        "2nd": 3,
+        "3rd": 3,
+        "4th": 2
+      }
+    },
+    "9": {
+      "proficiency_bonus": "+4",
+      "features": [],
+      "cantrips_known": 4,
+      "spell_slots": {
+        "1st": 4,
+        "2nd": 3,
+        "3rd": 3,
+        "4th": 3,
+        "5th": 1
+      }
+    },
+    "10": {
+      "proficiency_bonus": "+4",
+      "features": ["Divine Intervention"],
+      "cantrips_known": 5,
+      "spell_slots": {
+        "1st": 4,
+        "2nd": 3,
+        "3rd": 3,
+        "4th": 3,
+        "5th": 2
+      }
+    },
+    "11": {
+      "proficiency_bonus": "+4",
+      "features": ["Destroy Undead (CR 2)"],
+      "cantrips_known": 5,
+      "spell_slots": {
+        "1st": 4,
+        "2nd": 3,
+        "3rd": 3,
+        "4th": 3,
+        "5th": 2,
+        "6th": 1
+      }
+    },
+    "12": {
+      "proficiency_bonus": "+4",
+      "features": ["Ability Score Improvement"],
+      "cantrips_known": 5,
+      "spell_slots": {
+        "1st": 4,
+        "2nd": 3,
+        "3rd": 3,
+        "4th": 3,
+        "5th": 2,
+        "6th": 1
+      }
+    },
+    "13": {
+      "proficiency_bonus": "+5",
+      "features": [],
+      "cantrips_known": 5,
+      "spell_slots": {
+        "1st": 4,
+        "2nd": 3,
+        "3rd": 3,
+        "4th": 3,
+        "5th": 2,
+        "6th": 1,
+        "7th": 1
+      }
+    },
+    "14": {
+      "proficiency_bonus": "+5",
+      "features": ["Destroy Undead (CR 3)"],
+      "cantrips_known": 5,
+      "spell_slots": {
+        "1st": 4,
+        "2nd": 3,
+        "3rd": 3,
+        "4th": 3,
+        "5th": 2,
+        "6th": 1,
+        "7th": 1
+      }
+    },
+    "15": {
+      "proficiency_bonus": "+5",
+      "features": [],
+      "cantrips_known": 5,
+      "spell_slots": {
+        "1st": 4,
+        "2nd": 3,
+        "3rd": 3,
+        "4th": 3,
+        "5th": 2,
+        "6th": 1,
+        "7th": 1,
+        "8th": 1
+      }
+    },
+    "16": {
+      "proficiency_bonus": "+5",
+      "features": ["Ability Score Improvement"],
+      "cantrips_known": 5,
+      "spell_slots": {
+        "1st": 4,
+        "2nd": 3,
+        "3rd": 3,
+        "4th": 3,
+        "5th": 2,
+        "6th": 1,
+        "7th": 1,
+        "8th": 1
+      }
+    },
+    "17": {
+      "proficiency_bonus": "+6",
+      "features": ["Destroy Undead (CR 4)", "Divine Domain Feature"],
+      "cantrips_known": 5,
+      "spell_slots": {
+        "1st": 4,
+        "2nd": 3,
+        "3rd": 3,
+        "4th": 3,
+        "5th": 2,
+        "6th": 1,
+        "7th": 1,
+        "8th": 1,
+        "9th": 1
+      }
+    },
+    "18": {
+      "proficiency_bonus": "+6",
+      "features": ["Channel Divinity (3/rest)"],
+      "cantrips_known": 5,
+      "spell_slots": {
+        "1st": 4,
+        "2nd": 3,
+        "3rd": 3,
+        "4th": 3,
+        "5th": 3,
+        "6th": 1,
+        "7th": 1,
+        "8th": 1,
+        "9th": 1
+      }
+    },
+    "19": {
+      "proficiency_bonus": "+6",
+      "features": ["Ability Score Improvement"],
+      "cantrips_known": 5,
+      "spell_slots": {
+        "1st": 4,
+        "2nd": 3,
+        "3rd": 3,
+        "4th": 3,
+        "5th": 3,
+        "6th": 2,
+        "7th": 1,
+        "8th": 1,
+        "9th": 1
+      }
+    },
+    "20": {
+      "proficiency_bonus": "+6",
+      "features": ["Divine Intervention Improvement"],
+      "cantrips_known": 5,
+      "spell_slots": {
+        "1st": 4,
+        "2nd": 3,
+        "3rd": 3,
+        "4th": 3,
+        "5th": 3,
+        "6th": 2,
+        "7th": 2,
+        "8th": 1,
+        "9th": 1
+      }
+    }
+  }
+}

@@ -1,0 +1,187 @@
+{
+  "name": "Fighter",
+  "hit_die": "d10",
+  "skill_points": "2 + Int modifier",
+  "class_skills": [
+    "Climb",
+    "Craft",
+    "Handle Animal",
+    "Intimidate",
+    "Jump",
+    "Ride",
+    "Swim"
+  ],
+  "weapon_proficiencies": [
+    "All simple and martial weapons"
+  ],
+  "armor_proficiencies": [
+    "All armor (heavy, medium, light) and shields (including tower shields)"
+  ],
+  "level_progression": {
+    "1": {
+      "base_attack_bonus": "+1",
+      "fort_save": "+2",
+      "ref_save": "+0",
+      "will_save": "+0",
+      "special": ["Bonus feat"],
+      "feats": 2
+    },
+    "2": {
+      "base_attack_bonus": "+2",
+      "fort_save": "+3",
+      "ref_save": "+0",
+      "will_save": "+0",
+      "special": ["Bonus feat"],
+      "feats": 1
+    },
+    "3": {
+      "base_attack_bonus": "+3",
+      "fort_save": "+3",
+      "ref_save": "+1",
+      "will_save": "+1",
+      "special": [],
+      "feats": 1
+    },
+    "4": {
+      "base_attack_bonus": "+4",
+      "fort_save": "+4",
+      "ref_save": "+1",
+      "will_save": "+1",
+      "special": ["Bonus feat"],
+      "feats": 1,
+      "ability_score_improvement": 1
+    },
+    "5": {
+      "base_attack_bonus": "+5",
+      "fort_save": "+4",
+      "ref_save": "+1",
+      "will_save": "+1",
+      "special": [],
+      "feats": 0
+    },
+    "6": {
+      "base_attack_bonus": "+6/+1",
+      "fort_save": "+5",
+      "ref_save": "+2",
+      "will_save": "+2",
+      "special": ["Bonus feat"],
+      "feats": 1
+    },
+    "7": {
+      "base_attack_bonus": "+7/+2",
+      "fort_save": "+5",
+      "ref_save": "+2",
+      "will_save": "+2",
+      "special": [],
+      "feats": 0
+    },
+    "8": {
+      "base_attack_bonus": "+8/+3",
+      "fort_save": "+6",
+      "ref_save": "+2",
+      "will_save": "+2",
+      "special": ["Bonus feat"],
+      "feats": 1,
+      "ability_score_improvement": 1
+    },
+    "9": {
+      "base_attack_bonus": "+9/+4",
+      "fort_save": "+6",
+      "ref_save": "+3",
+      "will_save": "+3",
+      "special": [],
+      "feats": 1
+    },
+    "10": {
+      "base_attack_bonus": "+10/+5",
+      "fort_save": "+7",
+      "ref_save": "+3",
+      "will_save": "+3",
+      "special": ["Bonus feat"],
+      "feats": 1
+    },
+    "11": {
+      "base_attack_bonus": "+11/+6/+1",
+      "fort_save": "+7",
+      "ref_save": "+3",
+      "will_save": "+3",
+      "special": [],
+      "feats": 0
+    },
+    "12": {
+      "base_attack_bonus": "+12/+7/+2",
+      "fort_save": "+8",
+      "ref_save": "+4",
+      "will_save": "+4",
+      "special": ["Bonus feat"],
+      "feats": 1,
+      "ability_score_improvement": 1
+    },
+    "13": {
+      "base_attack_bonus": "+13/+8/+3",
+      "fort_save": "+8",
+      "ref_save": "+4",
+      "will_save": "+4",
+      "special": [],
+      "feats": 0
+    },
+    "14": {
+      "base_attack_bonus": "+14/+9/+4",
+      "fort_save": "+9",
+      "ref_save": "+4",
+      "will_save": "+4",
+      "special": ["Bonus feat"],
+      "feats": 1
+    },
+    "15": {
+      "base_attack_bonus": "+15/+10/+5",
+      "fort_save": "+9",
+      "ref_save": "+5",
+      "will_save": "+5",
+      "special": [],
+      "feats": 1
+    },
+    "16": {
+      "base_attack_bonus": "+16/+11/+6/+1",
+      "fort_save": "+10",
+      "ref_save": "+5",
+      "will_save": "+5",
+      "special": ["Bonus feat"],
+      "feats": 1,
+      "ability_score_improvement": 1
+    },
+    "17": {
+      "base_attack_bonus": "+17/+12/+7/+2",
+      "fort_save": "+10",
+      "ref_save": "+5",
+      "will_save": "+5",
+      "special": [],
+      "feats": 0
+    },
+    "18": {
+      "base_attack_bonus": "+18/+13/+8/+3",
+      "fort_save": "+11",
+      "ref_save": "+6",
+      "will_save": "+6",
+      "special": ["Bonus feat"],
+      "feats": 1
+    },
+    "19": {
+      "base_attack_bonus": "+19/+14/+9/+4",
+      "fort_save": "+11",
+      "ref_save": "+6",
+      "will_save": "+6",
+      "special": [],
+      "feats": 1
+    },
+    "20": {
+      "base_attack_bonus": "+20/+15/+10/+5",
+      "fort_save": "+12",
+      "ref_save": "+6",
+      "will_save": "+6",
+      "special": ["Bonus feat"],
+      "feats": 1,
+      "ability_score_improvement": 1
+    }
+  }
+}

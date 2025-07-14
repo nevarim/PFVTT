@@ -1,0 +1,216 @@
+{
+  "name": "Monk",
+  "hit_die": 10,
+  "primary_ability": "Strength or Dexterity",
+  "saving_throw_proficiencies": ["Fortitude", "Reflex"],
+  "skill_points_per_level": 4,
+  "class_skills": [
+    "Acrobatics", "Athletics", "Crafting", "Intimidation", "Medicine", "Occultism", "Religion", "Stealth"
+  ],
+  "armor_proficiencies": ["Unarmored"],
+  "weapon_proficiencies": ["Simple weapons", "Unarmed attacks"],
+  "tool_proficiencies": [],
+  "is_spellcaster": false,
+  "levels": {
+    "1": {
+      "level": 1,
+      "proficiency_bonus": 2,
+      "features": ["Ancestry and Background", "Initial Proficiencies", "Flurry of Blows", "Monk Feat", "Powerful Fist"],
+      "class_dc": "trained",
+      "perception": "trained",
+      "fortitude": "expert",
+      "reflex": "expert",
+      "will": "expert"
+    },
+    "2": {
+      "level": 2,
+      "proficiency_bonus": 2,
+      "features": ["Monk Feat", "Skill Feat"],
+      "class_dc": "trained",
+      "perception": "trained",
+      "fortitude": "expert",
+      "reflex": "expert",
+      "will": "expert"
+    },
+    "3": {
+      "level": 3,
+      "proficiency_bonus": 2,
+      "features": ["General Feat", "Incredible Movement", "Mystic Strikes", "Skill Increase"],
+      "class_dc": "trained",
+      "perception": "trained",
+      "fortitude": "expert",
+      "reflex": "expert",
+      "will": "expert"
+    },
+    "4": {
+      "level": 4,
+      "proficiency_bonus": 2,
+      "features": ["Monk Feat", "Skill Feat"],
+      "class_dc": "trained",
+      "perception": "trained",
+      "fortitude": "expert",
+      "reflex": "expert",
+      "will": "expert"
+    },
+    "5": {
+      "level": 5,
+      "proficiency_bonus": 3,
+      "features": ["Alertness", "Ancestry Feat", "Expert Strikes", "Skill Increase"],
+      "class_dc": "expert",
+      "perception": "expert",
+      "fortitude": "expert",
+      "reflex": "expert",
+      "will": "expert"
+    },
+    "6": {
+      "level": 6,
+      "proficiency_bonus": 3,
+      "features": ["Monk Feat", "Skill Feat"],
+      "class_dc": "expert",
+      "perception": "expert",
+      "fortitude": "expert",
+      "reflex": "expert",
+      "will": "expert"
+    },
+    "7": {
+      "level": 7,
+      "proficiency_bonus": 3,
+      "features": ["General Feat", "Path to Perfection", "Skill Increase", "Weapon Specialization"],
+      "class_dc": "expert",
+      "perception": "expert",
+      "fortitude": "master",
+      "reflex": "expert",
+      "will": "expert"
+    },
+    "8": {
+      "level": 8,
+      "proficiency_bonus": 3,
+      "features": ["Monk Feat", "Skill Feat"],
+      "class_dc": "expert",
+      "perception": "expert",
+      "fortitude": "master",
+      "reflex": "expert",
+      "will": "expert"
+    },
+    "9": {
+      "level": 9,
+      "proficiency_bonus": 4,
+      "features": ["Ancestry Feat", "Metal Strikes", "Monk Expertise", "Skill Increase"],
+      "class_dc": "master",
+      "perception": "expert",
+      "fortitude": "master",
+      "reflex": "expert",
+      "will": "expert"
+    },
+    "10": {
+      "level": 10,
+      "proficiency_bonus": 4,
+      "features": ["Ability Boosts", "Monk Feat", "Skill Feat"],
+      "class_dc": "master",
+      "perception": "expert",
+      "fortitude": "master",
+      "reflex": "expert",
+      "will": "expert"
+    },
+    "11": {
+      "level": 11,
+      "proficiency_bonus": 4,
+      "features": ["General Feat", "Second Path to Perfection", "Skill Increase"],
+      "class_dc": "master",
+      "perception": "expert",
+      "fortitude": "master",
+      "reflex": "master",
+      "will": "expert"
+    },
+    "12": {
+      "level": 12,
+      "proficiency_bonus": 4,
+      "features": ["Monk Feat", "Skill Feat"],
+      "class_dc": "master",
+      "perception": "expert",
+      "fortitude": "master",
+      "reflex": "master",
+      "will": "expert"
+    },
+    "13": {
+      "level": 13,
+      "proficiency_bonus": 5,
+      "features": ["Ancestry Feat", "Graceful Mastery", "Master Strikes", "Skill Increase"],
+      "class_dc": "master",
+      "perception": "expert",
+      "fortitude": "master",
+      "reflex": "master",
+      "will": "expert"
+    },
+    "14": {
+      "level": 14,
+      "proficiency_bonus": 5,
+      "features": ["Monk Feat", "Skill Feat"],
+      "class_dc": "master",
+      "perception": "expert",
+      "fortitude": "master",
+      "reflex": "master",
+      "will": "expert"
+    },
+    "15": {
+      "level": 15,
+      "proficiency_bonus": 5,
+      "features": ["General Feat", "Greater Weapon Specialization", "Third Path to Perfection", "Skill Increase"],
+      "class_dc": "master",
+      "perception": "expert",
+      "fortitude": "master",
+      "reflex": "master",
+      "will": "master"
+    },
+    "16": {
+      "level": 16,
+      "proficiency_bonus": 5,
+      "features": ["Monk Feat", "Skill Feat"],
+      "class_dc": "master",
+      "perception": "expert",
+      "fortitude": "master",
+      "reflex": "master",
+      "will": "master"
+    },
+    "17": {
+      "level": 17,
+      "proficiency_bonus": 6,
+      "features": ["Adamantine Strikes", "Ancestry Feat", "Graceful Legend", "Skill Increase"],
+      "class_dc": "master",
+      "perception": "expert",
+      "fortitude": "master",
+      "reflex": "legendary",
+      "will": "master"
+    },
+    "18": {
+      "level": 18,
+      "proficiency_bonus": 6,
+      "features": ["Monk Feat", "Skill Feat"],
+      "class_dc": "master",
+      "perception": "expert",
+      "fortitude": "master",
+      "reflex": "legendary",
+      "will": "master"
+    },
+    "19": {
+      "level": 19,
+      "proficiency_bonus": 6,
+      "features": ["General Feat", "Perfected Form", "Skill Increase"],
+      "class_dc": "legendary",
+      "perception": "expert",
+      "fortitude": "master",
+      "reflex": "legendary",
+      "will": "master"
+    },
+    "20": {
+      "level": 20,
+      "proficiency_bonus": 6,
+      "features": ["Ability Boosts", "Monk Feat", "Skill Feat"],
+      "class_dc": "legendary",
+      "perception": "expert",
+      "fortitude": "master",
+      "reflex": "legendary",
+      "will": "master"
+    }
+  }
+}

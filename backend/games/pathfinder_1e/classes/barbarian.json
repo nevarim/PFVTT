@@ -1,0 +1,190 @@
+{
+  "name": "Barbarian",
+  "hit_die": "d12",
+  "skill_points": "4 + Int modifier",
+  "class_skills": [
+    "Acrobatics (Dex)",
+    "Climb (Str)",
+    "Craft (Int)",
+    "Handle Animal (Cha)",
+    "Intimidate (Cha)",
+    "Knowledge (nature) (Int)",
+    "Perception (Wis)",
+    "Ride (Dex)",
+    "Survival (Wis)",
+    "Swim (Str)"
+  ],
+  "weapon_proficiencies": [
+    "All simple and martial weapons"
+  ],
+  "armor_proficiencies": [
+    "Light armor, medium armor, shields (except tower shields)"
+  ],
+  "level_progression": {
+    "1": {
+      "base_attack_bonus": "+1",
+      "fort_save": "+2",
+      "ref_save": "+0",
+      "will_save": "+0",
+      "special": ["Fast movement", "Rage"],
+      "feats": 1
+    },
+    "2": {
+      "base_attack_bonus": "+2",
+      "fort_save": "+3",
+      "ref_save": "+0",
+      "will_save": "+0",
+      "special": ["Rage power", "Uncanny dodge"],
+      "feats": 0
+    },
+    "3": {
+      "base_attack_bonus": "+3",
+      "fort_save": "+3",
+      "ref_save": "+1",
+      "will_save": "+1",
+      "special": ["Trap sense +1"],
+      "feats": 1
+    },
+    "4": {
+      "base_attack_bonus": "+4",
+      "fort_save": "+4",
+      "ref_save": "+1",
+      "will_save": "+1",
+      "special": ["Rage power"],
+      "feats": 0,
+      "ability_score_improvement": 1
+    },
+    "5": {
+      "base_attack_bonus": "+5",
+      "fort_save": "+4",
+      "ref_save": "+1",
+      "will_save": "+1",
+      "special": ["Improved uncanny dodge"],
+      "feats": 1
+    },
+    "6": {
+      "base_attack_bonus": "+6/+1",
+      "fort_save": "+5",
+      "ref_save": "+2",
+      "will_save": "+2",
+      "special": ["Rage power", "Trap sense +2"],
+      "feats": 0
+    },
+    "7": {
+      "base_attack_bonus": "+7/+2",
+      "fort_save": "+5",
+      "ref_save": "+2",
+      "will_save": "+2",
+      "special": ["Damage reduction 1/—"],
+      "feats": 1
+    },
+    "8": {
+      "base_attack_bonus": "+8/+3",
+      "fort_save": "+6",
+      "ref_save": "+2",
+      "will_save": "+2",
+      "special": ["Rage power"],
+      "feats": 0,
+      "ability_score_improvement": 1
+    },
+    "9": {
+      "base_attack_bonus": "+9/+4",
+      "fort_save": "+6",
+      "ref_save": "+3",
+      "will_save": "+3",
+      "special": ["Trap sense +3"],
+      "feats": 1
+    },
+    "10": {
+      "base_attack_bonus": "+10/+5",
+      "fort_save": "+7",
+      "ref_save": "+3",
+      "will_save": "+3",
+      "special": ["Damage reduction 2/—", "Rage power"],
+      "feats": 0
+    },
+    "11": {
+      "base_attack_bonus": "+11/+6/+1",
+      "fort_save": "+7",
+      "ref_save": "+3",
+      "will_save": "+3",
+      "special": ["Greater rage"],
+      "feats": 1
+    },
+    "12": {
+      "base_attack_bonus": "+12/+7/+2",
+      "fort_save": "+8",
+      "ref_save": "+4",
+      "will_save": "+4",
+      "special": ["Rage power", "Trap sense +4"],
+      "feats": 0,
+      "ability_score_improvement": 1
+    },
+    "13": {
+      "base_attack_bonus": "+13/+8/+3",
+      "fort_save": "+8",
+      "ref_save": "+4",
+      "will_save": "+4",
+      "special": ["Damage reduction 3/—"],
+      "feats": 1
+    },
+    "14": {
+      "base_attack_bonus": "+14/+9/+4",
+      "fort_save": "+9",
+      "ref_save": "+4",
+      "will_save": "+4",
+      "special": ["Indomitable will", "Rage power"],
+      "feats": 0
+    },
+    "15": {
+      "base_attack_bonus": "+15/+10/+5",
+      "fort_save": "+9",
+      "ref_save": "+5",
+      "will_save": "+5",
+      "special": ["Trap sense +5"],
+      "feats": 1
+    },
+    "16": {
+      "base_attack_bonus": "+16/+11/+6/+1",
+      "fort_save": "+10",
+      "ref_save": "+5",
+      "will_save": "+5",
+      "special": ["Damage reduction 4/—", "Rage power"],
+      "feats": 0,
+      "ability_score_improvement": 1
+    },
+    "17": {
+      "base_attack_bonus": "+17/+12/+7/+2",
+      "fort_save": "+10",
+      "ref_save": "+5",
+      "will_save": "+5",
+      "special": ["Tireless rage"],
+      "feats": 1
+    },
+    "18": {
+      "base_attack_bonus": "+18/+13/+8/+3",
+      "fort_save": "+11",
+      "ref_save": "+6",
+      "will_save": "+6",
+      "special": ["Rage power", "Trap sense +6"],
+      "feats": 0
+    },
+    "19": {
+      "base_attack_bonus": "+19/+14/+9/+4",
+      "fort_save": "+11",
+      "ref_save": "+6",
+      "will_save": "+6",
+      "special": ["Damage reduction 5/—"],
+      "feats": 1
+    },
+    "20": {
+      "base_attack_bonus": "+20/+15/+10/+5",
+      "fort_save": "+12",
+      "ref_save": "+6",
+      "will_save": "+6",
+      "special": ["Mighty rage", "Rage power"],
+      "feats": 0,
+      "ability_score_improvement": 1
+    }
+  }
+}

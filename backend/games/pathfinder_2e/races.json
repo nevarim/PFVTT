@@ -1,0 +1,145 @@
+{
+  "ancestries": [
+    {
+      "name": "Human",
+      "ability_boosts": ["Two free ability boosts"],
+      "ability_flaws": [],
+      "size": "Medium",
+      "speed": 25,
+      "traits": ["Human", "Humanoid"],
+      "languages": ["Common", "One additional language"],
+      "special_abilities": [
+        "Versatile Heritage: Gain a general feat at 1st level"
+      ],
+      "description": "Ambitious, adaptable, and diverse, humans are the most common ancestry in most parts of the world."
+    },
+    {
+      "name": "Dwarf",
+      "ability_boosts": ["Constitution", "Wisdom", "One free ability boost"],
+      "ability_flaws": ["Charisma"],
+      "size": "Medium",
+      "speed": 20,
+      "traits": ["Dwarf", "Humanoid"],
+      "languages": ["Common", "Dwarven"],
+      "special_abilities": [
+        "Darkvision",
+        "Clan Dagger: You get one clan dagger of your clan for free",
+        "Dwarven Weapon Familiarity: You have familiarity with dwarven weapons"
+      ],
+      "description": "These short and stocky defenders of mountain fortresses are often seen as stern and humorless."
+    },
+    {
+      "name": "Elf",
+      "ability_boosts": ["Dexterity", "Intelligence", "One free ability boost"],
+      "ability_flaws": ["Constitution"],
+      "size": "Medium",
+      "speed": 30,
+      "traits": ["Elf", "Humanoid"],
+      "languages": ["Common", "Elven"],
+      "special_abilities": [
+        "Low-Light Vision",
+        "Keen Senses: You become trained in Perception",
+        "Elven Weapon Familiarity: You have familiarity with elven weapons"
+      ],
+      "description": "As an ancient people, elves have seen great change and have the perspective that can come only from watching the arc of history."
+    },
+    {
+      "name": "Gnome",
+      "ability_boosts": ["Constitution", "Charisma", "One free ability boost"],
+      "ability_flaws": ["Strength"],
+      "size": "Small",
+      "speed": 25,
+      "traits": ["Gnome", "Humanoid"],
+      "languages": ["Common", "Gnomish", "Sylvan"],
+      "special_abilities": [
+        "Low-Light Vision",
+        "Gnome Weapon Familiarity: You have familiarity with gnome weapons"
+      ],
+      "description": "Long ago, early gnome ancestors emigrated from the First World, realm of the fey."
+    },
+    {
+      "name": "Goblin",
+      "ability_boosts": ["Dexterity", "Charisma", "One free ability boost"],
+      "ability_flaws": ["Wisdom"],
+      "size": "Small",
+      "speed": 25,
+      "traits": ["Goblin", "Humanoid"],
+      "languages": ["Common", "Goblin"],
+      "special_abilities": [
+        "Darkvision",
+        "Goblin Weapon Familiarity: You have familiarity with goblin weapons"
+      ],
+      "description": "The convoluted histories other people cling to don't interest goblins. These small folk live in the moment."
+    },
+    {
+      "name": "Halfling",
+      "ability_boosts": ["Dexterity", "Wisdom", "One free ability boost"],
+      "ability_flaws": ["Strength"],
+      "size": "Small",
+      "speed": 25,
+      "traits": ["Halfling", "Humanoid"],
+      "languages": ["Common", "Halfling"],
+      "special_abilities": [
+        "Keen Eyes: You gain a +2 circumstance bonus when using the Seek action",
+        "Halfling Weapon Familiarity: You have familiarity with halfling weapons"
+      ],
+      "description": "Claiming no place as their own, halflings control few settlements larger than villages."
+    },
+    {
+      "name": "Orc",
+      "ability_boosts": ["Strength", "One free ability boost"],
+      "ability_flaws": [],
+      "size": "Medium",
+      "speed": 25,
+      "traits": ["Humanoid", "Orc"],
+      "languages": ["Common", "Orcish"],
+      "special_abilities": [
+        "Darkvision",
+        "Orc Weapon Familiarity: You have familiarity with orc weapons"
+      ],
+      "description": "Orcs are forged in the fires of violence and conflict, often from the moment they're born."
+    },
+    {
+      "name": "Catfolk",
+      "ability_boosts": ["Dexterity", "Charisma", "One free ability boost"],
+      "ability_flaws": ["Wisdom"],
+      "size": "Medium",
+      "speed": 30,
+      "traits": ["Catfolk", "Humanoid"],
+      "languages": ["Amurrun", "Common"],
+      "special_abilities": [
+        "Low-Light Vision",
+        "Land on Your Feet: You always land on your feet when you fall"
+      ],
+      "description": "Curious and gregarious wanderers, catfolk combine features of felines and humanoids in both appearance and temperament."
+    },
+    {
+      "name": "Kobold",
+      "ability_boosts": ["Dexterity", "Charisma", "One free ability boost"],
+      "ability_flaws": ["Constitution"],
+      "size": "Small",
+      "speed": 25,
+      "traits": ["Humanoid", "Kobold"],
+      "languages": ["Common", "Draconic"],
+      "special_abilities": [
+        "Darkvision",
+        "Draconic Exemplar: You have a connection to a type of dragon"
+      ],
+      "description": "Every kobold knows that their slight frame belies true, mighty draconic power."
+    },
+    {
+      "name": "Lizardfolk",
+      "ability_boosts": ["Strength", "Wisdom", "One free ability boost"],
+      "ability_flaws": ["Intelligence"],
+      "size": "Medium",
+      "speed": 25,
+      "traits": ["Humanoid", "Lizardfolk"],
+      "languages": ["Common", "Iruxi"],
+      "special_abilities": [
+        "Claws: You have claws that can be used as weapons",
+        "Aquatic Adaptation: You can hold your breath longer and swim better"
+      ],
+      "description": "Lizardfolk are consummate survivors, heirs to empires considered ancient even by the elves."
+    }
+  ]
+}

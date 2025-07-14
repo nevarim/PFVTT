@@ -1,1 +1,118 @@
-{}
+{
+  "cantrips": {
+    "acid_splash": {
+      "name": "Acid Splash",
+      "level": 0,
+      "school": "Conjuration",
+      "casting_time": "1 action",
+      "range": "60 feet",
+      "components": "V, S",
+      "duration": "Instantaneous",
+      "description": "You hurl a bubble of acid. Choose one creature within range, or choose two creatures within range that are within 5 feet of each other. A target must succeed on a Dexterity saving throw or take 1d6 acid damage."
+    },
+    "fire_bolt": {
+      "name": "Fire Bolt",
+      "level": 0,
+      "school": "Evocation",
+      "casting_time": "1 action",
+      "range": "120 feet",
+      "components": "V, S",
+      "duration": "Instantaneous",
+      "description": "You hurl a mote of fire at a creature or object within range. Make a ranged spell attack against the target. On a hit, the target takes 1d10 fire damage."
+    },
+    "mage_hand": {
+      "name": "Mage Hand",
+      "level": 0,
+      "school": "Transmutation",
+      "casting_time": "1 action",
+      "range": "30 feet",
+      "components": "V, S",
+      "duration": "1 minute",
+      "description": "A spectral, floating hand appears at a point you choose within range. The hand lasts for the duration or until you dismiss it as an action."
+    },
+    "prestidigitation": {
+      "name": "Prestidigitation",
+      "level": 0,
+      "school": "Transmutation",
+      "casting_time": "1 action",
+      "range": "10 feet",
+      "components": "V, S",
+      "duration": "Up to 1 hour",
+      "description": "This spell is a minor magical trick that novice spellcasters use for practice. You create one of several minor effects."
+    }
+  },
+  "1st_level": {
+    "magic_missile": {
+      "name": "Magic Missile",
+      "level": 1,
+      "school": "Evocation",
+      "casting_time": "1 action",
+      "range": "120 feet",
+      "components": "V, S",
+      "duration": "Instantaneous",
+      "description": "You create three glowing darts of magical force. Each dart hits a creature of your choice that you can see within range. A dart deals 1d4 + 1 force damage to its target."
+    },
+    "cure_wounds": {
+      "name": "Cure Wounds",
+      "level": 1,
+      "school": "Evocation",
+      "casting_time": "1 action",
+      "range": "Touch",
+      "components": "V, S",
+      "duration": "Instantaneous",
+      "description": "A creature you touch regains a number of hit points equal to 1d8 + your spellcasting ability modifier."
+    },
+    "shield": {
+      "name": "Shield",
+      "level": 1,
+      "school": "Abjuration",
+      "casting_time": "1 reaction",
+      "range": "Self",
+      "components": "V, S",
+      "duration": "1 round",
+      "description": "An invisible barrier of magical force appears and protects you. Until the start of your next turn, you have a +5 bonus to AC."
+    },
+    "detect_magic": {
+      "name": "Detect Magic",
+      "level": 1,
+      "school": "Divination",
+      "casting_time": "1 action",
+      "range": "Self",
+      "components": "V, S",
+      "duration": "Concentration, up to 10 minutes",
+      "description": "For the duration, you sense the presence of magic within 30 feet of you."
+    }
+  },
+  "2nd_level": {
+    "fireball": {
+      "name": "Fireball",
+      "level": 3,
+      "school": "Evocation",
+      "casting_time": "1 action",
+      "range": "150 feet",
+      "components": "V, S, M",
+      "duration": "Instantaneous",
+      "description": "A bright streak flashes from your pointing finger to a point you choose within range and then blossoms with a low roar into an explosion of flame."
+    },
+    "invisibility": {
+      "name": "Invisibility",
+      "level": 2,
+      "school": "Illusion",
+      "casting_time": "1 action",
+      "range": "Touch",
+      "components": "V, S, M",
+      "duration": "Concentration, up to 1 hour",
+      "description": "A creature you touch becomes invisible until the spell ends."
+    },
+    "misty_step": {
+      "name": "Misty Step",
+      "level": 2,
+      "school": "Conjuration",
+      "casting_time": "1 bonus action",
+      "range": "Self",
+      "components": "V",
+      "duration": "Instantaneous",
+      "description": "Briefly surrounded by silvery mist, you teleport up to 30 feet to an unoccupied space that you can see."
+    }
+  }
+}

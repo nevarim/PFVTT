@@ -203,6 +203,32 @@
         font-size: 16px;
         cursor: pointer;
         padding: 0;
+      }
+      
+      /* Loading spinner animation */
+      .loading-spinner {
+        width: 20px;
+        height: 20px;
+        border: 2px solid #ffffff;
+        border-top: 2px solid transparent;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+      
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+      
+      /* Map loading and error styles */
+      .map-load-error {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+      
+      #map-loading-indicator {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
         width: 20px;
         height: 20px;
       }
@@ -988,7 +1014,7 @@
             const li = document.createElement('li');
             li.className = 'item';
             const tokenSheet = sheets.find(s => s.map_token_id === token.id) || null;
-            li.innerHTML = `<div class='item-name'>${escapeHtml(token.name||'Token')}</div><div class='item-details'><button style='background:#444; color:white; border:none; border-radius:3px; padding:2px 8px; cursor:pointer;' onclick='openTokenSheetModal(${JSON.stringify(token)}, ${JSON.stringify(tokenSheet)})'>Sheet</button></div>`;
+            li.innerHTML = `<div class='item-name'>${escapeHtml(token.name||'Token')}</div><div class='item-details'>ID: ${token.id} <button style='background:#444; color:white; border:none; border-radius:3px; padding:2px 8px; cursor:pointer; margin-left:8px;' onclick='openTokenSheetModal(${JSON.stringify(token)}, ${JSON.stringify(tokenSheet)})'>Sheet</button></div>`;
             list.appendChild(li);
           });
         }
@@ -2600,7 +2626,7 @@
         
         Logger.debug('Loading campaign info', { campaignId, user });
         
-        const response = await fetch(`http://localhost:8080/api/campaigns?username=${encodeURIComponent(user)}`);
+        const response = await fetch(`/api/campaigns?username=${encodeURIComponent(user)}`);
         
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
@@ -2658,7 +2684,7 @@
         
         Logger.debug('Loading maps for campaign', { campaignId });
         
-        const response = await fetch(`http://localhost:8080/api/maps?campaign_id=${campaignId}`);
+        const response = await fetch(`/api/maps?campaign_id=${campaignId}`);
         
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
@@ -2727,21 +2753,33 @@
           }
         });
         
-        // Auto-load map based on session storage or first available
+        // Auto-load map based on URL parameters, session storage, or first available
         if (validMaps.length > 0 && !currentMapId) {
           try {
+            const urlParams = new URLSearchParams(window.location.search);
+            const urlMapId = urlParams.get('map_id') || urlParams.get('id');
             const savedMapId = sessionStorage.getItem('current_map_id');
             let mapToLoad = null;
             
-            // Try to find the saved map first
-            if (savedMapId) {
+            // Try to find the URL map first
+            if (urlMapId) {
+              mapToLoad = validMaps.find(map => map.id == urlMapId);
+              if (mapToLoad) {
+                Logger.debug('Found URL map to load', { mapId: urlMapId });
+              } else {
+                Logger.warn('URL map ID not found in available maps', { urlMapId, availableMaps: validMaps.map(m => m.id) });
+              }
+            }
+            
+            // Try to find the saved map if URL map not found
+            if (!mapToLoad && savedMapId) {
               mapToLoad = validMaps.find(map => map.id == savedMapId);
               if (mapToLoad) {
                 Logger.debug('Found saved map to load', { mapId: savedMapId });
               }
             }
             
-            // If saved map not found, use first map
+            // If neither URL nor saved map found, use first map
             if (!mapToLoad) {
               mapToLoad = validMaps[0];
               Logger.debug('Using first available map', { mapId: mapToLoad.id });
@@ -2785,64 +2823,317 @@
     }
     
     // Enhanced map loading with validation and error handling
+    // ===== MAP LOADING STATE MANAGEMENT =====
+    let isLoadingMap = false;
+    let currentLoadingMapId = null;
+    
     async function loadMap(mapId) {
       try {
         // Validate map ID
         if (!mapId || (typeof mapId !== 'string' && typeof mapId !== 'number')) {
           Logger.error('Invalid map ID provided', { mapId });
-          return;
+          showMapLoadError('ID mappa non valido');
+          return false;
         }
+        
+        // Prevent concurrent map loading
+        if (isLoadingMap) {
+          Logger.warn('Map loading already in progress, ignoring request', { 
+            currentMapId: currentLoadingMapId, 
+            requestedMapId: mapId 
+          });
+          return false;
+        }
+        
+        isLoadingMap = true;
+        currentLoadingMapId = mapId;
         
         Logger.debug('Loading map', { mapId });
         
-        // Remove selection from all maps
-        const mapItems = document.querySelectorAll('#maps-list .item');
-        mapItems.forEach(item => {
-          try {
-            item.classList.remove('selected');
-          } catch (error) {
-            Logger.warn('Failed to remove selection from map item', error);
-          }
-        });
+        // Show loading indicator
+        showMapLoadingIndicator(true);
         
-        // Add selection to clicked map (only if called from click event)
-        if (typeof event !== 'undefined' && event && event.target) {
-          try {
-            const itemEl = event.target.closest('.item');
-            if (itemEl) {
-              itemEl.classList.add('selected');
-            }
-          } catch (error) {
-            Logger.warn('Failed to add selection to clicked map', error);
-          }
-        }
-        
-        // Update current map ID
-        currentMapId = mapId;
-        
-        // Save selected map ID to session storage
         try {
-          sessionStorage.setItem('current_map_id', mapId.toString());
-        } catch (error) {
-          Logger.warn('Failed to save map ID to session storage', error);
+          // ===== ENHANCED STATE CLEANUP =====
+          // Clear all previous map state before loading new map
+          resetMapState();
+          
+          // Remove selection from all maps
+          const mapItems = document.querySelectorAll('#maps-list .item');
+          mapItems.forEach(item => {
+            try {
+              item.classList.remove('selected');
+            } catch (error) {
+              Logger.warn('Failed to remove selection from map item', error);
+            }
+          });
+          
+          // Add selection to clicked map (only if called from click event)
+          if (typeof event !== 'undefined' && event && event.target) {
+            try {
+              const itemEl = event.target.closest('.item');
+              if (itemEl) {
+                itemEl.classList.add('selected');
+              }
+            } catch (error) {
+              Logger.warn('Failed to add selection to clicked map', error);
+            }
+          }
+          
+          // Update current map ID
+          currentMapId = mapId;
+          if (MapState) {
+            MapState.currentMapId = mapId;
+          }
+          
+          // Save selected map ID to session storage
+          try {
+            sessionStorage.setItem('current_map_id', mapId.toString());
+          } catch (error) {
+            Logger.warn('Failed to save map ID to session storage', error);
+          }
+          
+          // Clear existing assets from all layers
+          clearAllLayers();
+          
+          // Load positioned assets for this map
+          const assetsLoaded = await loadMapAssets(mapId);
+          if (!assetsLoaded) {
+            Logger.warn('Some assets failed to load for map', { mapId });
+          }
+          
+          // Update active tokens list for the selected map
+          try {
+            loadActiveTokensAndSheets();
+          } catch (error) {
+            Logger.error('Failed to load active tokens and sheets', error);
+          }
+          
+          Logger.debug('Map loaded successfully', { mapId });
+          return true;
+          
+        } finally {
+          // Always hide loading indicator and reset loading state
+          showMapLoadingIndicator(false);
+          isLoadingMap = false;
+          currentLoadingMapId = null;
         }
-        
-        // Clear existing assets from all layers
-        clearAllLayers();
-        
-        // Load positioned assets for this map
-        await loadMapAssets(mapId);
-        
-        // Update active tokens list for the selected map
-        loadActiveTokensAndSheets();
-        
-        Logger.debug('Map loaded successfully', { mapId });
         
       } catch (error) {
         Logger.error('Failed to load map', error, { mapId });
+        showMapLoadError('Errore durante il caricamento della mappa');
+        showMapLoadingIndicator(false);
+        isLoadingMap = false;
+        currentLoadingMapId = null;
+        return false;
       }
     }
     
+    // ===== MAP LOADING UI HELPERS =====
+    function showMapLoadingIndicator(show) {
+      try {
+        let indicator = document.getElementById('map-loading-indicator');
+        if (show) {
+          if (!indicator) {
+            indicator = document.createElement('div');
+            indicator.id = 'map-loading-indicator';
+            indicator.innerHTML = '<div class="loading-spinner"></div><span>Caricamento mappa...</span>';
+            indicator.style.cssText = `
+              position: fixed;
+              top: 50%;
+              left: 50%;
+              transform: translate(-50%, -50%);
+              background: rgba(0, 0, 0, 0.8);
+              color: white;
+              padding: 20px;
+              border-radius: 8px;
+              z-index: 10000;
+              display: flex;
+              align-items: center;
+              gap: 10px;
+            `;
+            document.body.appendChild(indicator);
+          }
+          indicator.style.display = 'flex';
+        } else if (indicator) {
+          indicator.style.display = 'none';
+        }
+      } catch (error) {
+        Logger.warn('Failed to show/hide loading indicator', error);
+      }
+    }
+    
+    function showMapLoadError(message) {
+      try {
+        // Remove any existing error messages
+        const existingErrors = document.querySelectorAll('.map-load-error');
+        existingErrors.forEach(error => error.remove());
+        
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'map-load-error';
+        errorDiv.textContent = message;
+        errorDiv.style.cssText = `
+          position: fixed;
+          top: 20px;
+          right: 20px;
+          background: #dc3545;
+          color: white;
+          padding: 12px 20px;
+          border-radius: 4px;
+          z-index: 10001;
+          max-width: 300px;
+        `;
+        
+        document.body.appendChild(errorDiv);
+        
+        // Auto-remove after 5 seconds
+        setTimeout(() => {
+          if (errorDiv.parentNode) {
+            errorDiv.remove();
+          }
+        }, 5000);
+        
+      } catch (error) {
+        Logger.warn('Failed to show error message', error);
+      }
+    }
+    
+    // ===== ENHANCED MAP STATE RESET FUNCTION =====
+    function resetMapState() {
+      try {
+        Logger.debug('Resetting map state for new map load');
+        
+        // Clear token selections
+        clearTokenSelection();
+        
+        // Reset navigation state
+        if (MapNavigation && MapNavigation.isDragging) {
+          if (MapNavigation.endDrag) {
+            MapNavigation.endDrag();
+          } else {
+            MapNavigation.isDragging = false;
+          }
+        }
+        
+        // Reset tool state
+        if (ToolManager && ToolManager.selectTool) {
+          ToolManager.selectTool('select');
+        }
+        
+        // Clear any active measurements
+        if (ToolManager && ToolManager.clearMeasurements) {
+          ToolManager.clearMeasurements();
+        }
+        
+        // Clear selection box if active
+        if (typeof isSelecting !== 'undefined' && isSelecting && selectionBox) {
+          try {
+            selectionBox.remove();
+            selectionBox = null;
+            isSelecting = false;
+          } catch (error) {
+            Logger.warn('Failed to clear selection box', error);
+          }
+        }
+        
+        // Reset zoom and pan to default for new map
+        if (MapNavigation) {
+          MapNavigation.currentZoom = 1;
+          MapNavigation.panX = 0;
+          MapNavigation.panY = 0;
+          if (MapNavigation.updateMapTransform) {
+            MapNavigation.updateMapTransform();
+          }
+        }
+        
+        // Clear any drag states
+        if (typeof isDragging !== 'undefined') {
+          isDragging = false;
+        }
+        if (MapState && typeof MapState.isDragging !== 'undefined') {
+          MapState.isDragging = false;
+        }
+        
+        // Clear any context menus
+        const contextMenus = document.querySelectorAll('.context-menu');
+        contextMenus.forEach(menu => {
+          try {
+            menu.remove();
+          } catch (error) {
+            Logger.warn('Failed to remove context menu', error);
+          }
+        });
+        
+        // Clear any temporary UI elements
+        const tempElements = document.querySelectorAll('.temp-ui-element, .measurement-line, .grid-highlight');
+        tempElements.forEach(element => {
+          try {
+            element.remove();
+          } catch (error) {
+            Logger.warn('Failed to remove temporary UI element', error);
+          }
+        });
+        
+        // Clean up any orphaned event listeners
+        cleanupOrphanedEventListeners();
+        
+        Logger.debug('Map state reset completed');
+        
+      } catch (error) {
+        Logger.error('Failed to reset map state', error);
+      }
+    }
+
+    // ===== CLEANUP ORPHANED EVENT LISTENERS =====
+    function cleanupOrphanedEventListeners() {
+      try {
+        Logger.debug('Cleaning up orphaned event listeners');
+        
+        // Remove any dangling drag event listeners
+        const dragElements = document.querySelectorAll('[draggable="true"]');
+        dragElements.forEach(element => {
+          if (!element.parentNode || !document.contains(element)) {
+            try {
+              // Element is orphaned, clean it up
+              element.draggable = false;
+              element.removeAttribute('draggable');
+            } catch (error) {
+              Logger.warn('Failed to clean orphaned drag element', error);
+            }
+          }
+        });
+        
+        // Clean up any audio instances that might be playing
+        const audioElements = document.querySelectorAll('audio');
+        audioElements.forEach(audio => {
+          try {
+            if (!document.contains(audio)) {
+              audio.pause();
+              audio.src = '';
+              audio.remove();
+            }
+          } catch (error) {
+            Logger.warn('Failed to clean orphaned audio element', error);
+          }
+        });
+        
+        // Force garbage collection hint (if available)
+        if (window.gc && typeof window.gc === 'function') {
+          try {
+            window.gc();
+            Logger.debug('Manual garbage collection triggered');
+          } catch (gcError) {
+            Logger.debug('Manual garbage collection not available');
+          }
+        }
+        
+        Logger.debug('Orphaned event listeners cleanup completed');
+        
+      } catch (error) {
+        Logger.error('Failed to cleanup orphaned event listeners', error);
+      }
+    }
+
     // Enhanced layer clearing with validation and error handling
     function clearAllLayers() {
       try {
@@ -2854,6 +3145,33 @@
           try {
             const layer = document.getElementById(`${layerName}-layer`);
             if (layer) {
+              // Remove all child elements and their event listeners properly
+              Array.from(layer.children).forEach(child => {
+                try {
+                  // Remove specific event listeners to prevent memory leaks
+                  if (child.removeEventListener) {
+                    // Clone and replace to remove all event listeners
+                    const newChild = child.cloneNode(true);
+                    child.parentNode.replaceChild(newChild, child);
+                  }
+                  
+                  // Clean up any audio instances
+                  if (child.audioInstance) {
+                    try {
+                      child.audioInstance.pause();
+                      child.audioInstance.src = '';
+                      child.audioInstance = null;
+                    } catch (audioError) {
+                      Logger.warn('Failed to clean up audio instance', audioError);
+                    }
+                  }
+                  
+                } catch (childError) {
+                  Logger.warn('Failed to clean up child element', childError);
+                }
+              });
+              
+              // Clear all children
               layer.innerHTML = '';
               Logger.debug(`Cleared layer: ${layerName}`);
             } else {
@@ -2972,10 +3290,17 @@
           }
         }
         
+        // Ensure map transform is applied after assets are loaded
+        if (MapNavigation && MapNavigation.updateMapTransform) {
+          MapNavigation.updateMapTransform();
+        }
+        
         Logger.debug('Map assets loading completed', { mapId });
+        return true;
         
       } catch (error) {
         Logger.error('Failed to load map assets', error, { mapId });
+        return false;
       }
     }
     
@@ -2992,7 +3317,7 @@
         }
         
         const user = localStorage.getItem('pfvtt_user') || sessionStorage.getItem('pfvtt_user');
-        const response = await fetch('http://localhost:8080/api/maps', {
+        const response = await fetch('/api/maps', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -3037,7 +3362,7 @@
         
         Logger.info('Loading assets for campaign:', campaignId);
         
-        const response = await fetch(`http://localhost:8080/api/assets?campaign_id=${campaignId}`);
+        const response = await fetch(`/api/assets?campaign_id=${campaignId}`);
         
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
@@ -3264,7 +3589,7 @@
             uploadFormData.append('upload_type', selectedCategory);
             
             // Upload file first
-            const uploadResponse = await fetch('http://localhost:8080/api/upload', {
+            const uploadResponse = await fetch('/api/upload', {
               method: 'POST',
               body: uploadFormData
             });
@@ -3295,7 +3620,7 @@
               tags: ''
             };
             
-            const assetResponse = await fetch('http://localhost:8080/api/assets', {
+            const assetResponse = await fetch('/api/assets', {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json'
@@ -3370,7 +3695,7 @@
         
         Logger.info('Updating asset name from', asset.name, 'to', trimmedName);
         
-        const response = await fetch(`http://localhost:8080/api/assets/${assetId}`, {
+        const response = await fetch(`/api/assets/${assetId}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json'
@@ -3473,7 +3798,7 @@
         Logger.info('Updating token name from', currentName, 'to', trimmedName, 'Token ID:', tokenId);
         
         // Update the asset name in the assets table
-        const assetResponse = await fetch(`http://localhost:8080/api/assets/${assetData.assetId}`, {
+        const assetResponse = await fetch(`/api/assets/${assetData.assetId}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json'
@@ -3496,7 +3821,7 @@
         }
         
         // Update the token name in map_tokens table
-        const tokenResponse = await fetch(`http://localhost:8080/api/map-tokens/${tokenId}`, {
+        const tokenResponse = await fetch(`/api/map-tokens/${tokenId}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json'
@@ -3570,7 +3895,7 @@
         
         Logger.info('Deleting asset:', assetName, 'ID:', assetId);
         
-        const response = await fetch(`http://localhost:8080/api/assets/${assetId}`, {
+        const response = await fetch(`/api/assets/${assetId}`, {
           method: 'DELETE'
         });
         
@@ -3699,6 +4024,18 @@
         });
         selectedTokens.clear();
         updateSelectionUI();
+        
+        // Clear any selection box if active
+        if (selectionBox) {
+          try {
+            selectionBox.remove();
+            selectionBox = null;
+            isSelecting = false;
+          } catch (error) {
+            Logger.warn('Failed to remove selection box during token selection clear', error);
+          }
+        }
+        
         Logger.debug('Token selection cleared');
       } catch (error) {
         Logger.error('Error in clearTokenSelection:', error);
@@ -3815,7 +4152,7 @@
           const mapCoords = screenToMapCoordinates(x, y);
           const gridCoords = mapToGridCoordinates(mapCoords.x, mapCoords.y);
           
-          const response = await fetch(`http://localhost:8080/api/map-tokens/${tokenId}`, {
+          const response = await fetch(`/api/map-tokens/${tokenId}`, {
             method: 'PUT',
             headers: {
               'Content-Type': 'application/json'
@@ -4139,28 +4476,33 @@
           return;
         }
         
-        const response = await fetch(`http://localhost:8080/api/campaigns/${campaignId}/settings`);
+        // TODO: Implement /api/campaigns/${campaignId}/settings endpoint in backend
+        // const response = await fetch(`/api/campaigns/${campaignId}/settings`);
+        // 
+        // if (!response.ok) {
+        //   throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        // }
+        // 
+        // const data = await response.json();
+        // 
+        // if (data && data.success && data.settings) {
+        //   // Validate settings data
+        //   const validatedSettings = {
+        //     gridSize: typeof data.settings.gridSize === 'number' ? data.settings.gridSize : campaignSettings.gridSize,
+        //     gridColor: typeof data.settings.gridColor === 'string' ? data.settings.gridColor : campaignSettings.gridColor,
+        //     gridOpacity: typeof data.settings.gridOpacity === 'number' ? data.settings.gridOpacity : campaignSettings.gridOpacity
+        //   };
+        //   
+        //   campaignSettings = { ...campaignSettings, ...validatedSettings };
+        //   applySettings();
+        //   Logger.info('Campaign settings loaded successfully');
+        // } else {
+        //   Logger.warn('No valid settings data received:', data);
+        // }
         
-        if (!response.ok) {
-          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-        }
-        
-        const data = await response.json();
-        
-        if (data && data.success && data.settings) {
-          // Validate settings data
-          const validatedSettings = {
-            gridSize: typeof data.settings.gridSize === 'number' ? data.settings.gridSize : campaignSettings.gridSize,
-            gridColor: typeof data.settings.gridColor === 'string' ? data.settings.gridColor : campaignSettings.gridColor,
-            gridOpacity: typeof data.settings.gridOpacity === 'number' ? data.settings.gridOpacity : campaignSettings.gridOpacity
-          };
-          
-          campaignSettings = { ...campaignSettings, ...validatedSettings };
-          applySettings();
-          Logger.info('Campaign settings loaded successfully');
-        } else {
-          Logger.warn('No valid settings data received:', data);
-        }
+        // For now, use default settings
+        applySettings();
+        Logger.info('Using default campaign settings (endpoint not implemented)');
       } catch (error) {
         Logger.error('Failed to load campaign settings:', error);
       }
@@ -4264,30 +4606,37 @@
           gridOpacity
         };
         
-        const response = await fetch(`http://localhost:8080/api/campaigns/${campaignId}/settings`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ settings })
-        });
+        // TODO: Implement /api/campaigns/${campaignId}/settings endpoint in backend
+        // const response = await fetch(`/api/campaigns/${campaignId}/settings`, {
+        //   method: 'PUT',
+        //   headers: {
+        //     'Content-Type': 'application/json'
+        //   },
+        //   body: JSON.stringify({ settings })
+        // });
+        // 
+        // if (!response.ok) {
+        //   throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        // }
+        // 
+        // const data = await response.json();
+        // 
+        // if (data && data.success) {
+        //   campaignSettings = settings;
+        //   applySettings();
+        //   Logger.info('Settings saved successfully');
+        //   alert('Settings saved successfully!');
+        // } else {
+        //   const errorMsg = data?.error || 'Unknown error occurred';
+        //   Logger.error('Failed to save settings:', errorMsg);
+        //   alert('Failed to save settings: ' + errorMsg);
+        // }
         
-        if (!response.ok) {
-          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-        }
-        
-        const data = await response.json();
-        
-        if (data && data.success) {
-          campaignSettings = settings;
-          applySettings();
-          Logger.info('Settings saved successfully');
-          alert('Settings saved successfully!');
-        } else {
-          const errorMsg = data?.error || 'Unknown error occurred';
-          Logger.error('Failed to save settings:', errorMsg);
-          alert('Failed to save settings: ' + errorMsg);
-        }
+        // For now, apply settings locally only
+        campaignSettings = settings;
+        applySettings();
+        Logger.info('Settings applied locally (endpoint not implemented)');
+        alert('Settings applied locally (backend endpoint not implemented)');
       } catch (error) {
         Logger.error('Exception during settings save:', error);
         alert('Failed to save settings: ' + (error.message || 'Network error'));
@@ -4806,7 +5155,7 @@
         if (!imageUrl.startsWith('http')) {
           // Remove leading slash if present to avoid double slashes
           const cleanPath = imageUrl.startsWith('/') ? imageUrl.substring(1) : imageUrl;
-          imageUrl = `http://localhost:8080/${cleanPath}`;
+          imageUrl = `/${cleanPath}`;
         }
         img.src = imageUrl;
         img.style.width = '100%';
@@ -4963,7 +5312,7 @@
         });
         
         // Add data attributes for selection management
-        assetElement.dataset.tokenId = assetData.assetId;
+        assetElement.dataset.tokenId = assetData.tokenId || assetData.assetId;
         assetElement.dataset.selectable = 'true';
       }
       
@@ -4995,7 +5344,7 @@
            let audioUrl = asset.file_url;
            if (!audioUrl.startsWith('http')) {
              const cleanPath = audioUrl.startsWith('/') ? audioUrl.substring(1) : audioUrl;
-             audioUrl = `http://localhost:8080/${cleanPath}`;
+             audioUrl = `/${cleanPath}`;
            }
            
            audioInstance.src = audioUrl;
@@ -5042,7 +5391,7 @@
           return currentMapId;
         }
         const urlParams = new URLSearchParams(window.location.search);
-        return urlParams.get('id') || '1'; // Default to 1 if not found
+        return urlParams.get('map_id') || urlParams.get('id') || '1'; // Check map_id first, then id, then default to 1
       } catch (error) {
         Logger.error('Error getting current map ID:', error);
         return '1'; // Safe fallback
@@ -5151,7 +5500,7 @@
         
         // Get user ID
         try {
-          const userIdResponse = await fetch(`http://localhost:8080/api/user_id?username=${encodeURIComponent(user)}`);
+          const userIdResponse = await fetch(`/api/user_id?username=${encodeURIComponent(user)}`);
           
           if (!userIdResponse.ok) {
             throw new Error(`HTTP ${userIdResponse.status}: ${userIdResponse.statusText}`);

@@ -1,1 +1,134 @@
-{}
+{
+  "barbarian": {
+    "name": "Barbarian",
+    "hit_die": "d12",
+    "primary_ability": "Strength",
+    "saving_throw_proficiencies": ["Fortitude"],
+    "skill_points_per_level": 4,
+    "class_skills": ["Climb", "Craft", "Handle Animal", "Intimidate", "Jump", "Listen", "Ride", "Survival", "Swim"],
+    "armor_proficiencies": ["Light armor", "Medium armor", "Shields (except tower shields)"],
+    "weapon_proficiencies": ["Simple weapons", "Martial weapons"],
+    "is_spellcaster": false,
+    "description": "A fierce warrior of primitive background who can enter a battle rage."
+  },
+  "bard": {
+    "name": "Bard",
+    "hit_die": "d6",
+    "primary_ability": "Charisma",
+    "saving_throw_proficiencies": ["Reflex", "Will"],
+    "skill_points_per_level": 6,
+    "class_skills": ["Appraise", "Balance", "Bluff", "Climb", "Concentration", "Craft", "Decipher Script", "Diplomacy", "Disguise", "Escape Artist", "Gather Information", "Hide", "Jump", "Knowledge (all skills, taken individually)", "Listen", "Move Silently", "Perform", "Profession", "Sense Motive", "Sleight of Hand", "Speak Language", "Spellcraft", "Swim", "Tumble", "Use Magic Device"],
+    "armor_proficiencies": ["Light armor", "Shields (except tower shields)"],
+    "weapon_proficiencies": ["Simple weapons", "Longsword", "Rapier", "Sap", "Short sword", "Shortbow", "Whip"],
+    "is_spellcaster": true,
+    "description": "A master of song, speech, and the magic they contain."
+  },
+  "cleric": {
+    "name": "Cleric",
+    "hit_die": "d8",
+    "primary_ability": "Wisdom",
+    "saving_throw_proficiencies": ["Fortitude", "Will"],
+    "skill_points_per_level": 2,
+    "class_skills": ["Concentration", "Craft", "Diplomacy", "Heal", "Knowledge (arcana)", "Knowledge (history)", "Knowledge (religion)", "Knowledge (the planes)", "Profession", "Spellcraft"],
+    "armor_proficiencies": ["Light armor", "Medium armor", "Heavy armor", "Shields (except tower shields)"],
+    "weapon_proficiencies": ["Simple weapons"],
+    "is_spellcaster": true,
+    "description": "A master of divine magic and a capable warrior as well."
+  },
+  "druid": {
+    "name": "Druid",
+    "hit_die": "d8",
+    "primary_ability": "Wisdom",
+    "saving_throw_proficiencies": ["Fortitude", "Will"],
+    "skill_points_per_level": 4,
+    "class_skills": ["Concentration", "Craft", "Diplomacy", "Handle Animal", "Heal", "Knowledge (nature)", "Listen", "Profession", "Ride", "Spellcraft", "Spot", "Survival", "Swim"],
+    "armor_proficiencies": ["Light armor", "Medium armor", "Shields (except tower shields)"],
+    "weapon_proficiencies": ["Club", "Dagger", "Dart", "Quarterstaff", "Scimitar", "Sickle", "Shortspear", "Sling", "Spear"],
+    "is_spellcaster": true,
+    "description": "One who draws power from nature itself or a nature deity."
+  },
+  "fighter": {
+    "name": "Fighter",
+    "hit_die": "d10",
+    "primary_ability": "Strength or Dexterity",
+    "saving_throw_proficiencies": ["Fortitude"],
+    "skill_points_per_level": 2,
+    "class_skills": ["Climb", "Craft", "Handle Animal", "Intimidate", "Jump", "Ride", "Swim"],
+    "armor_proficiencies": ["Light armor", "Medium armor", "Heavy armor", "Shields (including tower shields)"],
+    "weapon_proficiencies": ["Simple weapons", "Martial weapons"],
+    "is_spellcaster": false,
+    "description": "A master of martial combat, skilled with a variety of weapons and armor."
+  },
+  "monk": {
+    "name": "Monk",
+    "hit_die": "d8",
+    "primary_ability": "Dexterity and Wisdom",
+    "saving_throw_proficiencies": ["Fortitude", "Reflex", "Will"],
+    "skill_points_per_level": 4,
+    "class_skills": ["Balance", "Climb", "Concentration", "Craft", "Diplomacy", "Escape Artist", "Hide", "Jump", "Knowledge (arcana)", "Knowledge (religion)", "Listen", "Move Silently", "Perform", "Profession", "Sense Motive", "Spot", "Swim", "Tumble"],
+    "armor_proficiencies": [],
+    "weapon_proficiencies": ["Club", "Crossbow (light or heavy)", "Dagger", "Handaxe", "Javelin", "Kama", "Nunchaku", "Quarterstaff", "Sai", "Shuriken", "Siangham", "Sling"],
+    "is_spellcaster": false,
+    "description": "A master of martial arts, harnessing inner power to achieve perfection."
+  },
+  "paladin": {
+    "name": "Paladin",
+    "hit_die": "d10",
+    "primary_ability": "Charisma",
+    "saving_throw_proficiencies": ["Fortitude", "Will"],
+    "skill_points_per_level": 2,
+    "class_skills": ["Concentration", "Craft", "Diplomacy", "Handle Animal", "Heal", "Knowledge (nobility and royalty)", "Knowledge (religion)", "Profession", "Ride", "Sense Motive"],
+    "armor_proficiencies": ["Light armor", "Medium armor", "Heavy armor", "Shields (except tower shields)"],
+    "weapon_proficiencies": ["Simple weapons", "Martial weapons"],
+    "is_spellcaster": true,
+    "description": "A holy warrior, champion of all that is good and true."
+  },
+  "ranger": {
+    "name": "Ranger",
+    "hit_die": "d8",
+    "primary_ability": "Dexterity and Wisdom",
+    "saving_throw_proficiencies": ["Fortitude", "Reflex"],
+    "skill_points_per_level": 6,
+    "class_skills": ["Climb", "Concentration", "Craft", "Handle Animal", "Heal", "Hide", "Jump", "Knowledge (dungeoneering)", "Knowledge (geography)", "Knowledge (nature)", "Listen", "Move Silently", "Profession", "Ride", "Search", "Spot", "Survival", "Swim", "Use Rope"],
+    "armor_proficiencies": ["Light armor", "Medium armor", "Shields (except tower shields)"],
+    "weapon_proficiencies": ["Simple weapons", "Martial weapons"],
+    "is_spellcaster": true,
+    "description": "A skilled hunter and tracker who knows the ways of the wilderness."
+  },
+  "rogue": {
+    "name": "Rogue",
+    "hit_die": "d6",
+    "primary_ability": "Dexterity",
+    "saving_throw_proficiencies": ["Reflex"],
+    "skill_points_per_level": 8,
+    "class_skills": ["Appraise", "Balance", "Bluff", "Climb", "Craft", "Decipher Script", "Diplomacy", "Disable Device", "Disguise", "Escape Artist", "Forgery", "Gather Information", "Hide", "Intimidate", "Jump", "Knowledge (local)", "Listen", "Move Silently", "Open Lock", "Perform", "Profession", "Search", "Sense Motive", "Sleight of Hand", "Spot", "Swim", "Tumble", "Use Magic Device", "Use Rope"],
+    "armor_proficiencies": ["Light armor"],
+    "weapon_proficiencies": ["Simple weapons", "Hand crossbow", "Rapier", "Sap", "Shortbow", "Short sword"],
+    "is_spellcaster": false,
+    "description": "A scoundrel who uses stealth and trickery to overcome obstacles."
+  },
+  "sorcerer": {
+    "name": "Sorcerer",
+    "hit_die": "d4",
+    "primary_ability": "Charisma",
+    "saving_throw_proficiencies": ["Will"],
+    "skill_points_per_level": 2,
+    "class_skills": ["Bluff", "Concentration", "Craft", "Knowledge (arcana)", "Profession", "Spellcraft"],
+    "armor_proficiencies": [],
+    "weapon_proficiencies": ["Simple weapons"],
+    "is_spellcaster": true,
+    "description": "A spellcaster who draws on inherent magic from a draconic or other exotic bloodline."
+  },
+  "wizard": {
+    "name": "Wizard",
+    "hit_die": "d4",
+    "primary_ability": "Intelligence",
+    "saving_throw_proficiencies": ["Will"],
+    "skill_points_per_level": 2,
+    "class_skills": ["Concentration", "Craft", "Decipher Script", "Knowledge (all skills, taken individually)", "Profession", "Spellcraft"],
+    "armor_proficiencies": [],
+    "weapon_proficiencies": ["Club", "Dagger", "Heavy crossbow", "Light crossbow", "Quarterstaff"],
+    "is_spellcaster": true,
+    "description": "A potent spellcaster schooled in the arcane arts."
+  }
+}

@@ -1,1 +1,39 @@
-{}
+{
+  "name": "Pathfinder Second Edition",
+  "abbreviation": "PF2e",
+  "version": "2.0",
+  "publisher": "Paizo Publishing",
+  "description": "Pathfinder Second Edition is a tabletop role-playing game that emphasizes tactical combat, character customization, and heroic adventure.",
+  "core_mechanics": {
+    "dice_system": "d20 system",
+    "ability_scores": [
+      "Strength",
+      "Dexterity",
+      "Constitution",
+      "Intelligence",
+      "Wisdom",
+      "Charisma"
+    ],
+    "proficiency_system": "Proficiency ranks (Untrained, Trained, Expert, Master, Legendary)",
+    "action_economy": "Three-action system",
+    "degrees_of_success": "Critical success, success, failure, critical failure"
+  },
+  "character_creation": {
+    "ancestry": "Choose your character's ancestry (race)",
+    "background": "Select a background that represents your character's upbringing",
+    "class": "Pick a class that defines your character's role and abilities",
+    "ability_scores": "Assign ability score boosts from ancestry, background, class, and free boosts",
+    "skills": "Gain skill proficiencies based on background, class, and intelligence modifier",
+    "feats": "Select ancestry and class feats to customize your character"
+  },
+  "supported_features": [
+    "Character creation and management",
+    "Spell tracking and casting",
+    "Inventory and equipment management",
+    "Combat tracking with three-action system",
+    "Skill checks with proficiency ranks",
+    "Feat selection and management",
+    "Ancestry and heritage options",
+    "Class features and abilities"
+  ]
+}

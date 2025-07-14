@@ -1,1 +1,89 @@
-{}
+{
+  "skills": [
+    {
+      "name": "Acrobatics",
+      "ability": "Dexterity",
+      "description": "You can perform acrobatic maneuvers like tumbling, balancing, and escaping from restraints."
+    },
+    {
+      "name": "Arcana",
+      "ability": "Intelligence",
+      "description": "You understand the fundamental principles of magic and can identify magical effects."
+    },
+    {
+      "name": "Athletics",
+      "ability": "Strength",
+      "description": "You can perform athletic feats like climbing, jumping, swimming, and breaking objects."
+    },
+    {
+      "name": "Crafting",
+      "ability": "Intelligence",
+      "description": "You can create and repair items, identify alchemical substances, and recall knowledge about crafting."
+    },
+    {
+      "name": "Deception",
+      "ability": "Charisma",
+      "description": "You can trick and mislead others through lies, misdirection, and false identities."
+    },
+    {
+      "name": "Diplomacy",
+      "ability": "Charisma",
+      "description": "You can influence others through negotiation, persuasion, and social grace."
+    },
+    {
+      "name": "Intimidation",
+      "ability": "Charisma",
+      "description": "You can frighten foes and force others to act against their better judgment through threats."
+    },
+    {
+      "name": "Lore",
+      "ability": "Intelligence",
+      "description": "You have specialized knowledge in a particular field or subject."
+    },
+    {
+      "name": "Medicine",
+      "ability": "Wisdom",
+      "description": "You can patch up wounds, identify diseases and poisons, and provide medical care."
+    },
+    {
+      "name": "Nature",
+      "ability": "Wisdom",
+      "description": "You understand the natural world, including animals, plants, weather, and terrain."
+    },
+    {
+      "name": "Occultism",
+      "ability": "Intelligence",
+      "description": "You study the occult, including divination, necromancy, and other esoteric magical traditions."
+    },
+    {
+      "name": "Performance",
+      "ability": "Charisma",
+      "description": "You can entertain others through acting, comedy, dancing, music, oratory, or other performances."
+    },
+    {
+      "name": "Religion",
+      "ability": "Wisdom",
+      "description": "You understand divine magic, religious traditions, and the planes where deities reside."
+    },
+    {
+      "name": "Society",
+      "ability": "Intelligence",
+      "description": "You understand the people and systems that make up civilization."
+    },
+    {
+      "name": "Stealth",
+      "ability": "Dexterity",
+      "description": "You can avoid detection, move silently, and hide from enemies."
+    },
+    {
+      "name": "Survival",
+      "ability": "Wisdom",
+      "description": "You can survive in the wilderness, track creatures, and navigate natural environments."
+    },
+    {
+      "name": "Thievery",
+      "ability": "Dexterity",
+      "description": "You can pick locks, disable devices, and pickpocket others without being noticed."
+    }
+  ]
+}

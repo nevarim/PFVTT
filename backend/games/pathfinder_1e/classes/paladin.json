@@ -1,0 +1,209 @@
+{
+  "name": "Paladin",
+  "hit_die": "d10",
+  "skill_points": "2 + Int modifier",
+  "class_skills": [
+    "Craft (Int)",
+    "Diplomacy (Cha)",
+    "Handle Animal (Cha)",
+    "Heal (Wis)",
+    "Knowledge (nobility) (Int)",
+    "Knowledge (religion) (Int)",
+    "Profession (Wis)",
+    "Ride (Dex)",
+    "Sense Motive (Wis)",
+    "Spellcraft (Int)"
+  ],
+  "weapon_proficiencies": [
+    "All simple and martial weapons"
+  ],
+  "armor_proficiencies": [
+    "All armor and shields (except tower shields)"
+  ],
+  "spells_per_day": {
+    "4": {"1": 0},
+    "5": {"1": 0},
+    "6": {"1": 1},
+    "7": {"1": 1},
+    "8": {"1": 1, "2": 0},
+    "9": {"1": 2, "2": 0},
+    "10": {"1": 2, "2": 1},
+    "11": {"1": 2, "2": 1, "3": 0},
+    "12": {"1": 2, "2": 2, "3": 0},
+    "13": {"1": 3, "2": 2, "3": 1},
+    "14": {"1": 3, "2": 2, "3": 1, "4": 0},
+    "15": {"1": 3, "2": 2, "3": 2, "4": 0},
+    "16": {"1": 3, "2": 3, "3": 2, "4": 1},
+    "17": {"1": 4, "2": 3, "3": 2, "4": 1},
+    "18": {"1": 4, "2": 3, "3": 3, "4": 2},
+    "19": {"1": 4, "2": 4, "3": 3, "4": 2},
+    "20": {"1": 4, "2": 4, "3": 3, "4": 3}
+  },
+  "level_progression": {
+    "1": {
+      "base_attack_bonus": "+1",
+      "fort_save": "+2",
+      "ref_save": "+0",
+      "will_save": "+2",
+      "special": ["Aura of good", "Detect evil", "Smite evil 1/day"],
+      "feats": 1
+    },
+    "2": {
+      "base_attack_bonus": "+2",
+      "fort_save": "+3",
+      "ref_save": "+0",
+      "will_save": "+3",
+      "special": ["Divine grace", "Lay on hands"],
+      "feats": 0
+    },
+    "3": {
+      "base_attack_bonus": "+3",
+      "fort_save": "+3",
+      "ref_save": "+1",
+      "will_save": "+3",
+      "special": ["Aura of courage", "Divine health", "Mercy"],
+      "feats": 1
+    },
+    "4": {
+      "base_attack_bonus": "+4",
+      "fort_save": "+4",
+      "ref_save": "+1",
+      "will_save": "+4",
+      "special": ["Channel positive energy", "Smite evil 2/day"],
+      "feats": 0,
+      "ability_score_improvement": 1
+    },
+    "5": {
+      "base_attack_bonus": "+5",
+      "fort_save": "+4",
+      "ref_save": "+1",
+      "will_save": "+4",
+      "special": ["Divine bond"],
+      "feats": 1
+    },
+    "6": {
+      "base_attack_bonus": "+6/+1",
+      "fort_save": "+5",
+      "ref_save": "+2",
+      "will_save": "+5",
+      "special": ["Mercy"],
+      "feats": 0
+    },
+    "7": {
+      "base_attack_bonus": "+7/+2",
+      "fort_save": "+5",
+      "ref_save": "+2",
+      "will_save": "+5",
+      "special": ["Smite evil 3/day"],
+      "feats": 1
+    },
+    "8": {
+      "base_attack_bonus": "+8/+3",
+      "fort_save": "+6",
+      "ref_save": "+2",
+      "will_save": "+6",
+      "special": ["Aura of resolve"],
+      "feats": 0,
+      "ability_score_improvement": 1
+    },
+    "9": {
+      "base_attack_bonus": "+9/+4",
+      "fort_save": "+6",
+      "ref_save": "+3",
+      "will_save": "+6",
+      "special": ["Mercy"],
+      "feats": 1
+    },
+    "10": {
+      "base_attack_bonus": "+10/+5",
+      "fort_save": "+7",
+      "ref_save": "+3",
+      "will_save": "+7",
+      "special": ["Smite evil 4/day"],
+      "feats": 0
+    },
+    "11": {
+      "base_attack_bonus": "+11/+6/+1",
+      "fort_save": "+7",
+      "ref_save": "+3",
+      "will_save": "+7",
+      "special": ["Aura of justice"],
+      "feats": 1
+    },
+    "12": {
+      "base_attack_bonus": "+12/+7/+2",
+      "fort_save": "+8",
+      "ref_save": "+4",
+      "will_save": "+8",
+      "special": ["Mercy"],
+      "feats": 0,
+      "ability_score_improvement": 1
+    },
+    "13": {
+      "base_attack_bonus": "+13/+8/+3",
+      "fort_save": "+8",
+      "ref_save": "+4",
+      "will_save": "+8",
+      "special": ["Smite evil 5/day"],
+      "feats": 1
+    },
+    "14": {
+      "base_attack_bonus": "+14/+9/+4",
+      "fort_save": "+9",
+      "ref_save": "+4",
+      "will_save": "+9",
+      "special": ["Aura of faith"],
+      "feats": 0
+    },
+    "15": {
+      "base_attack_bonus": "+15/+10/+5",
+      "fort_save": "+9",
+      "ref_save": "+5",
+      "will_save": "+9",
+      "special": ["Mercy"],
+      "feats": 1
+    },
+    "16": {
+      "base_attack_bonus": "+16/+11/+6/+1",
+      "fort_save": "+10",
+      "ref_save": "+5",
+      "will_save": "+10",
+      "special": ["Smite evil 6/day"],
+      "feats": 0,
+      "ability_score_improvement": 1
+    },
+    "17": {
+      "base_attack_bonus": "+17/+12/+7/+2",
+      "fort_save": "+10",
+      "ref_save": "+5",
+      "will_save": "+10",
+      "special": ["Aura of righteousness"],
+      "feats": 1
+    },
+    "18": {
+      "base_attack_bonus": "+18/+13/+8/+3",
+      "fort_save": "+11",
+      "ref_save": "+6",
+      "will_save": "+11",
+      "special": ["Mercy"],
+      "feats": 0
+    },
+    "19": {
+      "base_attack_bonus": "+19/+14/+9/+4",
+      "fort_save": "+11",
+      "ref_save": "+6",
+      "will_save": "+11",
+      "special": ["Smite evil 7/day"],
+      "feats": 1
+    },
+    "20": {
+      "base_attack_bonus": "+20/+15/+10/+5",
+      "fort_save": "+12",
+      "ref_save": "+6",
+      "will_save": "+12",
+      "special": ["Holy champion"],
+      "feats": 0,
+      "ability_score_improvement": 1
+    }
+  }
+}

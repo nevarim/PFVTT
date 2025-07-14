@@ -1,0 +1,227 @@
+{
+  "name": "Fighter",
+  "hit_points": 10,
+  "key_ability": "Strength or Dexterity",
+  "proficiencies": {
+    "perception": "Expert",
+    "saving_throws": {
+      "fortitude": "Expert",
+      "reflex": "Expert",
+      "will": "Trained"
+    },
+    "skills": {
+      "trained": ["Choose a number of skills equal to 3 + your Intelligence modifier"]
+    },
+    "attacks": {
+      "simple_weapons": "Expert",
+      "martial_weapons": "Expert",
+      "advanced_weapons": "Trained",
+      "unarmed_attacks": "Expert"
+    },
+    "defenses": {
+      "light_armor": "Trained",
+      "medium_armor": "Trained",
+      "heavy_armor": "Trained",
+      "unarmored_defense": "Trained"
+    },
+    "class_dc": "Trained"
+  },
+  "level_progression": {
+    "1": {
+      "class_features": ["Attack of Opportunity", "Fighter Feat", "Shield Block"],
+      "skill_feats": 1,
+      "general_feats": 0,
+      "skill_increases": 0,
+      "ability_boosts": 4,
+      "ancestry_feats": 1
+    },
+    "2": {
+      "class_features": ["Fighter Feat"],
+      "skill_feats": 1,
+      "general_feats": 0,
+      "skill_increases": 0,
+      "ability_boosts": 0,
+      "ancestry_feats": 0
+    },
+    "3": {
+      "class_features": ["Bravery", "General Feat"],
+      "skill_feats": 1,
+      "general_feats": 1,
+      "skill_increases": 1,
+      "ability_boosts": 0,
+      "ancestry_feats": 0
+    },
+    "4": {
+      "class_features": ["Fighter Feat"],
+      "skill_feats": 1,
+      "general_feats": 0,
+      "skill_increases": 0,
+      "ability_boosts": 0,
+      "ancestry_feats": 0
+    },
+    "5": {
+      "class_features": ["Ability Boosts", "Ancestry Feat", "Fighter Weapon Mastery", "Skill Increases"],
+      "skill_feats": 1,
+      "general_feats": 0,
+      "skill_increases": 1,
+      "ability_boosts": 4,
+      "ancestry_feats": 1,
+      "proficiency_increases": {
+        "simple_weapons": "Master",
+        "martial_weapons": "Master"
+      }
+    },
+    "6": {
+      "class_features": ["Fighter Feat"],
+      "skill_feats": 1,
+      "general_feats": 0,
+      "skill_increases": 0,
+      "ability_boosts": 0,
+      "ancestry_feats": 0
+    },
+    "7": {
+      "class_features": ["Armor Expertise", "General Feat", "Weapon Specialization"],
+      "skill_feats": 1,
+      "general_feats": 1,
+      "skill_increases": 1,
+      "ability_boosts": 0,
+      "ancestry_feats": 0,
+      "proficiency_increases": {
+        "light_armor": "Expert",
+        "medium_armor": "Expert",
+        "heavy_armor": "Expert",
+        "unarmored_defense": "Expert"
+      }
+    },
+    "8": {
+      "class_features": ["Fighter Feat"],
+      "skill_feats": 1,
+      "general_feats": 0,
+      "skill_increases": 0,
+      "ability_boosts": 0,
+      "ancestry_feats": 0
+    },
+    "9": {
+      "class_features": ["Combat Flexibility", "Juggernaut"],
+      "skill_feats": 1,
+      "general_feats": 0,
+      "skill_increases": 1,
+      "ability_boosts": 0,
+      "ancestry_feats": 0,
+      "proficiency_increases": {
+        "fortitude": "Master"
+      }
+    },
+    "10": {
+      "class_features": ["Ability Boosts", "Ancestry Feat", "Fighter Feat"],
+      "skill_feats": 1,
+      "general_feats": 0,
+      "skill_increases": 0,
+      "ability_boosts": 4,
+      "ancestry_feats": 1
+    },
+    "11": {
+      "class_features": ["Armor Mastery", "General Feat"],
+      "skill_feats": 1,
+      "general_feats": 1,
+      "skill_increases": 1,
+      "ability_boosts": 0,
+      "ancestry_feats": 0,
+      "proficiency_increases": {
+        "light_armor": "Master",
+        "medium_armor": "Master",
+        "heavy_armor": "Master",
+        "unarmored_defense": "Master"
+      }
+    },
+    "12": {
+      "class_features": ["Fighter Feat"],
+      "skill_feats": 1,
+      "general_feats": 0,
+      "skill_increases": 0,
+      "ability_boosts": 0,
+      "ancestry_feats": 0
+    },
+    "13": {
+      "class_features": ["Weapon Legend"],
+      "skill_feats": 1,
+      "general_feats": 0,
+      "skill_increases": 1,
+      "ability_boosts": 0,
+      "ancestry_feats": 0,
+      "proficiency_increases": {
+        "simple_weapons": "Legendary",
+        "martial_weapons": "Legendary",
+        "unarmed_attacks": "Legendary"
+      }
+    },
+    "14": {
+      "class_features": ["Fighter Feat"],
+      "skill_feats": 1,
+      "general_feats": 0,
+      "skill_increases": 0,
+      "ability_boosts": 0,
+      "ancestry_feats": 0
+    },
+    "15": {
+      "class_features": ["Ability Boosts", "Ancestry Feat", "Evasion", "General Feat", "Greater Weapon Specialization"],
+      "skill_feats": 1,
+      "general_feats": 1,
+      "skill_increases": 1,
+      "ability_boosts": 4,
+      "ancestry_feats": 1,
+      "proficiency_increases": {
+        "reflex": "Master"
+      }
+    },
+    "16": {
+      "class_features": ["Fighter Feat"],
+      "skill_feats": 1,
+      "general_feats": 0,
+      "skill_increases": 0,
+      "ability_boosts": 0,
+      "ancestry_feats": 0
+    },
+    "17": {
+      "class_features": ["Armor Legend"],
+      "skill_feats": 1,
+      "general_feats": 0,
+      "skill_increases": 1,
+      "ability_boosts": 0,
+      "ancestry_feats": 0,
+      "proficiency_increases": {
+        "light_armor": "Legendary",
+        "medium_armor": "Legendary",
+        "heavy_armor": "Legendary",
+        "unarmored_defense": "Legendary"
+      }
+    },
+    "18": {
+      "class_features": ["Fighter Feat"],
+      "skill_feats": 1,
+      "general_feats": 0,
+      "skill_increases": 0,
+      "ability_boosts": 0,
+      "ancestry_feats": 0
+    },
+    "19": {
+      "class_features": ["General Feat", "Versatile Legend"],
+      "skill_feats": 1,
+      "general_feats": 1,
+      "skill_increases": 1,
+      "ability_boosts": 0,
+      "ancestry_feats": 0,
+      "proficiency_increases": {
+        "advanced_weapons": "Legendary"
+      }
+    },
+    "20": {
+      "class_features": ["Ability Boosts", "Ancestry Feat", "Fighter Feat"],
+      "skill_feats": 1,
+      "general_feats": 0,
+      "skill_increases": 0,
+      "ability_boosts": 4,
+      "ancestry_feats": 1
+    }
+  }
+}

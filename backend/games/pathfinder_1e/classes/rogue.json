@@ -1,0 +1,201 @@
+{
+  "name": "Rogue",
+  "hit_die": "d8",
+  "skill_points": "8 + Int modifier",
+  "class_skills": [
+    "Acrobatics (Dex)",
+    "Appraise (Int)",
+    "Bluff (Cha)",
+    "Climb (Str)",
+    "Craft (Int)",
+    "Diplomacy (Cha)",
+    "Disable Device (Dex)",
+    "Disguise (Cha)",
+    "Escape Artist (Dex)",
+    "Intimidate (Cha)",
+    "Knowledge (dungeoneering) (Int)",
+    "Knowledge (local) (Int)",
+    "Linguistics (Int)",
+    "Perception (Wis)",
+    "Perform (Cha)",
+    "Profession (Wis)",
+    "Sense Motive (Wis)",
+    "Sleight of Hand (Dex)",
+    "Stealth (Dex)",
+    "Swim (Str)",
+    "Use Magic Device (Cha)"
+  ],
+  "weapon_proficiencies": [
+    "All simple weapons, plus hand crossbow, rapier, sap, shortbow, short sword"
+  ],
+  "armor_proficiencies": [
+    "Light armor"
+  ],
+  "level_progression": {
+    "1": {
+      "base_attack_bonus": "+0",
+      "fort_save": "+0",
+      "ref_save": "+2",
+      "will_save": "+0",
+      "special": ["Sneak attack +1d6", "Trapfinding"],
+      "feats": 1
+    },
+    "2": {
+      "base_attack_bonus": "+1",
+      "fort_save": "+0",
+      "ref_save": "+3",
+      "will_save": "+0",
+      "special": ["Evasion", "Rogue talent"],
+      "feats": 0
+    },
+    "3": {
+      "base_attack_bonus": "+2",
+      "fort_save": "+1",
+      "ref_save": "+3",
+      "will_save": "+1",
+      "special": ["Sneak attack +2d6", "Trap sense +1"],
+      "feats": 1
+    },
+    "4": {
+      "base_attack_bonus": "+3",
+      "fort_save": "+1",
+      "ref_save": "+4",
+      "will_save": "+1",
+      "special": ["Rogue talent", "Uncanny dodge"],
+      "feats": 0,
+      "ability_score_improvement": 1
+    },
+    "5": {
+      "base_attack_bonus": "+3",
+      "fort_save": "+1",
+      "ref_save": "+4",
+      "will_save": "+1",
+      "special": ["Sneak attack +3d6"],
+      "feats": 1
+    },
+    "6": {
+      "base_attack_bonus": "+4",
+      "fort_save": "+2",
+      "ref_save": "+5",
+      "will_save": "+2",
+      "special": ["Rogue talent", "Trap sense +2"],
+      "feats": 0
+    },
+    "7": {
+      "base_attack_bonus": "+5",
+      "fort_save": "+2",
+      "ref_save": "+5",
+      "will_save": "+2",
+      "special": ["Sneak attack +4d6"],
+      "feats": 1
+    },
+    "8": {
+      "base_attack_bonus": "+6/+1",
+      "fort_save": "+2",
+      "ref_save": "+6",
+      "will_save": "+2",
+      "special": ["Improved uncanny dodge", "Rogue talent"],
+      "feats": 0,
+      "ability_score_improvement": 1
+    },
+    "9": {
+      "base_attack_bonus": "+6/+1",
+      "fort_save": "+3",
+      "ref_save": "+6",
+      "will_save": "+3",
+      "special": ["Sneak attack +5d6", "Trap sense +3"],
+      "feats": 1
+    },
+    "10": {
+      "base_attack_bonus": "+7/+2",
+      "fort_save": "+3",
+      "ref_save": "+7",
+      "will_save": "+3",
+      "special": ["Advanced talents", "Rogue talent"],
+      "feats": 0
+    },
+    "11": {
+      "base_attack_bonus": "+8/+3",
+      "fort_save": "+3",
+      "ref_save": "+7",
+      "will_save": "+3",
+      "special": ["Sneak attack +6d6"],
+      "feats": 1
+    },
+    "12": {
+      "base_attack_bonus": "+9/+4",
+      "fort_save": "+4",
+      "ref_save": "+8",
+      "will_save": "+4",
+      "special": ["Rogue talent", "Trap sense +4"],
+      "feats": 0,
+      "ability_score_improvement": 1
+    },
+    "13": {
+      "base_attack_bonus": "+9/+4",
+      "fort_save": "+4",
+      "ref_save": "+8",
+      "will_save": "+4",
+      "special": ["Sneak attack +7d6"],
+      "feats": 1
+    },
+    "14": {
+      "base_attack_bonus": "+10/+5",
+      "fort_save": "+4",
+      "ref_save": "+9",
+      "will_save": "+4",
+      "special": ["Rogue talent"],
+      "feats": 0
+    },
+    "15": {
+      "base_attack_bonus": "+11/+6/+1",
+      "fort_save": "+5",
+      "ref_save": "+9",
+      "will_save": "+5",
+      "special": ["Sneak attack +8d6", "Trap sense +5"],
+      "feats": 1
+    },
+    "16": {
+      "base_attack_bonus": "+12/+7/+2",
+      "fort_save": "+5",
+      "ref_save": "+10",
+      "will_save": "+5",
+      "special": ["Rogue talent"],
+      "feats": 0,
+      "ability_score_improvement": 1
+    },
+    "17": {
+      "base_attack_bonus": "+12/+7/+2",
+      "fort_save": "+5",
+      "ref_save": "+10",
+      "will_save": "+5",
+      "special": ["Sneak attack +9d6"],
+      "feats": 1
+    },
+    "18": {
+      "base_attack_bonus": "+13/+8/+3",
+      "fort_save": "+6",
+      "ref_save": "+11",
+      "will_save": "+6",
+      "special": ["Rogue talent", "Trap sense +6"],
+      "feats": 0
+    },
+    "19": {
+      "base_attack_bonus": "+14/+9/+4",
+      "fort_save": "+6",
+      "ref_save": "+11",
+      "will_save": "+6",
+      "special": ["Sneak attack +10d6"],
+      "feats": 1
+    },
+    "20": {
+      "base_attack_bonus": "+15/+10/+5",
+      "fort_save": "+6",
+      "ref_save": "+12",
+      "will_save": "+6",
+      "special": ["Master strike", "Rogue talent"],
+      "feats": 0,
+      "ability_score_improvement": 1
+    }
+  }
+}

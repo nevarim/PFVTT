@@ -1,0 +1,37 @@
+{
+  "name": "Mechanic",
+  "description": "Mechanics are masters of technology, able to repair, modify, and create technological devices and constructs.",
+  "hit_die": 6,
+  "skill_ranks_per_level": 4,
+  "class_skills": [
+    "Athletics", "Computers", "Engineering", "Medicine", "Perception", 
+    "Physical Science", "Piloting", "Profession"
+  ],
+  "proficiencies": {
+    "armor": ["Light armor"],
+    "weapons": ["Basic melee weapons", "Small arms"]
+  },
+  "spellcasting": false,
+  "class_features": {
+    "1": ["Artificial Intelligence", "Bypass +1", "Custom Rig"],
+    "2": ["Mechanic Trick"],
+    "3": ["Bypass +2", "Overload", "Weapon Specialization"],
+    "4": ["Mechanic Trick"],
+    "5": ["Bypass +3", "Remote Hack"],
+    "6": ["Mechanic Trick"],
+    "7": ["Bypass +4", "Expert Rig"],
+    "8": ["Mechanic Trick"],
+    "9": ["Bypass +5", "Override"],
+    "10": ["Mechanic Trick"],
+    "11": ["Bypass +6", "Coordinated Assault"],
+    "12": ["Mechanic Trick"],
+    "13": ["Bypass +7", "Control Net"],
+    "14": ["Mechanic Trick"],
+    "15": ["Bypass +8", "Advanced Rig"],
+    "16": ["Mechanic Trick"],
+    "17": ["Bypass +9", "Ghost Intrusion"],
+    "18": ["Mechanic Trick"],
+    "19": ["Bypass +10", "Superior Rig"],
+    "20": ["Mechanic Trick", "Tech Master"]
+  }
+}

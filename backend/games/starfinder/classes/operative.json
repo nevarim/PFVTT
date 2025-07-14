@@ -1,0 +1,38 @@
+{
+  "name": "Operative",
+  "description": "Operatives are skilled infiltrators, spies, and scouts who excel at stealth, precision attacks, and gathering information.",
+  "hit_die": 6,
+  "skill_ranks_per_level": 8,
+  "class_skills": [
+    "Acrobatics", "Athletics", "Bluff", "Computers", "Culture", "Disguise", 
+    "Engineering", "Intimidate", "Medicine", "Perception", "Piloting", 
+    "Profession", "Sense Motive", "Sleight of Hand", "Stealth", "Survival"
+  ],
+  "proficiencies": {
+    "armor": ["Light armor"],
+    "weapons": ["Basic melee weapons", "Small arms", "Sniper weapons"]
+  },
+  "spellcasting": false,
+  "class_features": {
+    "1": ["Operative's Edge +1", "Specialization", "Trick Attack +1d4"],
+    "2": ["Evasion", "Operative Exploit"],
+    "3": ["Operative's Edge +2", "Quick Movement +10 ft", "Trick Attack +1d8", "Weapon Specialization"],
+    "4": ["Debilitating Trick", "Operative Exploit"],
+    "5": ["Operative's Edge +3", "Specialization Exploit", "Trick Attack +3d8"],
+    "6": ["Operative Exploit"],
+    "7": ["Operative's Edge +4", "Specialization Skill Mastery", "Trick Attack +4d8", "Uncanny Agility"],
+    "8": ["Operative Exploit", "Triple Attack"],
+    "9": ["Operative's Edge +5", "Quick Movement +20 ft", "Specialization Power", "Trick Attack +5d8"],
+    "10": ["Operative Exploit"],
+    "11": ["Operative's Edge +6", "Specialization Exploit", "Trick Attack +6d8"],
+    "12": ["Operative Exploit"],
+    "13": ["Operative's Edge +7", "Quad Attack", "Trick Attack +7d8"],
+    "14": ["Operative Exploit"],
+    "15": ["Operative's Edge +8", "Quick Movement +30 ft", "Trick Attack +8d8"],
+    "16": ["Operative Exploit"],
+    "17": ["Operative's Edge +9", "Double Debilitation", "Specialization Power", "Trick Attack +9d8"],
+    "18": ["Operative Exploit"],
+    "19": ["Operative's Edge +10", "Trick Attack +10d8"],
+    "20": ["Operative Exploit", "Supreme Operative"]
+  }
+}

@@ -1,0 +1,150 @@
+{
+  "name": "Barbarian",
+  "hit_die": "d12",
+  "skill_points_per_level": 4,
+  "class_skills": ["Climb", "Craft", "Handle Animal", "Intimidate", "Jump", "Listen", "Ride", "Survival", "Swim"],
+  "armor_proficiencies": ["Light armor", "Medium armor", "Shields (except tower shields)"],
+  "weapon_proficiencies": ["Simple weapons", "Martial weapons"],
+  "levels": {
+    "1": {
+      "base_attack_bonus": "+1",
+      "fort_save": "+2",
+      "ref_save": "+0",
+      "will_save": "+0",
+      "special": ["Fast movement", "Illiteracy", "Rage 1/day"]
+    },
+    "2": {
+      "base_attack_bonus": "+2",
+      "fort_save": "+3",
+      "ref_save": "+0",
+      "will_save": "+0",
+      "special": ["Uncanny dodge"]
+    },
+    "3": {
+      "base_attack_bonus": "+3",
+      "fort_save": "+3",
+      "ref_save": "+1",
+      "will_save": "+1",
+      "special": ["Trap sense +1"]
+    },
+    "4": {
+      "base_attack_bonus": "+4",
+      "fort_save": "+4",
+      "ref_save": "+1",
+      "will_save": "+1",
+      "special": ["Rage 2/day"]
+    },
+    "5": {
+      "base_attack_bonus": "+5",
+      "fort_save": "+4",
+      "ref_save": "+1",
+      "will_save": "+1",
+      "special": ["Improved uncanny dodge"]
+    },
+    "6": {
+      "base_attack_bonus": "+6/+1",
+      "fort_save": "+5",
+      "ref_save": "+2",
+      "will_save": "+2",
+      "special": ["Trap sense +2"]
+    },
+    "7": {
+      "base_attack_bonus": "+7/+2",
+      "fort_save": "+5",
+      "ref_save": "+2",
+      "will_save": "+2",
+      "special": ["Damage reduction 1/—"]
+    },
+    "8": {
+      "base_attack_bonus": "+8/+3",
+      "fort_save": "+6",
+      "ref_save": "+2",
+      "will_save": "+2",
+      "special": ["Rage 3/day"]
+    },
+    "9": {
+      "base_attack_bonus": "+9/+4",
+      "fort_save": "+6",
+      "ref_save": "+3",
+      "will_save": "+3",
+      "special": ["Trap sense +3"]
+    },
+    "10": {
+      "base_attack_bonus": "+10/+5",
+      "fort_save": "+7",
+      "ref_save": "+3",
+      "will_save": "+3",
+      "special": ["Damage reduction 2/—"]
+    },
+    "11": {
+      "base_attack_bonus": "+11/+6/+1",
+      "fort_save": "+7",
+      "ref_save": "+3",
+      "will_save": "+3",
+      "special": ["Greater rage"]
+    },
+    "12": {
+      "base_attack_bonus": "+12/+7/+2",
+      "fort_save": "+8",
+      "ref_save": "+4",
+      "will_save": "+4",
+      "special": ["Rage 4/day", "Trap sense +4"]
+    },
+    "13": {
+      "base_attack_bonus": "+13/+8/+3",
+      "fort_save": "+8",
+      "ref_save": "+4",
+      "will_save": "+4",
+      "special": ["Damage reduction 3/—"]
+    },
+    "14": {
+      "base_attack_bonus": "+14/+9/+4",
+      "fort_save": "+9",
+      "ref_save": "+4",
+      "will_save": "+4",
+      "special": ["Indomitable will"]
+    },
+    "15": {
+      "base_attack_bonus": "+15/+10/+5",
+      "fort_save": "+9",
+      "ref_save": "+5",
+      "will_save": "+5",
+      "special": ["Trap sense +5"]
+    },
+    "16": {
+      "base_attack_bonus": "+16/+11/+6/+1",
+      "fort_save": "+10",
+      "ref_save": "+5",
+      "will_save": "+5",
+      "special": ["Damage reduction 4/—", "Rage 5/day"]
+    },
+    "17": {
+      "base_attack_bonus": "+17/+12/+7/+2",
+      "fort_save": "+10",
+      "ref_save": "+5",
+      "will_save": "+5",
+      "special": ["Tireless rage"]
+    },
+    "18": {
+      "base_attack_bonus": "+18/+13/+8/+3",
+      "fort_save": "+11",
+      "ref_save": "+6",
+      "will_save": "+6",
+      "special": ["Trap sense +6"]
+    },
+    "19": {
+      "base_attack_bonus": "+19/+14/+9/+4",
+      "fort_save": "+11",
+      "ref_save": "+6",
+      "will_save": "+6",
+      "special": ["Damage reduction 5/—"]
+    },
+    "20": {
+      "base_attack_bonus": "+20/+15/+10/+5",
+      "fort_save": "+12",
+      "ref_save": "+6",
+      "will_save": "+6",
+      "special": ["Mighty rage", "Rage 6/day"]
+    }
+  }
+}

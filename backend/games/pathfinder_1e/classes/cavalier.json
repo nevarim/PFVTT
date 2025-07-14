@@ -1,0 +1,192 @@
+{
+  "name": "Cavalier",
+  "hit_die": "d10",
+  "skill_points": "4 + Int modifier",
+  "class_skills": [
+    "Bluff (Cha)",
+    "Climb (Str)",
+    "Craft (Int)",
+    "Diplomacy (Cha)",
+    "Handle Animal (Cha)",
+    "Intimidate (Cha)",
+    "Profession (Wis)",
+    "Ride (Dex)",
+    "Sense Motive (Wis)",
+    "Swim (Str)"
+  ],
+  "weapon_proficiencies": [
+    "All simple weapons",
+    "All martial weapons"
+  ],
+  "armor_proficiencies": [
+    "All armor",
+    "Shields (including tower shields)"
+  ],
+  "level_progression": {
+    "1": {
+      "base_attack_bonus": "+1",
+      "fort_save": "+2",
+      "ref_save": "+0",
+      "will_save": "+0",
+      "special": ["Challenge 1/day", "Mount", "Order", "Tactician"],
+      "feats": 1
+    },
+    "2": {
+      "base_attack_bonus": "+2",
+      "fort_save": "+3",
+      "ref_save": "+0",
+      "will_save": "+0",
+      "special": ["Order ability"],
+      "feats": 0
+    },
+    "3": {
+      "base_attack_bonus": "+3",
+      "fort_save": "+3",
+      "ref_save": "+1",
+      "will_save": "+1",
+      "special": ["Cavalier's charge"],
+      "feats": 1
+    },
+    "4": {
+      "base_attack_bonus": "+4",
+      "fort_save": "+4",
+      "ref_save": "+1",
+      "will_save": "+1",
+      "special": ["Challenge 2/day"],
+      "feats": 0,
+      "ability_score_improvement": 1
+    },
+    "5": {
+      "base_attack_bonus": "+5",
+      "fort_save": "+4",
+      "ref_save": "+1",
+      "will_save": "+1",
+      "special": ["Banner"],
+      "feats": 1
+    },
+    "6": {
+      "base_attack_bonus": "+6/+1",
+      "fort_save": "+5",
+      "ref_save": "+2",
+      "will_save": "+2",
+      "special": ["Bonus feat"],
+      "feats": 1
+    },
+    "7": {
+      "base_attack_bonus": "+7/+2",
+      "fort_save": "+5",
+      "ref_save": "+2",
+      "will_save": "+2",
+      "special": ["Challenge 3/day"],
+      "feats": 1
+    },
+    "8": {
+      "base_attack_bonus": "+8/+3",
+      "fort_save": "+6",
+      "ref_save": "+2",
+      "will_save": "+2",
+      "special": ["Order ability"],
+      "feats": 0,
+      "ability_score_improvement": 1
+    },
+    "9": {
+      "base_attack_bonus": "+9/+4",
+      "fort_save": "+6",
+      "ref_save": "+3",
+      "will_save": "+3",
+      "special": ["Greater tactician"],
+      "feats": 1
+    },
+    "10": {
+      "base_attack_bonus": "+10/+5",
+      "fort_save": "+7",
+      "ref_save": "+3",
+      "will_save": "+3",
+      "special": ["Challenge 4/day"],
+      "feats": 0
+    },
+    "11": {
+      "base_attack_bonus": "+11/+6/+1",
+      "fort_save": "+7",
+      "ref_save": "+3",
+      "will_save": "+3",
+      "special": ["Mighty charge"],
+      "feats": 1
+    },
+    "12": {
+      "base_attack_bonus": "+12/+7/+2",
+      "fort_save": "+8",
+      "ref_save": "+4",
+      "will_save": "+4",
+      "special": ["Bonus feat", "Demanding challenge"],
+      "feats": 1,
+      "ability_score_improvement": 1
+    },
+    "13": {
+      "base_attack_bonus": "+13/+8/+3",
+      "fort_save": "+8",
+      "ref_save": "+4",
+      "will_save": "+4",
+      "special": ["Challenge 5/day"],
+      "feats": 1
+    },
+    "14": {
+      "base_attack_bonus": "+14/+9/+4",
+      "fort_save": "+9",
+      "ref_save": "+4",
+      "will_save": "+4",
+      "special": ["Greater banner"],
+      "feats": 0
+    },
+    "15": {
+      "base_attack_bonus": "+15/+10/+5",
+      "fort_save": "+9",
+      "ref_save": "+5",
+      "will_save": "+5",
+      "special": ["Order ability"],
+      "feats": 1
+    },
+    "16": {
+      "base_attack_bonus": "+16/+11/+6/+1",
+      "fort_save": "+10",
+      "ref_save": "+5",
+      "will_save": "+5",
+      "special": ["Challenge 6/day"],
+      "feats": 0,
+      "ability_score_improvement": 1
+    },
+    "17": {
+      "base_attack_bonus": "+17/+12/+7/+2",
+      "fort_save": "+10",
+      "ref_save": "+5",
+      "will_save": "+5",
+      "special": ["Master tactician"],
+      "feats": 1
+    },
+    "18": {
+      "base_attack_bonus": "+18/+13/+8/+3",
+      "fort_save": "+11",
+      "ref_save": "+6",
+      "will_save": "+6",
+      "special": ["Bonus feat"],
+      "feats": 1
+    },
+    "19": {
+      "base_attack_bonus": "+19/+14/+9/+4",
+      "fort_save": "+11",
+      "ref_save": "+6",
+      "will_save": "+6",
+      "special": ["Challenge 7/day"],
+      "feats": 1
+    },
+    "20": {
+      "base_attack_bonus": "+20/+15/+10/+5",
+      "fort_save": "+12",
+      "ref_save": "+6",
+      "will_save": "+6",
+      "special": ["Supreme charge"],
+      "feats": 0,
+      "ability_score_improvement": 1
+    }
+  }
+}

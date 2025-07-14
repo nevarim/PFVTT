@@ -165,3 +165,38 @@ UPLOAD: Abigail_icon_2.png - user_id:1 campaign_id:8
 UPLOAD: Success
 UPLOAD: 03 Dreams.mp3 - user_id:1 campaign_id:8
 UPLOAD: Success
+UPLOAD: 02 All Hooked Up.mp3 - user_id:1 campaign_id:8
+UPLOAD: Success
+UPLOAD: Adrontariel_icon.png - user_id:1 campaign_id:8
+UPLOAD ERROR: ECONNREFUSED: 
+UPLOAD: Adrontariel_icon.png - user_id:1 campaign_id:8
+UPLOAD ERROR: ECONNREFUSED: 
+UPLOAD: Adrontariel_icon.png - user_id:1 campaign_id:8
+UPLOAD ERROR: ECONNREFUSED: 
+UPLOAD: Adrontariel_icon.png - user_id:1 campaign_id:8
+UPLOAD ERROR: ECONNREFUSED: 
+CAMPAIGN BACKGROUND UPLOAD: RouiaLogo.png - user_id:1 campaign_id:2
+CAMPAIGN BACKGROUND UPLOAD: Success
+UPLOAD: RouiaLogo.png - user_id:nevarim campaign_id:4
+UPLOAD: Success
+Received POST /api/campaigns at frontend proxy: {"name":"1234aaa","description":"00000","game_rules_id":"2","image_url":"","username":"1234"}
+UPLOAD: 00012-2260949323.png - user_id:1234 campaign_id:9
+UPLOAD: Success
+UPLOAD: 00008-679949213.png - user_id:1234 campaign_id:9
+UPLOAD: Success
+UPLOAD: 00063-15343894.png - user_id:nevarim campaign_id:2
+UPLOAD: Success
+UPLOAD: 00005-257091290.png - user_id:nevarim campaign_id:4
+UPLOAD: Success
+Received POST /api/campaigns at frontend proxy: {"name":"Starfinder","description":"Starfinder Campaign","game_rules_id":"6","image_url":"","username":"nevarim"}
+UPLOAD: 00015-1785746429.png - user_id:nevarim campaign_id:10
+UPLOAD: Success
+UPLOAD: 00028-4000537686.png - user_id:nevarim campaign_id:8
+UPLOAD: Success
+UPLOAD: 00000-2766179786.png - user_id:nevarim campaign_id:7
+UPLOAD: Success
+UPLOAD: 00029-1996828903.png - user_id:nevarim campaign_id:6
+UPLOAD: Success
+UPLOAD: 00076-1558891931.png - user_id:nevarim campaign_id:5
+UPLOAD: Success
+Received POST /api/campaigns at frontend proxy: {"name":"Luigi  Vanacore","description":"","game_rules_id":"3","image_url":"","username":"luigivanacore"}

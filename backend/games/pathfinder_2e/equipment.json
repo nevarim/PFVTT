@@ -1,1 +1,280 @@
-{}
+{
+  "weapons": {
+    "simple_melee": [
+      {
+        "name": "Club",
+        "cost": "0 gp",
+        "damage": "1d6 bludgeoning",
+        "bulk": "1",
+        "hands": "1",
+        "group": "Club",
+        "traits": ["Thrown 10 ft."]
+      },
+      {
+        "name": "Dagger",
+        "cost": "2 sp",
+        "damage": "1d4 piercing",
+        "bulk": "L",
+        "hands": "1",
+        "group": "Knife",
+        "traits": ["Agile", "Finesse", "Thrown 10 ft.", "Versatile S"]
+      },
+      {
+        "name": "Mace",
+        "cost": "1 gp",
+        "damage": "1d6 bludgeoning",
+        "bulk": "1",
+        "hands": "1",
+        "group": "Club",
+        "traits": ["Shove"]
+      },
+      {
+        "name": "Staff",
+        "cost": "0 gp",
+        "damage": "1d4 bludgeoning",
+        "bulk": "1",
+        "hands": "1",
+        "group": "Club",
+        "traits": ["Two-Hand d8"]
+      }
+    ],
+    "simple_ranged": [
+      {
+        "name": "Crossbow",
+        "cost": "3 gp",
+        "damage": "1d8 piercing",
+        "range": "120 ft.",
+        "reload": "1",
+        "bulk": "1",
+        "hands": "2",
+        "group": "Bow",
+        "traits": []
+      },
+      {
+        "name": "Dart",
+        "cost": "1 cp",
+        "damage": "1d4 piercing",
+        "range": "20 ft.",
+        "reload": "0",
+        "bulk": "L",
+        "hands": "1",
+        "group": "Dart",
+        "traits": ["Agile", "Thrown"]
+      },
+      {
+        "name": "Sling",
+        "cost": "0 gp",
+        "damage": "1d6 bludgeoning",
+        "range": "50 ft.",
+        "reload": "1",
+        "bulk": "L",
+        "hands": "1",
+        "group": "Sling",
+        "traits": ["Propulsive"]
+      }
+    ],
+    "martial_melee": [
+      {
+        "name": "Longsword",
+        "cost": "1 gp",
+        "damage": "1d8 slashing",
+        "bulk": "1",
+        "hands": "1",
+        "group": "Sword",
+        "traits": ["Versatile P"]
+      },
+      {
+        "name": "Rapier",
+        "cost": "2 gp",
+        "damage": "1d6 piercing",
+        "bulk": "1",
+        "hands": "1",
+        "group": "Sword",
+        "traits": ["Deadly d8", "Finesse"]
+      },
+      {
+        "name": "Scimitar",
+        "cost": "1 gp",
+        "damage": "1d6 slashing",
+        "bulk": "1",
+        "hands": "1",
+        "group": "Sword",
+        "traits": ["Forceful", "Sweep"]
+      },
+      {
+        "name": "Warhammer",
+        "cost": "1 gp",
+        "damage": "1d8 bludgeoning",
+        "bulk": "1",
+        "hands": "1",
+        "group": "Hammer",
+        "traits": ["Shove"]
+      }
+    ],
+    "martial_ranged": [
+      {
+        "name": "Composite Longbow",
+        "cost": "20 gp",
+        "damage": "1d8 piercing",
+        "range": "100 ft.",
+        "reload": "0",
+        "bulk": "2",
+        "hands": "2",
+        "group": "Bow",
+        "traits": ["Deadly d10", "Propulsive", "Volley 30 ft."]
+      },
+      {
+        "name": "Composite Shortbow",
+        "cost": "14 gp",
+        "damage": "1d6 piercing",
+        "range": "60 ft.",
+        "reload": "0",
+        "bulk": "1",
+        "hands": "2",
+        "group": "Bow",
+        "traits": ["Deadly d10", "Propulsive"]
+      }
+    ]
+  },
+  "armor": {
+    "light": [
+      {
+        "name": "Leather Armor",
+        "cost": "2 gp",
+        "ac_bonus": "+1",
+        "dex_cap": "+4",
+        "check_penalty": "-1",
+        "speed_penalty": "0 ft.",
+        "strength": "10",
+        "bulk": "1",
+        "group": "Leather",
+        "traits": []
+      },
+      {
+        "name": "Studded Leather Armor",
+        "cost": "3 gp",
+        "ac_bonus": "+2",
+        "dex_cap": "+3",
+        "check_penalty": "-1",
+        "speed_penalty": "0 ft.",
+        "strength": "12",
+        "bulk": "1",
+        "group": "Leather",
+        "traits": []
+      }
+    ],
+    "medium": [
+      {
+        "name": "Chain Shirt",
+        "cost": "5 gp",
+        "ac_bonus": "+3",
+        "dex_cap": "+2",
+        "check_penalty": "-2",
+        "speed_penalty": "-5 ft.",
+        "strength": "14",
+        "bulk": "1",
+        "group": "Chain",
+        "traits": ["Flexible", "Noisy"]
+      },
+      {
+        "name": "Scale Mail",
+        "cost": "4 gp",
+        "ac_bonus": "+3",
+        "dex_cap": "+2",
+        "check_penalty": "-2",
+        "speed_penalty": "-5 ft.",
+        "strength": "14",
+        "bulk": "2",
+        "group": "Composite",
+        "traits": []
+      }
+    ],
+    "heavy": [
+      {
+        "name": "Chain Mail",
+        "cost": "6 gp",
+        "ac_bonus": "+4",
+        "dex_cap": "+1",
+        "check_penalty": "-2",
+        "speed_penalty": "-5 ft.",
+        "strength": "16",
+        "bulk": "2",
+        "group": "Chain",
+        "traits": ["Flexible", "Noisy"]
+      },
+      {
+        "name": "Full Plate",
+        "cost": "30 gp",
+        "ac_bonus": "+6",
+        "dex_cap": "+0",
+        "check_penalty": "-3",
+        "speed_penalty": "-10 ft.",
+        "strength": "18",
+        "bulk": "4",
+        "group": "Plate",
+        "traits": ["Bulwark"]
+      }
+    ],
+    "shields": [
+      {
+        "name": "Buckler",
+        "cost": "1 gp",
+        "ac_bonus": "+1",
+        "speed_penalty": "0 ft.",
+        "bulk": "L",
+        "hardness": "3",
+        "hp": "6",
+        "bt": "3",
+        "traits": []
+      },
+      {
+        "name": "Steel Shield",
+        "cost": "2 gp",
+        "ac_bonus": "+2",
+        "speed_penalty": "0 ft.",
+        "bulk": "1",
+        "hardness": "5",
+        "hp": "20",
+        "bt": "10",
+        "traits": []
+      }
+    ]
+  },
+  "adventuring_gear": [
+    {
+      "name": "Backpack",
+      "cost": "2 sp",
+      "bulk": "L",
+      "hands": "—",
+      "description": "A backpack holds up to 4 Bulk of items."
+    },
+    {
+      "name": "Bedroll",
+      "cost": "2 cp",
+      "bulk": "L",
+      "hands": "—",
+      "description": "A bedroll consists of bedding and a blanket thin enough to be rolled up and tied."
+    },
+    {
+      "name": "Rope (50 feet)",
+      "cost": "2 sp",
+      "bulk": "L",
+      "hands": "—",
+      "description": "This rope is 2 inches thick and has 5 Hit Points."
+    },
+    {
+      "name": "Torch",
+      "cost": "1 cp",
+      "bulk": "L",
+      "hands": "1",
+      "description": "A torch burns for 1 hour, shedding bright light in a 20-foot radius."
+    },
+    {
+      "name": "Healer's Kit",
+      "cost": "5 gp",
+      "bulk": "1",
+      "hands": "2",
+      "description": "This kit contains bandages, herbs, and healing items."
+    }
+  ]
+}

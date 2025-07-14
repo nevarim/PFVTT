@@ -1,0 +1,122 @@
+{
+  "name": "Rogue",
+  "hit_die": "d8",
+  "primary_ability": "Dexterity",
+  "saving_throw_proficiencies": ["Dexterity", "Intelligence"],
+  "skill_proficiencies": {
+    "number": 4,
+    "choices": ["Acrobatics", "Athletics", "Deception", "Insight", "Intimidation", "Investigation", "Perception", "Performance", "Persuasion", "Sleight of Hand", "Stealth"]
+  },
+  "armor_proficiencies": ["Light armor"],
+  "weapon_proficiencies": ["Simple weapons", "Hand crossbows", "Longswords", "Rapiers", "Shortswords"],
+  "tool_proficiencies": ["Thieves' tools"],
+  "level_progression": {
+    "1": {
+      "proficiency_bonus": "+2",
+      "features": ["Expertise", "Sneak Attack", "Thieves' Cant"],
+      "sneak_attack": "1d6",
+      "hit_points": "8 + Con modifier"
+    },
+    "2": {
+      "proficiency_bonus": "+2",
+      "features": ["Cunning Action"],
+      "sneak_attack": "1d6"
+    },
+    "3": {
+      "proficiency_bonus": "+2",
+      "features": ["Roguish Archetype"],
+      "sneak_attack": "2d6"
+    },
+    "4": {
+      "proficiency_bonus": "+2",
+      "features": ["Ability Score Improvement"],
+      "sneak_attack": "2d6"
+    },
+    "5": {
+      "proficiency_bonus": "+3",
+      "features": ["Uncanny Dodge"],
+      "sneak_attack": "3d6"
+    },
+    "6": {
+      "proficiency_bonus": "+3",
+      "features": ["Expertise"],
+      "sneak_attack": "3d6"
+    },
+    "7": {
+      "proficiency_bonus": "+3",
+      "features": ["Evasion"],
+      "sneak_attack": "4d6"
+    },
+    "8": {
+      "proficiency_bonus": "+3",
+      "features": ["Ability Score Improvement"],
+      "sneak_attack": "4d6"
+    },
+    "9": {
+      "proficiency_bonus": "+4",
+      "features": ["Roguish Archetype Feature"],
+      "sneak_attack": "5d6"
+    },
+    "10": {
+      "proficiency_bonus": "+4",
+      "features": ["Ability Score Improvement"],
+      "sneak_attack": "5d6"
+    },
+    "11": {
+      "proficiency_bonus": "+4",
+      "features": ["Reliable Talent"],
+      "sneak_attack": "6d6"
+    },
+    "12": {
+      "proficiency_bonus": "+4",
+      "features": ["Ability Score Improvement"],
+      "sneak_attack": "6d6"
+    },
+    "13": {
+      "proficiency_bonus": "+5",
+      "features": ["Roguish Archetype Feature"],
+      "sneak_attack": "7d6"
+    },
+    "14": {
+      "proficiency_bonus": "+5",
+      "features": ["Blindsense"],
+      "sneak_attack": "7d6"
+    },
+    "15": {
+      "proficiency_bonus": "+5",
+      "features": ["Slippery Mind"],
+      "sneak_attack": "8d6"
+    },
+    "16": {
+      "proficiency_bonus": "+5",
+      "features": ["Ability Score Improvement"],
+      "sneak_attack": "8d6"
+    },
+    "17": {
+      "proficiency_bonus": "+6",
+      "features": ["Roguish Archetype Feature"],
+      "sneak_attack": "9d6"
+    },
+    "18": {
+      "proficiency_bonus": "+6",
+      "features": ["Elusive"],
+      "sneak_attack": "9d6"
+    },
+    "19": {
+      "proficiency_bonus": "+6",
+      "features": ["Ability Score Improvement"],
+      "sneak_attack": "10d6"
+    },
+    "20": {
+      "proficiency_bonus": "+6",
+      "features": ["Stroke of Luck"],
+      "sneak_attack": "10d6"
+    }
+  },
+  "expertise": {
+    "description": "Choose two of your skill proficiencies, or one of your skill proficiencies and your proficiency with thieves' tools. Your proficiency bonus is doubled for any ability check you make that uses either of the chosen proficiencies."
+  },
+  "cunning_action": {
+    "description": "You can take a bonus action on each of your turns in combat. This action can be used only to take the Dash, Disengage, or Hide action."
+  }
+}

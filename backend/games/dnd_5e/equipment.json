@@ -1,1 +1,329 @@
-{}
+{
+  "weapons": {
+    "simple_melee": {
+      "club": {
+        "name": "Club",
+        "cost": "1 sp",
+        "damage": "1d4 bludgeoning",
+        "weight": "2 lb.",
+        "properties": ["light"]
+      },
+      "dagger": {
+        "name": "Dagger",
+        "cost": "2 gp",
+        "damage": "1d4 piercing",
+        "weight": "1 lb.",
+        "properties": ["finesse", "light", "thrown (range 20/60)"]
+      },
+      "dart": {
+        "name": "Dart",
+        "cost": "5 cp",
+        "damage": "1d4 piercing",
+        "weight": "1/4 lb.",
+        "properties": ["finesse", "thrown (range 20/60)"]
+      },
+      "javelin": {
+        "name": "Javelin",
+        "cost": "5 sp",
+        "damage": "1d6 piercing",
+        "weight": "2 lb.",
+        "properties": ["thrown (range 30/120)"]
+      },
+      "mace": {
+        "name": "Mace",
+        "cost": "5 gp",
+        "damage": "1d6 bludgeoning",
+        "weight": "4 lb.",
+        "properties": []
+      },
+      "quarterstaff": {
+        "name": "Quarterstaff",
+        "cost": "2 sp",
+        "damage": "1d6 bludgeoning",
+        "weight": "4 lb.",
+        "properties": ["versatile (1d8)"]
+      },
+      "spear": {
+        "name": "Spear",
+        "cost": "1 gp",
+        "damage": "1d6 piercing",
+        "weight": "3 lb.",
+        "properties": ["thrown (range 20/60)", "versatile (1d8)"]
+      }
+    },
+    "simple_ranged": {
+      "light_crossbow": {
+        "name": "Light crossbow",
+        "cost": "25 gp",
+        "damage": "1d8 piercing",
+        "weight": "5 lb.",
+        "properties": ["ammunition (range 80/320)", "loading", "two-handed"]
+      },
+      "shortbow": {
+        "name": "Shortbow",
+        "cost": "25 gp",
+        "damage": "1d6 piercing",
+        "weight": "2 lb.",
+        "properties": ["ammunition (range 80/320)", "two-handed"]
+      },
+      "sling": {
+        "name": "Sling",
+        "cost": "1 sp",
+        "damage": "1d4 bludgeoning",
+        "weight": "—",
+        "properties": ["ammunition (range 30/120)"]
+      }
+    },
+    "martial_melee": {
+      "battleaxe": {
+        "name": "Battleaxe",
+        "cost": "10 gp",
+        "damage": "1d8 slashing",
+        "weight": "4 lb.",
+        "properties": ["versatile (1d10)"]
+      },
+      "glaive": {
+        "name": "Glaive",
+        "cost": "20 gp",
+        "damage": "1d10 slashing",
+        "weight": "6 lb.",
+        "properties": ["heavy", "reach", "two-handed"]
+      },
+      "greataxe": {
+        "name": "Greataxe",
+        "cost": "30 gp",
+        "damage": "1d12 slashing",
+        "weight": "7 lb.",
+        "properties": ["heavy", "two-handed"]
+      },
+      "greatsword": {
+        "name": "Greatsword",
+        "cost": "50 gp",
+        "damage": "2d6 slashing",
+        "weight": "6 lb.",
+        "properties": ["heavy", "two-handed"]
+      },
+      "halberd": {
+        "name": "Halberd",
+        "cost": "20 gp",
+        "damage": "1d10 slashing",
+        "weight": "6 lb.",
+        "properties": ["heavy", "reach", "two-handed"]
+      },
+      "longsword": {
+        "name": "Longsword",
+        "cost": "15 gp",
+        "damage": "1d8 slashing",
+        "weight": "3 lb.",
+        "properties": ["versatile (1d10)"]
+      },
+      "rapier": {
+        "name": "Rapier",
+        "cost": "25 gp",
+        "damage": "1d8 piercing",
+        "weight": "2 lb.",
+        "properties": ["finesse"]
+      },
+      "scimitar": {
+        "name": "Scimitar",
+        "cost": "25 gp",
+        "damage": "1d6 slashing",
+        "weight": "3 lb.",
+        "properties": ["finesse", "light"]
+      },
+      "shortsword": {
+        "name": "Shortsword",
+        "cost": "10 gp",
+        "damage": "1d6 piercing",
+        "weight": "2 lb.",
+        "properties": ["finesse", "light"]
+      },
+      "warhammer": {
+        "name": "Warhammer",
+        "cost": "15 gp",
+        "damage": "1d8 bludgeoning",
+        "weight": "2 lb.",
+        "properties": ["versatile (1d10)"]
+      }
+    },
+    "martial_ranged": {
+      "hand_crossbow": {
+        "name": "Hand crossbow",
+        "cost": "75 gp",
+        "damage": "1d6 piercing",
+        "weight": "3 lb.",
+        "properties": ["ammunition (range 30/120)", "light", "loading"]
+      },
+      "heavy_crossbow": {
+        "name": "Heavy crossbow",
+        "cost": "50 gp",
+        "damage": "1d10 piercing",
+        "weight": "18 lb.",
+        "properties": ["ammunition (range 100/400)", "heavy", "loading", "two-handed"]
+      },
+      "longbow": {
+        "name": "Longbow",
+        "cost": "50 gp",
+        "damage": "1d8 piercing",
+        "weight": "2 lb.",
+        "properties": ["ammunition (range 150/600)", "heavy", "two-handed"]
+      }
+    }
+  },
+  "armor": {
+    "light": {
+      "leather": {
+        "name": "Leather",
+        "cost": "10 gp",
+        "armor_class": "11 + Dex modifier",
+        "weight": "10 lb.",
+        "properties": []
+      },
+      "studded_leather": {
+        "name": "Studded leather",
+        "cost": "45 gp",
+        "armor_class": "12 + Dex modifier",
+        "weight": "13 lb.",
+        "properties": []
+      }
+    },
+    "medium": {
+      "hide": {
+        "name": "Hide",
+        "cost": "10 gp",
+        "armor_class": "12 + Dex modifier (max 2)",
+        "weight": "12 lb.",
+        "properties": []
+      },
+      "chain_shirt": {
+        "name": "Chain shirt",
+        "cost": "50 gp",
+        "armor_class": "13 + Dex modifier (max 2)",
+        "weight": "20 lb.",
+        "properties": []
+      },
+      "scale_mail": {
+        "name": "Scale mail",
+        "cost": "50 gp",
+        "armor_class": "14 + Dex modifier (max 2)",
+        "weight": "45 lb.",
+        "properties": ["disadvantage on Stealth"]
+      },
+      "breastplate": {
+        "name": "Breastplate",
+        "cost": "400 gp",
+        "armor_class": "14 + Dex modifier (max 2)",
+        "weight": "20 lb.",
+        "properties": []
+      },
+      "half_plate": {
+        "name": "Half plate",
+        "cost": "750 gp",
+        "armor_class": "15 + Dex modifier (max 2)",
+        "weight": "40 lb.",
+        "properties": ["disadvantage on Stealth"]
+      }
+    },
+    "heavy": {
+      "ring_mail": {
+        "name": "Ring mail",
+        "cost": "30 gp",
+        "armor_class": "14",
+        "weight": "40 lb.",
+        "properties": ["disadvantage on Stealth"]
+      },
+      "chain_mail": {
+        "name": "Chain mail",
+        "cost": "75 gp",
+        "armor_class": "16",
+        "weight": "55 lb.",
+        "properties": ["Str 13 required", "disadvantage on Stealth"]
+      },
+      "splint": {
+        "name": "Splint",
+        "cost": "200 gp",
+        "armor_class": "17",
+        "weight": "60 lb.",
+        "properties": ["Str 15 required", "disadvantage on Stealth"]
+      },
+      "plate": {
+        "name": "Plate",
+        "cost": "1,500 gp",
+        "armor_class": "18",
+        "weight": "65 lb.",
+        "properties": ["Str 15 required", "disadvantage on Stealth"]
+      }
+    },
+    "shield": {
+      "shield": {
+        "name": "Shield",
+        "cost": "10 gp",
+        "armor_class": "+2",
+        "weight": "6 lb.",
+        "properties": []
+      }
+    }
+  },
+  "adventuring_gear": {
+    "backpack": {
+      "name": "Backpack",
+      "cost": "2 gp",
+      "weight": "5 lb.",
+      "description": "A backpack can hold 1 cubic foot or 30 pounds of gear."
+    },
+    "bedroll": {
+      "name": "Bedroll",
+      "cost": "1 gp",
+      "weight": "7 lb.",
+      "description": "A bedroll consists of bedding and a blanket."
+    },
+    "rope_hempen": {
+      "name": "Rope, hempen (50 feet)",
+      "cost": "2 gp",
+      "weight": "10 lb.",
+      "description": "Rope has 2 hit points and can be burst with a DC 17 Strength check."
+    },
+    "torch": {
+      "name": "Torch",
+      "cost": "1 cp",
+      "weight": "1 lb.",
+      "description": "A torch burns for 1 hour, providing bright light in a 20-foot radius and dim light for an additional 20 feet."
+    },
+    "rations": {
+      "name": "Rations (1 day)",
+      "cost": "2 gp",
+      "weight": "2 lb.",
+      "description": "Rations consist of dry foods suitable for extended travel."
+    },
+    "waterskin": {
+      "name": "Waterskin",
+      "cost": "2 gp",
+      "weight": "5 lb. (full)",
+      "description": "A waterskin can hold 4 pints of liquid."
+    },
+    "thieves_tools": {
+      "name": "Thieves' tools",
+      "cost": "25 gp",
+      "weight": "1 lb.",
+      "description": "This set of tools includes a small file, a set of lock picks, a small mirror mounted on a metal handle, a set of narrow-bladed scissors, and a pair of pliers."
+    },
+    "healers_kit": {
+      "name": "Healer's kit",
+      "cost": "5 gp",
+      "weight": "3 lb.",
+      "description": "This kit has ten uses. As an action, you can expend one use of the kit to stabilize a creature that has 0 hit points, without needing to make a Wisdom (Medicine) check."
+    },
+    "spell_component_pouch": {
+      "name": "Component pouch",
+      "cost": "25 gp",
+      "weight": "2 lb.",
+      "description": "A component pouch is a small, watertight leather belt pouch that has compartments to hold all the material components and other special items you need to cast your spells."
+    },
+    "spellbook": {
+      "name": "Spellbook",
+      "cost": "50 gp",
+      "weight": "3 lb.",
+      "description": "Essential for wizards, a spellbook is a leather-bound tome with 100 blank vellum pages suitable for recording spells."
+    }
+  }
+}

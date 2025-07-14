@@ -1,0 +1,190 @@
+{
+  "name": "Monk",
+  "hit_die": "d8",
+  "skill_points_per_level": 4,
+  "class_skills": ["Balance", "Climb", "Concentration", "Craft", "Diplomacy", "Escape Artist", "Hide", "Jump", "Knowledge (arcana)", "Knowledge (religion)", "Listen", "Move Silently", "Perform", "Profession", "Sense Motive", "Spot", "Swim", "Tumble"],
+  "armor_proficiencies": [],
+  "weapon_proficiencies": ["Club", "Crossbow (light or heavy)", "Dagger", "Handaxe", "Javelin", "Kama", "Nunchaku", "Quarterstaff", "Sai", "Shuriken", "Siangham", "Sling"],
+  "levels": {
+    "1": {
+      "base_attack_bonus": "+0",
+      "fort_save": "+2",
+      "ref_save": "+2",
+      "will_save": "+2",
+      "special": ["Bonus feat", "Flurry of blows", "Improved unarmed strike", "Unarmed damage 1d6"],
+      "ac_bonus": "+0",
+      "unarmored_speed_bonus": "+0 ft"
+    },
+    "2": {
+      "base_attack_bonus": "+1",
+      "fort_save": "+3",
+      "ref_save": "+3",
+      "will_save": "+3",
+      "special": ["Bonus feat", "Evasion"],
+      "ac_bonus": "+0",
+      "unarmored_speed_bonus": "+0 ft"
+    },
+    "3": {
+      "base_attack_bonus": "+2",
+      "fort_save": "+3",
+      "ref_save": "+3",
+      "will_save": "+3",
+      "special": ["Still mind", "Unarmed damage 1d6"],
+      "ac_bonus": "+0",
+      "unarmored_speed_bonus": "+10 ft"
+    },
+    "4": {
+      "base_attack_bonus": "+3",
+      "fort_save": "+4",
+      "ref_save": "+4",
+      "will_save": "+4",
+      "special": ["Ki strike (magic)", "Slow fall 20 ft", "Unarmed damage 1d8"],
+      "ac_bonus": "+0",
+      "unarmored_speed_bonus": "+10 ft"
+    },
+    "5": {
+      "base_attack_bonus": "+3",
+      "fort_save": "+4",
+      "ref_save": "+4",
+      "will_save": "+4",
+      "special": ["Purity of body", "Unarmed damage 1d8"],
+      "ac_bonus": "+1",
+      "unarmored_speed_bonus": "+10 ft"
+    },
+    "6": {
+      "base_attack_bonus": "+4",
+      "fort_save": "+5",
+      "ref_save": "+5",
+      "will_save": "+5",
+      "special": ["Bonus feat", "Slow fall 30 ft", "Unarmed damage 1d8"],
+      "ac_bonus": "+1",
+      "unarmored_speed_bonus": "+20 ft"
+    },
+    "7": {
+      "base_attack_bonus": "+5",
+      "fort_save": "+5",
+      "ref_save": "+5",
+      "will_save": "+5",
+      "special": ["Wholeness of body", "Unarmed damage 1d8"],
+      "ac_bonus": "+1",
+      "unarmored_speed_bonus": "+20 ft"
+    },
+    "8": {
+      "base_attack_bonus": "+6/+1",
+      "fort_save": "+6",
+      "ref_save": "+6",
+      "will_save": "+6",
+      "special": ["Slow fall 40 ft", "Unarmed damage 1d10"],
+      "ac_bonus": "+1",
+      "unarmored_speed_bonus": "+20 ft"
+    },
+    "9": {
+      "base_attack_bonus": "+6/+1",
+      "fort_save": "+6",
+      "ref_save": "+6",
+      "will_save": "+6",
+      "special": ["Improved evasion", "Unarmed damage 1d10"],
+      "ac_bonus": "+1",
+      "unarmored_speed_bonus": "+30 ft"
+    },
+    "10": {
+      "base_attack_bonus": "+7/+2",
+      "fort_save": "+7",
+      "ref_save": "+7",
+      "will_save": "+7",
+      "special": ["Ki strike (lawful)", "Slow fall 50 ft", "Unarmed damage 1d10"],
+      "ac_bonus": "+2",
+      "unarmored_speed_bonus": "+30 ft"
+    },
+    "11": {
+      "base_attack_bonus": "+8/+3",
+      "fort_save": "+7",
+      "ref_save": "+7",
+      "will_save": "+7",
+      "special": ["Diamond body", "Greater flurry", "Unarmed damage 1d10"],
+      "ac_bonus": "+2",
+      "unarmored_speed_bonus": "+30 ft"
+    },
+    "12": {
+      "base_attack_bonus": "+9/+4",
+      "fort_save": "+8",
+      "ref_save": "+8",
+      "will_save": "+8",
+      "special": ["Abundant step", "Slow fall 60 ft", "Unarmed damage 2d6"],
+      "ac_bonus": "+2",
+      "unarmored_speed_bonus": "+40 ft"
+    },
+    "13": {
+      "base_attack_bonus": "+9/+4",
+      "fort_save": "+8",
+      "ref_save": "+8",
+      "will_save": "+8",
+      "special": ["Diamond soul", "Unarmed damage 2d6"],
+      "ac_bonus": "+2",
+      "unarmored_speed_bonus": "+40 ft"
+    },
+    "14": {
+      "base_attack_bonus": "+10/+5",
+      "fort_save": "+9",
+      "ref_save": "+9",
+      "will_save": "+9",
+      "special": ["Slow fall 70 ft", "Unarmed damage 2d6"],
+      "ac_bonus": "+2",
+      "unarmored_speed_bonus": "+40 ft"
+    },
+    "15": {
+      "base_attack_bonus": "+11/+6/+1",
+      "fort_save": "+9",
+      "ref_save": "+9",
+      "will_save": "+9",
+      "special": ["Quivering palm", "Unarmed damage 2d6"],
+      "ac_bonus": "+3",
+      "unarmored_speed_bonus": "+50 ft"
+    },
+    "16": {
+      "base_attack_bonus": "+12/+7/+2",
+      "fort_save": "+10",
+      "ref_save": "+10",
+      "will_save": "+10",
+      "special": ["Ki strike (adamantine)", "Slow fall 80 ft", "Unarmed damage 2d8"],
+      "ac_bonus": "+3",
+      "unarmored_speed_bonus": "+50 ft"
+    },
+    "17": {
+      "base_attack_bonus": "+12/+7/+2",
+      "fort_save": "+10",
+      "ref_save": "+10",
+      "will_save": "+10",
+      "special": ["Timeless body", "Tongue of the sun and moon", "Unarmed damage 2d8"],
+      "ac_bonus": "+3",
+      "unarmored_speed_bonus": "+50 ft"
+    },
+    "18": {
+      "base_attack_bonus": "+13/+8/+3",
+      "fort_save": "+11",
+      "ref_save": "+11",
+      "will_save": "+11",
+      "special": ["Slow fall 90 ft", "Unarmed damage 2d8"],
+      "ac_bonus": "+3",
+      "unarmored_speed_bonus": "+60 ft"
+    },
+    "19": {
+      "base_attack_bonus": "+14/+9/+4",
+      "fort_save": "+11",
+      "ref_save": "+11",
+      "will_save": "+11",
+      "special": ["Empty body", "Unarmed damage 2d8"],
+      "ac_bonus": "+3",
+      "unarmored_speed_bonus": "+60 ft"
+    },
+    "20": {
+      "base_attack_bonus": "+15/+10/+5",
+      "fort_save": "+12",
+      "ref_save": "+12",
+      "will_save": "+12",
+      "special": ["Perfect self", "Slow fall any distance", "Unarmed damage 2d10"],
+      "ac_bonus": "+4",
+      "unarmored_speed_bonus": "+60 ft"
+    }
+  }
+}

@@ -1,1 +1,155 @@
-{}
+{
+  "classes": [
+    {
+      "name": "Alchemist",
+      "hit_die": 8,
+      "key_ability": "Intelligence",
+      "saving_throw_proficiencies": ["Fortitude", "Reflex"],
+      "skill_proficiencies": ["Crafting"],
+      "armor_proficiencies": ["Light armor"],
+      "weapon_proficiencies": ["Simple weapons", "Alchemical bombs", "Unarmed attacks"],
+      "spellcaster": true,
+      "spell_tradition": "Alchemical",
+      "description": "An alchemist creates elixirs and bombs to support allies and harm foes."
+    },
+    {
+      "name": "Barbarian",
+      "hit_die": 12,
+      "key_ability": "Strength",
+      "saving_throw_proficiencies": ["Fortitude", "Will"],
+      "skill_proficiencies": ["Athletics"],
+      "armor_proficiencies": ["Light armor", "Medium armor"],
+      "weapon_proficiencies": ["Simple weapons", "Martial weapons", "Unarmed attacks"],
+      "spellcaster": false,
+      "description": "A fierce warrior who can enter a battle rage to become more dangerous."
+    },
+    {
+      "name": "Bard",
+      "hit_die": 8,
+      "key_ability": "Charisma",
+      "saving_throw_proficiencies": ["Reflex", "Will"],
+      "skill_proficiencies": ["Occultism", "Performance"],
+      "armor_proficiencies": ["Light armor"],
+      "weapon_proficiencies": ["Simple weapons", "Longsword", "Rapier", "Sap", "Shortbow", "Shortsword", "Whip", "Unarmed attacks"],
+      "spellcaster": true,
+      "spell_tradition": "Occult",
+      "description": "A master of song, speech, and the magic they contain."
+    },
+    {
+      "name": "Champion",
+      "hit_die": 10,
+      "key_ability": "Strength or Dexterity",
+      "saving_throw_proficiencies": ["Fortitude", "Will"],
+      "skill_proficiencies": ["Religion"],
+      "armor_proficiencies": ["Light armor", "Medium armor", "Heavy armor", "Shields"],
+      "weapon_proficiencies": ["Simple weapons", "Martial weapons", "Unarmed attacks"],
+      "spellcaster": true,
+      "spell_tradition": "Divine",
+      "description": "A divine warrior who fights for a cause, wielding the power of their deity."
+    },
+    {
+      "name": "Cleric",
+      "hit_die": 8,
+      "key_ability": "Wisdom",
+      "saving_throw_proficiencies": ["Fortitude", "Will"],
+      "skill_proficiencies": ["Religion"],
+      "armor_proficiencies": ["Light armor", "Medium armor"],
+      "weapon_proficiencies": ["Simple weapons", "Unarmed attacks"],
+      "spellcaster": true,
+      "spell_tradition": "Divine",
+      "description": "A divine spellcaster who serves a deity and can channel divine energy."
+    },
+    {
+      "name": "Druid",
+      "hit_die": 8,
+      "key_ability": "Wisdom",
+      "saving_throw_proficiencies": ["Fortitude", "Will"],
+      "skill_proficiencies": ["Nature"],
+      "armor_proficiencies": ["Light armor", "Medium armor"],
+      "weapon_proficiencies": ["Simple weapons", "Unarmed attacks"],
+      "spellcaster": true,
+      "spell_tradition": "Primal",
+      "description": "A spellcaster of the wilderness who can take the form of animals."
+    },
+    {
+      "name": "Fighter",
+      "hit_die": 10,
+      "key_ability": "Strength or Dexterity",
+      "saving_throw_proficiencies": ["Fortitude", "Reflex"],
+      "skill_proficiencies": [],
+      "armor_proficiencies": ["Light armor", "Medium armor", "Heavy armor", "Shields"],
+      "weapon_proficiencies": ["Simple weapons", "Martial weapons", "Advanced weapons", "Unarmed attacks"],
+      "spellcaster": false,
+      "description": "A master of martial combat, skilled with a variety of weapons and armor."
+    },
+    {
+      "name": "Monk",
+      "hit_die": 10,
+      "key_ability": "Strength or Dexterity",
+      "saving_throw_proficiencies": ["Fortitude", "Reflex", "Will"],
+      "skill_proficiencies": [],
+      "armor_proficiencies": [],
+      "weapon_proficiencies": ["Simple weapons", "Club", "Crossbow", "Dagger", "Handwraps of mighty blows", "Javelin", "Kama", "Nunchaku", "Quarterstaff", "Sai", "Shuriken", "Sling", "Spear", "Temple sword", "Unarmed attacks"],
+      "spellcaster": false,
+      "description": "A martial artist who fights with disciplined techniques and ki power."
+    },
+    {
+      "name": "Oracle",
+      "hit_die": 8,
+      "key_ability": "Charisma",
+      "saving_throw_proficiencies": ["Fortitude", "Will"],
+      "skill_proficiencies": ["Religion"],
+      "armor_proficiencies": ["Light armor", "Medium armor"],
+      "weapon_proficiencies": ["Simple weapons", "Unarmed attacks"],
+      "spellcaster": true,
+      "spell_tradition": "Divine",
+      "description": "A divine spellcaster whose magic comes from a mysterious curse."
+    },
+    {
+      "name": "Ranger",
+      "hit_die": 10,
+      "key_ability": "Strength or Dexterity",
+      "saving_throw_proficiencies": ["Fortitude", "Reflex"],
+      "skill_proficiencies": ["Nature", "Survival"],
+      "armor_proficiencies": ["Light armor", "Medium armor"],
+      "weapon_proficiencies": ["Simple weapons", "Martial weapons", "Unarmed attacks"],
+      "spellcaster": false,
+      "description": "A skilled hunter and tracker who protects the wilderness."
+    },
+    {
+      "name": "Rogue",
+      "hit_die": 8,
+      "key_ability": "Dexterity",
+      "saving_throw_proficiencies": ["Reflex", "Will"],
+      "skill_proficiencies": ["Stealth"],
+      "armor_proficiencies": ["Light armor"],
+      "weapon_proficiencies": ["Simple weapons", "Rapier", "Sap", "Shortbow", "Shortsword", "Unarmed attacks"],
+      "spellcaster": false,
+      "description": "A skilled infiltrator who strikes from the shadows with deadly precision."
+    },
+    {
+      "name": "Sorcerer",
+      "hit_die": 6,
+      "key_ability": "Charisma",
+      "saving_throw_proficiencies": ["Fortitude", "Will"],
+      "skill_proficiencies": [],
+      "armor_proficiencies": [],
+      "weapon_proficiencies": ["Simple weapons", "Unarmed attacks"],
+      "spellcaster": true,
+      "spell_tradition": "Varies by bloodline",
+      "description": "A spellcaster whose magic comes from within, shaped by their bloodline."
+    },
+    {
+      "name": "Wizard",
+      "hit_die": 6,
+      "key_ability": "Intelligence",
+      "saving_throw_proficiencies": ["Fortitude", "Will"],
+      "skill_proficiencies": ["Arcana"],
+      "armor_proficiencies": [],
+      "weapon_proficiencies": ["Club", "Crossbow", "Dagger", "Heavy crossbow", "Staff", "Unarmed attacks"],
+      "spellcaster": true,
+      "spell_tradition": "Arcane",
+      "description": "A scholarly spellcaster who learns magic through study and preparation."
+    }
+  ]
+}

@@ -221,24 +221,8 @@ CREATE TABLE IF NOT EXISTS map_props (
 
 INSERT INTO game_rules (system, folder_name, rules_json) VALUES
   ('D&D 5e', 'dnd_5e', '{"description": "Dungeons & Dragons 5th Edition core rules."}'),
-  ('Pathfinder', 'pathfinder_1e', '{"description": "Pathfinder 1st Edition core rules."}'),
-  ('Pathfinder 2', 'pathfinder_2e', '{"description": "Pathfinder 2nd Edition core rules."}'),
-  ('D&D 3.5', 'dnd_35e', '{"description": "Dungeons & Dragons 3.5 Edition core rules."}');
+  ('Pathfinder 1e', 'pathfinder_1e', '{"description": "Pathfinder 1st Edition core rules."}'),
+  ('Pathfinder 2e', 'pathfinder_2e', '{"description": "Pathfinder 2nd Edition core rules."}'),
+  ('D&D 3.5e', 'dnd_35e', '{"description": "Dungeons & Dragons 3.5 Edition core rules."}'),
+  ('Starfinder', 'starfinder', '{"description": "Starfinder RPG core rules."}');
 
--- Sample data for testing
-INSERT INTO campaigns (user_id, name, description, game_rules_id) VALUES
-  (1, 'Test Campaign', 'A test campaign for development', 1),
-  (1, 'Adventure Campaign', 'Main adventure campaign', 2);
-
-INSERT INTO maps (campaign_id, name, data, created_by) VALUES
-  (1, 'Starting Town', '{"width": 800, "height": 600, "background": "#f0f0f0"}', 1),
-  (1, 'Dungeon Level 1', '{"width": 1000, "height": 800, "background": "#333333"}', 1),
-  (2, 'World Map', '{"width": 1200, "height": 900, "background": "#87CEEB"}', 1);
-
--- Sample scenes data (uncomment and modify campaign_id values as needed)
--- INSERT INTO scenes (campaign_id, name, data) VALUES
---   (2, 'Tavern Interior', '{"description": "A cozy tavern with wooden tables and a fireplace", "width": 40, "height": 30, "gridSize": 50, "backgroundColor": "#8B4513"}'),
---   (2, 'Forest Path', '{"description": "A winding path through a dense forest", "width": 60, "height": 40, "gridSize": 50, "backgroundColor": "#228B22"}'),
---   (2, 'Dungeon Chamber', '{"description": "A dark stone chamber with ancient runes", "width": 30, "height": 25, "gridSize": 50, "backgroundColor": "#2F4F4F"}'),
---   (4, 'Mountain Pass', '{"description": "A treacherous mountain pass with steep cliffs", "width": 50, "height": 35, "gridSize": 50, "backgroundColor": "#696969"}'),
---   (4, 'Ancient Temple', '{"description": "A mysterious temple filled with magical energy", "width": 45, "height": 45, "gridSize": 50, "backgroundColor": "#4B0082"}');}

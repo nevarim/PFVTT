@@ -1,0 +1,37 @@
+{
+  "name": "Soldier",
+  "description": "Soldiers are masters of combat, trained in various fighting styles and weapon specializations.",
+  "hit_die": 7,
+  "skill_ranks_per_level": 4,
+  "class_skills": [
+    "Acrobatics", "Athletics", "Engineering", "Intimidate", "Medicine", 
+    "Perception", "Profession", "Survival"
+  ],
+  "proficiencies": {
+    "armor": ["Light armor", "Heavy armor"],
+    "weapons": ["Basic melee weapons", "Advanced melee weapons", "Small arms", "Longarms", "Heavy weapons", "Sniper weapons"]
+  },
+  "spellcasting": false,
+  "class_features": {
+    "1": ["Fighting Style", "Primary Fighting Style"],
+    "2": ["Combat Feat"],
+    "3": ["Armor Training", "Weapon Specialization"],
+    "4": ["Combat Feat"],
+    "5": ["Primary Style Technique"],
+    "6": ["Combat Feat"],
+    "7": ["Secondary Fighting Style"],
+    "8": ["Combat Feat"],
+    "9": ["Primary Style Technique", "Secondary Style Technique"],
+    "10": ["Combat Feat"],
+    "11": ["Soldier's Onslaught"],
+    "12": ["Combat Feat"],
+    "13": ["Primary Style Technique", "Secondary Style Technique"],
+    "14": ["Combat Feat"],
+    "15": ["Tertiary Fighting Style"],
+    "16": ["Combat Feat"],
+    "17": ["Primary Style Technique", "Secondary Style Technique", "Tertiary Style Technique"],
+    "18": ["Combat Feat"],
+    "19": ["Armor Mastery"],
+    "20": ["Combat Feat", "Kill Shot"]
+  }
+}

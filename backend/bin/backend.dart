@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:async';
 import 'package:mysql1/mysql1.dart';
 import 'package:bcrypt/bcrypt.dart';
+import 'package:dotenv/dotenv.dart';
 import '../sheet_templates.dart';
 import '../game_system_manager.dart';
 
@@ -123,12 +124,28 @@ Future<void> main(List<String> arguments) async {
   try {
     print('PFVTT backend main() started');
 
+    // Load environment variables
+    var env = DotEnv(includePlatformEnvironment: true)..load(['../.env']);
+    
+    final dbHost = env['DB_HOST'] ?? 'localhost';
+    final dbPort = int.tryParse(env['DB_PORT'] ?? '3306') ?? 3306;
+    final dbUser = env['DB_USER'] ?? 'PFVTT';
+    final dbPassword = env['DB_PASSWORD'] ?? 'PFVTT';
+    final dbName = env['DB_NAME'] ?? 'PFVTT';
+    final serverHost = env['SERVER_HOST'] ?? 'localhost';
+    final serverPort = int.tryParse(env['SERVER_PORT'] ?? '8080') ?? 8080;
+    final frontendPort = env['FRONTEND_PORT'] ?? '3000';
+    
+    print('[BACKEND] Database: $dbHost:$dbPort/$dbName');
+    print('[BACKEND] Server will run on: $serverHost:$serverPort');
+    print('[BACKEND] Frontend expected on port: $frontendPort');
+
     final settings = ConnectionSettings(
-      host: 'localhost',
-      port: 3306,
-      user: 'PFVTT',
-      password: 'PFVTT',
-      db: 'PFVTT',
+      host: dbHost,
+      port: dbPort,
+      user: dbUser,
+      password: dbPassword,
+      db: dbName,
     );
 
     // Initialize connection pool
@@ -140,8 +157,8 @@ Future<void> main(List<String> arguments) async {
 
     await _connectionPool.initialize();
 
-    final server = await HttpServer.bind(InternetAddress.anyIPv4, 8080);
-    print('Backend running on http://localhost:8080');
+    final server = await HttpServer.bind(InternetAddress.anyIPv4, serverPort);
+    print('Backend running on http://$serverHost:$serverPort');
 
     await for (HttpRequest request in server) {
       try {
@@ -151,7 +168,7 @@ Future<void> main(List<String> arguments) async {
         // Add CORS headers
         request.response.headers.add(
           'Access-Control-Allow-Origin',
-          'http://localhost:3000',
+          'http://$serverHost:$frontendPort',
         );
         request.response.headers.add(
           'Access-Control-Allow-Methods',
@@ -275,6 +292,64 @@ Future<void> main(List<String> arguments) async {
             );
           }
           await request.response.close();
+        } else if (request.uri.path == '/api/debug/check-map' &&
+            request.method == 'GET') {
+          // Debug endpoint to check if a map exists
+          final mapId = request.uri.queryParameters['map_id'];
+          if (mapId == null) {
+            request.response.statusCode = 400;
+            request.response.headers.contentType = ContentType.json;
+            request.response.write(
+              jsonEncode({'success': false, 'error': 'Missing map_id'}),
+            );
+            await request.response.close();
+            return;
+          }
+          
+          try {
+            print('DEBUG: Checking if map $mapId exists...');
+            var results = await _connectionPool.query(
+              'SELECT id, name, campaign_id FROM maps WHERE id = ?',
+              [mapId],
+            );
+            print('DEBUG: Query completed. Found ${results.length} maps');
+            
+            if (results.isEmpty) {
+              print('DEBUG: Map $mapId does NOT exist');
+              request.response.headers.contentType = ContentType.json;
+              request.response.write(
+                jsonEncode({
+                  'success': true, 
+                  'exists': false, 
+                  'map_id': mapId,
+                  'message': 'Map does not exist'
+                }),
+              );
+            } else {
+              var row = results.first;
+              print('DEBUG: Map $mapId EXISTS - Name: ${row[1]}, Campaign: ${row[2]}');
+              request.response.headers.contentType = ContentType.json;
+              request.response.write(
+                jsonEncode({
+                  'success': true, 
+                  'exists': true, 
+                  'map_id': mapId,
+                  'name': row[1]?.toString() ?? '',
+                  'campaign_id': row[2]?.toString() ?? ''
+                }),
+              );
+            }
+            await request.response.close();
+          } catch (e, stack) {
+            print('DEBUG: Error checking map $mapId: $e');
+            print('DEBUG: Stack trace: $stack');
+            request.response.statusCode = HttpStatus.internalServerError;
+            request.response.headers.contentType = ContentType.json;
+            request.response.write(
+              jsonEncode({'success': false, 'error': e.toString()}),
+            );
+            await request.response.close();
+          }
         } else if (request.uri.path == '/map' ||
             request.uri.path == '/api/maps') {
           if (request.method == 'GET') {
@@ -441,37 +516,59 @@ Future<void> main(List<String> arguments) async {
           if (params['name'] != null) {
             updateFields.add('name = ?');
             updateValues.add(params['name']);
+          }
+          
+          // Complete the map update operation
+          if (updateFields.isNotEmpty) {
+            updateValues.add(mapId);
+            await _connectionPool.query(
+              'UPDATE maps SET ${updateFields.join(', ')} WHERE id = ?',
+              updateValues,
+            );
+          }
+          
+          request.response.headers.contentType = ContentType.json;
+          request.response.write(jsonEncode({'success': true}));
+          await request.response.close();
         }
         // === TOKEN SHEETS API ===
         else if (request.uri.path == '/api/token-sheets' && request.method == 'GET') {
-          // List all token sheets for a map (by map_id)
-          final mapId = request.uri.queryParameters['map_id'];
-          if (mapId == null) {
-            request.response.statusCode = 400;
+          try {
+            // List all token sheets for a map (by map_id)
+            final mapId = request.uri.queryParameters['map_id'];
+            if (mapId == null) {
+              request.response.statusCode = 400;
+              request.response.headers.contentType = ContentType.json;
+              request.response.write(jsonEncode({'success': false, 'error': 'Missing map_id'}));
+              await request.response.close();
+              return;
+            }
+            var results = await _connectionPool.query(
+              'SELECT ts.id, ts.map_token_id, ts.actor_id, ts.sheet_json, ts.created_at, ts.updated_at, mt.name as token_name FROM token_sheets ts JOIN map_tokens mt ON ts.map_token_id = mt.id WHERE mt.map_id = ?',
+              [mapId],
+            );
+            List<Map<String, dynamic>> sheets = [];
+            for (var row in results) {
+              sheets.add({
+                'id': row[0],
+                'map_token_id': row[1],
+                'actor_id': row[2],
+                'sheet_json': row[3],
+                'created_at': row[4]?.toString() ?? '',
+                'updated_at': row[5]?.toString() ?? '',
+                'token_name': row[6]?.toString() ?? '',
+              });
+            }
             request.response.headers.contentType = ContentType.json;
-            request.response.write(jsonEncode({'success': false, 'error': 'Missing map_id'}));
+            request.response.write(jsonEncode({'success': true, 'sheets': sheets}));
             await request.response.close();
-            return;
+          } catch (e) {
+            print('Error in GET /api/token-sheets: $e');
+            request.response.statusCode = 500;
+            request.response.headers.contentType = ContentType.json;
+            request.response.write(jsonEncode({'success': false, 'error': 'Database error: ${e.toString()}'}));
+            await request.response.close();
           }
-          var results = await _connectionPool.query(
-            'SELECT ts.id, ts.map_token_id, ts.actor_id, ts.sheet_json, ts.created_at, ts.updated_at, mt.name as token_name FROM token_sheets ts JOIN map_tokens mt ON ts.map_token_id = mt.id WHERE mt.map_id = ?',
-            [mapId],
-          );
-          List<Map<String, dynamic>> sheets = [];
-          for (var row in results) {
-            sheets.add({
-              'id': row[0],
-              'map_token_id': row[1],
-              'actor_id': row[2],
-              'sheet_json': row[3],
-              'created_at': row[4]?.toString() ?? '',
-              'updated_at': row[5]?.toString() ?? '',
-              'token_name': row[6]?.toString() ?? '',
-            });
-          }
-          request.response.headers.contentType = ContentType.json;
-          request.response.write(jsonEncode({'success': true, 'sheets': sheets}));
-          await request.response.close();
           return;
         }
         else if (request.uri.path == '/api/token-sheets' && request.method == 'POST') {
@@ -652,7 +749,6 @@ Future<void> main(List<String> arguments) async {
             await request.response.close();
             return;
           }
-        }
         } else if ((request.uri.path.startsWith('/maps/') ||
                 request.uri.path.startsWith('/api/maps/')) &&
             request.method == 'DELETE') {
@@ -1218,7 +1314,7 @@ Future<void> main(List<String> arguments) async {
             }
             final userId = userRes.first[0];
             var results = await _connectionPool.query(
-              'SELECT c.id, c.name, c.description, c.game_rules_id, c.image_url, c.created_at, gr.system FROM campaigns c LEFT JOIN game_rules gr ON c.game_rules_id = gr.id WHERE c.user_id = ?',
+              'SELECT c.id, c.name, c.description, c.game_rules_id, c.image_url, c.created_at, c.background_image_url, gr.system FROM campaigns c LEFT JOIN game_rules gr ON c.game_rules_id = gr.id WHERE c.user_id = ?',
               [userId],
             );
             List<Map<String, dynamic>> campaigns = [];
@@ -1233,6 +1329,18 @@ Future<void> main(List<String> arguments) async {
               } else if (imageUrlValue != null) {
                 imageUrlValue = imageUrlValue.toString();
               }
+              
+              var backgroundImageUrlValue = row[6];
+              if (backgroundImageUrlValue is Blob) {
+                backgroundImageUrlValue = utf8.decode(backgroundImageUrlValue.toBytes());
+              } else if (backgroundImageUrlValue is List<int>) {
+                backgroundImageUrlValue = utf8.decode(backgroundImageUrlValue);
+              } else if (backgroundImageUrlValue is String) {
+                // already a string, do nothing
+              } else if (backgroundImageUrlValue != null) {
+                backgroundImageUrlValue = backgroundImageUrlValue.toString();
+              }
+              
               campaigns.add({
                 'id': row[0],
                 'name': row[1]?.toString(),
@@ -1240,7 +1348,8 @@ Future<void> main(List<String> arguments) async {
                 'game_rules_id': row[3],
                 'image_url': imageUrlValue,
                 'created_at': row[5]?.toString(),
-                'system': row[6]?.toString(),
+                'background_image_url': backgroundImageUrlValue,
+                'system': row[7]?.toString(),
               });
             }
             request.response.headers.contentType = ContentType.json;
@@ -1270,7 +1379,7 @@ Future<void> main(List<String> arguments) async {
               : pathParts[2];
 
           var results = await _connectionPool.query(
-            'SELECT c.id, c.name, c.description, c.game_rules_id, c.image_url, c.created_at, gr.system FROM campaigns c LEFT JOIN game_rules gr ON c.game_rules_id = gr.id WHERE c.id = ?',
+            'SELECT c.id, c.name, c.description, c.game_rules_id, c.image_url, c.created_at, c.background_image_url, gr.system FROM campaigns c LEFT JOIN game_rules gr ON c.game_rules_id = gr.id WHERE c.id = ?',
             [campaignId],
           );
           if (results.isEmpty) {
@@ -1294,6 +1403,17 @@ Future<void> main(List<String> arguments) async {
           } else if (imageUrlValue != null) {
             imageUrlValue = imageUrlValue.toString();
           }
+          
+          var backgroundImageUrlValue = row[6];
+          if (backgroundImageUrlValue is Blob) {
+            backgroundImageUrlValue = utf8.decode(backgroundImageUrlValue.toBytes());
+          } else if (backgroundImageUrlValue is List<int>) {
+            backgroundImageUrlValue = utf8.decode(backgroundImageUrlValue);
+          } else if (backgroundImageUrlValue is String) {
+            // already a string, do nothing
+          } else if (backgroundImageUrlValue != null) {
+            backgroundImageUrlValue = backgroundImageUrlValue.toString();
+          }
 
           Map<String, dynamic> campaign = {
             'id': row[0],
@@ -1302,7 +1422,8 @@ Future<void> main(List<String> arguments) async {
             'game_rules_id': row[3],
             'image_url': imageUrlValue,
             'created_at': row[5]?.toString(),
-            'system': row[6]?.toString(),
+            'background_image_url': backgroundImageUrlValue,
+            'system': row[7]?.toString(),
           };
 
           request.response.headers.contentType = ContentType.json;
@@ -1869,231 +1990,302 @@ Future<void> main(List<String> arguments) async {
         // Map Tokens API
         else if (request.uri.path == '/api/map-tokens' &&
             request.method == 'GET') {
-          final mapId = request.uri.queryParameters['map_id'];
-          if (mapId == null) {
-            request.response.statusCode = 400;
-            request.response.headers.contentType = ContentType.json;
-            request.response.write(
-              jsonEncode({'success': false, 'error': 'Missing map_id'}),
-            );
-            await request.response.close();
-            return;
-          }
+          String? mapId;
+          try {
+            print('GET /api/map-tokens - Request received');
+            mapId = request.uri.queryParameters['map_id'];
+            if (mapId == null) {
+              print('GET /api/map-tokens - ERROR: Missing map_id parameter');
+              request.response.statusCode = 400;
+              request.response.headers.contentType = ContentType.json;
+              request.response.write(
+                jsonEncode({'success': false, 'error': 'Missing map_id'}),
+              );
+              await request.response.close();
+              return;
+            }
 
-          var results = await _connectionPool.query(
-            'SELECT id, map_id, asset_id, name, grid_x, grid_y, grid_z, scale_x, scale_y, rotation, visible, locked, properties, created_at, updated_at FROM map_tokens WHERE map_id = ?',
-            [mapId],
-          );
-          List<Map<String, dynamic>> tokens = [];
-          for (var row in results) {
-            var propertiesValue = row[12];
-            if (propertiesValue is String && propertiesValue.isNotEmpty) {
-              try {
-                propertiesValue = jsonDecode(propertiesValue);
-              } catch (e) {
+            print('GET /api/map-tokens - Querying for map_id: $mapId');
+            print('GET /api/map-tokens - About to execute database query...');
+            var results = await _connectionPool.query(
+              'SELECT id, map_id, asset_id, name, grid_x, grid_y, grid_z, scale_x, scale_y, rotation, visible, locked, properties, created_at, updated_at FROM map_tokens WHERE map_id = ?',
+              [mapId],
+            );
+            print('GET /api/map-tokens - Database query completed successfully');
+            print('GET /api/map-tokens - Raw results count: ${results.length}');
+            List<Map<String, dynamic>> tokens = [];
+            for (var row in results) {
+              var propertiesValue = row[12];
+              if (propertiesValue is String && propertiesValue.isNotEmpty) {
+                try {
+                  propertiesValue = jsonDecode(propertiesValue);
+                } catch (e) {
+                  propertiesValue = {};
+                }
+              } else {
                 propertiesValue = {};
               }
-            } else {
-              propertiesValue = {};
+              tokens.add({
+                'id': row[0]?.toString() ?? '',
+                'map_id': row[1]?.toString() ?? '',
+                'asset_id': row[2]?.toString() ?? '',
+                'name': row[3]?.toString() ?? '',
+                'grid_x': int.tryParse(row[4]?.toString() ?? '0') ?? 0,
+                'grid_y': int.tryParse(row[5]?.toString() ?? '0') ?? 0,
+                'grid_z': int.tryParse(row[6]?.toString() ?? '0') ?? 0,
+                'scale_x': row[7]?.toString() ?? '1.0',
+                'scale_y': row[8]?.toString() ?? '1.0',
+                'rotation': row[9]?.toString() ?? '0.0',
+                'visible': row[10] == 1,
+                'locked': row[11] == 1,
+                'properties': propertiesValue,
+                'created_at': row[13]?.toString() ?? '',
+                'updated_at': row[14]?.toString() ?? '',
+              });
             }
-            tokens.add({
-              'id': row[0]?.toString() ?? '',
-              'map_id': row[1]?.toString() ?? '',
-              'asset_id': row[2]?.toString() ?? '',
-              'name': row[3]?.toString() ?? '',
-              'grid_x': int.tryParse(row[4]?.toString() ?? '0') ?? 0,
-              'grid_y': int.tryParse(row[5]?.toString() ?? '0') ?? 0,
-              'grid_z': int.tryParse(row[6]?.toString() ?? '0') ?? 0,
-              'scale_x': row[7]?.toString() ?? '1.0',
-              'scale_y': row[8]?.toString() ?? '1.0',
-              'rotation': row[9]?.toString() ?? '0.0',
-              'visible': row[10] == 1,
-              'locked': row[11] == 1,
-              'properties': propertiesValue,
-              'created_at': row[13]?.toString() ?? '',
-              'updated_at': row[14]?.toString() ?? '',
-            });
+            print('GET /api/map-tokens - Found ${tokens.length} tokens');
+            request.response.headers.contentType = ContentType.json;
+            request.response.write(
+              jsonEncode({'success': true, 'tokens': tokens}),
+            );
+            await request.response.close();
+          } catch (e, stack) {
+            print('ERROR in GET /api/map-tokens for map_id=${mapId ?? 'unknown'}: $e');
+            print('ERROR Stack trace: $stack');
+            print('ERROR Type: ${e.runtimeType}');
+            // Return empty but valid response when database is unavailable
+            request.response.headers.contentType = ContentType.json;
+            request.response.write(
+              jsonEncode({'success': true, 'tokens': []}),
+            );
+            await request.response.close();
           }
-          request.response.headers.contentType = ContentType.json;
-          request.response.write(
-            jsonEncode({'success': true, 'tokens': tokens}),
-          );
-          await request.response.close();
         } else if (request.uri.path == '/api/map-tokens' &&
             request.method == 'POST') {
-          final body = await utf8.decoder.bind(request).join();
-          final params = jsonDecode(body);
-          final mapId = params['map_id'];
-          final assetId = params['asset_id'];
-          final gridX = params['grid_x'];
-          final gridY = params['grid_y'];
+          try {
+            final body = await utf8.decoder.bind(request).join();
+            final params = jsonDecode(body);
+            final mapId = params['map_id'];
+            final assetId = params['asset_id'];
+            final gridX = params['grid_x'];
+            final gridY = params['grid_y'];
 
-          if (mapId == null ||
-              assetId == null ||
-              gridX == null ||
-              gridY == null) {
-            request.response.statusCode = 400;
+            print('POST /api/map-tokens - Received params: $params');
+
+            if (mapId == null ||
+                assetId == null ||
+                gridX == null ||
+                gridY == null) {
+              request.response.statusCode = 400;
+              request.response.headers.contentType = ContentType.json;
+              request.response.write(
+                jsonEncode({
+                  'success': false,
+                  'error': 'Missing required fields',
+                }),
+              );
+              await request.response.close();
+              return;
+            }
+
+            var result = await _connectionPool.query(
+              'INSERT INTO map_tokens (map_id, asset_id, name, grid_x, grid_y, grid_z, scale_x, scale_y, rotation, visible, locked, properties) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+              [
+                mapId,
+                assetId,
+                params['name'] ?? '',
+                gridX,
+                gridY,
+                params['grid_z'] ?? 0,
+                params['scale_x'] ?? 1.0,
+                params['scale_y'] ?? 1.0,
+                params['rotation'] ?? 0.0,
+                params['visible'] ?? true,
+                params['locked'] ?? false,
+                jsonEncode(params['properties'] ?? {}),
+              ],
+            );
+
             request.response.headers.contentType = ContentType.json;
             request.response.write(
-              jsonEncode({
-                'success': false,
-                'error': 'Missing required fields',
-              }),
+              jsonEncode({'success': true, 'token_id': result.insertId}),
             );
             await request.response.close();
-            return;
+          } catch (e, stack) {
+            print('Error in POST /api/map-tokens: $e');
+            print('Stack trace: $stack');
+            request.response.statusCode = HttpStatus.internalServerError;
+            request.response.headers.contentType = ContentType.json;
+            request.response.write(
+              jsonEncode({'success': false, 'error': e.toString()}),
+            );
+            await request.response.close();
           }
-
-          var result = await _connectionPool.query(
-            'INSERT INTO map_tokens (map_id, asset_id, name, grid_x, grid_y, grid_z, scale_x, scale_y, rotation, visible, locked, properties) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-            [
-              mapId,
-              assetId,
-              params['name'] ?? '',
-              gridX,
-              gridY,
-              params['grid_z'] ?? 0,
-              params['scale_x'] ?? 1.0,
-              params['scale_y'] ?? 1.0,
-              params['rotation'] ?? 0.0,
-              params['visible'] ?? true,
-              params['locked'] ?? false,
-              jsonEncode(params['properties'] ?? {}),
-            ],
-          );
-
-          request.response.headers.contentType = ContentType.json;
-          request.response.write(
-            jsonEncode({'success': true, 'token_id': result.insertId}),
-          );
-          await request.response.close();
         } else if (request.uri.path.startsWith('/api/map-tokens/') &&
             request.method == 'PUT') {
-          // Update map token
-          final pathParts = request.uri.path.split('/');
-          final tokenId = pathParts[3];
-          final body = await utf8.decoder.bind(request).join();
-          final params = jsonDecode(body);
+          try {
+            // Update map token
+            print('PUT /api/map-tokens - Request received');
+            final pathParts = request.uri.path.split('/');
+            final tokenId = pathParts[3];
+            print('PUT /api/map-tokens - Token ID: $tokenId');
+            final body = await utf8.decoder.bind(request).join();
+            print('PUT /api/map-tokens - Request body: $body');
+            final params = jsonDecode(body);
+            print('PUT /api/map-tokens - Parsed params: $params');
 
-          List<String> updateFields = [];
-          List<dynamic> updateValues = [];
+            List<String> updateFields = [];
+            List<dynamic> updateValues = [];
 
-          if (params['name'] != null) {
-            updateFields.add('name = ?');
-            updateValues.add(params['name']);
-          }
-          if (params['grid_x'] != null) {
-            updateFields.add('grid_x = ?');
-            updateValues.add(params['grid_x']);
-          }
-          if (params['grid_y'] != null) {
-            updateFields.add('grid_y = ?');
-            updateValues.add(params['grid_y']);
-          }
-          if (params['grid_z'] != null) {
-            updateFields.add('grid_z = ?');
-            updateValues.add(params['grid_z']);
-          }
-          if (params['scale_x'] != null) {
-            updateFields.add('scale_x = ?');
-            updateValues.add(params['scale_x']);
-          }
-          if (params['scale_y'] != null) {
-            updateFields.add('scale_y = ?');
-            updateValues.add(params['scale_y']);
-          }
-          if (params['rotation'] != null) {
-            updateFields.add('rotation = ?');
-            updateValues.add(params['rotation']);
-          }
-          if (params['visible'] != null) {
-            updateFields.add('visible = ?');
-            updateValues.add(params['visible']);
-          }
-          if (params['locked'] != null) {
-            updateFields.add('locked = ?');
-            updateValues.add(params['locked']);
-          }
-          if (params['properties'] != null) {
-            updateFields.add('properties = ?');
-            updateValues.add(jsonEncode(params['properties']));
-          }
+            if (params['name'] != null) {
+              updateFields.add('name = ?');
+              updateValues.add(params['name']);
+            }
+            if (params['grid_x'] != null) {
+              updateFields.add('grid_x = ?');
+              updateValues.add(params['grid_x']);
+            }
+            if (params['grid_y'] != null) {
+              updateFields.add('grid_y = ?');
+              updateValues.add(params['grid_y']);
+            }
+            if (params['grid_z'] != null) {
+              updateFields.add('grid_z = ?');
+              updateValues.add(params['grid_z']);
+            }
+            if (params['scale_x'] != null) {
+              updateFields.add('scale_x = ?');
+              updateValues.add(params['scale_x']);
+            }
+            if (params['scale_y'] != null) {
+              updateFields.add('scale_y = ?');
+              updateValues.add(params['scale_y']);
+            }
+            if (params['rotation'] != null) {
+              updateFields.add('rotation = ?');
+              updateValues.add(params['rotation']);
+            }
+            if (params['visible'] != null) {
+              updateFields.add('visible = ?');
+              updateValues.add(params['visible']);
+            }
+            if (params['locked'] != null) {
+              updateFields.add('locked = ?');
+              updateValues.add(params['locked']);
+            }
+            if (params['properties'] != null) {
+              updateFields.add('properties = ?');
+              updateValues.add(jsonEncode(params['properties']));
+            }
 
-          if (updateFields.isEmpty) {
-            request.response.statusCode = 400;
+            if (updateFields.isEmpty) {
+              request.response.statusCode = 400;
+              request.response.headers.contentType = ContentType.json;
+              request.response.write(
+                jsonEncode({'success': false, 'error': 'No fields to update'}),
+              );
+              await request.response.close();
+              return;
+            }
+
+            updateFields.add('updated_at = CURRENT_TIMESTAMP');
+            updateValues.add(tokenId);
+            final query = 'UPDATE map_tokens SET ${updateFields.join(', ')} WHERE id = ?';
+            print('PUT /api/map-tokens - SQL Query: $query');
+            print('PUT /api/map-tokens - Query Values: $updateValues');
+            await _connectionPool.query(query, updateValues);
+            print('PUT /api/map-tokens - Query executed successfully');
+
+            request.response.headers.contentType = ContentType.json;
+            request.response.write(jsonEncode({'success': true}));
+            await request.response.close();
+          } catch (e, stack) {
+            final pathParts = request.uri.path.split('/');
+            final tokenId = pathParts.length > 3 ? pathParts[3] : 'unknown';
+            print('Error in PUT /api/map-tokens/$tokenId: $e');
+            print('Stack trace: $stack');
+            request.response.statusCode = HttpStatus.internalServerError;
             request.response.headers.contentType = ContentType.json;
             request.response.write(
-              jsonEncode({'success': false, 'error': 'No fields to update'}),
+              jsonEncode({'success': false, 'error': e.toString()}),
             );
             await request.response.close();
-            return;
           }
-
-          updateFields.add('updated_at = NOW()');
-          updateValues.add(tokenId);
-          await _connectionPool.query(
-            'UPDATE map_tokens SET ${updateFields.join(', ')} WHERE id = ?',
-            updateValues,
-          );
-
-          request.response.headers.contentType = ContentType.json;
-          request.response.write(jsonEncode({'success': true}));
-          await request.response.close();
         }
         // Map Backgrounds API
         else if (request.uri.path == '/api/map-backgrounds' &&
             request.method == 'GET') {
-          final mapId = request.uri.queryParameters['map_id'];
-          if (mapId == null) {
-            request.response.statusCode = 400;
-            request.response.headers.contentType = ContentType.json;
-            request.response.write(
-              jsonEncode({'success': false, 'error': 'Missing map_id'}),
-            );
-            await request.response.close();
-            return;
-          }
+          String? mapId;
+          try {
+            print('GET /api/map-backgrounds - Request received');
+            mapId = request.uri.queryParameters['map_id'];
+            if (mapId == null) {
+              print('GET /api/map-backgrounds - ERROR: Missing map_id parameter');
+              request.response.statusCode = 400;
+              request.response.headers.contentType = ContentType.json;
+              request.response.write(
+                jsonEncode({'success': false, 'error': 'Missing map_id'}),
+              );
+              await request.response.close();
+              return;
+            }
 
-          var results = await _connectionPool.query(
-            'SELECT id, map_id, asset_id, grid_x, grid_y, grid_z, grid_width, grid_height, scale_x, scale_y, rotation, visible, locked, properties, created_at, updated_at FROM map_backgrounds WHERE map_id = ?',
-            [mapId],
-          );
-          List<Map<String, dynamic>> backgrounds = [];
-          for (var row in results) {
-            var propertiesValue = row[12];
-            if (propertiesValue is String && propertiesValue.isNotEmpty) {
-              try {
-                propertiesValue = jsonDecode(propertiesValue);
-              } catch (e) {
+            print('GET /api/map-backgrounds - Querying for map_id: $mapId');
+            print('GET /api/map-backgrounds - About to execute database query...');
+            var results = await _connectionPool.query(
+              'SELECT id, map_id, asset_id, grid_x, grid_y, grid_z, grid_width, grid_height, scale_x, scale_y, rotation, visible, locked, properties, created_at, updated_at FROM map_backgrounds WHERE map_id = ?',
+              [mapId],
+            );
+            print('GET /api/map-backgrounds - Database query completed successfully');
+            print('GET /api/map-backgrounds - Raw results count: ${results.length}');
+            List<Map<String, dynamic>> backgrounds = [];
+            for (var row in results) {
+              var propertiesValue = row[13];
+              if (propertiesValue is String && propertiesValue.isNotEmpty) {
+                try {
+                  propertiesValue = jsonDecode(propertiesValue);
+                } catch (e) {
+                  propertiesValue = {};
+                }
+              } else {
                 propertiesValue = {};
               }
-            } else {
-              propertiesValue = {};
+              backgrounds.add({
+                'id': row[0]?.toString() ?? '',
+                'map_id': row[1]?.toString() ?? '',
+                'asset_id': row[2]?.toString() ?? '',
+                'grid_x': int.tryParse(row[3]?.toString() ?? '0') ?? 0,
+                'grid_y': int.tryParse(row[4]?.toString() ?? '0') ?? 0,
+                'grid_z': int.tryParse(row[5]?.toString() ?? '0') ?? 0,
+                'grid_width': int.tryParse(row[6]?.toString() ?? '1') ?? 1,
+                'grid_height': int.tryParse(row[7]?.toString() ?? '1') ?? 1,
+                'scale_x': row[8]?.toString() ?? '1.0',
+                'scale_y': row[9]?.toString() ?? '1.0',
+                'rotation': row[10]?.toString() ?? '0.0',
+                'visible': row[11] == 1,
+                'locked': row[12] == 1,
+                'properties': propertiesValue,
+                'created_at': row[14]?.toString() ?? '',
+                'updated_at': row[15]?.toString() ?? '',
+              });
             }
-            backgrounds.add({
-              'id': row[0]?.toString() ?? '',
-              'map_id': row[1]?.toString() ?? '',
-              'asset_id': row[2]?.toString() ?? '',
-              'grid_x': int.tryParse(row[3]?.toString() ?? '0') ?? 0,
-              'grid_y': int.tryParse(row[4]?.toString() ?? '0') ?? 0,
-              'grid_z': int.tryParse(row[5]?.toString() ?? '0') ?? 0,
-              'grid_width': int.tryParse(row[6]?.toString() ?? '1') ?? 1,
-              'grid_height': int.tryParse(row[7]?.toString() ?? '1') ?? 1,
-              'scale_x': row[8]?.toString() ?? '1.0',
-              'scale_y': row[9]?.toString() ?? '1.0',
-              'rotation': row[10]?.toString() ?? '0.0',
-              'visible': row[11] == 1,
-              'locked': row[12] == 1,
-              'properties': propertiesValue,
-              'created_at': row[14]?.toString() ?? '',
-              'updated_at': row[15]?.toString() ?? '',
-            });
+            print('GET /api/map-backgrounds - Found ${backgrounds.length} backgrounds');
+            request.response.headers.contentType = ContentType.json;
+            request.response.write(
+              jsonEncode({'success': true, 'backgrounds': backgrounds}),
+            );
+            await request.response.close();
+          } catch (e, stack) {
+            print('ERROR in GET /api/map-backgrounds for map_id=${mapId ?? 'unknown'}: $e');
+            print('ERROR Stack trace: $stack');
+            print('ERROR Type: ${e.runtimeType}');
+            // Return empty but valid response when database is unavailable
+            request.response.headers.contentType = ContentType.json;
+            request.response.write(
+              jsonEncode({'success': true, 'backgrounds': []}),
+            );
+            await request.response.close();
           }
-          request.response.headers.contentType = ContentType.json;
-          request.response.write(
-            jsonEncode({'success': true, 'backgrounds': backgrounds}),
-          );
-          await request.response.close();
         } else if (request.uri.path == '/api/map-backgrounds' &&
             request.method == 'POST') {
           final body = await utf8.decoder.bind(request).join();
@@ -2147,56 +2339,77 @@ Future<void> main(List<String> arguments) async {
         // Map Audio API
         else if (request.uri.path == '/api/map-audio' &&
             request.method == 'GET') {
-          final mapId = request.uri.queryParameters['map_id'];
-          if (mapId == null) {
-            request.response.statusCode = 400;
-            request.response.headers.contentType = ContentType.json;
-            request.response.write(
-              jsonEncode({'success': false, 'error': 'Missing map_id'}),
-            );
-            await request.response.close();
-            return;
-          }
+          String? mapId;
+          try {
+            print('GET /api/map-audio - Request received');
+            mapId = request.uri.queryParameters['map_id'];
+            if (mapId == null) {
+              print('GET /api/map-audio - ERROR: Missing map_id parameter');
+              request.response.statusCode = 400;
+              request.response.headers.contentType = ContentType.json;
+              request.response.write(
+                jsonEncode({'success': false, 'error': 'Missing map_id'}),
+              );
+              await request.response.close();
+              return;
+            }
 
-          var results = await _connectionPool.query(
-            'SELECT id, map_id, asset_id, grid_x, grid_y, grid_z, volume, loop_audio, auto_play, radius_grid, visible, locked, properties, created_at, updated_at FROM map_audio WHERE map_id = ?',
-            [mapId],
-          );
-          List<Map<String, dynamic>> audioItems = [];
-          for (var row in results) {
-            var propertiesValue = row[12];
-            if (propertiesValue is String && propertiesValue.isNotEmpty) {
-              try {
-                propertiesValue = jsonDecode(propertiesValue);
-              } catch (e) {
+            print('GET /api/map-audio - Querying for map_id: $mapId');
+            print('GET /api/map-audio - About to execute database query...');
+            var results = await _connectionPool.query(
+              'SELECT id, map_id, asset_id, name, grid_x, grid_y, volume, loop_audio, auto_play, radius_grid, grid_z, visible, locked, properties, created_at, updated_at FROM map_audio WHERE map_id = ?',
+              [mapId],
+            );
+            print('GET /api/map-audio - Database query completed successfully');
+            print('GET /api/map-audio - Raw results count: ${results.length}');
+            List<Map<String, dynamic>> audioItems = [];
+            for (var row in results) {
+              var propertiesValue = row[13];
+              if (propertiesValue is String && propertiesValue.isNotEmpty) {
+                try {
+                  propertiesValue = jsonDecode(propertiesValue);
+                } catch (e) {
+                  propertiesValue = {};
+                }
+              } else {
                 propertiesValue = {};
               }
-            } else {
-              propertiesValue = {};
+              audioItems.add({
+                'id': row[0]?.toString() ?? '',
+                'map_id': row[1]?.toString() ?? '',
+                'asset_id': row[2]?.toString() ?? '',
+                'name': row[3]?.toString() ?? '',
+                'grid_x': int.tryParse(row[4]?.toString() ?? '0') ?? 0,
+                'grid_y': int.tryParse(row[5]?.toString() ?? '0') ?? 0,
+                'volume': row[6]?.toString() ?? '1.0',
+                'loop_audio': row[7] == 1,
+                'auto_play': row[8] == 1,
+                'radius_grid': int.tryParse(row[9]?.toString() ?? '0') ?? 0,
+                'grid_z': int.tryParse(row[10]?.toString() ?? '0') ?? 0,
+                'visible': row[11] == 1,
+                'locked': row[12] == 1,
+                'properties': propertiesValue,
+                'created_at': row[14]?.toString() ?? '',
+                'updated_at': row[15]?.toString() ?? '',
+              });
             }
-            audioItems.add({
-              'id': row[0]?.toString() ?? '',
-              'map_id': row[1]?.toString() ?? '',
-              'asset_id': row[2]?.toString() ?? '',
-              'grid_x': int.tryParse(row[3]?.toString() ?? '0') ?? 0,
-              'grid_y': int.tryParse(row[4]?.toString() ?? '0') ?? 0,
-              'grid_z': int.tryParse(row[5]?.toString() ?? '0') ?? 0,
-              'volume': row[6]?.toString() ?? '1.0',
-              'loop_audio': row[7] == 1,
-              'auto_play': row[8] == 1,
-              'radius_grid': int.tryParse(row[9]?.toString() ?? '0') ?? 0,
-              'visible': row[10] == 1,
-              'locked': row[11] == 1,
-              'properties': propertiesValue,
-              'created_at': row[13]?.toString() ?? '',
-              'updated_at': row[14]?.toString() ?? '',
-            });
+            print('GET /api/map-audio - Found ${audioItems.length} audio items');
+            request.response.headers.contentType = ContentType.json;
+            request.response.write(
+              jsonEncode({'success': true, 'audio': audioItems}),
+            );
+            await request.response.close();
+          } catch (e, stack) {
+            print('ERROR in GET /api/map-audio for map_id=${mapId ?? 'unknown'}: $e');
+            print('ERROR Stack trace: $stack');
+            print('ERROR Type: ${e.runtimeType}');
+            // Return empty but valid response when database is unavailable
+            request.response.headers.contentType = ContentType.json;
+            request.response.write(
+              jsonEncode({'success': true, 'audio': []}),
+            );
+            await request.response.close();
           }
-          request.response.headers.contentType = ContentType.json;
-          request.response.write(
-            jsonEncode({'success': true, 'audio': audioItems}),
-          );
-          await request.response.close();
         } else if (request.uri.path == '/api/map-audio' &&
             request.method == 'POST') {
           final body = await utf8.decoder.bind(request).join();
@@ -2249,55 +2462,75 @@ Future<void> main(List<String> arguments) async {
         // Map Props API
         else if (request.uri.path == '/api/map-props' &&
             request.method == 'GET') {
-          final mapId = request.uri.queryParameters['map_id'];
-          if (mapId == null) {
-            request.response.statusCode = 400;
-            request.response.headers.contentType = ContentType.json;
-            request.response.write(
-              jsonEncode({'success': false, 'error': 'Missing map_id'}),
-            );
-            await request.response.close();
-            return;
-          }
+          String? mapId;
+          try {
+            print('GET /api/map-props - Request received');
+            mapId = request.uri.queryParameters['map_id'];
+            if (mapId == null) {
+              print('GET /api/map-props - ERROR: Missing map_id parameter');
+              request.response.statusCode = 400;
+              request.response.headers.contentType = ContentType.json;
+              request.response.write(
+                jsonEncode({'success': false, 'error': 'Missing map_id'}),
+              );
+              await request.response.close();
+              return;
+            }
 
-          var results = await _connectionPool.query(
-            'SELECT id, map_id, asset_id, grid_x, grid_y, grid_z, grid_width, grid_height, scale_x, scale_y, rotation, visible, locked, properties, created_at, updated_at FROM map_props WHERE map_id = ?',
-            [mapId],
-          );
-          List<Map<String, dynamic>> props = [];
-          for (var row in results) {
-            var propertiesValue = row[11];
-            if (propertiesValue is String && propertiesValue.isNotEmpty) {
-              try {
-                propertiesValue = jsonDecode(propertiesValue);
-              } catch (e) {
+            print('GET /api/map-props - Querying for map_id: $mapId');
+            print('GET /api/map-props - About to execute database query...');
+            var results = await _connectionPool.query(
+              'SELECT id, map_id, asset_id, grid_x, grid_y, grid_z, grid_width, grid_height, scale_x, scale_y, rotation, visible, locked, properties, created_at, updated_at FROM map_props WHERE map_id = ?',
+              [mapId],
+            );
+            print('GET /api/map-props - Database query completed successfully');
+            print('GET /api/map-props - Raw results count: ${results.length}');
+            List<Map<String, dynamic>> props = [];
+            for (var row in results) {
+              var propertiesValue = row[13];
+              if (propertiesValue is String && propertiesValue.isNotEmpty) {
+                try {
+                  propertiesValue = jsonDecode(propertiesValue);
+                } catch (e) {
+                  propertiesValue = {};
+                }
+              } else {
                 propertiesValue = {};
               }
-            } else {
-              propertiesValue = {};
+              props.add({
+                'id': row[0]?.toString() ?? '',
+                'map_id': row[1]?.toString() ?? '',
+                'asset_id': row[2]?.toString() ?? '',
+                'grid_x': int.tryParse(row[3]?.toString() ?? '0') ?? 0,
+                'grid_y': int.tryParse(row[4]?.toString() ?? '0') ?? 0,
+                'grid_z': int.tryParse(row[5]?.toString() ?? '0') ?? 0,
+                'grid_width': int.tryParse(row[6]?.toString() ?? '1') ?? 1,
+                'grid_height': int.tryParse(row[7]?.toString() ?? '1') ?? 1,
+                'scale_x': row[8]?.toString() ?? '1.0',
+                'scale_y': row[9]?.toString() ?? '1.0',
+                'rotation': row[10]?.toString() ?? '0.0',
+                'visible': row[11] == 1,
+                'locked': row[12] == 1,
+                'properties': propertiesValue,
+                'created_at': row[14]?.toString() ?? '',
+                'updated_at': row[15]?.toString() ?? '',
+              });
             }
-            props.add({
-              'id': row[0]?.toString() ?? '',
-              'map_id': row[1]?.toString() ?? '',
-              'asset_id': row[2]?.toString() ?? '',
-              'grid_x': int.tryParse(row[3]?.toString() ?? '0') ?? 0,
-              'grid_y': int.tryParse(row[4]?.toString() ?? '0') ?? 0,
-              'grid_z': int.tryParse(row[5]?.toString() ?? '0') ?? 0,
-              'grid_width': int.tryParse(row[6]?.toString() ?? '1') ?? 1,
-              'grid_height': int.tryParse(row[7]?.toString() ?? '1') ?? 1,
-              'scale_x': row[8]?.toString() ?? '1.0',
-              'scale_y': row[9]?.toString() ?? '1.0',
-              'rotation': row[10]?.toString() ?? '0.0',
-              'visible': row[11] == 1,
-              'locked': row[12] == 1,
-              'properties': propertiesValue,
-              'created_at': row[14]?.toString() ?? '',
-              'updated_at': row[15]?.toString() ?? '',
-            });
+            print('GET /api/map-props - Found ${props.length} props');
+            request.response.headers.contentType = ContentType.json;
+            request.response.write(jsonEncode({'success': true, 'props': props}));
+            await request.response.close();
+          } catch (e, stack) {
+            print('ERROR in GET /api/map-props for map_id=${mapId ?? 'unknown'}: $e');
+            print('ERROR Stack trace: $stack');
+            print('ERROR Type: ${e.runtimeType}');
+            // Return empty but valid response when database is unavailable
+            request.response.headers.contentType = ContentType.json;
+            request.response.write(
+              jsonEncode({'success': true, 'props': []}),
+            );
+            await request.response.close();
           }
-          request.response.headers.contentType = ContentType.json;
-          request.response.write(jsonEncode({'success': true, 'props': props}));
-          await request.response.close();
         } else if (request.uri.path == '/api/map-props' &&
             request.method == 'POST') {
           final body = await utf8.decoder.bind(request).join();
@@ -2353,6 +2586,7 @@ Future<void> main(List<String> arguments) async {
                 request.uri.path == '/api/upload') &&
             request.method == 'POST') {
           try {
+            print('POST /api/upload - Upload request received');
             // Parse multipart form data
             final contentType = request.headers.contentType;
             if (contentType?.mimeType != 'multipart/form-data') {
@@ -2464,10 +2698,13 @@ Future<void> main(List<String> arguments) async {
               }
             }
 
+            print('POST /api/upload - Parsed fields: userId=$userId, campaignId=$campaignId, filename=$filename, fileBytes=${fileBytes?.length}');
+
             if (userId == null ||
                 campaignId == null ||
                 filename == null ||
                 fileBytes == null) {
+              print('POST /api/upload - Missing required fields');
               request.response.statusCode = HttpStatus.badRequest;
               request.response.headers.contentType = ContentType.json;
               request.response.write(
@@ -2555,6 +2792,8 @@ Future<void> main(List<String> arguments) async {
             }
             final fileUrl = urlPath;
 
+            print('POST /api/upload - File uploaded successfully: $fileUrl');
+            
             request.response.headers.contentType = ContentType.json;
             request.response.write(
               jsonEncode({
@@ -2565,8 +2804,9 @@ Future<void> main(List<String> arguments) async {
               }),
             );
             await request.response.close();
-          } catch (e) {
-            print('Upload error: $e');
+          } catch (e, stack) {
+            print('POST /api/upload - Upload error: $e');
+            print('POST /api/upload - Stack trace: $stack');
             request.response.statusCode = HttpStatus.internalServerError;
             request.response.headers.contentType = ContentType.json;
             request.response.write(

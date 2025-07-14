@@ -1,1 +1,49 @@
-{}
+{
+  "abilities": [
+    {
+      "name": "Strength",
+      "abbreviation": "Str",
+      "description": "Measures your character's physical power and determines how much your character can carry.",
+      "key_skills": ["Athletics"],
+      "saving_throw": false
+    },
+    {
+      "name": "Dexterity",
+      "abbreviation": "Dex",
+      "description": "Measures agility, reflexes, and balance. It affects Armor Class, Reflex saves, and ranged attacks.",
+      "key_skills": ["Acrobatics", "Stealth", "Thievery"],
+      "saving_throw": true,
+      "save_type": "Reflex"
+    },
+    {
+      "name": "Constitution",
+      "abbreviation": "Con",
+      "description": "Represents your character's health and stamina. It affects hit points and Fortitude saves.",
+      "key_skills": [],
+      "saving_throw": true,
+      "save_type": "Fortitude"
+    },
+    {
+      "name": "Intelligence",
+      "abbreviation": "Int",
+      "description": "Measures reasoning ability, memory, and analytical thinking. It determines additional languages and skills.",
+      "key_skills": ["Arcana", "Crafting", "Lore", "Occultism", "Society"],
+      "saving_throw": false
+    },
+    {
+      "name": "Wisdom",
+      "abbreviation": "Wis",
+      "description": "Reflects how attuned you are to the world around you and represents perceptiveness and intuition.",
+      "key_skills": ["Medicine", "Nature", "Perception", "Religion", "Survival"],
+      "saving_throw": true,
+      "save_type": "Will"
+    },
+    {
+      "name": "Charisma",
+      "abbreviation": "Cha",
+      "description": "Measures your character's personal magnetism, persuasiveness, and force of personality.",
+      "key_skills": ["Deception", "Diplomacy", "Intimidation", "Performance"],
+      "saving_throw": false
+    }
+  ]
+}

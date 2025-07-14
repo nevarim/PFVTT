@@ -1,0 +1,170 @@
+{
+  "adaptive_upgrade": {
+    "name": "Adaptive Upgrade",
+    "type": "General",
+    "prerequisites": ["Android"],
+    "description": "You have learned to use your body's unique construction to adapt to new situations. You can install one additional augmentation (cybernetic or biotech) into your body. This augmentation can't be of a type that you already have."
+  },
+  "barricade": {
+    "name": "Barricade",
+    "type": "Combat",
+    "prerequisites": ["Str 13"],
+    "description": "You can create cover from almost anything. As a move action, you can stack and reinforce objects that are too small or too fragile to provide cover on their own."
+  },
+  "bodyguard": {
+    "name": "Bodyguard",
+    "type": "Combat",
+    "prerequisites": ["Combat Reflexes"],
+    "description": "Your swift strikes ward off enemies attacking nearby allies. When an adjacent ally is attacked, you can use a reaction to grant that ally a +2 circumstance bonus to AC against that attack."
+  },
+  "cleave": {
+    "name": "Cleave",
+    "type": "Combat",
+    "prerequisites": ["Str 13", "Base attack bonus +1"],
+    "description": "You can strike two adjacent foes with a single swing. As a standard action, you can make a single melee attack against a foe within reach."
+  },
+  "combat_casting": {
+    "name": "Combat Casting",
+    "type": "General",
+    "prerequisites": ["Ability to cast spells"],
+    "description": "You are adept at casting spells in combat. You gain a +4 bonus to AC against attacks of opportunity provoked by casting a spell."
+  },
+  "combat_reflexes": {
+    "name": "Combat Reflexes",
+    "type": "Combat",
+    "prerequisites": [],
+    "description": "You can respond rapidly to threats. You can make a number of additional attacks of opportunity per round equal to your Dexterity bonus."
+  },
+  "connection_inkling": {
+    "name": "Connection Inkling",
+    "type": "General",
+    "prerequisites": ["Wis 15", "Character level 5th", "No levels in mystic"],
+    "description": "You have formed a tenuous connection to a cosmic power. Choose a mystic connection. You gain the 1st-level connection power for that connection."
+  },
+  "deadly_aim": {
+    "name": "Deadly Aim",
+    "type": "Combat",
+    "prerequisites": ["Base attack bonus +1"],
+    "description": "You can make exceptionally deadly ranged attacks by pinpointing a foe's vital spots, at the expense of making the attack less likely to succeed."
+  },
+  "enhanced_resistance": {
+    "name": "Enhanced Resistance",
+    "type": "General",
+    "prerequisites": ["Base Fortitude save bonus +4"],
+    "description": "Your body is adept at resisting ailments. Choose two of the following: bleed, blind, deafen, disease, poison, or sleep. You gain a +4 enhancement bonus to saving throws against effects that cause those conditions."
+  },
+  "extra_resolve": {
+    "name": "Extra Resolve",
+    "type": "General",
+    "prerequisites": ["Character level 5th"],
+    "description": "You have more resolve than others. You gain 2 additional Resolve Points."
+  },
+  "far_shot": {
+    "name": "Far Shot",
+    "type": "Combat",
+    "prerequisites": ["Base attack bonus +1"],
+    "description": "You remain accurate at longer ranges. You take only a –1 penalty per full range increment between you and your target when using a ranged weapon."
+  },
+  "great_fortitude": {
+    "name": "Great Fortitude",
+    "type": "General",
+    "prerequisites": [],
+    "description": "You are resistant to poisons, diseases, and other maladies. You gain a +2 bonus to Fortitude saving throws."
+  },
+  "improved_combat_maneuver": {
+    "name": "Improved Combat Maneuver",
+    "type": "Combat",
+    "prerequisites": [],
+    "description": "You are skilled at performing a specific combat maneuver. Choose one combat maneuver (bull rush, dirty fighting, disarm, grapple, reposition, sunder, or trip) when you gain this feat."
+  },
+  "improved_initiative": {
+    "name": "Improved Initiative",
+    "type": "General",
+    "prerequisites": [],
+    "description": "Your quick reflexes allow you to react rapidly to danger. You gain a +4 bonus to initiative checks."
+  },
+  "iron_will": {
+    "name": "Iron Will",
+    "type": "General",
+    "prerequisites": [],
+    "description": "You are more resistant to mental effects. You gain a +2 bonus to Will saving throws."
+  },
+  "jet_dash": {
+    "name": "Jet Dash",
+    "type": "General",
+    "prerequisites": ["Racial fly speed"],
+    "description": "You can fly in short bursts. Twice per day, you can fly up to your fly speed as a move action."
+  },
+  "lightning_reflexes": {
+    "name": "Lightning Reflexes",
+    "type": "General",
+    "prerequisites": [],
+    "description": "You have faster reflexes than normal. You gain a +2 bonus to Reflex saving throws."
+  },
+  "mobility": {
+    "name": "Mobility",
+    "type": "General",
+    "prerequisites": ["Dex 13"],
+    "description": "You can weave through foes' defenses when moving. You gain a +4 bonus to AC against attacks of opportunity that you provoke by leaving a threatened square."
+  },
+  "multi_weapon_fighting": {
+    "name": "Multi-Weapon Fighting",
+    "type": "Combat",
+    "prerequisites": [],
+    "description": "You know how to fight with several lighter weapons at once, as opposed to using a single heavier weapon."
+  },
+  "nimble_moves": {
+    "name": "Nimble Moves",
+    "type": "General",
+    "prerequisites": ["Dex 15"],
+    "description": "You can move across a single obstacle with ease. Whenever you move, you can move through up to 5 feet of difficult terrain each round as if it were normal terrain."
+  },
+  "penetrating_attack": {
+    "name": "Penetrating Attack",
+    "type": "Combat",
+    "prerequisites": ["Base attack bonus +12"],
+    "description": "Your attacks are particularly penetrating. Your attacks ignore 5 points of damage reduction, unless the damage reduction is without a type (such as DR 10/—)."
+  },
+  "skill_focus": {
+    "name": "Skill Focus",
+    "type": "General",
+    "prerequisites": [],
+    "description": "You are particularly adept at a certain skill. Choose a skill. You gain a +3 insight bonus to checks with that skill."
+  },
+  "spell_focus": {
+    "name": "Spell Focus",
+    "type": "General",
+    "prerequisites": ["Ability to cast spells"],
+    "description": "Choose a school of magic (such as illusion). Add +1 to the DC for all saving throws against spells from the school of magic you select."
+  },
+  "spell_penetration": {
+    "name": "Spell Penetration",
+    "type": "General",
+    "prerequisites": ["Ability to cast spells"],
+    "description": "Your spells are especially potent, breaking through spell resistance more readily than normal. You gain a +2 bonus to caster level checks to overcome spell resistance."
+  },
+  "step_up": {
+    "name": "Step Up",
+    "type": "Combat",
+    "prerequisites": ["Base attack bonus +1"],
+    "description": "You can close the distance when a foe tries to move away. Whenever an adjacent foe attempts to take a guarded step away from you, you can also take a guarded step as a reaction."
+  },
+  "toughness": {
+    "name": "Toughness",
+    "type": "General",
+    "prerequisites": [],
+    "description": "You have enhanced physical stamina. You gain 4 Stamina Points. In addition, the DC of Constitution checks to continue running is only 10 + your number of previous checks, instead of 10 + 2 × your number of previous checks."
+  },
+  "weapon_focus": {
+    "name": "Weapon Focus",
+    "type": "Combat",
+    "prerequisites": ["Proficiency with selected weapon type"],
+    "description": "Choose one weapon type (small arms, longarms, heavy weapons, etc.). You gain a +1 bonus to attack rolls with weapons of the selected type."
+  },
+  "weapon_specialization": {
+    "name": "Weapon Specialization",
+    "type": "Combat",
+    "prerequisites": ["Character level 3rd", "Proficiency with selected weapon type"],
+    "description": "Choose one weapon type (small arms, longarms, heavy weapons, etc.). You gain a bonus equal to half your character level to damage rolls with weapons of the selected type."
+  }
+}

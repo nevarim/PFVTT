@@ -1,0 +1,236 @@
+{
+  "name": "Rogue",
+  "hit_die": 8,
+  "primary_ability": "Dexterity",
+  "saving_throw_proficiencies": ["Reflex", "Will"],
+  "skill_points_per_level": 8,
+  "class_skills": [
+    "Acrobatics", "Athletics", "Crafting", "Deception", "Diplomacy", "Intimidation", "Lore", "Medicine", "Nature", "Occultism", "Performance", "Religion", "Society", "Stealth", "Survival", "Thievery"
+  ],
+  "armor_proficiencies": ["Unarmored", "Light armor"],
+  "weapon_proficiencies": ["Simple weapons", "Rapier", "Sap", "Shortbow", "Shortsword", "Unarmed attacks"],
+  "tool_proficiencies": ["Thieves' tools"],
+  "is_spellcaster": false,
+  "levels": {
+    "1": {
+      "level": 1,
+      "proficiency_bonus": 2,
+      "features": ["Ancestry and Background", "Initial Proficiencies", "Rogue's Racket", "Sneak Attack", "Surprise Attack", "Rogue Feat", "Skill Feat"],
+      "class_dc": "trained",
+      "perception": "expert",
+      "fortitude": "trained",
+      "reflex": "expert",
+      "will": "expert",
+      "sneak_attack": "1d6"
+    },
+    "2": {
+      "level": 2,
+      "proficiency_bonus": 2,
+      "features": ["Rogue Feat", "Skill Feat"],
+      "class_dc": "trained",
+      "perception": "expert",
+      "fortitude": "trained",
+      "reflex": "expert",
+      "will": "expert",
+      "sneak_attack": "1d6"
+    },
+    "3": {
+      "level": 3,
+      "proficiency_bonus": 2,
+      "features": ["Deny Advantage", "General Feat", "Skill Increase"],
+      "class_dc": "trained",
+      "perception": "expert",
+      "fortitude": "trained",
+      "reflex": "expert",
+      "will": "expert",
+      "sneak_attack": "2d6"
+    },
+    "4": {
+      "level": 4,
+      "proficiency_bonus": 2,
+      "features": ["Rogue Feat", "Skill Feat"],
+      "class_dc": "trained",
+      "perception": "expert",
+      "fortitude": "trained",
+      "reflex": "expert",
+      "will": "expert",
+      "sneak_attack": "2d6"
+    },
+    "5": {
+      "level": 5,
+      "proficiency_bonus": 3,
+      "features": ["Ancestry Feat", "Skill Increase", "Weapon Tricks"],
+      "class_dc": "expert",
+      "perception": "expert",
+      "fortitude": "trained",
+      "reflex": "expert",
+      "will": "expert",
+      "sneak_attack": "3d6"
+    },
+    "6": {
+      "level": 6,
+      "proficiency_bonus": 3,
+      "features": ["Rogue Feat", "Skill Feat"],
+      "class_dc": "expert",
+      "perception": "expert",
+      "fortitude": "trained",
+      "reflex": "expert",
+      "will": "expert",
+      "sneak_attack": "3d6"
+    },
+    "7": {
+      "level": 7,
+      "proficiency_bonus": 3,
+      "features": ["Evasion", "General Feat", "Skill Increase", "Vigilant Senses", "Weapon Specialization"],
+      "class_dc": "expert",
+      "perception": "master",
+      "fortitude": "trained",
+      "reflex": "master",
+      "will": "expert",
+      "sneak_attack": "4d6"
+    },
+    "8": {
+      "level": 8,
+      "proficiency_bonus": 3,
+      "features": ["Rogue Feat", "Skill Feat"],
+      "class_dc": "expert",
+      "perception": "master",
+      "fortitude": "trained",
+      "reflex": "master",
+      "will": "expert",
+      "sneak_attack": "4d6"
+    },
+    "9": {
+      "level": 9,
+      "proficiency_bonus": 4,
+      "features": ["Ancestry Feat", "Debilitating Strike", "Great Fortitude", "Skill Increase"],
+      "class_dc": "expert",
+      "perception": "master",
+      "fortitude": "expert",
+      "reflex": "master",
+      "will": "expert",
+      "sneak_attack": "5d6"
+    },
+    "10": {
+      "level": 10,
+      "proficiency_bonus": 4,
+      "features": ["Ability Boosts", "Rogue Feat", "Skill Feat"],
+      "class_dc": "expert",
+      "perception": "master",
+      "fortitude": "expert",
+      "reflex": "master",
+      "will": "expert",
+      "sneak_attack": "5d6"
+    },
+    "11": {
+      "level": 11,
+      "proficiency_bonus": 4,
+      "features": ["General Feat", "Rogue Expertise", "Skill Increase"],
+      "class_dc": "master",
+      "perception": "master",
+      "fortitude": "expert",
+      "reflex": "master",
+      "will": "expert",
+      "sneak_attack": "6d6"
+    },
+    "12": {
+      "level": 12,
+      "proficiency_bonus": 4,
+      "features": ["Rogue Feat", "Skill Feat"],
+      "class_dc": "master",
+      "perception": "master",
+      "fortitude": "expert",
+      "reflex": "master",
+      "will": "expert",
+      "sneak_attack": "6d6"
+    },
+    "13": {
+      "level": 13,
+      "proficiency_bonus": 5,
+      "features": ["Ancestry Feat", "Improved Evasion", "Incredible Senses", "Light Armor Expertise", "Master Tricks", "Skill Increase"],
+      "class_dc": "master",
+      "perception": "legendary",
+      "fortitude": "expert",
+      "reflex": "legendary",
+      "will": "expert",
+      "sneak_attack": "7d6"
+    },
+    "14": {
+      "level": 14,
+      "proficiency_bonus": 5,
+      "features": ["Rogue Feat", "Skill Feat"],
+      "class_dc": "master",
+      "perception": "legendary",
+      "fortitude": "expert",
+      "reflex": "legendary",
+      "will": "expert",
+      "sneak_attack": "7d6"
+    },
+    "15": {
+      "level": 15,
+      "proficiency_bonus": 5,
+      "features": ["Double Debilitation", "General Feat", "Greater Weapon Specialization", "Skill Increase"],
+      "class_dc": "master",
+      "perception": "legendary",
+      "fortitude": "expert",
+      "reflex": "legendary",
+      "will": "expert",
+      "sneak_attack": "8d6"
+    },
+    "16": {
+      "level": 16,
+      "proficiency_bonus": 5,
+      "features": ["Rogue Feat", "Skill Feat"],
+      "class_dc": "master",
+      "perception": "legendary",
+      "fortitude": "expert",
+      "reflex": "legendary",
+      "will": "expert",
+      "sneak_attack": "8d6"
+    },
+    "17": {
+      "level": 17,
+      "proficiency_bonus": 6,
+      "features": ["Ancestry Feat", "Slippery Mind", "Skill Increase"],
+      "class_dc": "master",
+      "perception": "legendary",
+      "fortitude": "expert",
+      "reflex": "legendary",
+      "will": "master",
+      "sneak_attack": "9d6"
+    },
+    "18": {
+      "level": 18,
+      "proficiency_bonus": 6,
+      "features": ["Rogue Feat", "Skill Feat"],
+      "class_dc": "master",
+      "perception": "legendary",
+      "fortitude": "expert",
+      "reflex": "legendary",
+      "will": "master",
+      "sneak_attack": "9d6"
+    },
+    "19": {
+      "level": 19,
+      "proficiency_bonus": 6,
+      "features": ["General Feat", "Light Armor Mastery", "Master Strike", "Skill Increase"],
+      "class_dc": "legendary",
+      "perception": "legendary",
+      "fortitude": "expert",
+      "reflex": "legendary",
+      "will": "master",
+      "sneak_attack": "10d6"
+    },
+    "20": {
+      "level": 20,
+      "proficiency_bonus": 6,
+      "features": ["Ability Boosts", "Rogue Feat", "Skill Feat"],
+      "class_dc": "legendary",
+      "perception": "legendary",
+      "fortitude": "expert",
+      "reflex": "legendary",
+      "will": "master",
+      "sneak_attack": "10d6"
+    }
+  }
+}

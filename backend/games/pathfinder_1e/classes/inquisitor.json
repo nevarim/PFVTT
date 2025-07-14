@@ -1,0 +1,229 @@
+{
+  "name": "Inquisitor",
+  "hit_die": "d8",
+  "skill_points": "6 + Int modifier",
+  "class_skills": [
+    "Bluff (Cha)",
+    "Climb (Str)",
+    "Craft (Int)",
+    "Diplomacy (Cha)",
+    "Disguise (Cha)",
+    "Heal (Wis)",
+    "Intimidate (Cha)",
+    "Knowledge (arcana) (Int)",
+    "Knowledge (dungeoneering) (Int)",
+    "Knowledge (nature) (Int)",
+    "Knowledge (planes) (Int)",
+    "Knowledge (religion) (Int)",
+    "Perception (Wis)",
+    "Profession (Wis)",
+    "Ride (Dex)",
+    "Sense Motive (Wis)",
+    "Spellcraft (Int)",
+    "Stealth (Dex)",
+    "Survival (Wis)",
+    "Swim (Str)"
+  ],
+  "weapon_proficiencies": [
+    "All simple weapons",
+    "Hand crossbow",
+    "Longbow",
+    "Repeating crossbow",
+    "Shortbow",
+    "Favored weapon of deity"
+  ],
+  "armor_proficiencies": [
+    "Light armor",
+    "Medium armor",
+    "Shields (except tower shields)"
+  ],
+  "spells_per_day": {
+    "1": {"0": 3, "1": 1},
+    "2": {"0": 4, "1": 2},
+    "3": {"0": 4, "1": 3},
+    "4": {"0": 4, "1": 3, "2": 1},
+    "5": {"0": 4, "1": 4, "2": 2},
+    "6": {"0": 5, "1": 4, "2": 3},
+    "7": {"0": 5, "1": 4, "2": 3, "3": 1},
+    "8": {"0": 5, "1": 4, "2": 4, "3": 2},
+    "9": {"0": 5, "1": 5, "2": 4, "3": 3},
+    "10": {"0": 5, "1": 5, "2": 4, "3": 3, "4": 1},
+    "11": {"0": 5, "1": 5, "2": 5, "3": 4, "4": 2},
+    "12": {"0": 5, "1": 5, "2": 5, "3": 4, "4": 3},
+    "13": {"0": 5, "1": 5, "2": 5, "3": 4, "4": 3, "5": 1},
+    "14": {"0": 5, "1": 5, "2": 5, "3": 5, "4": 4, "5": 2},
+    "15": {"0": 5, "1": 5, "2": 5, "3": 5, "4": 4, "5": 3},
+    "16": {"0": 5, "1": 5, "2": 5, "3": 5, "4": 4, "5": 3, "6": 1},
+    "17": {"0": 5, "1": 5, "2": 5, "3": 5, "4": 5, "5": 4, "6": 2},
+    "18": {"0": 5, "1": 5, "2": 5, "3": 5, "4": 5, "5": 4, "6": 3},
+    "19": {"0": 5, "1": 5, "2": 5, "3": 5, "4": 5, "5": 5, "6": 4},
+    "20": {"0": 5, "1": 5, "2": 5, "3": 5, "4": 5, "5": 5, "6": 5}
+  },
+  "level_progression": {
+    "1": {
+      "base_attack_bonus": "+0",
+      "fort_save": "+2",
+      "ref_save": "+0",
+      "will_save": "+2",
+      "special": ["Domain", "Judgment 1/day", "Monster lore", "Orisons", "Stern gaze"],
+      "feats": 1
+    },
+    "2": {
+      "base_attack_bonus": "+1",
+      "fort_save": "+3",
+      "ref_save": "+0",
+      "will_save": "+3",
+      "special": ["Cunning initiative", "Detect alignment", "Track"],
+      "feats": 0
+    },
+    "3": {
+      "base_attack_bonus": "+2",
+      "fort_save": "+3",
+      "ref_save": "+1",
+      "will_save": "+3",
+      "special": ["Solo tactics", "Teamwork feat"],
+      "feats": 1
+    },
+    "4": {
+      "base_attack_bonus": "+3",
+      "fort_save": "+4",
+      "ref_save": "+1",
+      "will_save": "+4",
+      "special": ["Judgment 2/day"],
+      "feats": 0,
+      "ability_score_improvement": 1
+    },
+    "5": {
+      "base_attack_bonus": "+3",
+      "fort_save": "+4",
+      "ref_save": "+1",
+      "will_save": "+4",
+      "special": ["Bane", "Discern lies"],
+      "feats": 1
+    },
+    "6": {
+      "base_attack_bonus": "+4",
+      "fort_save": "+5",
+      "ref_save": "+2",
+      "will_save": "+5",
+      "special": ["Teamwork feat"],
+      "feats": 0
+    },
+    "7": {
+      "base_attack_bonus": "+5",
+      "fort_save": "+5",
+      "ref_save": "+2",
+      "will_save": "+5",
+      "special": ["Judgment 3/day"],
+      "feats": 1
+    },
+    "8": {
+      "base_attack_bonus": "+6/+1",
+      "fort_save": "+6",
+      "ref_save": "+2",
+      "will_save": "+6",
+      "special": ["Second judgment"],
+      "feats": 0,
+      "ability_score_improvement": 1
+    },
+    "9": {
+      "base_attack_bonus": "+6/+1",
+      "fort_save": "+6",
+      "ref_save": "+3",
+      "will_save": "+6",
+      "special": ["Teamwork feat"],
+      "feats": 1
+    },
+    "10": {
+      "base_attack_bonus": "+7/+2",
+      "fort_save": "+7",
+      "ref_save": "+3",
+      "will_save": "+7",
+      "special": ["Judgment 4/day"],
+      "feats": 0
+    },
+    "11": {
+      "base_attack_bonus": "+8/+3",
+      "fort_save": "+7",
+      "ref_save": "+3",
+      "will_save": "+7",
+      "special": ["Stalwart"],
+      "feats": 1
+    },
+    "12": {
+      "base_attack_bonus": "+9/+4",
+      "fort_save": "+8",
+      "ref_save": "+4",
+      "will_save": "+8",
+      "special": ["Greater bane", "Teamwork feat"],
+      "feats": 0,
+      "ability_score_improvement": 1
+    },
+    "13": {
+      "base_attack_bonus": "+9/+4",
+      "fort_save": "+8",
+      "ref_save": "+4",
+      "will_save": "+8",
+      "special": ["Judgment 5/day"],
+      "feats": 1
+    },
+    "14": {
+      "base_attack_bonus": "+10/+5",
+      "fort_save": "+9",
+      "ref_save": "+4",
+      "will_save": "+9",
+      "special": ["Exploit weakness"],
+      "feats": 0
+    },
+    "15": {
+      "base_attack_bonus": "+11/+6/+1",
+      "fort_save": "+9",
+      "ref_save": "+5",
+      "will_save": "+9",
+      "special": ["Teamwork feat"],
+      "feats": 1
+    },
+    "16": {
+      "base_attack_bonus": "+12/+7/+2",
+      "fort_save": "+10",
+      "ref_save": "+5",
+      "will_save": "+10",
+      "special": ["Judgment 6/day", "Third judgment"],
+      "feats": 0,
+      "ability_score_improvement": 1
+    },
+    "17": {
+      "base_attack_bonus": "+12/+7/+2",
+      "fort_save": "+10",
+      "ref_save": "+5",
+      "will_save": "+10",
+      "special": ["Slayer"],
+      "feats": 1
+    },
+    "18": {
+      "base_attack_bonus": "+13/+8/+3",
+      "fort_save": "+11",
+      "ref_save": "+6",
+      "will_save": "+11",
+      "special": ["Teamwork feat"],
+      "feats": 0
+    },
+    "19": {
+      "base_attack_bonus": "+14/+9/+4",
+      "fort_save": "+11",
+      "ref_save": "+6",
+      "will_save": "+11",
+      "special": ["Judgment 7/day"],
+      "feats": 1
+    },
+    "20": {
+      "base_attack_bonus": "+15/+10/+5",
+      "fort_save": "+12",
+      "ref_save": "+6",
+      "will_save": "+12",
+      "special": ["True judgment"],
+      "feats": 0,
+      "ability_score_improvement": 1
+    }
+  }
+}

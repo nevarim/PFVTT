@@ -1,0 +1,152 @@
+{
+  "envoy": {
+    "name": "Envoy",
+    "description": "Envoys are skilled diplomats, negotiators, and leaders who excel at inspiring allies and manipulating social situations.",
+    "hit_die": 6,
+    "skill_ranks_per_level": 8,
+    "class_skills": [
+      "Bluff", "Computers", "Culture", "Diplomacy", "Disguise", "Engineering", 
+      "Intimidate", "Medicine", "Perception", "Piloting", "Profession", "Sense Motive"
+    ],
+    "proficiencies": {
+      "armor": ["Light armor"],
+      "weapons": ["Basic melee weapons", "Small arms", "Sniper weapons"]
+    },
+    "spellcasting": false
+  },
+  "mechanic": {
+    "name": "Mechanic",
+    "description": "Mechanics are masters of technology, able to repair, modify, and create technological devices and constructs.",
+    "hit_die": 6,
+    "skill_ranks_per_level": 4,
+    "class_skills": [
+      "Athletics", "Computers", "Engineering", "Medicine", "Perception", 
+      "Physical Science", "Piloting", "Profession"
+    ],
+    "proficiencies": {
+      "armor": ["Light armor"],
+      "weapons": ["Basic melee weapons", "Small arms"]
+    },
+    "spellcasting": false
+  },
+  "mystic": {
+    "name": "Mystic",
+    "description": "Mystics are spellcasters who channel the power of the universe through their connection to various philosophies and cosmic forces.",
+    "hit_die": 6,
+    "skill_ranks_per_level": 6,
+    "class_skills": [
+      "Bluff", "Culture", "Diplomacy", "Disguise", "Intimidate", "Life Science", 
+      "Medicine", "Mysticism", "Perception", "Profession", "Sense Motive", "Survival"
+    ],
+    "proficiencies": {
+      "armor": ["Light armor"],
+      "weapons": ["Basic melee weapons", "Small arms"]
+    },
+    "spellcasting": true,
+    "spells_per_day": {
+      "1": {"0": 4, "1": 2},
+      "2": {"0": 5, "1": 3},
+      "3": {"0": 6, "1": 4},
+      "4": {"0": 6, "1": 4, "2": 2},
+      "5": {"0": 6, "1": 4, "2": 3},
+      "6": {"0": 6, "1": 4, "2": 4},
+      "7": {"0": 6, "1": 5, "2": 4, "3": 2},
+      "8": {"0": 6, "1": 5, "2": 4, "3": 3},
+      "9": {"0": 6, "1": 5, "2": 4, "3": 4},
+      "10": {"0": 6, "1": 5, "2": 5, "3": 4, "4": 2},
+      "11": {"0": 6, "1": 6, "2": 5, "3": 4, "4": 3},
+      "12": {"0": 6, "1": 6, "2": 5, "3": 4, "4": 4},
+      "13": {"0": 6, "1": 6, "2": 5, "3": 5, "4": 4, "5": 2},
+      "14": {"0": 6, "1": 6, "2": 6, "3": 5, "4": 4, "5": 3},
+      "15": {"0": 6, "1": 6, "2": 6, "3": 5, "4": 4, "5": 4},
+      "16": {"0": 6, "1": 6, "2": 6, "3": 5, "4": 5, "5": 4, "6": 2},
+      "17": {"0": 6, "1": 6, "2": 6, "3": 6, "4": 5, "5": 4, "6": 3},
+      "18": {"0": 6, "1": 6, "2": 6, "3": 6, "4": 5, "5": 4, "6": 4},
+      "19": {"0": 6, "1": 6, "2": 6, "3": 6, "4": 5, "5": 5, "6": 4},
+      "20": {"0": 6, "1": 6, "2": 6, "3": 6, "4": 6, "5": 5, "6": 5}
+    }
+  },
+  "operative": {
+    "name": "Operative",
+    "description": "Operatives are skilled infiltrators, spies, and scouts who excel at stealth, precision attacks, and gathering information.",
+    "hit_die": 6,
+    "skill_ranks_per_level": 8,
+    "class_skills": [
+      "Acrobatics", "Athletics", "Bluff", "Computers", "Culture", "Disguise", 
+      "Engineering", "Intimidate", "Medicine", "Perception", "Piloting", 
+      "Profession", "Sense Motive", "Sleight of Hand", "Stealth", "Survival"
+    ],
+    "proficiencies": {
+      "armor": ["Light armor"],
+      "weapons": ["Basic melee weapons", "Small arms", "Sniper weapons"]
+    },
+    "spellcasting": false
+  },
+  "solarian": {
+    "name": "Solarian",
+    "description": "Solarians are warrior-philosophers who channel the power of stars and black holes through their stellar revelations.",
+    "hit_die": 7,
+    "skill_ranks_per_level": 4,
+    "class_skills": [
+      "Acrobatics", "Athletics", "Diplomacy", "Intimidate", "Mysticism", 
+      "Perception", "Physical Science", "Profession", "Sense Motive", "Stealth"
+    ],
+    "proficiencies": {
+      "armor": ["Light armor"],
+      "weapons": ["Basic melee weapons", "Advanced melee weapons", "Small arms"]
+    },
+    "spellcasting": false
+  },
+  "soldier": {
+    "name": "Soldier",
+    "description": "Soldiers are masters of combat, trained in various fighting styles and weapon specializations.",
+    "hit_die": 7,
+    "skill_ranks_per_level": 4,
+    "class_skills": [
+      "Acrobatics", "Athletics", "Engineering", "Intimidate", "Medicine", 
+      "Perception", "Profession", "Survival"
+    ],
+    "proficiencies": {
+      "armor": ["Light armor", "Heavy armor"],
+      "weapons": ["Basic melee weapons", "Advanced melee weapons", "Small arms", "Longarms", "Heavy weapons", "Sniper weapons"]
+    },
+    "spellcasting": false
+  },
+  "technomancer": {
+    "name": "Technomancer",
+    "description": "Technomancers are spellcasters who blend magic and technology, manipulating both through their unique understanding.",
+    "hit_die": 5,
+    "skill_ranks_per_level": 4,
+    "class_skills": [
+      "Computers", "Engineering", "Life Science", "Mysticism", "Perception", 
+      "Physical Science", "Piloting", "Profession", "Sleight of Hand"
+    ],
+    "proficiencies": {
+      "armor": ["Light armor"],
+      "weapons": ["Basic melee weapons", "Small arms"]
+    },
+    "spellcasting": true,
+    "spells_per_day": {
+      "1": {"0": 4, "1": 2},
+      "2": {"0": 5, "1": 3},
+      "3": {"0": 6, "1": 4},
+      "4": {"0": 6, "1": 4, "2": 2},
+      "5": {"0": 6, "1": 4, "2": 3},
+      "6": {"0": 6, "1": 4, "2": 4},
+      "7": {"0": 6, "1": 5, "2": 4, "3": 2},
+      "8": {"0": 6, "1": 5, "2": 4, "3": 3},
+      "9": {"0": 6, "1": 5, "2": 4, "3": 4},
+      "10": {"0": 6, "1": 5, "2": 5, "3": 4, "4": 2},
+      "11": {"0": 6, "1": 6, "2": 5, "3": 4, "4": 3},
+      "12": {"0": 6, "1": 6, "2": 5, "3": 4, "4": 4},
+      "13": {"0": 6, "1": 6, "2": 5, "3": 5, "4": 4, "5": 2},
+      "14": {"0": 6, "1": 6, "2": 6, "3": 5, "4": 4, "5": 3},
+      "15": {"0": 6, "1": 6, "2": 6, "3": 5, "4": 4, "5": 4},
+      "16": {"0": 6, "1": 6, "2": 6, "3": 5, "4": 5, "5": 4, "6": 2},
+      "17": {"0": 6, "1": 6, "2": 6, "3": 6, "4": 5, "5": 4, "6": 3},
+      "18": {"0": 6, "1": 6, "2": 6, "3": 6, "4": 5, "5": 4, "6": 4},
+      "19": {"0": 6, "1": 6, "2": 6, "3": 6, "4": 5, "5": 5, "6": 4},
+      "20": {"0": 6, "1": 6, "2": 6, "3": 6, "4": 6, "5": 5, "6": 5}
+    }
+  }
+}

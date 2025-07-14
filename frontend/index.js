@@ -1,11 +1,16 @@
+require('dotenv').config({ path: '../.env' });
 const express = require('express');
 const path = require('path');
 const app = express();
-const PORT = 3000;
+const PORT = process.env.FRONTEND_PORT || 3000;
+const BACKEND_URL = `http://${process.env.SERVER_HOST || 'localhost'}:${process.env.SERVER_PORT || 8080}`;
 const axios = require('axios');
 const fs = require('fs');
 const multer = require('multer');
 const upload = multer();
+
+console.log(`[FRONTEND] Starting on port ${PORT}`);
+console.log(`[FRONTEND] Backend URL: ${BACKEND_URL}`);
 
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
@@ -37,7 +42,7 @@ app.get('/register', (req, res) => {
 app.post('/login', async (req, res) => {
   const { username, password } = req.body;
   try {
-    const response = await axios.post('http://localhost:8080/login', { username, password }, {
+    const response = await axios.post(`${BACKEND_URL}/login`, { username, password }, {
       headers: { 'Content-Type': 'application/json' }
     });
     // console.log('FRONTEND /login backend response:', response.data);
@@ -71,7 +76,7 @@ app.post('/login', async (req, res) => {
 app.post('/register', async (req, res) => {
   const { username, password } = req.body;
   try {
-    const response = await axios.post('http://localhost:8080/register', { username, password }, {
+    const response = await axios.post(`${BACKEND_URL}/register`, { username, password }, {
       headers: { 'Content-Type': 'application/json' }
     });
     if (
@@ -138,12 +143,15 @@ app.get('/map', (req, res) => {
   if (!loggedIn) {
     return res.redirect('/login');
   }
-  res.render('map');
+  res.render('map', {
+    FRONTEND_PORT: PORT,
+    BACKEND_URL: BACKEND_URL
+  });
 });
 
 app.get('/api/map', async (req, res) => {
   try {
-    const response = await axios.get('http://localhost:8080/map');
+    const response = await axios.get(`${BACKEND_URL}/map`);
     res.json(response.data);
   } catch (err) {
     res.status(500).json({ error: 'Failed to fetch map data' });
@@ -153,7 +161,7 @@ app.get('/api/map', async (req, res) => {
 // Maps API proxies
 app.get('/api/maps', async (req, res) => {
   try {
-    let url = 'http://localhost:8080/api/maps';
+    let url = `${BACKEND_URL}/api/maps`;
     if (req.query.campaign_id) {
       url += `?campaign_id=${encodeURIComponent(req.query.campaign_id)}`;
     }
@@ -166,7 +174,7 @@ app.get('/api/maps', async (req, res) => {
 
 app.get('/api/maps/:id', async (req, res) => {
   try {
-    const response = await axios.get(`http://localhost:8080/api/maps/${req.params.id}`);
+    const response = await axios.get(`${BACKEND_URL}/api/maps/${req.params.id}`);
     res.json(response.data);
   } catch (err) {
     res.status(500).json({ error: 'Failed to fetch map' });
@@ -175,7 +183,7 @@ app.get('/api/maps/:id', async (req, res) => {
 
 app.post('/api/maps', async (req, res) => {
   try {
-    const response = await axios.post('http://localhost:8080/api/maps', req.body, {
+    const response = await axios.post(`${BACKEND_URL}/api/maps`, req.body, {
       headers: { 'Content-Type': 'application/json' }
     });
     res.json(response.data);
@@ -186,7 +194,7 @@ app.post('/api/maps', async (req, res) => {
 
 app.put('/api/maps/:id', async (req, res) => {
   try {
-    const response = await axios.put(`http://localhost:8080/api/maps/${req.params.id}`, req.body, {
+    const response = await axios.put(`${BACKEND_URL}/api/maps/${req.params.id}`, req.body, {
       headers: { 'Content-Type': 'application/json' }
     });
     res.json(response.data);
@@ -196,11 +204,18 @@ app.put('/api/maps/:id', async (req, res) => {
 });
 
 app.delete('/api/maps/:id', async (req, res) => {
+  try {
+    const response = await axios.delete(`${BACKEND_URL}/api/maps/${req.params.id}`);
+    res.json(response.data);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to delete map' });
+  }
+});
 
 // === TOKEN SHEETS API PROXY ===
 app.get('/api/token-sheets', async (req, res) => {
   try {
-    let url = 'http://localhost:8080/api/token-sheets';
+    let url = `${BACKEND_URL}/api/token-sheets`;
     if (req.query.map_id) {
       url += `?map_id=${encodeURIComponent(req.query.map_id)}`;
     }
@@ -213,7 +228,7 @@ app.get('/api/token-sheets', async (req, res) => {
 
 app.get('/api/token-sheets/:id', async (req, res) => {
   try {
-    const response = await axios.get(`http://localhost:8080/api/token-sheets/${req.params.id}`);
+    const response = await axios.get(`${BACKEND_URL}/api/token-sheets/${req.params.id}`);
     res.json(response.data);
   } catch (err) {
     res.status(500).json({ error: 'Failed to fetch token sheet' });
@@ -222,7 +237,7 @@ app.get('/api/token-sheets/:id', async (req, res) => {
 
 app.post('/api/token-sheets', async (req, res) => {
   try {
-    const response = await axios.post('http://localhost:8080/api/token-sheets', req.body, {
+    const response = await axios.post(`${BACKEND_URL}/api/token-sheets`, req.body, {
       headers: { 'Content-Type': 'application/json' }
     });
     res.json(response.data);
@@ -233,7 +248,7 @@ app.post('/api/token-sheets', async (req, res) => {
 
 app.put('/api/token-sheets/:id', async (req, res) => {
   try {
-    const response = await axios.put(`http://localhost:8080/api/token-sheets/${req.params.id}`, req.body, {
+    const response = await axios.put(`${BACKEND_URL}/api/token-sheets/${req.params.id}`, req.body, {
       headers: { 'Content-Type': 'application/json' }
     });
     res.json(response.data);
@@ -244,7 +259,7 @@ app.put('/api/token-sheets/:id', async (req, res) => {
 
 app.delete('/api/token-sheets/:id', async (req, res) => {
   try {
-    const response = await axios.delete(`http://localhost:8080/api/token-sheets/${req.params.id}`);
+    const response = await axios.delete(`${BACKEND_URL}/api/token-sheets/${req.params.id}`);
     res.json(response.data);
   } catch (err) {
     res.status(500).json({ error: 'Failed to delete token sheet' });
@@ -253,7 +268,7 @@ app.delete('/api/token-sheets/:id', async (req, res) => {
 
 app.post('/api/token-sheets/auto-create', async (req, res) => {
   try {
-    const response = await axios.post('http://localhost:8080/api/token-sheets/auto-create', req.body, {
+    const response = await axios.post(`${BACKEND_URL}/api/token-sheets/auto-create`, req.body, {
       headers: { 'Content-Type': 'application/json' }
     });
     res.json(response.data);
@@ -262,18 +277,10 @@ app.post('/api/token-sheets/auto-create', async (req, res) => {
   }
 });
 
-  try {
-    const response = await axios.delete(`http://localhost:8080/api/maps/${req.params.id}`);
-    res.json(response.data);
-  } catch (err) {
-    res.status(500).json({ error: 'Failed to delete map' });
-  }
-});
-
 // Scenes API proxies
 app.get('/api/scenes', async (req, res) => {
   try {
-    let url = 'http://localhost:8080/api/scenes';
+    let url = `${BACKEND_URL}/api/scenes`;
     if (req.query.campaign_id) {
       url += `?campaign_id=${encodeURIComponent(req.query.campaign_id)}`;
     }
@@ -286,7 +293,7 @@ app.get('/api/scenes', async (req, res) => {
 
 app.post('/api/scenes', async (req, res) => {
   try {
-    const response = await axios.post('http://localhost:8080/api/scenes', req.body, {
+    const response = await axios.post(`${BACKEND_URL}/api/scenes`, req.body, {
       headers: { 'Content-Type': 'application/json' }
     });
     res.json(response.data);
@@ -297,7 +304,7 @@ app.post('/api/scenes', async (req, res) => {
 
 app.put('/api/scenes/:id', async (req, res) => {
   try {
-    const response = await axios.put(`http://localhost:8080/api/scenes/${req.params.id}`, req.body, {
+    const response = await axios.put(`${BACKEND_URL}/api/scenes/${req.params.id}`, req.body, {
       headers: { 'Content-Type': 'application/json' }
     });
     res.json(response.data);
@@ -308,7 +315,7 @@ app.put('/api/scenes/:id', async (req, res) => {
 
 app.delete('/api/scenes/:id', async (req, res) => {
   try {
-    const response = await axios.delete(`http://localhost:8080/api/scenes/${req.params.id}`);
+    const response = await axios.delete(`${BACKEND_URL}/api/scenes/${req.params.id}`);
     res.json(response.data);
   } catch (err) {
     res.status(500).json({ error: 'Failed to delete scene' });
@@ -318,7 +325,7 @@ app.delete('/api/scenes/:id', async (req, res) => {
 // Proxy GET and POST requests for campaigns to the Dart backend
 app.get('/api/campaigns', async (req, res) => {
   try {
-    let url = 'http://localhost:8080/campaigns';
+    let url = `${BACKEND_URL}/api/campaigns`;
     if (req.query.username) {
       url += `?username=${encodeURIComponent(req.query.username)}`;
     }
@@ -332,7 +339,7 @@ app.get('/api/campaigns', async (req, res) => {
 // Get single campaign
 app.get('/api/campaigns/:id', async (req, res) => {
   try {
-    const response = await axios.get(`http://localhost:8080/campaigns/${req.params.id}`);
+    const response = await axios.get(`${BACKEND_URL}/api/campaigns/${req.params.id}`);
     res.json(response.data);
   } catch (err) {
     res.status(500).json({ error: 'Failed to fetch campaign' });
@@ -343,7 +350,7 @@ app.post('/api/campaigns', async (req, res) => {
   const logMsg = `Received POST /api/campaigns at frontend proxy: ${JSON.stringify(req.body)}\n`;
   fs.appendFileSync('frontend.log', logMsg);
   try {
-    const response = await axios.post('http://localhost:8080/campaigns', req.body, {
+    const response = await axios.post(`${BACKEND_URL}/api/campaigns`, req.body, {
       headers: { 'Content-Type': 'application/json' }
     });
     res.json(response.data);
@@ -354,7 +361,7 @@ app.post('/api/campaigns', async (req, res) => {
 
 app.post('/api/campaigns/edit', async (req, res) => {
   try {
-    const response = await axios.post('http://localhost:8080/campaigns/edit', req.body, {
+    const response = await axios.post(`${BACKEND_URL}/api/campaigns/edit`, req.body, {
       headers: { 'Content-Type': 'application/json' }
     });
     res.json(response.data);
@@ -365,7 +372,7 @@ app.post('/api/campaigns/edit', async (req, res) => {
 
 app.post('/campaigns/delete', async (req, res) => {
   try {
-    const response = await axios.post('http://localhost:8080/campaigns/delete', req.body, {
+    const response = await axios.post(`${BACKEND_URL}/campaigns/delete`, req.body, {
       headers: { 'Content-Type': 'application/json' }
     });
     res.json(response.data);
@@ -376,7 +383,7 @@ app.post('/campaigns/delete', async (req, res) => {
 
 app.get('/api/rules', async (req, res) => {
   try {
-    const response = await axios.get('http://localhost:8080/rules');
+    const response = await axios.get(`${BACKEND_URL}/api/rules`);
     res.json(response.data);
   } catch (err) {
     res.status(500).json({ error: 'Failed to fetch rules from backend' });
@@ -385,7 +392,7 @@ app.get('/api/rules', async (req, res) => {
 
 app.get('/api/user_id', async (req, res) => {
   try {
-    let url = 'http://localhost:8080/api/user_id';
+    let url = `${BACKEND_URL}/api/user_id`;
     if (req.query.username) {
       url += `?username=${encodeURIComponent(req.query.username)}`;
     }
@@ -399,7 +406,7 @@ app.get('/api/user_id', async (req, res) => {
 // === GAME SYSTEMS API PROXY ===
 app.get('/api/game-systems', async (req, res) => {
   try {
-    const response = await axios.get('http://localhost:8080/api/game-systems');
+    const response = await axios.get(`${BACKEND_URL}/api/game-systems`);
     res.json(response.data);
   } catch (err) {
     res.status(500).json({ error: 'Failed to fetch game systems' });
@@ -408,7 +415,7 @@ app.get('/api/game-systems', async (req, res) => {
 
 app.get('/api/game-systems/:folder', async (req, res) => {
   try {
-    let url = `http://localhost:8080/api/game-systems/${req.params.folder}`;
+    let url = `${BACKEND_URL}/api/game-systems/${req.params.folder}`;
     if (req.query.type) {
       url += `?type=${encodeURIComponent(req.query.type)}`;
     }
@@ -420,7 +427,7 @@ app.get('/api/game-systems/:folder', async (req, res) => {
 });
 app.post('/api/rules', async (req, res) => {
   try {
-    const response = await axios.post('http://localhost:8080/rules', req.body, { headers: { 'Content-Type': 'application/json' } });
+    const response = await axios.post(`${BACKEND_URL}/api/rules`, req.body, { headers: { 'Content-Type': 'application/json' } });
     res.json(response.data);
   } catch (err) {
     res.status(500).json({ error: 'Failed to add rule' });
@@ -429,7 +436,7 @@ app.post('/api/rules', async (req, res) => {
 
 app.put('/api/rules', async (req, res) => {
   try {
-    const response = await axios.put('http://localhost:8080/rules', req.body, { headers: { 'Content-Type': 'application/json' } });
+    const response = await axios.put(`${BACKEND_URL}/api/rules`, req.body, { headers: { 'Content-Type': 'application/json' } });
     res.json(response.data);
   } catch (err) {
     res.status(500).json({ error: 'Failed to update rule' });
@@ -438,7 +445,7 @@ app.put('/api/rules', async (req, res) => {
 
 app.delete('/api/rules', async (req, res) => {
   try {
-    const response = await axios.delete('http://localhost:8080/rules', { data: req.body, headers: { 'Content-Type': 'application/json' } });
+    const response = await axios.delete(`${BACKEND_URL}/api/rules`, { data: req.body, headers: { 'Content-Type': 'application/json' } });
     res.json(response.data);
   } catch (err) {
     res.status(500).json({ error: 'Failed to delete rule' });
@@ -454,7 +461,7 @@ app.get('/rules', (req, res) => {
 
 app.post('/api/reset_password', async (req, res) => {
   try {
-    const response = await axios.post('http://localhost:8080/api/reset_password', req.body, { headers: { 'Content-Type': 'application/json' } });
+    const response = await axios.post(`${BACKEND_URL}/api/reset_password`, req.body, { headers: { 'Content-Type': 'application/json' } });
     res.json(response.data);
   } catch (err) {
     res.status(500).json({ error: 'Failed to request password reset' });
@@ -483,20 +490,26 @@ app.post('/api/debug_log', (req, res) => {
 // Proxy for map layer APIs
 app.get('/api/map-tokens', async (req, res) => {
   try {
-    let url = 'http://localhost:8080/api/map-tokens';
+    let url = `${BACKEND_URL}/api/map-tokens`;
     if (req.query.map_id) {
       url += `?map_id=${encodeURIComponent(req.query.map_id)}`;
     }
+    console.log(`[FRONTEND PROXY] GET /api/map-tokens - URL: ${url}`);
     const response = await axios.get(url);
+    console.log(`[FRONTEND PROXY] GET /api/map-tokens - Success: ${JSON.stringify(response.data)}`);
     res.json(response.data);
   } catch (err) {
+    console.error(`[FRONTEND PROXY] GET /api/map-tokens - Error:`, err.message);
+    if (err.response) {
+      console.error(`[FRONTEND PROXY] GET /api/map-tokens - Backend error:`, err.response.data);
+    }
     res.status(500).json({ error: 'Failed to fetch map tokens' });
   }
 });
 
 app.post('/api/map-tokens', async (req, res) => {
   try {
-    const response = await axios.post('http://localhost:8080/api/map-tokens', req.body, {
+    const response = await axios.post(`${BACKEND_URL}/api/map-tokens`, req.body, {
       headers: { 'Content-Type': 'application/json' }
     });
     res.json(response.data);
@@ -506,32 +519,57 @@ app.post('/api/map-tokens', async (req, res) => {
 });
 
 app.put('/api/map-tokens/:id', async (req, res) => {
+  console.log(`[FRONTEND PROXY] PUT /api/map-tokens/${req.params.id} - Request received`);
+  console.log(`[FRONTEND PROXY] PUT /api/map-tokens/${req.params.id} - Headers:`, req.headers);
+  console.log(`[FRONTEND PROXY] PUT /api/map-tokens/${req.params.id} - Request body:`, req.body);
+  
   try {
-    const response = await axios.put(`http://localhost:8080/api/map-tokens/${req.params.id}`, req.body, {
+    const backendUrl = `${BACKEND_URL}/api/map-tokens/${req.params.id}`;
+    console.log(`[FRONTEND PROXY] PUT /api/map-tokens/${req.params.id} - Sending to backend: ${backendUrl}`);
+    
+    const response = await axios.put(backendUrl, req.body, {
       headers: { 'Content-Type': 'application/json' }
     });
+    
+    console.log(`[FRONTEND PROXY] PUT /api/map-tokens/${req.params.id} - Backend response:`, response.data);
     res.json(response.data);
   } catch (err) {
-    res.status(500).json({ error: 'Failed to update token' });
+    console.error(`[FRONTEND PROXY] PUT /api/map-tokens/${req.params.id} - Error:`, err.message);
+    console.error(`[FRONTEND PROXY] PUT /api/map-tokens/${req.params.id} - Error stack:`, err.stack);
+    
+    if (err.response) {
+      console.error(`[FRONTEND PROXY] PUT /api/map-tokens/${req.params.id} - Backend error status:`, err.response.status);
+      console.error(`[FRONTEND PROXY] PUT /api/map-tokens/${req.params.id} - Backend error response:`, err.response.data);
+      res.status(err.response.status).json(err.response.data);
+    } else {
+      console.error(`[FRONTEND PROXY] PUT /api/map-tokens/${req.params.id} - No response from backend`);
+      res.status(500).json({ error: 'Failed to update token - no response from backend' });
+    }
   }
 });
 
 app.get('/api/map-backgrounds', async (req, res) => {
   try {
-    let url = 'http://localhost:8080/api/map-backgrounds';
+    let url = `${BACKEND_URL}/api/map-backgrounds`;
     if (req.query.map_id) {
       url += `?map_id=${encodeURIComponent(req.query.map_id)}`;
     }
+    console.log(`[FRONTEND PROXY] GET /api/map-backgrounds - URL: ${url}`);
     const response = await axios.get(url);
+    console.log(`[FRONTEND PROXY] GET /api/map-backgrounds - Success: ${JSON.stringify(response.data)}`);
     res.json(response.data);
   } catch (err) {
+    console.error(`[FRONTEND PROXY] GET /api/map-backgrounds - Error:`, err.message);
+    if (err.response) {
+      console.error(`[FRONTEND PROXY] GET /api/map-backgrounds - Backend error:`, err.response.data);
+    }
     res.status(500).json({ error: 'Failed to fetch map backgrounds' });
   }
 });
 
 app.post('/api/map-backgrounds', async (req, res) => {
   try {
-    const response = await axios.post('http://localhost:8080/api/map-backgrounds', req.body, {
+    const response = await axios.post(`${BACKEND_URL}/api/map-backgrounds`, req.body, {
       headers: { 'Content-Type': 'application/json' }
     });
     res.json(response.data);
@@ -542,20 +580,26 @@ app.post('/api/map-backgrounds', async (req, res) => {
 
 app.get('/api/map-audio', async (req, res) => {
   try {
-    let url = 'http://localhost:8080/api/map-audio';
+    let url = `${BACKEND_URL}/api/map-audio`;
     if (req.query.map_id) {
       url += `?map_id=${encodeURIComponent(req.query.map_id)}`;
     }
+    console.log(`[FRONTEND PROXY] GET /api/map-audio - URL: ${url}`);
     const response = await axios.get(url);
+    console.log(`[FRONTEND PROXY] GET /api/map-audio - Success: ${JSON.stringify(response.data)}`);
     res.json(response.data);
   } catch (err) {
+    console.error(`[FRONTEND PROXY] GET /api/map-audio - Error:`, err.message);
+    if (err.response) {
+      console.error(`[FRONTEND PROXY] GET /api/map-audio - Backend error:`, err.response.data);
+    }
     res.status(500).json({ error: 'Failed to fetch map audio' });
   }
 });
 
 app.post('/api/map-audio', async (req, res) => {
   try {
-    const response = await axios.post('http://localhost:8080/api/map-audio', req.body, {
+    const response = await axios.post(`${BACKEND_URL}/api/map-audio`, req.body, {
       headers: { 'Content-Type': 'application/json' }
     });
     res.json(response.data);
@@ -566,20 +610,26 @@ app.post('/api/map-audio', async (req, res) => {
 
 app.get('/api/map-props', async (req, res) => {
   try {
-    let url = 'http://localhost:8080/api/map-props';
+    let url = `${BACKEND_URL}/api/map-props`;
     if (req.query.map_id) {
       url += `?map_id=${encodeURIComponent(req.query.map_id)}`;
     }
+    console.log(`[FRONTEND PROXY] GET /api/map-props - URL: ${url}`);
     const response = await axios.get(url);
+    console.log(`[FRONTEND PROXY] GET /api/map-props - Success: ${JSON.stringify(response.data)}`);
     res.json(response.data);
   } catch (err) {
+    console.error(`[FRONTEND PROXY] GET /api/map-props - Error:`, err.message);
+    if (err.response) {
+      console.error(`[FRONTEND PROXY] GET /api/map-props - Backend error:`, err.response.data);
+    }
     res.status(500).json({ error: 'Failed to fetch map props' });
   }
 });
 
 app.post('/api/map-props', async (req, res) => {
   try {
-    const response = await axios.post('http://localhost:8080/api/map-props', req.body, {
+    const response = await axios.post(`${BACKEND_URL}/api/map-props`, req.body, {
       headers: { 'Content-Type': 'application/json' }
     });
     res.json(response.data);
@@ -591,7 +641,7 @@ app.post('/api/map-props', async (req, res) => {
 // Proxy for assets API
 app.get('/api/assets', async (req, res) => {
   try {
-    let url = 'http://localhost:8080/api/assets';
+    let url = `${BACKEND_URL}/api/assets`;
     if (req.query.campaign_id) {
       url += `?campaign_id=${encodeURIComponent(req.query.campaign_id)}`;
     }
@@ -604,7 +654,7 @@ app.get('/api/assets', async (req, res) => {
 
 app.post('/api/assets', async (req, res) => {
   try {
-    const response = await axios.post('http://localhost:8080/api/assets', req.body, {
+    const response = await axios.post(`${BACKEND_URL}/api/assets`, req.body, {
       headers: { 'Content-Type': 'application/json' }
     });
     res.json(response.data);
@@ -615,7 +665,7 @@ app.post('/api/assets', async (req, res) => {
 
 app.put('/api/assets/:id', async (req, res) => {
   try {
-    const response = await axios.put(`http://localhost:8080/api/assets/${req.params.id}`, req.body, {
+    const response = await axios.put(`${BACKEND_URL}/api/assets/${req.params.id}`, req.body, {
       headers: { 'Content-Type': 'application/json' }
     });
     res.json(response.data);
@@ -626,12 +676,88 @@ app.put('/api/assets/:id', async (req, res) => {
 
 app.delete('/api/assets/:id', async (req, res) => {
   try {
-    const response = await axios.delete(`http://localhost:8080/api/assets/${req.params.id}`);
+    const response = await axios.delete(`${BACKEND_URL}/api/assets/${req.params.id}`);
     res.json(response.data);
   } catch (err) {
     res.status(500).json({ error: 'Failed to delete asset' });
   }
 });
+
+// Proxy for actors API
+app.get('/api/actors', async (req, res) => {
+  try {
+    let url = `${BACKEND_URL}/api/actors`;
+    if (req.query.campaign_id) {
+      url += `?campaign_id=${encodeURIComponent(req.query.campaign_id)}`;
+    }
+    const response = await axios.get(url);
+    res.json(response.data);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch actors' });
+  }
+});
+
+app.post('/api/actors', async (req, res) => {
+  try {
+    const response = await axios.post(`${BACKEND_URL}/api/actors`, req.body, {
+      headers: { 'Content-Type': 'application/json' }
+    });
+    res.json(response.data);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to create actor' });
+  }
+});
+
+// Proxy for journals API
+app.get('/api/journals', async (req, res) => {
+  try {
+    let url = `${BACKEND_URL}/api/journals`;
+    if (req.query.campaign_id) {
+      url += `?campaign_id=${encodeURIComponent(req.query.campaign_id)}`;
+    }
+    const response = await axios.get(url);
+    res.json(response.data);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch journals' });
+  }
+});
+
+app.post('/api/journals', async (req, res) => {
+  try {
+    const response = await axios.post(`${BACKEND_URL}/api/journals`, req.body, {
+      headers: { 'Content-Type': 'application/json' }
+    });
+    res.json(response.data);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to create journal' });
+  }
+});
+
+// Proxy for campaign permissions API
+app.get('/api/campaign_permissions', async (req, res) => {
+  try {
+    let url = `${BACKEND_URL}/api/campaign_permissions`;
+    if (req.query.campaign_id) {
+      url += `?campaign_id=${encodeURIComponent(req.query.campaign_id)}`;
+    }
+    const response = await axios.get(url);
+    res.json(response.data);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch campaign permissions' });
+  }
+});
+
+app.post('/api/campaign_permissions', async (req, res) => {
+  try {
+    const response = await axios.post(`${BACKEND_URL}/api/campaign_permissions`, req.body, {
+      headers: { 'Content-Type': 'application/json' }
+    });
+    res.json(response.data);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to update campaign permissions' });
+  }
+});
+
 app.post('/api/upload', upload.single('file'), async (req, res) => {
   const logMsg = `UPLOAD: ${req.file ? req.file.originalname : 'No file'} - user_id:${req.body.user_id} campaign_id:${req.body.campaign_id}\n`;
   fs.appendFileSync('frontend.log', logMsg);
@@ -646,7 +772,7 @@ app.post('/api/upload', upload.single('file'), async (req, res) => {
     if (req.body.campaign_id) form.append('campaign_id', req.body.campaign_id);
     if (req.body.upload_type) form.append('upload_type', req.body.upload_type);
     console.log(`UPLOAD: Forwarding to backend...`);
-    const response = await axios.post('http://localhost:8080/api/upload', form, {
+    const response = await axios.post(`${BACKEND_URL}/api/upload`, form, {
       headers: form.getHeaders(),
       timeout: 30000,
       maxContentLength: Infinity,
@@ -681,7 +807,7 @@ app.post('/api/campaign-background-upload', upload.single('image'), async (req, 
     if (req.body.user_id) form.append('user_id', req.body.user_id);
     if (req.body.campaign_id) form.append('campaign_id', req.body.campaign_id);
     console.log(`CAMPAIGN BACKGROUND UPLOAD: Forwarding to backend...`);
-    const response = await axios.post('http://localhost:8080/api/campaign-background-upload', form, {
+    const response = await axios.post(`${BACKEND_URL}/api/campaign-background-upload`, form, {
       headers: form.getHeaders(),
       timeout: 30000,
       maxContentLength: Infinity,
@@ -712,7 +838,7 @@ process.on('unhandledRejection', (reason, promise) => {
 });
 
 const server = app.listen(PORT, () => {
-  console.log(`Frontend running at http://localhost:${PORT}`);
+  console.log(`[FRONTEND] Running at http://${process.env.SERVER_HOST || 'localhost'}:${PORT}`);
 });
 
 // Keep the server alive

@@ -1,0 +1,250 @@
+{
+  "name": "Bard",
+  "hit_die": "d8",
+  "skill_points": "6 + Int modifier",
+  "class_skills": [
+    "Acrobatics (Dex)",
+    "Appraise (Int)",
+    "Bluff (Cha)",
+    "Climb (Str)",
+    "Craft (Int)",
+    "Diplomacy (Cha)",
+    "Disguise (Cha)",
+    "Escape Artist (Dex)",
+    "Intimidate (Cha)",
+    "Knowledge (all) (Int)",
+    "Linguistics (Int)",
+    "Perception (Wis)",
+    "Perform (Cha)",
+    "Profession (Wis)",
+    "Sense Motive (Wis)",
+    "Sleight of Hand (Dex)",
+    "Spellcraft (Int)",
+    "Stealth (Dex)",
+    "Use Magic Device (Cha)"
+  ],
+  "weapon_proficiencies": [
+    "All simple weapons",
+    "Longsword",
+    "Rapier",
+    "Sap",
+    "Short sword",
+    "Shortbow",
+    "Whip"
+  ],
+  "armor_proficiencies": [
+    "Light armor",
+    "Shields (except tower shields)"
+  ],
+  "spells_per_day": {
+    "1": {"0": "∞", "1": 1},
+    "2": {"0": "∞", "1": 2},
+    "3": {"0": "∞", "1": 3},
+    "4": {"0": "∞", "1": 3, "2": 1},
+    "5": {"0": "∞", "1": 4, "2": 2},
+    "6": {"0": "∞", "1": 4, "2": 3},
+    "7": {"0": "∞", "1": 4, "2": 3, "3": 1},
+    "8": {"0": "∞", "1": 4, "2": 4, "3": 2},
+    "9": {"0": "∞", "1": 5, "2": 4, "3": 3},
+    "10": {"0": "∞", "1": 5, "2": 4, "3": 3, "4": 1},
+    "11": {"0": "∞", "1": 5, "2": 5, "3": 4, "4": 2},
+    "12": {"0": "∞", "1": 5, "2": 5, "3": 4, "4": 3},
+    "13": {"0": "∞", "1": 5, "2": 5, "3": 4, "4": 3, "5": 1},
+    "14": {"0": "∞", "1": 5, "2": 5, "3": 5, "4": 4, "5": 2},
+    "15": {"0": "∞", "1": 5, "2": 5, "3": 5, "4": 4, "5": 3},
+    "16": {"0": "∞", "1": 5, "2": 5, "3": 5, "4": 4, "5": 3, "6": 1},
+    "17": {"0": "∞", "1": 5, "2": 5, "3": 5, "4": 5, "5": 4, "6": 2},
+    "18": {"0": "∞", "1": 5, "2": 5, "3": 5, "4": 5, "5": 4, "6": 3},
+    "19": {"0": "∞", "1": 5, "2": 5, "3": 5, "4": 5, "5": 5, "6": 4},
+    "20": {"0": "∞", "1": 5, "2": 5, "3": 5, "4": 5, "5": 5, "6": 5}
+  },
+  "spells_known": {
+    "1": {"0": 4, "1": 2},
+    "2": {"0": 5, "1": 3},
+    "3": {"0": 6, "1": 4},
+    "4": {"0": 6, "1": 4, "2": 2},
+    "5": {"0": 6, "1": 4, "2": 3},
+    "6": {"0": 6, "1": 5, "2": 4},
+    "7": {"0": 6, "1": 5, "2": 4, "3": 2},
+    "8": {"0": 6, "1": 5, "2": 4, "3": 3},
+    "9": {"0": 6, "1": 5, "2": 5, "3": 4},
+    "10": {"0": 6, "1": 5, "2": 5, "3": 4, "4": 2},
+    "11": {"0": 6, "1": 6, "2": 5, "3": 4, "4": 3},
+    "12": {"0": 6, "1": 6, "2": 5, "3": 5, "4": 4},
+    "13": {"0": 6, "1": 6, "2": 6, "3": 5, "4": 4, "5": 2},
+    "14": {"0": 6, "1": 6, "2": 6, "3": 5, "4": 4, "5": 3},
+    "15": {"0": 6, "1": 6, "2": 6, "3": 6, "4": 5, "5": 4},
+    "16": {"0": 6, "1": 6, "2": 6, "3": 6, "4": 5, "5": 4, "6": 2},
+    "17": {"0": 6, "1": 6, "2": 6, "3": 6, "4": 5, "5": 4, "6": 3},
+    "18": {"0": 6, "1": 6, "2": 6, "3": 6, "4": 6, "5": 5, "6": 4},
+    "19": {"0": 6, "1": 6, "2": 6, "3": 6, "4": 6, "5": 5, "6": 5},
+    "20": {"0": 6, "1": 6, "2": 6, "3": 6, "4": 6, "5": 6, "6": 5}
+  },
+  "level_progression": {
+    "1": {
+      "base_attack_bonus": "+0",
+      "fort_save": "+0",
+      "ref_save": "+2",
+      "will_save": "+2",
+      "special": ["Bardic knowledge", "Bardic performance", "Cantrips", "Countersong", "Distraction", "Fascinate", "Inspire courage +1"],
+      "feats": 1
+    },
+    "2": {
+      "base_attack_bonus": "+1",
+      "fort_save": "+0",
+      "ref_save": "+3",
+      "will_save": "+3",
+      "special": ["Versatile performance", "Well-versed"],
+      "feats": 0
+    },
+    "3": {
+      "base_attack_bonus": "+2",
+      "fort_save": "+1",
+      "ref_save": "+3",
+      "will_save": "+3",
+      "special": ["Inspire competence +2"],
+      "feats": 1
+    },
+    "4": {
+      "base_attack_bonus": "+3",
+      "fort_save": "+1",
+      "ref_save": "+4",
+      "will_save": "+4",
+      "special": [],
+      "feats": 0,
+      "ability_score_improvement": 1
+    },
+    "5": {
+      "base_attack_bonus": "+3",
+      "fort_save": "+1",
+      "ref_save": "+4",
+      "will_save": "+4",
+      "special": ["Inspire courage +2", "Lore master 1/day"],
+      "feats": 1
+    },
+    "6": {
+      "base_attack_bonus": "+4",
+      "fort_save": "+2",
+      "ref_save": "+5",
+      "will_save": "+5",
+      "special": ["Suggestion", "Versatile performance"],
+      "feats": 0
+    },
+    "7": {
+      "base_attack_bonus": "+5",
+      "fort_save": "+2",
+      "ref_save": "+5",
+      "will_save": "+5",
+      "special": ["Inspire competence +3"],
+      "feats": 1
+    },
+    "8": {
+      "base_attack_bonus": "+6/+1",
+      "fort_save": "+2",
+      "ref_save": "+6",
+      "will_save": "+6",
+      "special": ["Dirge of doom"],
+      "feats": 0,
+      "ability_score_improvement": 1
+    },
+    "9": {
+      "base_attack_bonus": "+6/+1",
+      "fort_save": "+3",
+      "ref_save": "+6",
+      "will_save": "+6",
+      "special": ["Inspire greatness"],
+      "feats": 1
+    },
+    "10": {
+      "base_attack_bonus": "+7/+2",
+      "fort_save": "+3",
+      "ref_save": "+7",
+      "will_save": "+7",
+      "special": ["Jack-of-all-trades", "Versatile performance"],
+      "feats": 0
+    },
+    "11": {
+      "base_attack_bonus": "+8/+3",
+      "fort_save": "+3",
+      "ref_save": "+7",
+      "will_save": "+7",
+      "special": ["Inspire competence +4", "Inspire courage +3", "Lore master 2/day"],
+      "feats": 1
+    },
+    "12": {
+      "base_attack_bonus": "+9/+4",
+      "fort_save": "+4",
+      "ref_save": "+8",
+      "will_save": "+8",
+      "special": ["Soothing performance"],
+      "feats": 0,
+      "ability_score_improvement": 1
+    },
+    "13": {
+      "base_attack_bonus": "+9/+4",
+      "fort_save": "+4",
+      "ref_save": "+8",
+      "will_save": "+8",
+      "special": [],
+      "feats": 1
+    },
+    "14": {
+      "base_attack_bonus": "+10/+5",
+      "fort_save": "+4",
+      "ref_save": "+9",
+      "will_save": "+9",
+      "special": ["Frightening tune", "Versatile performance"],
+      "feats": 0
+    },
+    "15": {
+      "base_attack_bonus": "+11/+6/+1",
+      "fort_save": "+5",
+      "ref_save": "+9",
+      "will_save": "+9",
+      "special": ["Inspire competence +5", "Inspire heroics"],
+      "feats": 1
+    },
+    "16": {
+      "base_attack_bonus": "+12/+7/+2",
+      "fort_save": "+5",
+      "ref_save": "+10",
+      "will_save": "+10",
+      "special": [],
+      "feats": 0,
+      "ability_score_improvement": 1
+    },
+    "17": {
+      "base_attack_bonus": "+12/+7/+2",
+      "fort_save": "+5",
+      "ref_save": "+10",
+      "will_save": "+10",
+      "special": ["Inspire courage +4", "Lore master 3/day"],
+      "feats": 1
+    },
+    "18": {
+      "base_attack_bonus": "+13/+8/+3",
+      "fort_save": "+6",
+      "ref_save": "+11",
+      "will_save": "+11",
+      "special": ["Mass suggestion", "Versatile performance"],
+      "feats": 0
+    },
+    "19": {
+      "base_attack_bonus": "+14/+9/+4",
+      "fort_save": "+6",
+      "ref_save": "+11",
+      "will_save": "+11",
+      "special": ["Inspire competence +6"],
+      "feats": 1
+    },
+    "20": {
+      "base_attack_bonus": "+15/+10/+5",
+      "fort_save": "+6",
+      "ref_save": "+12",
+      "will_save": "+12",
+      "special": ["Deadly performance"],
+      "feats": 0,
+      "ability_score_improvement": 1
+    }
+  }
+}

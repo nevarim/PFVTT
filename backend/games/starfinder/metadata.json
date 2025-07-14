@@ -1,0 +1,41 @@
+{
+  "name": "Starfinder",
+  "abbreviation": "SF",
+  "version": "1.0",
+  "publisher": "Paizo Publishing",
+  "description": "Starfinder is a science fantasy role-playing game set in the far future of the Pathfinder universe, blending magic and technology.",
+  "core_mechanics": {
+    "dice_system": "d20 system",
+    "ability_scores": [
+      "Strength",
+      "Dexterity",
+      "Constitution",
+      "Intelligence",
+      "Wisdom",
+      "Charisma"
+    ],
+    "skill_system": "Skill ranks with ability modifiers and class bonuses",
+    "saving_throws": "Fortitude, Reflex, Will",
+    "armor_class": "Energy Armor Class (EAC) and Kinetic Armor Class (KAC)",
+    "stamina_system": "Stamina Points and Hit Points",
+    "resolve_points": "Resolve Points for special abilities and recovery"
+  },
+  "character_creation": {
+    "race": "Choose your character's race with racial traits",
+    "theme": "Select a theme that represents your character's background",
+    "class": "Select a class with unique class features and progression",
+    "ability_scores": "Use point buy or rolling methods with racial modifiers",
+    "skills": "Allocate skill ranks based on class and intelligence",
+    "feats": "Gain feats at 1st level and every odd level thereafter"
+  },
+  "supported_features": [
+    "Character creation and advancement",
+    "Spell preparation and spontaneous casting",
+    "Skill checks with class skill bonuses",
+    "Combat with full attacks and special actions",
+    "Feat trees and prerequisites",
+    "Technology and magic integration",
+    "Starship combat and exploration",
+    "Equipment and augmentation systems"
+  ]
+}

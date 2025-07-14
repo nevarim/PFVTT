@@ -1,0 +1,162 @@
+{
+  "name": "Druid",
+  "hit_die": "d8",
+  "skill_points_per_level": 4,
+  "class_skills": ["Concentration", "Craft", "Diplomacy", "Handle Animal", "Heal", "Knowledge (nature)", "Listen", "Profession", "Ride", "Spellcraft", "Spot", "Survival", "Swim"],
+  "armor_proficiencies": ["Light armor", "Medium armor", "Shields (except tower shields)"],
+  "weapon_proficiencies": ["Club", "Dagger", "Dart", "Quarterstaff", "Scimitar", "Sickle", "Shortspear", "Sling", "Spear"],
+  "spells_per_day": {
+    "0": [3, 4, 4, 5, 5, 5, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6],
+    "1": [1, 2, 2, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4],
+    "2": [0, 0, 1, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3],
+    "3": [0, 0, 0, 0, 1, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3],
+    "4": [0, 0, 0, 0, 0, 0, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3],
+    "5": [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3],
+    "6": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 2, 2, 2, 2],
+    "7": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1],
+    "8": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    "9": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1]
+  },
+  "levels": {
+    "1": {
+      "base_attack_bonus": "+0",
+      "fort_save": "+2",
+      "ref_save": "+0",
+      "will_save": "+2",
+      "special": ["Animal companion", "Nature sense", "Wild empathy"]
+    },
+    "2": {
+      "base_attack_bonus": "+1",
+      "fort_save": "+3",
+      "ref_save": "+0",
+      "will_save": "+3",
+      "special": ["Woodland stride"]
+    },
+    "3": {
+      "base_attack_bonus": "+2",
+      "fort_save": "+3",
+      "ref_save": "+1",
+      "will_save": "+3",
+      "special": ["Trackless step"]
+    },
+    "4": {
+      "base_attack_bonus": "+3",
+      "fort_save": "+4",
+      "ref_save": "+1",
+      "will_save": "+4",
+      "special": ["Resist nature's lure"]
+    },
+    "5": {
+      "base_attack_bonus": "+3",
+      "fort_save": "+4",
+      "ref_save": "+1",
+      "will_save": "+4",
+      "special": ["Wild shape (1/day)"]
+    },
+    "6": {
+      "base_attack_bonus": "+4",
+      "fort_save": "+5",
+      "ref_save": "+2",
+      "will_save": "+5",
+      "special": ["Wild shape (2/day)"]
+    },
+    "7": {
+      "base_attack_bonus": "+5",
+      "fort_save": "+5",
+      "ref_save": "+2",
+      "will_save": "+5",
+      "special": ["Wild shape (3/day)"]
+    },
+    "8": {
+      "base_attack_bonus": "+6/+1",
+      "fort_save": "+6",
+      "ref_save": "+2",
+      "will_save": "+6",
+      "special": ["Wild shape (Large)"]
+    },
+    "9": {
+      "base_attack_bonus": "+6/+1",
+      "fort_save": "+6",
+      "ref_save": "+3",
+      "will_save": "+6",
+      "special": ["Venom immunity"]
+    },
+    "10": {
+      "base_attack_bonus": "+7/+2",
+      "fort_save": "+7",
+      "ref_save": "+3",
+      "will_save": "+7",
+      "special": ["Wild shape (4/day)"]
+    },
+    "11": {
+      "base_attack_bonus": "+8/+3",
+      "fort_save": "+7",
+      "ref_save": "+3",
+      "will_save": "+7",
+      "special": ["Wild shape (Tiny)"]
+    },
+    "12": {
+      "base_attack_bonus": "+9/+4",
+      "fort_save": "+8",
+      "ref_save": "+4",
+      "will_save": "+8",
+      "special": ["Wild shape (plant)"]
+    },
+    "13": {
+      "base_attack_bonus": "+9/+4",
+      "fort_save": "+8",
+      "ref_save": "+4",
+      "will_save": "+8",
+      "special": ["A thousand faces"]
+    },
+    "14": {
+      "base_attack_bonus": "+10/+5",
+      "fort_save": "+9",
+      "ref_save": "+4",
+      "will_save": "+9",
+      "special": ["Wild shape (5/day)"]
+    },
+    "15": {
+      "base_attack_bonus": "+11/+6/+1",
+      "fort_save": "+9",
+      "ref_save": "+5",
+      "will_save": "+9",
+      "special": ["Timeless body", "Wild shape (Huge)"]
+    },
+    "16": {
+      "base_attack_bonus": "+12/+7/+2",
+      "fort_save": "+10",
+      "ref_save": "+5",
+      "will_save": "+10",
+      "special": ["Wild shape (elemental 1/day)"]
+    },
+    "17": {
+      "base_attack_bonus": "+12/+7/+2",
+      "fort_save": "+10",
+      "ref_save": "+5",
+      "will_save": "+10",
+      "special": []
+    },
+    "18": {
+      "base_attack_bonus": "+13/+8/+3",
+      "fort_save": "+11",
+      "ref_save": "+6",
+      "will_save": "+11",
+      "special": ["Wild shape (6/day)", "Wild shape (elemental 2/day)"]
+    },
+    "19": {
+      "base_attack_bonus": "+14/+9/+4",
+      "fort_save": "+11",
+      "ref_save": "+6",
+      "will_save": "+11",
+      "special": []
+    },
+    "20": {
+      "base_attack_bonus": "+15/+10/+5",
+      "fort_save": "+12",
+      "ref_save": "+6",
+      "will_save": "+12",
+      "special": ["Wild shape (elemental 3/day)", "Wild shape (Huge elemental)"]
+    }
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "name": "Envoy",
+  "description": "Envoys are skilled diplomats, negotiators, and leaders who excel at inspiring allies and manipulating social situations.",
+  "hit_die": 6,
+  "skill_ranks_per_level": 8,
+  "class_skills": [
+    "Bluff", "Computers", "Culture", "Diplomacy", "Disguise", "Engineering", 
+    "Intimidate", "Medicine", "Perception", "Piloting", "Profession", "Sense Motive"
+  ],
+  "proficiencies": {
+    "armor": ["Light armor"],
+    "weapons": ["Basic melee weapons", "Small arms", "Sniper weapons"]
+  },
+  "spellcasting": false,
+  "class_features": {
+    "1": ["Envoy Improvisations", "Expertise (1d6)", "Skill Expertise"],
+    "2": ["Envoy Improvisation"],
+    "3": ["Expertise (1d6+1)", "Weapon Specialization"],
+    "4": ["Envoy Improvisation"],
+    "5": ["Expertise (1d6+2)"],
+    "6": ["Envoy Improvisation"],
+    "7": ["Expertise (1d8+2)"],
+    "8": ["Envoy Improvisation"],
+    "9": ["Expertise (1d8+3)"],
+    "10": ["Envoy Improvisation"],
+    "11": ["Expertise (1d8+4)"],
+    "12": ["Envoy Improvisation"],
+    "13": ["Expertise (1d10+4)"],
+    "14": ["Envoy Improvisation"],
+    "15": ["Expertise (1d10+5)"],
+    "16": ["Envoy Improvisation"],
+    "17": ["Expertise (1d10+6)"],
+    "18": ["Envoy Improvisation"],
+    "19": ["Expertise (1d12+6)"],
+    "20": ["Envoy Improvisation", "True Expertise"]
+  }
+}

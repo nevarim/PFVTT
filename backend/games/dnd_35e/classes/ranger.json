@@ -1,0 +1,156 @@
+{
+  "name": "Ranger",
+  "hit_die": "d8",
+  "skill_points_per_level": 6,
+  "class_skills": ["Climb", "Concentration", "Craft", "Handle Animal", "Heal", "Hide", "Jump", "Knowledge (dungeoneering)", "Knowledge (geography)", "Knowledge (nature)", "Listen", "Move Silently", "Profession", "Ride", "Search", "Spot", "Survival", "Swim", "Use Rope"],
+  "armor_proficiencies": ["Light armor", "Medium armor", "Shields (except tower shields)"],
+  "weapon_proficiencies": ["Simple weapons", "Martial weapons"],
+  "spells_per_day": {
+    "1": [0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4],
+    "2": [0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3],
+    "3": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3],
+    "4": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2]
+  },
+  "levels": {
+    "1": {
+      "base_attack_bonus": "+1",
+      "fort_save": "+2",
+      "ref_save": "+2",
+      "will_save": "+0",
+      "special": ["1st favored enemy", "Track", "Wild empathy"]
+    },
+    "2": {
+      "base_attack_bonus": "+2",
+      "fort_save": "+3",
+      "ref_save": "+3",
+      "will_save": "+0",
+      "special": ["Combat style"]
+    },
+    "3": {
+      "base_attack_bonus": "+3",
+      "fort_save": "+3",
+      "ref_save": "+3",
+      "will_save": "+1",
+      "special": ["Endurance"]
+    },
+    "4": {
+      "base_attack_bonus": "+4",
+      "fort_save": "+4",
+      "ref_save": "+4",
+      "will_save": "+1",
+      "special": ["Animal companion"]
+    },
+    "5": {
+      "base_attack_bonus": "+5",
+      "fort_save": "+4",
+      "ref_save": "+4",
+      "will_save": "+1",
+      "special": ["2nd favored enemy"]
+    },
+    "6": {
+      "base_attack_bonus": "+6/+1",
+      "fort_save": "+5",
+      "ref_save": "+5",
+      "will_save": "+2",
+      "special": ["Improved combat style"]
+    },
+    "7": {
+      "base_attack_bonus": "+7/+2",
+      "fort_save": "+5",
+      "ref_save": "+5",
+      "will_save": "+2",
+      "special": ["Woodland stride"]
+    },
+    "8": {
+      "base_attack_bonus": "+8/+3",
+      "fort_save": "+6",
+      "ref_save": "+6",
+      "will_save": "+2",
+      "special": ["Swift tracker"]
+    },
+    "9": {
+      "base_attack_bonus": "+9/+4",
+      "fort_save": "+6",
+      "ref_save": "+6",
+      "will_save": "+3",
+      "special": ["Evasion"]
+    },
+    "10": {
+      "base_attack_bonus": "+10/+5",
+      "fort_save": "+7",
+      "ref_save": "+7",
+      "will_save": "+3",
+      "special": ["3rd favored enemy"]
+    },
+    "11": {
+      "base_attack_bonus": "+11/+6/+1",
+      "fort_save": "+7",
+      "ref_save": "+7",
+      "will_save": "+3",
+      "special": ["Combat style mastery"]
+    },
+    "12": {
+      "base_attack_bonus": "+12/+7/+2",
+      "fort_save": "+8",
+      "ref_save": "+8",
+      "will_save": "+4",
+      "special": []
+    },
+    "13": {
+      "base_attack_bonus": "+13/+8/+3",
+      "fort_save": "+8",
+      "ref_save": "+8",
+      "will_save": "+4",
+      "special": ["Camouflage"]
+    },
+    "14": {
+      "base_attack_bonus": "+14/+9/+4",
+      "fort_save": "+9",
+      "ref_save": "+9",
+      "will_save": "+4",
+      "special": []
+    },
+    "15": {
+      "base_attack_bonus": "+15/+10/+5",
+      "fort_save": "+9",
+      "ref_save": "+9",
+      "will_save": "+5",
+      "special": ["4th favored enemy"]
+    },
+    "16": {
+      "base_attack_bonus": "+16/+11/+6/+1",
+      "fort_save": "+10",
+      "ref_save": "+10",
+      "will_save": "+5",
+      "special": []
+    },
+    "17": {
+      "base_attack_bonus": "+17/+12/+7/+2",
+      "fort_save": "+10",
+      "ref_save": "+10",
+      "will_save": "+5",
+      "special": ["Hide in plain sight"]
+    },
+    "18": {
+      "base_attack_bonus": "+18/+13/+8/+3",
+      "fort_save": "+11",
+      "ref_save": "+11",
+      "will_save": "+6",
+      "special": []
+    },
+    "19": {
+      "base_attack_bonus": "+19/+14/+9/+4",
+      "fort_save": "+11",
+      "ref_save": "+11",
+      "will_save": "+6",
+      "special": []
+    },
+    "20": {
+      "base_attack_bonus": "+20/+15/+10/+5",
+      "fort_save": "+12",
+      "ref_save": "+12",
+      "will_save": "+6",
+      "special": ["5th favored enemy"]
+    }
+  }
+}

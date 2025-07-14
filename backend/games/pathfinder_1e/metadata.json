@@ -1,1 +1,40 @@
-{}
+{
+  "name": "Pathfinder First Edition",
+  "abbreviation": "PF1e",
+  "version": "1.0",
+  "publisher": "Paizo Publishing",
+  "description": "An evolution of the 3.5 edition d20 System, Pathfinder RPG is a tabletop fantasy role-playing game.",
+  "core_mechanics": {
+    "dice_system": "d20 system",
+    "ability_scores": [
+      "Strength",
+      "Dexterity",
+      "Constitution",
+      "Intelligence",
+      "Wisdom",
+      "Charisma"
+    ],
+    "skill_system": "Consolidated skill list with ranks and ability modifiers",
+    "saving_throws": "Fortitude, Reflex, Will",
+    "armor_class": "10 + Dex modifier + armor bonus + shield bonus + other modifiers",
+    "combat_maneuver": "Combat Maneuver Bonus (CMB) and Combat Maneuver Defense (CMD)"
+  },
+  "character_creation": {
+    "race": "Choose your character's race with racial traits",
+    "class": "Select a class with unique class features and progression",
+    "ability_scores": "Use point buy, standard array, or rolling methods",
+    "skills": "Allocate skill ranks based on class and intelligence",
+    "feats": "Gain feats at 1st level and every odd level thereafter",
+    "traits": "Select character traits for additional customization"
+  },
+  "supported_features": [
+    "Character creation and advancement",
+    "Spell preparation and spontaneous casting",
+    "Skill checks with consolidated skill system",
+    "Combat with combat maneuvers and flanking",
+    "Feat trees and prerequisites",
+    "Favored class bonuses",
+    "Archetypes and alternate class features",
+    "Magic item crafting and enhancement"
+  ]
+}

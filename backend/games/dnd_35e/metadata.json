@@ -1,1 +1,40 @@
-{}
+{
+  "name": "Dungeons & Dragons 3.5 Edition",
+  "abbreviation": "D&D 3.5e",
+  "version": "3.5",
+  "publisher": "Wizards of the Coast",
+  "description": "The revised third edition of the world's most popular fantasy role-playing game, featuring the d20 system.",
+  "core_mechanics": {
+    "dice_system": "d20 system",
+    "ability_scores": [
+      "Strength",
+      "Dexterity",
+      "Constitution",
+      "Intelligence",
+      "Wisdom",
+      "Charisma"
+    ],
+    "skill_system": "Skill ranks and ability modifiers",
+    "saving_throws": "Fortitude, Reflex, Will",
+    "armor_class": "10 + Dex modifier + armor bonus + shield bonus + other modifiers",
+    "base_attack_bonus": "Progression based on class level"
+  },
+  "character_creation": {
+    "race": "Choose your character's race",
+    "class": "Select a class that defines your character's abilities",
+    "ability_scores": "Roll 4d6, drop lowest, or use point buy system",
+    "skills": "Allocate skill points based on class and intelligence",
+    "feats": "Gain feats at 1st level and every 3rd level thereafter",
+    "hit_points": "Roll hit die + Constitution modifier per level"
+  },
+  "supported_features": [
+    "Character creation and advancement",
+    "Spell preparation and casting",
+    "Skill checks with ranks and synergy bonuses",
+    "Combat with full attack actions and attacks of opportunity",
+    "Feat selection and prerequisites",
+    "Multiclassing with experience penalties",
+    "Prestige classes",
+    "Magic item creation"
+  ]
+}

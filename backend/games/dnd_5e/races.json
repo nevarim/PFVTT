@@ -29,23 +29,7 @@
       "Stonecunning"
     ],
     "languages": ["Common", "Dwarvish"],
-    "description": "Bold and hardy, dwarves are known as skilled warriors, miners, and workers of stone and metal.",
-    "subraces": {
-      "hill_dwarf": {
-        "name": "Hill Dwarf",
-        "ability_score_increase": {
-          "wisdom": 1
-        },
-        "traits": ["Dwarven Toughness"]
-      },
-      "mountain_dwarf": {
-        "name": "Mountain Dwarf",
-        "ability_score_increase": {
-          "strength": 2
-        },
-        "traits": ["Armor Proficiency"]
-      }
-    }
+    "description": "Bold and hardy, dwarves are known as skilled warriors, miners, and workers of stone and metal."
   },
   "elf": {
     "name": "Elf",
@@ -61,30 +45,7 @@
       "Trance"
     ],
     "languages": ["Common", "Elvish"],
-    "description": "Elves are a magical people of otherworldly grace, living in the world but not entirely part of it.",
-    "subraces": {
-      "high_elf": {
-        "name": "High Elf",
-        "ability_score_increase": {
-          "intelligence": 1
-        },
-        "traits": ["Elf Weapon Training", "Cantrip", "Extra Language"]
-      },
-      "wood_elf": {
-        "name": "Wood Elf",
-        "ability_score_increase": {
-          "wisdom": 1
-        },
-        "traits": ["Elf Weapon Training", "Fleet of Foot", "Mask of the Wild"]
-      },
-      "dark_elf": {
-        "name": "Dark Elf (Drow)",
-        "ability_score_increase": {
-          "charisma": 1
-        },
-        "traits": ["Superior Darkvision", "Sunlight Sensitivity", "Drow Magic", "Drow Weapon Training"]
-      }
-    }
+    "description": "Elves are a magical people of otherworldly grace, living in the world but not entirely part of it."
   },
   "gnome": {
     "name": "Gnome",
@@ -98,23 +59,7 @@
       "Gnome Cunning"
     ],
     "languages": ["Common", "Gnomish"],
-    "description": "A gnome's energy and enthusiasm for living shines through every inch of his or her tiny body.",
-    "subraces": {
-      "forest_gnome": {
-        "name": "Forest Gnome",
-        "ability_score_increase": {
-          "dexterity": 1
-        },
-        "traits": ["Natural Illusionist", "Speak with Small Beasts"]
-      },
-      "rock_gnome": {
-        "name": "Rock Gnome",
-        "ability_score_increase": {
-          "constitution": 1
-        },
-        "traits": ["Artificer's Lore", "Tinker"]
-      }
-    }
+    "description": "A gnome's energy and enthusiasm for living shines through every inch of his or her tiny body."
   },
   "half_elf": {
     "name": "Half-Elf",
@@ -127,27 +72,11 @@
     "traits": [
       "Darkvision",
       "Fey Ancestry",
-      "Skill Versatility"
+      "Extra Skill",
+      "Extra Language"
     ],
-    "languages": ["Common", "Elvish", "One extra language"],
+    "languages": ["Common", "Elvish", "choice"],
     "description": "Walking in two worlds but truly belonging to neither, half-elves combine what some say are the best qualities of their elf and human parents."
-  },
-  "half_orc": {
-    "name": "Half-Orc",
-    "ability_score_increase": {
-      "strength": 2,
-      "constitution": 1
-    },
-    "size": "Medium",
-    "speed": 30,
-    "traits": [
-      "Darkvision",
-      "Menacing",
-      "Relentless Endurance",
-      "Savage Attacks"
-    ],
-    "languages": ["Common", "Orc"],
-    "description": "Whether united under the leadership of a mighty warlock or having fought to a standstill after years of conflict, orc and human communities sometimes form alliances."
   },
   "halfling": {
     "name": "Halfling",
@@ -162,23 +91,23 @@
       "Halfling Nimbleness"
     ],
     "languages": ["Common", "Halfling"],
-    "description": "The comforts of home are the goals of most halflings' lives: a place to settle in peace and quiet, far from marauding monsters and clashing armies.",
-    "subraces": {
-      "lightfoot": {
-        "name": "Lightfoot",
-        "ability_score_increase": {
-          "charisma": 1
-        },
-        "traits": ["Naturally Stealthy"]
-      },
-      "stout": {
-        "name": "Stout",
-        "ability_score_increase": {
-          "constitution": 1
-        },
-        "traits": ["Stout Resilience"]
-      }
-    }
+    "description": "The comforts of home are the goals of most halflings' lives: a place to settle in peace and quiet, far from marauding monsters and clashing armies."
+  },
+  "half_orc": {
+    "name": "Half-Orc",
+    "ability_score_increase": {
+      "strength": 2,
+      "constitution": 1
+    },
+    "size": "Medium",
+    "speed": 30,
+    "traits": [
+      "Darkvision",
+      "Relentless Endurance",
+      "Savage Attacks"
+    ],
+    "languages": ["Common", "Orc"],
+    "description": "Whether united under the leadership of a mighty warlock or having fought to a standstill after years of conflict, orc and human tribes sometimes form alliances."
   },
   "human": {
     "name": "Human",
@@ -188,20 +117,12 @@
     "size": "Medium",
     "speed": 30,
     "traits": [
+      "Extra Skill",
       "Extra Language",
-      "Extra Skill"
+      "Extra Feat"
     ],
-    "languages": ["Common", "One extra language"],
-    "description": "In the reckonings of most worlds, humans are the youngest of the common races, late to arrive on the world scene and short-lived in comparison to dwarves, elves, and dragons.",
-    "variants": {
-      "variant_human": {
-        "name": "Variant Human",
-        "ability_score_increase": {
-          "choice": 2
-        },
-        "traits": ["Extra Skill", "Feat"]
-      }
-    }
+    "languages": ["Common", "choice"],
+    "description": "In the reckonings of most worlds, humans are the youngest of the common races, late to arrive on the world scene and short-lived in comparison to dwarves, elves, and dragons."
   },
   "tiefling": {
     "name": "Tiefling",

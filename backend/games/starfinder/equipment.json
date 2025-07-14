@@ -1,0 +1,190 @@
+{
+  "weapons": {
+    "small_arms": {
+      "azimuth_laser_pistol": {
+        "name": "Azimuth Laser Pistol",
+        "level": 1,
+        "price": 350,
+        "damage": "1d4 F",
+        "range": 80,
+        "critical": "Burn 1d4",
+        "capacity": "20 charges",
+        "usage": "1",
+        "bulk": "L",
+        "special": []
+      },
+      "tactical_semi_auto_pistol": {
+        "name": "Tactical Semi-Auto Pistol",
+        "level": 1,
+        "price": 260,
+        "damage": "1d6 P",
+        "range": 30,
+        "critical": "—",
+        "capacity": "9 rounds",
+        "usage": "1",
+        "bulk": "L",
+        "special": []
+      }
+    },
+    "longarms": {
+      "tactical_assault_rifle": {
+        "name": "Tactical Assault Rifle",
+        "level": 3,
+        "price": 1400,
+        "damage": "1d8 P",
+        "range": 80,
+        "critical": "—",
+        "capacity": "24 rounds",
+        "usage": "1",
+        "bulk": "1",
+        "special": ["Automatic"]
+      },
+      "hunting_rifle": {
+        "name": "Hunting Rifle",
+        "level": 1,
+        "price": 240,
+        "damage": "1d8 P",
+        "range": 90,
+        "critical": "—",
+        "capacity": "6 rounds",
+        "usage": "1",
+        "bulk": "1",
+        "special": []
+      }
+    },
+    "heavy_weapons": {
+      "tactical_rocket_launcher": {
+        "name": "Tactical Rocket Launcher",
+        "level": 2,
+        "price": 3100,
+        "damage": "1d8 B & F",
+        "range": 80,
+        "critical": "—",
+        "capacity": "1 rocket",
+        "usage": "1",
+        "bulk": "2",
+        "special": ["Explode (5 ft.)"]
+      }
+    },
+    "melee": {
+      "tactical_baton": {
+        "name": "Tactical Baton",
+        "level": 1,
+        "price": 90,
+        "damage": "1d4 B",
+        "critical": "—",
+        "bulk": "L",
+        "special": ["Operative"]
+      },
+      "survival_knife": {
+        "name": "Survival Knife",
+        "level": 1,
+        "price": 95,
+        "damage": "1d4 S",
+        "critical": "—",
+        "bulk": "L",
+        "special": ["Operative"]
+      }
+    }
+  },
+  "armor": {
+    "light_armor": {
+      "second_skin": {
+        "name": "Second Skin",
+        "level": 1,
+        "price": 250,
+        "eac_bonus": 1,
+        "kac_bonus": 2,
+        "max_dex_bonus": 5,
+        "armor_check_penalty": 0,
+        "speed_adjustment": 0,
+        "upgrade_slots": 1,
+        "bulk": "L"
+      },
+      "stationwear": {
+        "name": "Stationwear",
+        "level": 1,
+        "price": 95,
+        "eac_bonus": 0,
+        "kac_bonus": 1,
+        "max_dex_bonus": 5,
+        "armor_check_penalty": 0,
+        "speed_adjustment": 0,
+        "upgrade_slots": 0,
+        "bulk": "L"
+      },
+      "flight_suit_stationwear": {
+        "name": "Flight Suit Stationwear",
+        "level": 2,
+        "price": 750,
+        "eac_bonus": 2,
+        "kac_bonus": 3,
+        "max_dex_bonus": 5,
+        "armor_check_penalty": 0,
+        "speed_adjustment": 0,
+        "upgrade_slots": 2,
+        "bulk": "L"
+      }
+    },
+    "heavy_armor": {
+      "golemforged_plating_i": {
+        "name": "Golemforged Plating I",
+        "level": 1,
+        "price": 250,
+        "eac_bonus": 2,
+        "kac_bonus": 4,
+        "max_dex_bonus": 2,
+        "armor_check_penalty": -2,
+        "speed_adjustment": -5,
+        "upgrade_slots": 1,
+        "bulk": "2"
+      }
+    }
+  },
+  "technological_items": {
+    "comm_unit": {
+      "name": "Comm Unit",
+      "level": 1,
+      "price": 7,
+      "bulk": "L",
+      "description": "Personal communication device with 5-mile range."
+    },
+    "datapad": {
+      "name": "Datapad",
+      "level": 1,
+      "price": 20,
+      "bulk": "L",
+      "description": "Handheld computer for data storage and basic computing."
+    },
+    "engineering_kit": {
+      "name": "Engineering Kit",
+      "level": 1,
+      "price": 20,
+      "bulk": "1",
+      "description": "Tools for engineering tasks and repairs."
+    },
+    "hacking_kit": {
+      "name": "Hacking Kit",
+      "level": 1,
+      "price": 20,
+      "bulk": "1",
+      "description": "Specialized tools for computer infiltration."
+    }
+  },
+  "consumables": {
+    "serum_of_healing_mk_1": {
+      "name": "Serum of Healing, Mk 1",
+      "level": 1,
+      "price": 50,
+      "bulk": "L",
+      "description": "Restores 1d8 Hit Points when consumed."
+    },
+    "battery": {
+      "name": "Battery",
+      "level": 1,
+      "price": 60,
+      "bulk": "—",
+      "description": "Standard energy cell with 20 charges."
+    }
+  }
+}

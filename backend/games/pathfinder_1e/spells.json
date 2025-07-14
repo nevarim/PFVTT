@@ -1,1 +1,180 @@
-{}
+{
+  "0_level": {
+    "acid_splash": {
+      "name": "Acid Splash",
+      "level": 0,
+      "school": "Conjuration",
+      "casting_time": "1 standard action",
+      "range": "Close (25 ft. + 5 ft./2 levels)",
+      "duration": "Instantaneous",
+      "components": "V, S",
+      "description": "Orb deals 1d3 acid damage."
+    },
+    "detect_magic": {
+      "name": "Detect Magic",
+      "level": 0,
+      "school": "Divination",
+      "casting_time": "1 standard action",
+      "range": "60 ft.",
+      "duration": "Concentration, up to 1 min./level (D)",
+      "components": "V, S",
+      "description": "Detects all spells and magic items within 60 ft."
+    },
+    "light": {
+      "name": "Light",
+      "level": 0,
+      "school": "Evocation",
+      "casting_time": "1 standard action",
+      "range": "Touch",
+      "duration": "10 min./level",
+      "components": "V, M/DF",
+      "description": "Object shines like a torch."
+    },
+    "mage_hand": {
+      "name": "Mage Hand",
+      "level": 0,
+      "school": "Transmutation",
+      "casting_time": "1 standard action",
+      "range": "Close (25 ft. + 5 ft./2 levels)",
+      "duration": "Concentration",
+      "components": "V, S",
+      "description": "5-pound telekinesis."
+    },
+    "prestidigitation": {
+      "name": "Prestidigitation",
+      "level": 0,
+      "school": "Universal",
+      "casting_time": "1 standard action",
+      "range": "10 ft.",
+      "duration": "1 hour",
+      "components": "V, S",
+      "description": "Performs minor tricks."
+    },
+    "ray_of_frost": {
+      "name": "Ray of Frost",
+      "level": 0,
+      "school": "Evocation",
+      "casting_time": "1 standard action",
+      "range": "Close (25 ft. + 5 ft./2 levels)",
+      "duration": "Instantaneous",
+      "components": "V, S",
+      "description": "Ray deals 1d3 cold damage."
+    }
+  },
+  "1st_level": {
+    "magic_missile": {
+      "name": "Magic Missile",
+      "level": 1,
+      "school": "Evocation",
+      "casting_time": "1 standard action",
+      "range": "Medium (100 ft. + 10 ft./level)",
+      "duration": "Instantaneous",
+      "components": "V, S",
+      "description": "1d4+1 damage; +1 missile per two levels above 1st (max 5)."
+    },
+    "cure_light_wounds": {
+      "name": "Cure Light Wounds",
+      "level": 1,
+      "school": "Conjuration",
+      "casting_time": "1 standard action",
+      "range": "Touch",
+      "duration": "Instantaneous",
+      "components": "V, S",
+      "description": "Cures 1d8 damage + 1/level (max +5)."
+    },
+    "shield": {
+      "name": "Shield",
+      "level": 1,
+      "school": "Abjuration",
+      "casting_time": "1 standard action",
+      "range": "Personal",
+      "duration": "1 min./level (D)",
+      "components": "V, S",
+      "description": "Invisible disc gives +4 to AC, blocks magic missiles."
+    },
+    "burning_hands": {
+      "name": "Burning Hands",
+      "level": 1,
+      "school": "Evocation",
+      "casting_time": "1 standard action",
+      "range": "15 ft.",
+      "duration": "Instantaneous",
+      "components": "V, S",
+      "description": "1d4/level fire damage (max 5d4)."
+    },
+    "alarm": {
+      "name": "Alarm",
+      "level": 1,
+      "school": "Abjuration",
+      "casting_time": "1 standard action",
+      "range": "Close (25 ft. + 5 ft./2 levels)",
+      "duration": "2 hours/level (D)",
+      "components": "V, S, F/DF",
+      "description": "Wards an area for 2 hours/level."
+    }
+  },
+  "2nd_level": {
+    "invisibility": {
+      "name": "Invisibility",
+      "level": 2,
+      "school": "Illusion",
+      "casting_time": "1 standard action",
+      "range": "Personal or touch",
+      "duration": "1 min./level (D)",
+      "components": "V, S, M/DF",
+      "description": "Subject is invisible for 1 min./level or until it attacks."
+    },
+    "web": {
+      "name": "Web",
+      "level": 2,
+      "school": "Conjuration",
+      "casting_time": "1 standard action",
+      "range": "Medium (100 ft. + 10 ft./level)",
+      "duration": "10 min./level (D)",
+      "components": "V, S, M",
+      "description": "Fills 20-ft.-radius spread with sticky spiderwebs that can grapple foes and impair movement."
+    },
+    "scorching_ray": {
+      "name": "Scorching Ray",
+      "level": 2,
+      "school": "Evocation",
+      "casting_time": "1 standard action",
+      "range": "Close (25 ft. + 5 ft./2 levels)",
+      "duration": "Instantaneous",
+      "components": "V, S",
+      "description": "Ranged touch attack deals 4d6 fire damage, +1 ray/four levels (max 3)."
+    }
+  },
+  "3rd_level": {
+    "fireball": {
+      "name": "Fireball",
+      "level": 3,
+      "school": "Evocation",
+      "casting_time": "1 standard action",
+      "range": "Long (400 ft. + 40 ft./level)",
+      "duration": "Instantaneous",
+      "components": "V, S, M",
+      "description": "1d6/level damage, 20-ft. radius."
+    },
+    "lightning_bolt": {
+      "name": "Lightning Bolt",
+      "level": 3,
+      "school": "Evocation",
+      "casting_time": "1 standard action",
+      "range": "120 ft.",
+      "duration": "Instantaneous",
+      "components": "V, S, M",
+      "description": "Electricity deals 1d6/level damage."
+    },
+    "dispel_magic": {
+      "name": "Dispel Magic",
+      "level": 3,
+      "school": "Abjuration",
+      "casting_time": "1 standard action",
+      "range": "Medium (100 ft. + 10 ft./level)",
+      "duration": "Instantaneous",
+      "components": "V, S",
+      "description": "Cancels one magical spell or effect."
+    }
+  }
+}

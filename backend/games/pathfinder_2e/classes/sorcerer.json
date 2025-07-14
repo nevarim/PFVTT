@@ -1,0 +1,408 @@
+{
+  "name": "Sorcerer",
+  "hit_die": 6,
+  "primary_ability": "Charisma",
+  "saving_throw_proficiencies": ["Fortitude", "Will"],
+  "skill_points_per_level": 2,
+  "class_skills": [
+    "Arcana", "Crafting", "Deception", "Intimidation", "Religion"
+  ],
+  "armor_proficiencies": ["Unarmored"],
+  "weapon_proficiencies": ["Simple weapons", "Unarmed attacks"],
+  "tool_proficiencies": [],
+  "is_spellcaster": true,
+  "spellcasting_ability": "Charisma",
+  "spellcasting_tradition": "Varies by bloodline",
+  "levels": {
+    "1": {
+      "level": 1,
+      "proficiency_bonus": 2,
+      "features": ["Ancestry and Background", "Initial Proficiencies", "Bloodline", "Sorcerer Spellcasting", "Spell Repertoire"],
+      "class_dc": "trained",
+      "spell_attack": "trained",
+      "perception": "trained",
+      "fortitude": "expert",
+      "reflex": "trained",
+      "will": "expert",
+      "cantrips": 5,
+      "spell_slots": {
+        "1st": 2
+      }
+    },
+    "2": {
+      "level": 2,
+      "proficiency_bonus": 2,
+      "features": ["Sorcerer Feat", "Skill Feat"],
+      "class_dc": "trained",
+      "spell_attack": "trained",
+      "perception": "trained",
+      "fortitude": "expert",
+      "reflex": "trained",
+      "will": "expert",
+      "cantrips": 5,
+      "spell_slots": {
+        "1st": 3
+      }
+    },
+    "3": {
+      "level": 3,
+      "proficiency_bonus": 2,
+      "features": ["2nd-Level Spells", "General Feat", "Signature Spells", "Skill Increase"],
+      "class_dc": "trained",
+      "spell_attack": "trained",
+      "perception": "trained",
+      "fortitude": "expert",
+      "reflex": "trained",
+      "will": "expert",
+      "cantrips": 5,
+      "spell_slots": {
+        "1st": 4,
+        "2nd": 2
+      }
+    },
+    "4": {
+      "level": 4,
+      "proficiency_bonus": 2,
+      "features": ["Sorcerer Feat", "Skill Feat"],
+      "class_dc": "trained",
+      "spell_attack": "trained",
+      "perception": "trained",
+      "fortitude": "expert",
+      "reflex": "trained",
+      "will": "expert",
+      "cantrips": 5,
+      "spell_slots": {
+        "1st": 4,
+        "2nd": 3
+      }
+    },
+    "5": {
+      "level": 5,
+      "proficiency_bonus": 3,
+      "features": ["3rd-Level Spells", "Ancestry Feat", "Magical Fortification", "Skill Increase"],
+      "class_dc": "expert",
+      "spell_attack": "expert",
+      "perception": "trained",
+      "fortitude": "expert",
+      "reflex": "trained",
+      "will": "expert",
+      "cantrips": 5,
+      "spell_slots": {
+        "1st": 4,
+        "2nd": 4,
+        "3rd": 2
+      }
+    },
+    "6": {
+      "level": 6,
+      "proficiency_bonus": 3,
+      "features": ["Sorcerer Feat", "Skill Feat"],
+      "class_dc": "expert",
+      "spell_attack": "expert",
+      "perception": "trained",
+      "fortitude": "expert",
+      "reflex": "trained",
+      "will": "expert",
+      "cantrips": 5,
+      "spell_slots": {
+        "1st": 4,
+        "2nd": 4,
+        "3rd": 3
+      }
+    },
+    "7": {
+      "level": 7,
+      "proficiency_bonus": 3,
+      "features": ["4th-Level Spells", "General Feat", "Skill Increase"],
+      "class_dc": "expert",
+      "spell_attack": "expert",
+      "perception": "trained",
+      "fortitude": "expert",
+      "reflex": "trained",
+      "will": "expert",
+      "cantrips": 5,
+      "spell_slots": {
+        "1st": 4,
+        "2nd": 4,
+        "3rd": 4,
+        "4th": 2
+      }
+    },
+    "8": {
+      "level": 8,
+      "proficiency_bonus": 3,
+      "features": ["Sorcerer Feat", "Skill Feat"],
+      "class_dc": "expert",
+      "spell_attack": "expert",
+      "perception": "trained",
+      "fortitude": "expert",
+      "reflex": "trained",
+      "will": "expert",
+      "cantrips": 5,
+      "spell_slots": {
+        "1st": 4,
+        "2nd": 4,
+        "3rd": 4,
+        "4th": 3
+      }
+    },
+    "9": {
+      "level": 9,
+      "proficiency_bonus": 4,
+      "features": ["5th-Level Spells", "Ancestry Feat", "Lightning Reflexes", "Skill Increase"],
+      "class_dc": "expert",
+      "spell_attack": "expert",
+      "perception": "trained",
+      "fortitude": "expert",
+      "reflex": "expert",
+      "will": "expert",
+      "cantrips": 5,
+      "spell_slots": {
+        "1st": 4,
+        "2nd": 4,
+        "3rd": 4,
+        "4th": 4,
+        "5th": 2
+      }
+    },
+    "10": {
+      "level": 10,
+      "proficiency_bonus": 4,
+      "features": ["Ability Boosts", "Sorcerer Feat", "Skill Feat"],
+      "class_dc": "expert",
+      "spell_attack": "expert",
+      "perception": "trained",
+      "fortitude": "expert",
+      "reflex": "expert",
+      "will": "expert",
+      "cantrips": 5,
+      "spell_slots": {
+        "1st": 4,
+        "2nd": 4,
+        "3rd": 4,
+        "4th": 4,
+        "5th": 3
+      }
+    },
+    "11": {
+      "level": 11,
+      "proficiency_bonus": 4,
+      "features": ["6th-Level Spells", "Alertness", "General Feat", "Skill Increase"],
+      "class_dc": "master",
+      "spell_attack": "master",
+      "perception": "expert",
+      "fortitude": "expert",
+      "reflex": "expert",
+      "will": "expert",
+      "cantrips": 5,
+      "spell_slots": {
+        "1st": 4,
+        "2nd": 4,
+        "3rd": 4,
+        "4th": 4,
+        "5th": 4,
+        "6th": 2
+      }
+    },
+    "12": {
+      "level": 12,
+      "proficiency_bonus": 4,
+      "features": ["Sorcerer Feat", "Skill Feat"],
+      "class_dc": "master",
+      "spell_attack": "master",
+      "perception": "expert",
+      "fortitude": "expert",
+      "reflex": "expert",
+      "will": "expert",
+      "cantrips": 5,
+      "spell_slots": {
+        "1st": 4,
+        "2nd": 4,
+        "3rd": 4,
+        "4th": 4,
+        "5th": 4,
+        "6th": 3
+      }
+    },
+    "13": {
+      "level": 13,
+      "proficiency_bonus": 5,
+      "features": ["7th-Level Spells", "Ancestry Feat", "Defensive Robes", "Skill Increase"],
+      "class_dc": "master",
+      "spell_attack": "master",
+      "perception": "expert",
+      "fortitude": "expert",
+      "reflex": "expert",
+      "will": "expert",
+      "cantrips": 5,
+      "spell_slots": {
+        "1st": 4,
+        "2nd": 4,
+        "3rd": 4,
+        "4th": 4,
+        "5th": 4,
+        "6th": 4,
+        "7th": 2
+      }
+    },
+    "14": {
+      "level": 14,
+      "proficiency_bonus": 5,
+      "features": ["Sorcerer Feat", "Skill Feat"],
+      "class_dc": "master",
+      "spell_attack": "master",
+      "perception": "expert",
+      "fortitude": "expert",
+      "reflex": "expert",
+      "will": "expert",
+      "cantrips": 5,
+      "spell_slots": {
+        "1st": 4,
+        "2nd": 4,
+        "3rd": 4,
+        "4th": 4,
+        "5th": 4,
+        "6th": 4,
+        "7th": 3
+      }
+    },
+    "15": {
+      "level": 15,
+      "proficiency_bonus": 5,
+      "features": ["8th-Level Spells", "General Feat", "Skill Increase"],
+      "class_dc": "master",
+      "spell_attack": "master",
+      "perception": "expert",
+      "fortitude": "expert",
+      "reflex": "expert",
+      "will": "expert",
+      "cantrips": 5,
+      "spell_slots": {
+        "1st": 4,
+        "2nd": 4,
+        "3rd": 4,
+        "4th": 4,
+        "5th": 4,
+        "6th": 4,
+        "7th": 4,
+        "8th": 2
+      }
+    },
+    "16": {
+      "level": 16,
+      "proficiency_bonus": 5,
+      "features": ["Sorcerer Feat", "Skill Feat"],
+      "class_dc": "master",
+      "spell_attack": "master",
+      "perception": "expert",
+      "fortitude": "expert",
+      "reflex": "expert",
+      "will": "expert",
+      "cantrips": 5,
+      "spell_slots": {
+        "1st": 4,
+        "2nd": 4,
+        "3rd": 4,
+        "4th": 4,
+        "5th": 4,
+        "6th": 4,
+        "7th": 4,
+        "8th": 3
+      }
+    },
+    "17": {
+      "level": 17,
+      "proficiency_bonus": 6,
+      "features": ["9th-Level Spells", "Ancestry Feat", "Resolve", "Skill Increase"],
+      "class_dc": "master",
+      "spell_attack": "master",
+      "perception": "expert",
+      "fortitude": "expert",
+      "reflex": "expert",
+      "will": "master",
+      "cantrips": 5,
+      "spell_slots": {
+        "1st": 4,
+        "2nd": 4,
+        "3rd": 4,
+        "4th": 4,
+        "5th": 4,
+        "6th": 4,
+        "7th": 4,
+        "8th": 4,
+        "9th": 2
+      }
+    },
+    "18": {
+      "level": 18,
+      "proficiency_bonus": 6,
+      "features": ["Sorcerer Feat", "Skill Feat"],
+      "class_dc": "master",
+      "spell_attack": "master",
+      "perception": "expert",
+      "fortitude": "expert",
+      "reflex": "expert",
+      "will": "master",
+      "cantrips": 5,
+      "spell_slots": {
+        "1st": 4,
+        "2nd": 4,
+        "3rd": 4,
+        "4th": 4,
+        "5th": 4,
+        "6th": 4,
+        "7th": 4,
+        "8th": 4,
+        "9th": 3
+      }
+    },
+    "19": {
+      "level": 19,
+      "proficiency_bonus": 6,
+      "features": ["Bloodline Paragon", "General Feat", "Skill Increase"],
+      "class_dc": "legendary",
+      "spell_attack": "legendary",
+      "perception": "expert",
+      "fortitude": "expert",
+      "reflex": "expert",
+      "will": "master",
+      "cantrips": 5,
+      "spell_slots": {
+        "1st": 4,
+        "2nd": 4,
+        "3rd": 4,
+        "4th": 4,
+        "5th": 4,
+        "6th": 4,
+        "7th": 4,
+        "8th": 4,
+        "9th": 4,
+        "10th": 1
+      }
+    },
+    "20": {
+      "level": 20,
+      "proficiency_bonus": 6,
+      "features": ["Ability Boosts", "Sorcerer Feat", "Skill Feat"],
+      "class_dc": "legendary",
+      "spell_attack": "legendary",
+      "perception": "expert",
+      "fortitude": "expert",
+      "reflex": "expert",
+      "will": "master",
+      "cantrips": 5,
+      "spell_slots": {
+        "1st": 4,
+        "2nd": 4,
+        "3rd": 4,
+        "4th": 4,
+        "5th": 4,
+        "6th": 4,
+        "7th": 4,
+        "8th": 4,
+        "9th": 4,
+        "10th": 1
+      }
+    }
+  }
+}

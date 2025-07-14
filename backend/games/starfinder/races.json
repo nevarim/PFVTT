@@ -1,0 +1,149 @@
+{
+  "android": {
+    "name": "Android",
+    "description": "Artificial beings with souls, androids struggle to find their place between the worlds of constructs and humanoids.",
+    "ability_score_modifiers": {
+      "dexterity": 2,
+      "intelligence": 2,
+      "charisma": -2
+    },
+    "hit_points": 4,
+    "size": "Medium",
+    "type": "Humanoid",
+    "subtype": "android",
+    "racial_traits": [
+      "Constructed",
+      "Exceptional Vision",
+      "Flat Affect",
+      "Upgrade Slot"
+    ]
+  },
+  "human": {
+    "name": "Human",
+    "description": "Ambitious, creative, and endlessly curious, humans have shown more drive to explore their system and beyond than any of their neighbor races.",
+    "ability_score_modifiers": {
+      "any": 2
+    },
+    "hit_points": 4,
+    "size": "Medium",
+    "type": "Humanoid",
+    "subtype": "human",
+    "racial_traits": [
+      "Bonus Feat",
+      "Skilled"
+    ]
+  },
+  "kasatha": {
+    "name": "Kasatha",
+    "description": "Originally from a world orbiting a dying star far beyond the Pact Worlds, the four-armed kasathas maintain a reputation as a noble and mysterious people.",
+    "ability_score_modifiers": {
+      "strength": 2,
+      "wisdom": 2,
+      "intelligence": -2
+    },
+    "hit_points": 4,
+    "size": "Medium",
+    "type": "Humanoid",
+    "subtype": "kasatha",
+    "racial_traits": [
+      "Desert Stride",
+      "Four-Armed",
+      "Historian",
+      "Natural Grace"
+    ]
+  },
+  "lashunta": {
+    "name": "Lashunta",
+    "description": "Idealized by many other humanoid races and gifted with innate psychic abilities, lashuntas are at once consummate scholars and enlightened warriors.",
+    "ability_score_modifiers": {
+      "charisma": 2
+    },
+    "hit_points": 4,
+    "size": "Medium",
+    "type": "Humanoid",
+    "subtype": "lashunta",
+    "racial_traits": [
+      "Dimorphic",
+      "Lashunta Magic",
+      "Limited Telepathy",
+      "Student"
+    ],
+    "subraces": {
+      "korasha": {
+        "name": "Korasha",
+        "description": "Tall, powerful, and lean, korasha lashuntas are the warrior caste.",
+        "ability_score_modifiers": {
+          "strength": 2,
+          "charisma": 2,
+          "wisdom": -2
+        }
+      },
+      "damaya": {
+        "name": "Damaya",
+        "description": "Shorter and more cerebral, damaya lashuntas are the scholar caste.",
+        "ability_score_modifiers": {
+          "intelligence": 2,
+          "charisma": 2,
+          "constitution": -2
+        }
+      }
+    }
+  },
+  "shirren": {
+    "name": "Shirren",
+    "description": "Once part of a ravenous hive of locust-like predators, the insectile shirrens only recently broke with their hive mind to become a race of telepaths committed to peace and harmony.",
+    "ability_score_modifiers": {
+      "constitution": 2,
+      "wisdom": 2,
+      "charisma": -2
+    },
+    "hit_points": 6,
+    "size": "Medium",
+    "type": "Humanoid",
+    "subtype": "shirren",
+    "racial_traits": [
+      "Blindsense",
+      "Communalism",
+      "Cultural Fascination",
+      "Limited Telepathy"
+    ]
+  },
+  "vesk": {
+    "name": "Vesk",
+    "description": "Heavily muscled and covered with thick scales and short, sharp horns, the reptilian vesk are exactly as predatory and warlike as they appear.",
+    "ability_score_modifiers": {
+      "strength": 2,
+      "constitution": 2,
+      "intelligence": -2
+    },
+    "hit_points": 6,
+    "size": "Medium",
+    "type": "Humanoid",
+    "subtype": "vesk",
+    "racial_traits": [
+      "Armor Savant",
+      "Fearless",
+      "Low-Light Vision",
+      "Natural Weapons"
+    ]
+  },
+  "ysoki": {
+    "name": "Ysoki",
+    "description": "Small and furtive, the ysoki are often overlooked by larger races. Yet through wit and technological prowess, they've spread throughout the solar system.",
+    "ability_score_modifiers": {
+      "dexterity": 2,
+      "intelligence": 2,
+      "strength": -2
+    },
+    "hit_points": 2,
+    "size": "Small",
+    "type": "Humanoid",
+    "subtype": "ysoki",
+    "racial_traits": [
+      "Cheek Pouches",
+      "Darkvision",
+      "Moxie",
+      "Scrounger"
+    ]
+  }
+}

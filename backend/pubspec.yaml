@@ -12,6 +12,7 @@ dependencies:
   bcrypt: any
   mime: ^1.0.4
   http_parser: ^4.0.2
+  dotenv: ^4.2.0
   # path: ^1.8.0
 
 dev_dependencies:

@@ -1,1 +1,317 @@
-{}
+{
+  "Appraise": {
+    "name": "Appraise",
+    "ability": "Intelligence",
+    "trained_only": false,
+    "armor_check_penalty": false,
+    "description": "You can evaluate the monetary worth of an object."
+  },
+  "Balance": {
+    "name": "Balance",
+    "ability": "Dexterity",
+    "trained_only": false,
+    "armor_check_penalty": true,
+    "description": "You can keep your balance while traversing narrow or treacherous surfaces."
+  },
+  "Bluff": {
+    "name": "Bluff",
+    "ability": "Charisma",
+    "trained_only": false,
+    "armor_check_penalty": false,
+    "description": "You can make the outrageous or the untrue seem plausible."
+  },
+  "Climb": {
+    "name": "Climb",
+    "ability": "Strength",
+    "trained_only": false,
+    "armor_check_penalty": true,
+    "description": "You can scale vertical surfaces, from city walls to cliff faces."
+  },
+  "Concentration": {
+    "name": "Concentration",
+    "ability": "Constitution",
+    "trained_only": false,
+    "armor_check_penalty": false,
+    "description": "You can focus your mind, enabling you to cast a spell, use a spell-like ability, or use a skill despite distractions."
+  },
+  "Craft": {
+    "name": "Craft",
+    "ability": "Intelligence",
+    "trained_only": false,
+    "armor_check_penalty": false,
+    "description": "You are skilled in the creation of a specific group of items."
+  },
+  "Decipher Script": {
+    "name": "Decipher Script",
+    "ability": "Intelligence",
+    "trained_only": true,
+    "armor_check_penalty": false,
+    "description": "You can understand writings in an unfamiliar language or a message written in an incomplete or archaic form."
+  },
+  "Diplomacy": {
+    "name": "Diplomacy",
+    "ability": "Charisma",
+    "trained_only": false,
+    "armor_check_penalty": false,
+    "description": "You can change the attitudes of others with a successful check."
+  },
+  "Disable Device": {
+    "name": "Disable Device",
+    "ability": "Intelligence",
+    "trained_only": true,
+    "armor_check_penalty": false,
+    "description": "You can jam locks, sabotage wagon wheels, disable traps, and perform similar acts of sabotage."
+  },
+  "Disguise": {
+    "name": "Disguise",
+    "ability": "Charisma",
+    "trained_only": false,
+    "armor_check_penalty": false,
+    "description": "You can change your appearance."
+  },
+  "Escape Artist": {
+    "name": "Escape Artist",
+    "ability": "Dexterity",
+    "trained_only": false,
+    "armor_check_penalty": true,
+    "description": "You can slip bonds, squeeze through tight spaces, and generally contort yourself to escape from confinement."
+  },
+  "Forgery": {
+    "name": "Forgery",
+    "ability": "Intelligence",
+    "trained_only": false,
+    "armor_check_penalty": false,
+    "description": "You can create false documents, identify such documents, and detect someone else's handiwork."
+  },
+  "Gather Information": {
+    "name": "Gather Information",
+    "ability": "Charisma",
+    "trained_only": false,
+    "armor_check_penalty": false,
+    "description": "You can collect rumors, gossip, and lore from taverns, inns, and other social gathering places."
+  },
+  "Handle Animal": {
+    "name": "Handle Animal",
+    "ability": "Charisma",
+    "trained_only": true,
+    "armor_check_penalty": false,
+    "description": "You can handle an animal, train it to perform tricks, or even train it for a purpose such as combat or guarding."
+  },
+  "Heal": {
+    "name": "Heal",
+    "ability": "Wisdom",
+    "trained_only": false,
+    "armor_check_penalty": false,
+    "description": "You can tend to wounds and help others recover from various afflictions."
+  },
+  "Hide": {
+    "name": "Hide",
+    "ability": "Dexterity",
+    "trained_only": false,
+    "armor_check_penalty": true,
+    "description": "You can conceal yourself from enemies."
+  },
+  "Intimidate": {
+    "name": "Intimidate",
+    "ability": "Charisma",
+    "trained_only": false,
+    "armor_check_penalty": false,
+    "description": "You can use this skill to get a bully to back down, frighten an enemy, or make a prisoner give you the information you want."
+  },
+  "Jump": {
+    "name": "Jump",
+    "ability": "Strength",
+    "trained_only": false,
+    "armor_check_penalty": true,
+    "description": "You can leap over pits, vault low fences, or reach a ledge."
+  },
+  "Knowledge (arcana)": {
+    "name": "Knowledge (arcana)",
+    "ability": "Intelligence",
+    "trained_only": true,
+    "armor_check_penalty": false,
+    "description": "You have studied the arcane arts and know about magic-related topics."
+  },
+  "Knowledge (architecture and engineering)": {
+    "name": "Knowledge (architecture and engineering)",
+    "ability": "Intelligence",
+    "trained_only": true,
+    "armor_check_penalty": false,
+    "description": "You know about buildings, aqueducts, bridges, fortifications, and other structures."
+  },
+  "Knowledge (dungeoneering)": {
+    "name": "Knowledge (dungeoneering)",
+    "ability": "Intelligence",
+    "trained_only": true,
+    "armor_check_penalty": false,
+    "description": "You know about aberrations, caverns, oozes, spelunking, and the Underdark."
+  },
+  "Knowledge (geography)": {
+    "name": "Knowledge (geography)",
+    "ability": "Intelligence",
+    "trained_only": true,
+    "armor_check_penalty": false,
+    "description": "You know about lands, terrain, climate, people, customs, kingdoms, and rulers."
+  },
+  "Knowledge (history)": {
+    "name": "Knowledge (history)",
+    "ability": "Intelligence",
+    "trained_only": true,
+    "armor_check_penalty": false,
+    "description": "You know about wars, colonies, migrations, founding of cities, and other historical topics."
+  },
+  "Knowledge (local)": {
+    "name": "Knowledge (local)",
+    "ability": "Intelligence",
+    "trained_only": true,
+    "armor_check_penalty": false,
+    "description": "You know about legends, personalities, inhabitants, laws, customs, traditions, and humanoids of a particular region."
+  },
+  "Knowledge (nature)": {
+    "name": "Knowledge (nature)",
+    "ability": "Intelligence",
+    "trained_only": true,
+    "armor_check_penalty": false,
+    "description": "You know about animals, fey, giants, monstrous humanoids, plants, seasons and cycles, weather, and vermin."
+  },
+  "Knowledge (nobility and royalty)": {
+    "name": "Knowledge (nobility and royalty)",
+    "ability": "Intelligence",
+    "trained_only": true,
+    "armor_check_penalty": false,
+    "description": "You know about lineages, heraldry, family trees, mottoes, and personalities of the nobility."
+  },
+  "Knowledge (religion)": {
+    "name": "Knowledge (religion)",
+    "ability": "Intelligence",
+    "trained_only": true,
+    "armor_check_penalty": false,
+    "description": "You know about gods and goddesses, mythic history, ecclesiastic tradition, holy symbols, and undead."
+  },
+  "Knowledge (the planes)": {
+    "name": "Knowledge (the planes)",
+    "ability": "Intelligence",
+    "trained_only": true,
+    "armor_check_penalty": false,
+    "description": "You know about the Inner Planes, Outer Planes, Astral Plane, Ethereal Plane, outsiders, elementals, and magic related to the planes."
+  },
+  "Listen": {
+    "name": "Listen",
+    "ability": "Wisdom",
+    "trained_only": false,
+    "armor_check_penalty": false,
+    "description": "You can hear approaching enemies, sneak up on foes, or overhear conversations."
+  },
+  "Move Silently": {
+    "name": "Move Silently",
+    "ability": "Dexterity",
+    "trained_only": false,
+    "armor_check_penalty": true,
+    "description": "You can sneak up on someone or slip away without being noticed."
+  },
+  "Open Lock": {
+    "name": "Open Lock",
+    "ability": "Dexterity",
+    "trained_only": true,
+    "armor_check_penalty": false,
+    "description": "You can pick padlocks, finesse combination locks, and solve puzzle boxes."
+  },
+  "Perform": {
+    "name": "Perform",
+    "ability": "Charisma",
+    "trained_only": false,
+    "armor_check_penalty": false,
+    "description": "You can impress audiences with your talent and skill in a variety of performance types."
+  },
+  "Profession": {
+    "name": "Profession",
+    "ability": "Wisdom",
+    "trained_only": true,
+    "armor_check_penalty": false,
+    "description": "You are trained in a livelihood or a professional role."
+  },
+  "Ride": {
+    "name": "Ride",
+    "ability": "Dexterity",
+    "trained_only": false,
+    "armor_check_penalty": false,
+    "description": "You can ride a mount in combat or in noncombat situations."
+  },
+  "Search": {
+    "name": "Search",
+    "ability": "Intelligence",
+    "trained_only": false,
+    "armor_check_penalty": false,
+    "description": "You can find secret doors, simple traps, hidden compartments, and other details not readily apparent."
+  },
+  "Sense Motive": {
+    "name": "Sense Motive",
+    "ability": "Wisdom",
+    "trained_only": false,
+    "armor_check_penalty": false,
+    "description": "You can tell when someone is bluffing you, sense when someone is trustworthy, or determine if someone is under the influence of an enchantment."
+  },
+  "Sleight of Hand": {
+    "name": "Sleight of Hand",
+    "ability": "Dexterity",
+    "trained_only": true,
+    "armor_check_penalty": true,
+    "description": "You can cut or lift purses, palm unattended objects, or perform feats of legerdemain."
+  },
+  "Speak Language": {
+    "name": "Speak Language",
+    "ability": "None",
+    "trained_only": true,
+    "armor_check_penalty": false,
+    "description": "You can speak and understand a language."
+  },
+  "Spellcraft": {
+    "name": "Spellcraft",
+    "ability": "Intelligence",
+    "trained_only": true,
+    "armor_check_penalty": false,
+    "description": "You can identify spells and magic effects."
+  },
+  "Spot": {
+    "name": "Spot",
+    "ability": "Wisdom",
+    "trained_only": false,
+    "armor_check_penalty": false,
+    "description": "You can notice enemies, detect details, and see through disguises."
+  },
+  "Survival": {
+    "name": "Survival",
+    "ability": "Wisdom",
+    "trained_only": false,
+    "armor_check_penalty": false,
+    "description": "You can survive in the wild and navigate safely through dangerous territory."
+  },
+  "Swim": {
+    "name": "Swim",
+    "ability": "Strength",
+    "trained_only": false,
+    "armor_check_penalty": true,
+    "description": "You can swim and dive in various bodies of water."
+  },
+  "Tumble": {
+    "name": "Tumble",
+    "ability": "Dexterity",
+    "trained_only": true,
+    "armor_check_penalty": true,
+    "description": "You can dive, roll, somersault, flip, and so on."
+  },
+  "Use Magic Device": {
+    "name": "Use Magic Device",
+    "ability": "Charisma",
+    "trained_only": true,
+    "armor_check_penalty": false,
+    "description": "You can activate magic devices, even if you cannot normally do so."
+  },
+  "Use Rope": {
+    "name": "Use Rope",
+    "ability": "Dexterity",
+    "trained_only": false,
+    "armor_check_penalty": false,
+    "description": "You can tie knots, bind prisoners, and rig pulleys."
+  }
+}
