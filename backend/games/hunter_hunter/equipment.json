@@ -1,0 +1,105 @@
+{
+  "weapons": {
+    "nen_enhanced_sword": {
+      "name": "Spada Potenziata dal Nen",
+      "type": "martial_melee",
+      "damage": "1d8",
+      "damage_type": "slashing",
+      "weight": 3,
+      "cost": 15,
+      "properties": ["versatile", "nen_compatible"],
+      "description": "Una spada che può essere potenziata con il Nen per aumentare il danno."
+    },
+    "yo_yo": {
+      "name": "Yo-Yo da Combattimento",
+      "type": "simple_ranged",
+      "damage": "1d4",
+      "damage_type": "bludgeoning",
+      "range": "20/60",
+      "weight": 1,
+      "cost": 5,
+      "properties": ["finesse", "returning"],
+      "description": "Yo-yo modificato per il combattimento, può essere richiamato automaticamente."
+    },
+    "fishing_rod": {
+      "name": "Canna da Pesca da Combattimento",
+      "type": "martial_ranged",
+      "damage": "1d6",
+      "damage_type": "bludgeoning",
+      "range": "30/120",
+      "weight": 2,
+      "cost": 10,
+      "properties": ["reach", "entangling"],
+      "description": "Canna da pesca rinforzata che può essere usata per intrappolare nemici."
+    }
+  },
+  "armor": {
+    "hunter_outfit": {
+      "name": "Abbigliamento da Cacciatore",
+      "type": "light",
+      "ac_base": 11,
+      "max_dex_bonus": null,
+      "weight": 10,
+      "cost": 50,
+      "description": "Abbigliamento standard dei Cacciatori, leggero e resistente."
+    },
+    "nen_infused_clothing": {
+      "name": "Vestiti Infusi di Nen",
+      "type": "light",
+      "ac_base": 12,
+      "max_dex_bonus": null,
+      "weight": 8,
+      "cost": 200,
+      "description": "Vestiti potenziati permanentemente con il Nen per fornire protezione extra."
+    }
+  },
+  "tools": {
+    "hunter_license": {
+      "name": "Licenza da Cacciatore",
+      "type": "tool",
+      "weight": 0,
+      "cost": 0,
+      "description": "Licenza ufficiale che garantisce privilegi speciali e accesso a informazioni riservate.",
+      "benefits": [
+        "Accesso gratuito a quasi tutti i servizi pubblici",
+        "Credito illimitato presso la maggior parte delle banche",
+        "Accesso a informazioni classificate",
+        "Immunità legale in molte situazioni"
+      ]
+    },
+    "nen_training_weights": {
+      "name": "Pesi da Allenamento Nen",
+      "type": "tool",
+      "weight": 20,
+      "cost": 100,
+      "description": "Pesi speciali che aiutano nell'allenamento del controllo dell'aura."
+    },
+    "aura_detector": {
+      "name": "Rilevatore di Aura",
+      "type": "tool",
+      "weight": 1,
+      "cost": 500,
+      "description": "Dispositivo tecnologico che può rilevare la presenza di aura Nen nell'area."
+    }
+  },
+  "consumables": {
+    "nen_recovery_pill": {
+      "name": "Pillola di Recupero Nen",
+      "type": "consumable",
+      "weight": 0,
+      "cost": 50,
+      "description": "Ripristina 1d4+1 punti Nen quando consumata.",
+      "effect": "restore_nen",
+      "amount": "1d4+1"
+    },
+    "stamina_booster": {
+      "name": "Potenziatore di Resistenza",
+      "type": "consumable",
+      "weight": 0,
+      "cost": 25,
+      "description": "Fornisce vantaggio sui tiri salvezza di Costituzione per 1 ora.",
+      "effect": "constitution_advantage",
+      "duration": "1 hour"
+    }
+  }
+}

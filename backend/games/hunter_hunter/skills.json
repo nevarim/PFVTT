@@ -1,0 +1,77 @@
+{
+  "acrobatics": {
+    "name": "Acrobazia",
+    "ability": "dexterity",
+    "description": "Capacità di eseguire movimenti acrobatici e mantenere l'equilibrio."
+  },
+  "athletics": {
+    "name": "Atletica",
+    "ability": "strength",
+    "description": "Forza fisica, nuoto, arrampicata e salto."
+  },
+  "concentration": {
+    "name": "Concentrazione",
+    "ability": "constitution",
+    "description": "Capacità di mantenere la concentrazione durante l'uso del Nen."
+  },
+  "craft": {
+    "name": "Artigianato",
+    "ability": "intelligence",
+    "description": "Creazione e riparazione di oggetti."
+  },
+  "heal": {
+    "name": "Guarigione",
+    "ability": "wisdom",
+    "description": "Conoscenze mediche e capacità di curare ferite."
+  },
+  "intimidate": {
+    "name": "Intimidire",
+    "ability": "charisma",
+    "description": "Capacità di incutere timore negli altri."
+  },
+  "knowledge_arcana": {
+    "name": "Conoscenze (Nen)",
+    "ability": "intelligence",
+    "description": "Conoscenza teorica del Nen e delle sue applicazioni."
+  },
+  "listen": {
+    "name": "Ascoltare",
+    "ability": "wisdom",
+    "description": "Capacità di percepire suoni e conversazioni."
+  },
+  "profession": {
+    "name": "Professione",
+    "ability": "wisdom",
+    "description": "Competenza in una professione specifica."
+  },
+  "sense_motive": {
+    "name": "Intuire Intenzioni",
+    "ability": "wisdom",
+    "description": "Capacità di leggere le intenzioni e le emozioni altrui."
+  },
+  "spot": {
+    "name": "Osservare",
+    "ability": "wisdom",
+    "description": "Capacità di notare dettagli e oggetti nascosti."
+  },
+  "survival": {
+    "name": "Sopravvivenza",
+    "ability": "wisdom",
+    "description": "Capacità di sopravvivere in ambienti selvaggi."
+  },
+  "nen_control": {
+    "name": "Controllo Nen",
+    "ability": "wisdom",
+    "description": "Abilità specifica per controllare e manipolare l'aura del Nen."
+  },
+  "hunter_knowledge": {
+    "name": "Conoscenze da Cacciatore",
+    "ability": "intelligence",
+    "description": "Conoscenze specifiche relative al mondo dei Cacciatori."
+  },
+  "aura_reading": {
+    "name": "Lettura dell'Aura",
+    "ability": "wisdom",
+    "description": "Capacità di percepire e interpretare l'aura degli altri."
+  }
+}

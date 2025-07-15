@@ -1,0 +1,95 @@
+{
+  "human": {
+    "name": "Umano",
+    "description": "La razza più comune nel mondo di Hunter x Hunter. Gli umani mostrano grande versatilità nell'apprendimento del Nen.",
+    "ability_score_increases": {
+      "any": 2,
+      "any_secondary": 1
+    },
+    "size": "medium",
+    "speed": 30,
+    "traits": {
+      "versatile_learning": {
+        "name": "Apprendimento Versatile",
+        "description": "Bonus +1 a tutte le prove di abilità relative al Nen."
+      },
+      "adaptive_nature": {
+        "name": "Natura Adattiva",
+        "description": "Può scegliere una categoria Nen aggiuntiva come secondaria al 5° livello."
+      }
+    }
+  },
+  "kurta": {
+    "name": "Kurta",
+    "description": "Clan quasi estinto noto per i loro occhi scarlatti che si attivano in stati emotivi intensi.",
+    "ability_score_increases": {
+      "wisdom": 2,
+      "charisma": 1
+    },
+    "size": "medium",
+    "speed": 30,
+    "traits": {
+      "scarlet_eyes": {
+        "name": "Occhi Scarlatti",
+        "description": "Quando attivati, forniscono +2 a tutte le caratteristiche per 1 minuto. Utilizzabile 1 volta per riposo lungo."
+      },
+      "emperor_time": {
+        "name": "Tempo dell'Imperatore",
+        "description": "Durante l'attivazione degli occhi scarlatti, può utilizzare tutte le categorie Nen al 100% di efficienza."
+      },
+      "emotional_trigger": {
+        "name": "Innesco Emotivo",
+        "description": "Gli occhi scarlatti si attivano automaticamente quando subisce danno critico o vede un alleato morire."
+      }
+    }
+  },
+  "zoldyck": {
+    "name": "Zoldyck",
+    "description": "Famiglia di assassini leggendari con capacità fisiche e mentali superiori.",
+    "ability_score_increases": {
+      "dexterity": 2,
+      "constitution": 1
+    },
+    "size": "medium",
+    "speed": 35,
+    "traits": {
+      "assassin_training": {
+        "name": "Addestramento da Assassino",
+        "description": "Competenza in Furtività e Intimidire. Doppia competenza se già posseduta."
+      },
+      "poison_resistance": {
+        "name": "Resistenza ai Veleni",
+        "description": "Vantaggio sui tiri salvezza contro veleni e resistenza al danno da veleno."
+      },
+      "killer_instinct": {
+        "name": "Istinto Omicida",
+        "description": "Può attivare un'aura intimidatoria che causa paura negli avversari entro 10 piedi."
+      }
+    }
+  },
+  "chimera_ant": {
+    "name": "Formica Chimera",
+    "description": "Esseri ibridi con caratteristiche sia umane che animali, dotati di grande potenziale nel Nen.",
+    "ability_score_increases": {
+      "strength": 1,
+      "constitution": 1,
+      "any": 1
+    },
+    "size": "medium",
+    "speed": 30,
+    "traits": {
+      "hybrid_nature": {
+        "name": "Natura Ibrida",
+        "description": "Sceglie un tratto animale che fornisce un'abilità speciale (volo, nuoto, artigli, ecc.)."
+      },
+      "rapid_evolution": {
+        "name": "Evoluzione Rapida",
+        "description": "Guadagna punti esperienza aggiuntivi quando impara nuove tecniche Nen."
+      },
+      "enhanced_senses": {
+        "name": "Sensi Potenziati",
+        "description": "Vantaggio sulle prove di Percezione e può percepire l'aura a distanze maggiori."
+      }
+    }
+  }
+}

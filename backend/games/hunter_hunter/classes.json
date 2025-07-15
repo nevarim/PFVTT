@@ -1,0 +1,93 @@
+{
+  "nen_master": {
+    "name": "Nen Master",
+    "description": "Un maestro nell'arte del Nen, capace di manipolare la propria aura vitale per ottenere poteri straordinari. I Nen Master sono cacciatori esperti che hanno sviluppato le loro abilità attraverso anni di allenamento e disciplina.",
+    "hit_die": "d8",
+    "primary_ability": "wisdom",
+    "saving_throw_proficiencies": ["wisdom", "constitution"],
+    "skill_points_per_level": 4,
+    "base_attack_bonus": "medium",
+    "class_skills": [
+      "acrobatics",
+      "athletics",
+      "concentration",
+      "craft",
+      "heal",
+      "intimidate",
+      "knowledge_arcana",
+      "listen",
+      "profession",
+      "sense_motive",
+      "spot",
+      "survival"
+    ],
+    "class_features": {
+      "1": {
+        "aura_sight": {
+          "name": "Vista dell'Aura",
+          "description": "Capacità di vedere l'aura vitale degli esseri viventi entro 30 piedi."
+        },
+        "nen_points": {
+          "name": "Punti Nen",
+          "description": "Pool di energia per utilizzare le abilità Nen. Punti = livello classe + modificatore Saggezza."
+        }
+      },
+      "2": {
+        "nen_category": {
+          "name": "Categoria Nen",
+          "description": "Scelta della categoria principale di Nen: Enhancer, Emitter, Manipulator, Transmuter, Conjurer, o Specialist."
+        }
+      },
+      "3": {
+        "hatsu_development": {
+          "name": "Sviluppo Hatsu",
+          "description": "Sviluppo di un'abilità Nen personalizzata unica."
+        }
+      },
+      "4": {
+        "ability_score_improvement": {
+          "name": "Miglioramento Caratteristiche",
+          "description": "Aumento di 2 punti in una caratteristica o 1 punto in due caratteristiche diverse."
+        }
+      },
+      "5": {
+        "advanced_nen": {
+          "name": "Nen Avanzato",
+          "description": "Accesso a tecniche Nen più potenti e complesse."
+        }
+      }
+    },
+    "nen_categories": {
+      "enhancer": {
+        "name": "Enhancer",
+        "description": "Potenzia le proprietà fisiche di oggetti e del proprio corpo.",
+        "primary_stat": "strength"
+      },
+      "emitter": {
+        "name": "Emitter",
+        "description": "Proietta l'aura a distanza dal corpo.",
+        "primary_stat": "dexterity"
+      },
+      "manipulator": {
+        "name": "Manipulator",
+        "description": "Controlla oggetti animati e inanimati.",
+        "primary_stat": "intelligence"
+      },
+      "transmuter": {
+        "name": "Transmuter",
+        "description": "Cambia le proprietà dell'aura per imitare altre sostanze.",
+        "primary_stat": "charisma"
+      },
+      "conjurer": {
+        "name": "Conjurer",
+        "description": "Materializza oggetti dall'aura.",
+        "primary_stat": "wisdom"
+      },
+      "specialist": {
+        "name": "Specialist",
+        "description": "Abilità uniche che non rientrano nelle altre categorie.",
+        "primary_stat": "constitution"
+      }
+    }
+  }
+}

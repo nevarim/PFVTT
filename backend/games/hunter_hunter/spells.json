@@ -1,0 +1,154 @@
+{
+  "basic_nen_techniques": {
+    "ten": {
+      "name": "Ten",
+      "level": 0,
+      "school": "enhancement",
+      "casting_time": "1 action",
+      "range": "self",
+      "duration": "concentration, up to 10 minutes",
+      "nen_cost": 1,
+      "description": "Mantieni un sottile strato di aura attorno al tuo corpo. Ottieni +1 alla CA e resistenza ai danni non magici."
+    },
+    "zetsu": {
+      "name": "Zetsu",
+      "level": 0,
+      "school": "specialist",
+      "casting_time": "1 action",
+      "range": "self",
+      "duration": "concentration, up to 1 hour",
+      "nen_cost": 0,
+      "description": "Sopprimi completamente la tua aura. Diventi invisibile alla percezione dell'aura ma non puoi usare altre tecniche Nen."
+    },
+    "ren": {
+      "name": "Ren",
+      "level": 1,
+      "school": "enhancement",
+      "casting_time": "1 action",
+      "range": "self",
+      "duration": "concentration, up to 1 minute",
+      "nen_cost": 2,
+      "description": "Aumenti drasticamente la tua aura. Ottieni +2 a tutti i tiri per colpire e danni per la durata."
+    },
+    "hatsu_basic": {
+      "name": "Hatsu Base",
+      "level": 1,
+      "school": "varies",
+      "casting_time": "1 action",
+      "range": "varies",
+      "duration": "instantaneous",
+      "nen_cost": 3,
+      "description": "La tua abilità Nen personalizzata di base. L'effetto dipende dalla categoria Nen scelta."
+    }
+  },
+  "enhancement_techniques": {
+    "ko": {
+      "name": "Ko",
+      "level": 2,
+      "school": "enhancement",
+      "casting_time": "1 action",
+      "range": "self",
+      "duration": "1 round",
+      "nen_cost": 4,
+      "description": "Concentri tutta la tua aura in una parte del corpo. Il prossimo attacco infligge danno doppio ma subisci svantaggio alla CA fino al tuo prossimo turno."
+    },
+    "shu": {
+      "name": "Shu",
+      "level": 2,
+      "school": "enhancement",
+      "casting_time": "1 bonus action",
+      "range": "touch",
+      "duration": "concentration, up to 10 minutes",
+      "nen_cost": 3,
+      "description": "Estendi la tua aura a un oggetto che tocchi. L'oggetto ottiene +1 ai tiri per colpire e danni e diventa magico."
+    }
+  },
+  "emission_techniques": {
+    "nen_bullet": {
+      "name": "Proiettile di Nen",
+      "level": 1,
+      "school": "emission",
+      "casting_time": "1 action",
+      "range": "120 feet",
+      "duration": "instantaneous",
+      "nen_cost": 2,
+      "description": "Lanci un proiettile di aura concentrata. Attacco a distanza che infligge 1d8 + modificatore Saggezza danni di forza."
+    },
+    "aura_blast": {
+      "name": "Esplosione di Aura",
+      "level": 3,
+      "school": "emission",
+      "casting_time": "1 action",
+      "range": "60 feet",
+      "duration": "instantaneous",
+      "nen_cost": 5,
+      "description": "Crei un'esplosione di aura in un punto entro il raggio. Tutte le creature in un raggio di 20 piedi devono effettuare un TS su Destrezza o subire 3d6 danni di forza."
+    }
+  },
+  "manipulation_techniques": {
+    "puppet_strings": {
+      "name": "Fili Marionetta",
+      "level": 2,
+      "school": "manipulation",
+      "casting_time": "1 action",
+      "range": "60 feet",
+      "duration": "concentration, up to 1 minute",
+      "nen_cost": 4,
+      "description": "Controlli i movimenti di una creatura. Il bersaglio deve effettuare un TS su Saggezza o essere controllato per la durata."
+    },
+    "object_control": {
+      "name": "Controllo Oggetti",
+      "level": 1,
+      "school": "manipulation",
+      "casting_time": "1 action",
+      "range": "30 feet",
+      "duration": "concentration, up to 10 minutes",
+      "nen_cost": 2,
+      "description": "Controlli telecineticamente un oggetto non magico di taglia Media o inferiore entro il raggio."
+    }
+  },
+  "transmutation_techniques": {
+    "aura_blade": {
+      "name": "Lama di Aura",
+      "level": 2,
+      "school": "transmutation",
+      "casting_time": "1 bonus action",
+      "range": "self",
+      "duration": "concentration, up to 10 minutes",
+      "nen_cost": 3,
+      "description": "Trasformi la tua aura in una lama tagliente. Crei un'arma da mischia magica che infligge 1d8 + modificatore Saggezza danni taglienti."
+    },
+    "electric_aura": {
+      "name": "Aura Elettrica",
+      "level": 3,
+      "school": "transmutation",
+      "casting_time": "1 action",
+      "range": "self",
+      "duration": "concentration, up to 1 minute",
+      "nen_cost": 5,
+      "description": "La tua aura assume proprietà elettriche. I tuoi attacchi in mischia infliggono 1d6 danni elettrici aggiuntivi."
+    }
+  },
+  "conjuration_techniques": {
+    "conjure_weapon": {
+      "name": "Evoca Arma",
+      "level": 2,
+      "school": "conjuration",
+      "casting_time": "1 action",
+      "range": "self",
+      "duration": "concentration, up to 1 hour",
+      "nen_cost": 4,
+      "description": "Materializzi un'arma dalla tua aura. L'arma ha le statistiche di un'arma normale ma è considerata magica."
+    },
+    "nen_barrier": {
+      "name": "Barriera di Nen",
+      "level": 3,
+      "school": "conjuration",
+      "casting_time": "1 action",
+      "range": "60 feet",
+      "duration": "concentration, up to 10 minutes",
+      "nen_cost": 6,
+      "description": "Crei una barriera invisibile di aura solida. La barriera ha 25 punti ferita e CA 15."
+    }
+  }
+}

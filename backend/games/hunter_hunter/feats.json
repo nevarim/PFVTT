@@ -1,0 +1,92 @@
+{
+  "nen_mastery": {
+    "name": "Maestria del Nen",
+    "prerequisites": "Nen Master livello 3+",
+    "description": "Hai perfezionato il controllo della tua aura.",
+    "benefits": [
+      "Aumenta i tuoi punti Nen massimi di 2",
+      "Puoi recuperare 1 punto Nen durante un riposo breve",
+      "Ottieni vantaggio sui tiri di Concentrazione per mantenere le tecniche Nen"
+    ]
+  },
+  "enhanced_aura_sight": {
+    "name": "Vista dell'Aura Potenziata",
+    "prerequisites": "Capacità Vista dell'Aura",
+    "description": "La tua capacità di percepire l'aura è notevolmente migliorata.",
+    "benefits": [
+      "Raggio della Vista dell'Aura aumenta a 60 piedi",
+      "Puoi determinare la categoria Nen principale di una creatura osservandola per 1 minuto",
+      "Puoi vedere attraverso l'invisibilità creata da Zetsu con una prova di Saggezza (Percezione) CD 15"
+    ]
+  },
+  "dual_nen_affinity": {
+    "name": "Doppia Affinità Nen",
+    "prerequisites": "Nen Master livello 5+",
+    "description": "Hai sviluppato competenza in una seconda categoria Nen.",
+    "benefits": [
+      "Scegli una seconda categoria Nen",
+      "Puoi utilizzare tecniche di quella categoria al 80% di efficienza invece che al 60%",
+      "Riduci di 1 il costo in punti Nen delle tecniche della categoria secondaria"
+    ]
+  },
+  "hunter_instincts": {
+    "name": "Istinti da Cacciatore",
+    "prerequisites": "Licenza da Cacciatore",
+    "description": "I tuoi istinti da cacciatore sono affinati.",
+    "benefits": [
+      "Vantaggio sui tiri di Iniziativa",
+      "Vantaggio sulle prove di Saggezza (Sopravvivenza) per tracciare creature",
+      "Puoi usare un'azione bonus per analizzare un nemico e ottenere informazioni sulle sue capacità"
+    ]
+  },
+  "nen_specialist": {
+    "name": "Specialista del Nen",
+    "prerequisites": "Categoria Nen Specialist",
+    "description": "Hai sviluppato un'abilità Nen completamente unica.",
+    "benefits": [
+      "Sviluppi un'abilità Hatsu personalizzata in collaborazione con il GM",
+      "Questa abilità non segue le normali regole delle categorie Nen",
+      "L'abilità si evolve e diventa più potente con l'aumento di livello"
+    ]
+  },
+  "aura_burst": {
+    "name": "Esplosione di Aura",
+    "prerequisites": "Capacità Ren",
+    "description": "Puoi rilasciare la tua aura in un'esplosione intimidatoria.",
+    "benefits": [
+      "Come azione, puoi spendere 2 punti Nen per creare un'esplosione di aura",
+      "Tutte le creature entro 15 piedi devono effettuare un TS su Saggezza CD 8 + bonus competenza + mod. Saggezza",
+      "Chi fallisce è spaventato per 1 minuto e può ripetere il TS alla fine di ogni suo turno"
+    ]
+  },
+  "enhanced_physical_conditioning": {
+    "name": "Condizionamento Fisico Potenziato",
+    "prerequisites": "Costituzione 13+",
+    "description": "Il tuo allenamento intensivo ha potenziato il tuo corpo.",
+    "benefits": [
+      "Aumenta la Costituzione di 1 (massimo 20)",
+      "I tuoi punti ferita massimi aumentano di 1 per livello",
+      "Ottieni resistenza ai danni contundenti da attacchi non magici"
+    ]
+  },
+  "nen_efficiency": {
+    "name": "Efficienza del Nen",
+    "prerequisites": "Nen Master livello 7+",
+    "description": "Hai imparato a utilizzare il Nen in modo più efficiente.",
+    "benefits": [
+      "Riduci di 1 il costo in punti Nen di tutte le tecniche (minimo 1)",
+      "Puoi mantenere una tecnica di concentrazione aggiuntiva",
+      "Recuperi 1 punto Nen aggiuntivo durante i riposi lunghi"
+    ]
+  },
+  "combat_nen_integration": {
+    "name": "Integrazione Nen da Combattimento",
+    "prerequisites": "Bonus di attacco base +5",
+    "description": "Hai integrato perfettamente il Nen nel tuo stile di combattimento.",
+    "benefits": [
+      "Puoi utilizzare tecniche Nen come azioni bonus invece che azioni complete",
+      "Quando colpisci con un attacco critico, recuperi 1 punto Nen",
+      "Puoi spendere 1 punto Nen per ottenere vantaggio su un tiro per colpire"
+    ]
+  }
+}

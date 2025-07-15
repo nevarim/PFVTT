@@ -943,57 +943,83 @@
     // ===== PFVTT MAP SYSTEM - ENHANCED VERSION =====
     // Robust error handling and validation
     // ===== TOKEN SHEET LOGIC =====
-    async function loadActiveTokensAndSheets() {
+    // Debouncing mechanism to prevent excessive API calls
+    let loadTokensTimeout = null;
+    let isLoadingTokens = false;
+    
+    async function loadActiveTokensAndSheets(forceReload = false) {
       const mapId = MapState.getCurrentMapId();
       if (!mapId) {
         Logger.warn('No map ID available for loading tokens');
         return;
       }
       
+      // Prevent multiple simultaneous calls
+      if (isLoadingTokens && !forceReload) {
+        Logger.debug('Token loading already in progress, skipping duplicate call');
+        return;
+      }
+      
+      // Clear any pending timeout
+      if (loadTokensTimeout) {
+        clearTimeout(loadTokensTimeout);
+        loadTokensTimeout = null;
+      }
+      
+      // If not forcing reload, debounce the call
+      if (!forceReload) {
+        loadTokensTimeout = setTimeout(() => {
+          loadActiveTokensAndSheets(true);
+        }, 1100); // 1100ms debounce to work with backend rate limiting
+        return;
+      }
+      
+      isLoadingTokens = true;
+      
       try {
         Logger.info(`Loading tokens for map ID: ${mapId}`);
         
-        // Load tokens
-        const tokensRes = await fetch(`/api/map-tokens?map_id=${encodeURIComponent(mapId)}`);
+        // Load tokens and sheets in parallel to reduce total request time
+        const [tokensRes, sheetsRes] = await Promise.all([
+          fetch(`/api/map-tokens?map_id=${encodeURIComponent(mapId)}`),
+          fetch(`/api/token-sheets?map_id=${encodeURIComponent(mapId)}`)
+        ]);
+        
         if (!tokensRes.ok) {
+          if (tokensRes.status === 429) {
+            Logger.warn('Rate limit exceeded for tokens, retrying in 1200ms');
+            setTimeout(() => loadActiveTokensAndSheets(true), 1200);
+            return;
+          }
           throw new Error(`Failed to fetch tokens: ${tokensRes.status} ${tokensRes.statusText}`);
         }
         
-        const tokensText = await tokensRes.text();
-        Logger.debug('Tokens response text:', tokensText);
-        
-        let tokensData;
-        try {
-          tokensData = JSON.parse(tokensText);
-        } catch (parseError) {
-          Logger.error('Failed to parse tokens JSON response', parseError);
-          Logger.error('Response text was:', tokensText);
-          throw new Error('Invalid JSON response from tokens endpoint');
-        }
-        
-        const tokens = tokensData.tokens || [];
-        Logger.info(`Loaded ${tokens.length} tokens`);
-        
-        // Load token sheets
-        const sheetsRes = await fetch(`/api/token-sheets?map_id=${encodeURIComponent(mapId)}`);
         if (!sheetsRes.ok) {
           throw new Error(`Failed to fetch token sheets: ${sheetsRes.status} ${sheetsRes.statusText}`);
         }
         
-        const sheetsText = await sheetsRes.text();
+        const [tokensText, sheetsText] = await Promise.all([
+          tokensRes.text(),
+          sheetsRes.text()
+        ]);
+        
+        Logger.debug('Tokens response text:', tokensText);
         Logger.debug('Sheets response text:', sheetsText);
         
-        let sheetsData;
+        let tokensData, sheetsData;
         try {
+          tokensData = JSON.parse(tokensText);
           sheetsData = JSON.parse(sheetsText);
         } catch (parseError) {
-          Logger.error('Failed to parse sheets JSON response', parseError);
-          Logger.error('Response text was:', sheetsText);
-          throw new Error('Invalid JSON response from token sheets endpoint');
+          Logger.error('Failed to parse JSON response', parseError);
+          Logger.error('Tokens response was:', tokensText);
+          Logger.error('Sheets response was:', sheetsText);
+          throw new Error('Invalid JSON response from API endpoints');
         }
         
+        const tokens = tokensData.tokens || [];
         const sheets = sheetsData.sheets || [];
-        Logger.info(`Loaded ${sheets.length} token sheets`);
+        Logger.info(`Loaded ${tokens.length} tokens and ${sheets.length} token sheets`);
         
         // Update UI
         const list = document.getElementById('tokens-list');
@@ -1029,6 +1055,8 @@
         if (list) {
           list.innerHTML = `<li class='item'><div class='item-name' style='color: #dc3545;'>Error loading tokens</div><div class='item-details' style='color: #999; font-size: 11px;'>${escapeHtml(e.message)}</div></li>`;
         }
+      } finally {
+        isLoadingTokens = false;
       }
     }
     async function openTokenSheetModal(token, sheet) {
@@ -1060,7 +1088,7 @@
               };
               
               // Refresh the tokens list to show the new sheet
-              loadActiveTokensAndSheets();
+              loadActiveTokensAndSheets(); // Debounced call after delete
             } else {
               Logger.error('Failed to auto-create sheet:', result.error);
               alert('Failed to create character sheet: ' + result.error);
@@ -1069,7 +1097,7 @@
           } else if (response.status === 409) {
             // Sheet already exists, reload and try again
             Logger.info('Sheet already exists, reloading...');
-            await loadActiveTokensAndSheets();
+            await loadActiveTokensAndSheets(true); // Force reload
             return;
           } else {
             throw new Error(`HTTP ${response.status}: ${response.statusText}`);
@@ -1152,7 +1180,7 @@
           await fetch(`/api/token-sheets`, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({map_token_id: token_id, actor_id: null, sheet_json: sheetJson})});
         }
         closeTokenSheetModal();
-        loadActiveTokensAndSheets();
+        loadActiveTokensAndSheets(); // Debounced call after save
       } catch (e) { Logger.error('Failed to save token sheet', e); }
     }
     async function deleteTokenSheet() {
@@ -2904,7 +2932,7 @@
           
           // Update active tokens list for the selected map
           try {
-            loadActiveTokensAndSheets();
+            loadActiveTokensAndSheets(true); // Force immediate reload for new map
           } catch (error) {
             Logger.error('Failed to load active tokens and sheets', error);
           }
@@ -3537,118 +3565,12 @@
         
         Logger.info('Starting asset upload for category:', selectedCategory);
         
-        const input = document.createElement('input');
-        input.type = 'file';
-        
-        // Set file filter based on selected category
-        const acceptTypes = {
-          'tokens': '.png',
-          'background': '.jpg,.jpeg,.png',
-          'props': '.png',
-          'audio': '.mp3,.wav,.ogg,.m4a,.aac'
-        };
-        
-        input.accept = acceptTypes[selectedCategory] || 'image/*,audio/*';
-        
-        input.onchange = async function(e) {
-          try {
-            const file = e.target.files[0];
-            if (!file) {
-              Logger.warn('No file selected for upload');
-              return;
-            }
-            
-            // Validate file size (max 50MB)
-            const maxSize = 50 * 1024 * 1024; // 50MB
-            if (file.size > maxSize) {
-              alert('File size too large. Maximum allowed size is 50MB.');
-              return;
-            }
-            
-            // Validate file type
-            const allowedTypes = {
-              'tokens': ['image/png'],
-              'background': ['image/jpeg', 'image/jpg', 'image/png'],
-              'props': ['image/png'],
-              'audio': ['audio/mpeg', 'audio/wav', 'audio/ogg', 'audio/mp4', 'audio/aac']
-            };
-            
-            const categoryTypes = allowedTypes[selectedCategory];
-            if (categoryTypes && !categoryTypes.includes(file.type)) {
-              alert(`Invalid file type for ${selectedCategory}. Allowed types: ${categoryTypes.join(', ')}`);
-              return;
-            }
-            
-            Logger.info('Uploading file:', file.name, 'Size:', file.size, 'Type:', file.type);
-            
-            // First upload the file to get the URL
-            const uploadFormData = new FormData();
-            uploadFormData.append('file', file);
-            uploadFormData.append('user_id', userId);
-            uploadFormData.append('campaign_id', campaignId);
-            uploadFormData.append('upload_type', selectedCategory);
-            
-            // Upload file first
-            const uploadResponse = await fetch('/api/upload', {
-              method: 'POST',
-              body: uploadFormData
-            });
-            
-            if (!uploadResponse.ok) {
-              throw new Error(`Upload HTTP error! status: ${uploadResponse.status}`);
-            }
-            
-            const uploadData = await uploadResponse.json();
-            if (!uploadData || !uploadData.success) {
-              const errorMsg = uploadData?.error || 'Unknown upload error';
-              Logger.error('File upload failed:', errorMsg);
-              alert('Failed to upload file: ' + errorMsg);
-              return;
-            }
-            
-            Logger.info('File uploaded successfully, creating asset record');
-            
-            // Then create asset record
-            const assetData = {
-              campaign_id: parseInt(campaignId),
-              name: file.name,
-              category: selectedCategory,
-              file_url: uploadData.url,
-              file_size: uploadData.size || file.size,
-              mime_type: file.type,
-              description: '',
-              tags: ''
-            };
-            
-            const assetResponse = await fetch('/api/assets', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json'
-              },
-              body: JSON.stringify(assetData)
-            });
-            
-            if (!assetResponse.ok) {
-              throw new Error(`Asset creation HTTP error! status: ${assetResponse.status}`);
-            }
-            
-            const assetResult = await assetResponse.json();
-            if (assetResult && assetResult.success) {
-              Logger.info('Asset created successfully:', file.name);
-              await loadAssets();
-              alert('Asset uploaded successfully!');
-            } else {
-              const errorMsg = assetResult?.error || 'Unknown asset creation error';
-              Logger.error('Asset creation failed:', errorMsg);
-              alert('Failed to create asset record: ' + errorMsg);
-            }
-          } catch (error) {
-            Logger.error('Exception during asset upload:', error);
-            alert('Failed to upload asset: ' + (error.message || 'Network error'));
-          }
-        };
-        
-        input.click();
+        // For tokens, show the editor; for other assets, use the standard upload
+        if (selectedCategory === 'tokens') {
+          showTokenEditor();
+        } else {
+          standardAssetUpload(selectedCategory, campaignId);
+        }
         
       } catch (error) {
         Logger.error('Exception in uploadAsset function:', error);
@@ -3656,7 +3578,466 @@
       }
     }
     
-    async function editAsset(assetId) {
+    function standardAssetUpload(selectedCategory, campaignId) {
+      const input = document.createElement('input');
+      input.type = 'file';
+      
+      // Set file filter based on selected category
+      const acceptTypes = {
+        'background': '.jpg,.jpeg,.png',
+        'props': '.png',
+        'audio': '.mp3,.wav,.ogg,.m4a,.aac'
+      };
+      
+      input.accept = acceptTypes[selectedCategory] || 'image/*,audio/*';
+      
+      input.onchange = async function(e) {
+        try {
+          const file = e.target.files[0];
+          if (!file) {
+            Logger.warn('No file selected for upload');
+            return;
+          }
+          
+          // Validate file size (max 50MB)
+          const maxSize = 50 * 1024 * 1024; // 50MB
+          if (file.size > maxSize) {
+            alert('File size too large. Maximum allowed size is 50MB.');
+            return;
+          }
+          
+          // Validate file type
+          const allowedTypes = {
+            'background': ['image/jpeg', 'image/jpg', 'image/png'],
+            'props': ['image/png'],
+            'audio': ['audio/mpeg', 'audio/wav', 'audio/ogg', 'audio/mp4', 'audio/aac']
+          };
+          
+          const categoryTypes = allowedTypes[selectedCategory];
+          if (categoryTypes && !categoryTypes.includes(file.type)) {
+            alert(`Invalid file type for ${selectedCategory}. Allowed types: ${categoryTypes.join(', ')}`);
+            return;
+          }
+          
+          Logger.info('Uploading file:', file.name, 'Size:', file.size, 'Type:', file.type);
+          
+          await processAssetUpload(file, selectedCategory, campaignId);
+          
+        } catch (error) {
+          Logger.error('Exception during asset upload:', error);
+          alert('Failed to upload asset: ' + (error.message || 'Network error'));
+        }
+      };
+      
+      input.click();
+    }
+    
+    async function processAssetUpload(file, selectedCategory, campaignId) {
+      // First upload the file to get the URL
+      const uploadFormData = new FormData();
+      uploadFormData.append('file', file);
+      uploadFormData.append('user_id', userId);
+      uploadFormData.append('campaign_id', campaignId);
+      uploadFormData.append('upload_type', selectedCategory);
+      
+      // Upload file first
+      const uploadResponse = await fetch('/api/upload', {
+        method: 'POST',
+        body: uploadFormData
+      });
+      
+      if (!uploadResponse.ok) {
+        throw new Error(`Upload HTTP error! status: ${uploadResponse.status}`);
+      }
+      
+      const uploadData = await uploadResponse.json();
+      if (!uploadData || !uploadData.success) {
+        const errorMsg = uploadData?.error || 'Unknown upload error';
+        Logger.error('File upload failed:', errorMsg);
+        alert('Failed to upload file: ' + errorMsg);
+        return;
+      }
+      
+      Logger.info('File uploaded successfully, creating asset record');
+      
+      // Then create asset record
+      const assetData = {
+        campaign_id: parseInt(campaignId),
+        name: file.name,
+        category: selectedCategory,
+        file_url: uploadData.url,
+        file_size: uploadData.size || file.size,
+        mime_type: file.type,
+        description: '',
+        tags: ''
+      };
+      
+      const assetResponse = await fetch('/api/assets', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(assetData)
+      });
+      
+      if (!assetResponse.ok) {
+        throw new Error(`Asset creation HTTP error! status: ${assetResponse.status}`);
+      }
+      
+      const assetResult = await assetResponse.json();
+      if (assetResult && assetResult.success) {
+        Logger.info('Asset created successfully:', file.name);
+        await loadAssets();
+        alert('Asset uploaded successfully!');
+      } else {
+        const errorMsg = assetResult?.error || 'Unknown asset creation error';
+        Logger.error('Asset creation failed:', errorMsg);
+        alert('Failed to create asset record: ' + errorMsg);
+      }
+    }
+     
+     function showTokenEditor() {
+       // Create modal overlay
+       const overlay = document.createElement('div');
+       overlay.id = 'token-editor-overlay';
+       overlay.style.cssText = `
+         position: fixed;
+         top: 0;
+         left: 0;
+         width: 100%;
+         height: 100%;
+         background: rgba(0, 0, 0, 0.8);
+         z-index: 10000;
+         display: flex;
+         justify-content: center;
+         align-items: center;
+       `;
+       
+       // Create modal content
+       const modal = document.createElement('div');
+       modal.style.cssText = `
+         background: white;
+         padding: 20px;
+         border-radius: 10px;
+         max-width: 90%;
+         max-height: 90%;
+         overflow: auto;
+         text-align: center;
+       `;
+       
+       modal.innerHTML = `
+         <h2>Editor Token con Ritaglio</h2>
+         
+         <div style="margin: 10px 0;">
+           <label for="token-background-image">Livello 1: Immagine di sfondo</label><br>
+           <input type="file" id="token-background-image" accept="image/png,image/jpg,image/jpeg" style="margin: 5px;">
+         </div>
+         
+         <div style="margin: 10px 0;">
+           <label>Livello 2: Seleziona Token Border</label><br>
+           <div id="token-border-selector" style="display: flex; overflow-x: auto; gap: 10px; padding: 10px; border: 1px solid #ccc; border-radius: 5px; max-width: 100%; white-space: nowrap;">
+             <!-- Token borders will be loaded here -->
+           </div>
+         </div>
+         
+         <div style="margin: 10px 0;">
+           <label for="token-layer-select">Seleziona cosa modificare:</label><br>
+           <select id="token-layer-select" style="margin: 5px;">
+             <option value="background">Livello 1 (Sfondo)</option>
+             <option value="circle">Livello 3 (Cerchio di ritaglio)</option>
+           </select>
+         </div>
+         
+         <canvas id="token-result-canvas" style="border: 1px solid #000; margin: 10px 0; max-width: 100%;"></canvas>
+         
+         <div style="margin: 10px 0;">
+           <button id="token-finalize-button" style="margin: 5px; padding: 10px 20px; background: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer;">Genera e Carica Token</button>
+           <button id="token-cancel-button" style="margin: 5px; padding: 10px 20px; background: #f44336; color: white; border: none; border-radius: 5px; cursor: pointer;">Annulla</button>
+         </div>
+         
+         <div style="margin: 10px 0; font-size: 12px; color: #666;">
+           <p>Istruzioni:</p>
+           <p>• Trascina con il mouse per spostare il livello selezionato</p>
+           <p>• Usa la rotella del mouse per ridimensionare</p>
+           <p>• Il cerchio rosso mostra l'area di ritaglio</p>
+         </div>
+       `;
+       
+       overlay.appendChild(modal);
+       document.body.appendChild(overlay);
+       
+       // Initialize token editor
+       initTokenEditor(overlay);
+     }
+     
+     function initTokenEditor(overlay) {
+       const backgroundInput = document.getElementById('token-background-image');
+       const borderSelector = document.getElementById('token-border-selector');
+       const layerSelect = document.getElementById('token-layer-select');
+       const finalizeButton = document.getElementById('token-finalize-button');
+       const cancelButton = document.getElementById('token-cancel-button');
+       const canvas = document.getElementById('token-result-canvas');
+       const ctx = canvas.getContext('2d');
+       
+       let backgroundImage = null;
+       let crownImage = null;
+       let currentLayer = 'background';
+       let layers = {
+         background: { x: 0, y: 0, scale: 1 },
+         circle: { x: 150, y: 150, radius: 50 }
+       };
+       
+       // Load background image
+       backgroundInput.addEventListener('change', (event) => {
+         const file = event.target.files[0];
+         if (!file) return;
+         
+         const reader = new FileReader();
+         reader.onload = () => {
+           const img = new Image();
+           img.src = reader.result;
+           img.onload = () => {
+             backgroundImage = img;
+             drawTokenCanvas();
+           };
+         };
+         reader.readAsDataURL(file);
+       });
+       
+       // Load available token borders
+       async function loadTokenBorders() {
+         try {
+           const response = await fetch('/api/token-borders');
+           if (!response.ok) {
+             throw new Error('Failed to load token borders');
+           }
+           const data = await response.json();
+           
+           if (!data.success || !Array.isArray(data.borders)) {
+             throw new Error('Invalid response format from token borders API');
+           }
+           
+           const borders = data.borders;
+           borderSelector.innerHTML = '';
+           borders.forEach(border => {
+             const borderItem = document.createElement('div');
+             borderItem.style.cssText = `
+               flex-shrink: 0;
+               width: 60px;
+               height: 60px;
+               border: 2px solid transparent;
+               border-radius: 5px;
+               cursor: pointer;
+               background-size: contain;
+               background-repeat: no-repeat;
+               background-position: center;
+               background-image: url('${border.url}');
+               transition: border-color 0.2s;
+             `;
+             
+             borderItem.addEventListener('click', () => {
+               // Remove selection from other borders
+               borderSelector.querySelectorAll('div').forEach(item => {
+                 item.style.borderColor = 'transparent';
+               });
+               
+               // Select this border
+               borderItem.style.borderColor = '#007bff';
+               
+               // Load the border image
+               const img = new Image();
+               img.src = border.url;
+               img.onload = () => {
+                 crownImage = img;
+                 drawTokenCanvas();
+               };
+             });
+             
+             borderSelector.appendChild(borderItem);
+           });
+         } catch (error) {
+           console.error('Error loading token borders:', error);
+           borderSelector.innerHTML = '<div style="color: red; padding: 10px;">Errore nel caricamento dei token border</div>';
+         }
+       }
+       
+       // Load token borders on initialization
+       loadTokenBorders();
+       
+       // Draw canvas
+       function drawTokenCanvas() {
+         if (!backgroundImage) return;
+         
+         // Imposta dimensioni fisse del canvas
+         const CANVAS_SIZE = 400;
+         canvas.width = CANVAS_SIZE;
+         canvas.height = CANVAS_SIZE;
+         
+         // Se non c'è ancora la corona, inizializza i layer
+         if (!crownImage) {
+           // Calcola il fattore di scala per adattare l'immagine al canvas
+           const scaleX = CANVAS_SIZE / backgroundImage.width;
+           const scaleY = CANVAS_SIZE / backgroundImage.height;
+           const initialScale = Math.min(scaleX, scaleY); // Mantiene le proporzioni
+           
+           // Centra l'immagine nel canvas
+           const scaledWidth = backgroundImage.width * initialScale;
+           const scaledHeight = backgroundImage.height * initialScale;
+           layers.background.x = (CANVAS_SIZE - scaledWidth) / 2;
+           layers.background.y = (CANVAS_SIZE - scaledHeight) / 2;
+           layers.background.scale = initialScale;
+           
+           // Centra il cerchio inizialmente
+           layers.circle.x = CANVAS_SIZE / 2;
+           layers.circle.y = CANVAS_SIZE / 2;
+           layers.circle.radius = CANVAS_SIZE / 8;
+         }
+         
+         ctx.clearRect(0, 0, canvas.width, canvas.height);
+         
+         // Draw background layer
+         const bg = layers.background;
+         ctx.drawImage(
+           backgroundImage,
+           bg.x,
+           bg.y,
+           backgroundImage.width * bg.scale,
+           backgroundImage.height * bg.scale
+         );
+         
+         // Draw clipping circle guide solo se c'è l'immagine di sfondo
+         if (backgroundImage) {
+           const cir = layers.circle;
+           ctx.beginPath();
+           ctx.arc(cir.x, cir.y, cir.radius, 0, Math.PI * 2);
+           ctx.strokeStyle = 'red';
+           ctx.lineWidth = 2;
+           ctx.stroke();
+         }
+         
+         // Draw crown image solo se presente
+         if (crownImage) {
+           // Ridimensiona anche la corona per adattarla al canvas fisso
+           const crownScale = Math.min(CANVAS_SIZE / crownImage.width, CANVAS_SIZE / crownImage.height);
+           const crownWidth = crownImage.width * crownScale;
+           const crownHeight = crownImage.height * crownScale;
+           const crownX = (CANVAS_SIZE - crownWidth) / 2;
+           const crownY = (CANVAS_SIZE - crownHeight) / 2;
+           ctx.drawImage(crownImage, crownX, crownY, crownWidth, crownHeight);
+         }
+       }
+       
+       // Layer selection
+       layerSelect.addEventListener('change', (event) => {
+         currentLayer = event.target.value;
+       });
+       
+       // Mouse movement and zoom
+       canvas.addEventListener('mousemove', (event) => {
+         if (event.buttons === 1) {
+           const layer = layers[currentLayer];
+           if (currentLayer === 'circle') {
+             layer.x += event.movementX;
+             layer.y += event.movementY;
+           } else if (currentLayer === 'background') {
+             layer.x += event.movementX;
+             layer.y += event.movementY;
+           }
+           drawTokenCanvas();
+         }
+       });
+       
+       canvas.addEventListener('wheel', (event) => {
+         event.preventDefault();
+         const layer = layers[currentLayer];
+         if (currentLayer === 'circle') {
+           layer.radius += event.deltaY * -0.1;
+           layer.radius = Math.max(10, layer.radius);
+         } else if (currentLayer === 'background') {
+           layer.scale += event.deltaY * -0.001;
+           layer.scale = Math.max(0.1, Math.min(layer.scale, 5));
+         }
+         drawTokenCanvas();
+       });
+       
+       // Cancel button
+       cancelButton.addEventListener('click', () => {
+         document.body.removeChild(overlay);
+       });
+       
+       // Finalize and upload
+       finalizeButton.addEventListener('click', async () => {
+         if (!backgroundImage) {
+           alert('Carica almeno l\'immagine di sfondo prima di procedere.');
+           return;
+         }
+         
+         try {
+           const cir = layers.circle;
+           
+           // Create output canvas with clipping
+           const outputCanvas = document.createElement('canvas');
+           const outputCtx = outputCanvas.getContext('2d');
+           const CANVAS_SIZE = 400;
+           outputCanvas.width = CANVAS_SIZE;
+           outputCanvas.height = CANVAS_SIZE;
+           
+           outputCtx.save();
+           outputCtx.beginPath();
+           outputCtx.arc(cir.x, cir.y, cir.radius, 0, Math.PI * 2);
+           outputCtx.clip();
+           
+           outputCtx.clearRect(0, 0, outputCanvas.width, outputCanvas.height);
+           const bg = layers.background;
+           outputCtx.drawImage(
+             backgroundImage,
+             bg.x,
+             bg.y,
+             backgroundImage.width * bg.scale,
+             backgroundImage.height * bg.scale
+           );
+           outputCtx.restore();
+           
+           // Draw crown on top solo se presente
+           if (crownImage) {
+             const crownScale = Math.min(CANVAS_SIZE / crownImage.width, CANVAS_SIZE / crownImage.height);
+             const crownWidth = crownImage.width * crownScale;
+             const crownHeight = crownImage.height * crownScale;
+             const crownX = (CANVAS_SIZE - crownWidth) / 2;
+             const crownY = (CANVAS_SIZE - crownHeight) / 2;
+             outputCtx.drawImage(crownImage, crownX, crownY, crownWidth, crownHeight);
+           }
+           
+           // Convert to blob and upload
+           outputCanvas.toBlob(async (blob) => {
+             try {
+               const file = new File([blob], 'token_edited.png', { type: 'image/png' });
+               const campaignId = MapState.getCampaignId();
+               
+               await processAssetUpload(file, 'tokens', campaignId);
+               document.body.removeChild(overlay);
+               
+             } catch (error) {
+               Logger.error('Error uploading edited token:', error);
+               alert('Errore durante il caricamento del token: ' + error.message);
+             }
+           }, 'image/png');
+           
+         } catch (error) {
+           Logger.error('Error generating final token:', error);
+           alert('Errore durante la generazione del token: ' + error.message);
+         }
+       });
+       
+       // Close on overlay click
+       overlay.addEventListener('click', (event) => {
+         if (event.target === overlay) {
+           document.body.removeChild(overlay);
+         }
+       });
+     }
+     
+     async function editAsset(assetId) {
       try {
         // Validate asset ID
         if (!assetId || isNaN(parseInt(assetId))) {
@@ -3781,7 +4162,7 @@
               return;
             }
             
-            const token = tokensData.tokens.find(t => t && t.asset_id == assetData.assetId);
+            const token = tokensData.tokens.find(t => t && t.asset_id == parseInt(assetData.assetId));
             if (!token) {
               Logger.error('Token not found in map tokens:', assetData.assetId);
               alert('Token non trovato nel database');
@@ -4980,7 +5361,7 @@
         // Prepare data for API call with grid coordinates
         const payload = {
           map_id: mapId,
-          asset_id: assetData.assetId,
+          asset_id: parseInt(assetData.assetId), // Convert string ID to number
           grid_x: gridX,
           grid_y: gridY,
           grid_z: 0,
@@ -5062,7 +5443,7 @@
             }
             // Update active tokens list if a token was added
             if (targetLayer === 'tokens' || targetLayer === 'gm') {
-              loadActiveTokensAndSheets();
+              loadActiveTokensAndSheets(); // Debounced call after token placement
             }
           } else {
             const errorMsg = data?.error || 'Unknown error occurred';

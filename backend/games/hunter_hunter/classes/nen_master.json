@@ -1,0 +1,230 @@
+{
+  "name": "Nen Master",
+  "description": "Un maestro nell'arte del Nen, capace di manipolare la propria aura vitale per ottenere poteri straordinari. I Nen Master sono cacciatori esperti che hanno sviluppato le loro abilità attraverso anni di allenamento e disciplina mentale.",
+  "hit_die": "d8",
+  "primary_ability": "wisdom",
+  "saving_throw_proficiencies": ["wisdom", "constitution"],
+  "skill_points_per_level": 4,
+  "base_attack_bonus": "medium",
+  "proficiencies": {
+    "armor": ["light_armor"],
+    "weapons": ["simple_weapons", "martial_weapons"],
+    "tools": ["nen_training_equipment"],
+    "saving_throws": ["wisdom", "constitution"]
+  },
+  "class_skills": [
+    "acrobatics",
+    "athletics",
+    "concentration",
+    "craft",
+    "heal",
+    "intimidate",
+    "knowledge_arcana",
+    "listen",
+    "profession",
+    "sense_motive",
+    "spot",
+    "survival",
+    "nen_control",
+    "hunter_knowledge",
+    "aura_reading"
+  ],
+  "level_progression": {
+    "1": {
+      "hit_points": "8 + Constitution modifier",
+      "proficiency_bonus": 2,
+      "nen_points": "1 + Wisdom modifier",
+      "features": [
+        "aura_sight",
+        "nen_points",
+        "basic_nen_training"
+      ],
+      "techniques_known": 2,
+      "technique_level": 1
+    },
+    "2": {
+      "hit_points": "+1d8 + Constitution modifier",
+      "proficiency_bonus": 2,
+      "nen_points": "2 + Wisdom modifier",
+      "features": [
+        "nen_category_selection",
+        "fighting_style"
+      ],
+      "techniques_known": 3,
+      "technique_level": 1
+    },
+    "3": {
+      "hit_points": "+1d8 + Constitution modifier",
+      "proficiency_bonus": 2,
+      "nen_points": "3 + Wisdom modifier",
+      "features": [
+        "hatsu_development",
+        "nen_archetype"
+      ],
+      "techniques_known": 4,
+      "technique_level": 2
+    },
+    "4": {
+      "hit_points": "+1d8 + Constitution modifier",
+      "proficiency_bonus": 2,
+      "nen_points": "4 + Wisdom modifier",
+      "features": [
+        "ability_score_improvement"
+      ],
+      "techniques_known": 5,
+      "technique_level": 2
+    },
+    "5": {
+      "hit_points": "+1d8 + Constitution modifier",
+      "proficiency_bonus": 3,
+      "nen_points": "5 + Wisdom modifier",
+      "features": [
+        "advanced_nen",
+        "extra_attack"
+      ],
+      "techniques_known": 6,
+      "technique_level": 3
+    },
+    "6": {
+      "hit_points": "+1d8 + Constitution modifier",
+      "proficiency_bonus": 3,
+      "nen_points": "6 + Wisdom modifier",
+      "features": [
+        "nen_archetype_feature"
+      ],
+      "techniques_known": 7,
+      "technique_level": 3
+    },
+    "7": {
+      "hit_points": "+1d8 + Constitution modifier",
+      "proficiency_bonus": 3,
+      "nen_points": "7 + Wisdom modifier",
+      "features": [
+        "nen_mastery"
+      ],
+      "techniques_known": 8,
+      "technique_level": 4
+    },
+    "8": {
+      "hit_points": "+1d8 + Constitution modifier",
+      "proficiency_bonus": 3,
+      "nen_points": "8 + Wisdom modifier",
+      "features": [
+        "ability_score_improvement"
+      ],
+      "techniques_known": 9,
+      "technique_level": 4
+    },
+    "9": {
+      "hit_points": "+1d8 + Constitution modifier",
+      "proficiency_bonus": 4,
+      "nen_points": "9 + Wisdom modifier",
+      "features": [
+        "enhanced_hatsu"
+      ],
+      "techniques_known": 10,
+      "technique_level": 5
+    },
+    "10": {
+      "hit_points": "+1d8 + Constitution modifier",
+      "proficiency_bonus": 4,
+      "nen_points": "10 + Wisdom modifier",
+      "features": [
+        "nen_archetype_feature"
+      ],
+      "techniques_known": 11,
+      "technique_level": 5
+    }
+  },
+  "class_features": {
+    "aura_sight": {
+      "name": "Vista dell'Aura",
+      "level": 1,
+      "description": "Puoi vedere l'aura vitale degli esseri viventi entro 30 piedi come azione bonus. Questa capacità rivela la presenza di creature viventi anche se nascoste, ma non la loro posizione esatta se sono dietro copertura totale."
+    },
+    "nen_points": {
+      "name": "Punti Nen",
+      "level": 1,
+      "description": "Hai un pool di energia Nen pari al tuo livello di classe + il tuo modificatore di Saggezza. Questi punti si rigenerano completamente dopo un riposo lungo e parzialmente (metà) dopo un riposo breve."
+    },
+    "basic_nen_training": {
+      "name": "Addestramento Nen Base",
+      "level": 1,
+      "description": "Conosci le quattro tecniche fondamentali del Nen: Ten, Zetsu, Ren e Hatsu base. Puoi utilizzare queste tecniche spendendo punti Nen."
+    },
+    "nen_category_selection": {
+      "name": "Selezione Categoria Nen",
+      "level": 2,
+      "description": "Scegli la tua categoria Nen principale tra Enhancement, Emission, Manipulation, Transmutation, Conjuration, o Specialization. Questa scelta determina la tua efficienza nell'uso delle diverse tecniche Nen."
+    },
+    "fighting_style": {
+      "name": "Stile di Combattimento",
+      "level": 2,
+      "description": "Scegli uno stile di combattimento che si adatta al tuo approccio: Combattimento a Due Armi, Duello, Combattimento a Distanza, o Protezione."
+    },
+    "hatsu_development": {
+      "name": "Sviluppo Hatsu",
+      "level": 3,
+      "description": "Sviluppi la tua abilità Nen personalizzata unica (Hatsu). Lavora con il GM per creare un'abilità che rifletta la tua personalità e il tuo stile di combattimento."
+    },
+    "nen_archetype": {
+      "name": "Archetipo Nen",
+      "level": 3,
+      "description": "Scegli un archetipo che definisce il tuo approccio al Nen: Guerriero dell'Aura, Manipolatore Sottile, o Specialista Unico."
+    },
+    "ability_score_improvement": {
+      "name": "Miglioramento Caratteristiche",
+      "level": 4,
+      "description": "Puoi aumentare una caratteristica di 2 punti o due caratteristiche di 1 punto ciascuna. Non puoi aumentare una caratteristica oltre 20 con questa capacità."
+    },
+    "advanced_nen": {
+      "name": "Nen Avanzato",
+      "level": 5,
+      "description": "Accedi a tecniche Nen più potenti e complesse. Puoi ora utilizzare tecniche di livello 3 e superiore."
+    },
+    "extra_attack": {
+      "name": "Attacco Extra",
+      "level": 5,
+      "description": "Puoi attaccare due volte invece di una quando usi l'azione di Attacco nel tuo turno."
+    },
+    "nen_mastery": {
+      "name": "Maestria del Nen",
+      "level": 7,
+      "description": "La tua comprensione del Nen raggiunge nuove vette. Riduci di 1 il costo in punti Nen di tutte le tecniche (minimo 1) e puoi recuperare 1 punto Nen durante un riposo breve."
+    },
+    "enhanced_hatsu": {
+      "name": "Hatsu Potenziato",
+      "level": 9,
+      "description": "La tua abilità Hatsu evolve e diventa più potente. Guadagna effetti aggiuntivi o potenziamenti determinati in collaborazione con il GM."
+    }
+  },
+  "nen_archetypes": {
+    "aura_warrior": {
+      "name": "Guerriero dell'Aura",
+      "description": "Specializzato nel combattimento diretto e nel potenziamento fisico.",
+      "features": {
+        "3": "Aura Combattiva: +1 danno a tutti gli attacchi in mischia",
+        "6": "Resistenza Potenziata: Resistenza a un tipo di danno a scelta",
+        "10": "Furia dell'Aura: Una volta per riposo lungo, raddoppia i danni per 1 minuto"
+      }
+    },
+    "subtle_manipulator": {
+      "name": "Manipolatore Sottile",
+      "description": "Esperto nel controllo e nella manipolazione sottile.",
+      "features": {
+        "3": "Controllo Mentale: Può influenzare le emozioni delle creature",
+        "6": "Manipolazione a Distanza: Raggio delle abilità di manipolazione raddoppiato",
+        "10": "Controllo Totale: Può controllare completamente una creatura per breve tempo"
+      }
+    },
+    "unique_specialist": {
+      "name": "Specialista Unico",
+      "description": "Possiede abilità Nen completamente uniche e non classificabili.",
+      "features": {
+        "3": "Abilità Unica: Sviluppa un'abilità completamente personalizzata",
+        "6": "Evoluzione Specializzata: L'abilità unica guadagna nuovi aspetti",
+        "10": "Maestria Assoluta: L'abilità unica raggiunge il suo pieno potenziale"
+      }
+    }
+  }
+}

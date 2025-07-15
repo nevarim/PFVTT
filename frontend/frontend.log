@@ -200,3 +200,9 @@ UPLOAD: Success
 UPLOAD: 00076-1558891931.png - user_id:nevarim campaign_id:5
 UPLOAD: Success
 Received POST /api/campaigns at frontend proxy: {"name":"Luigi  Vanacore","description":"","game_rules_id":"3","image_url":"","username":"luigivanacore"}
+Received POST /api/campaigns at frontend proxy: {"name":"Roll20","description":"roll20","game_rules_id":"1","image_url":"","username":"ajeje"}
+Received POST /api/campaigns at frontend proxy: {"name":"prova","description":"provaprova","game_rules_id":"7","image_url":"","username":"ajeje"}
+Received POST /api/campaigns at frontend proxy: {"name":"provaprova","description":"provaprova","game_rules_id":"","image_url":"","username":"ajeje"}
+Received POST /api/campaigns at frontend proxy: {"name":"HxX Senza Sam","description":"rubo la campagna a sam","game_rules_id":"7","image_url":"","username":"ajeje"}
+UPLOAD: token_edited.png - user_id:1 campaign_id:8
+UPLOAD: Success

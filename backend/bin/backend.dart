@@ -120,6 +120,17 @@ class MySqlConnectionPool {
 
 late MySqlConnectionPool _connectionPool;
 
+// Rate limiting for map-tokens endpoint
+Map<String, DateTime> _mapTokensRequestCache = {};
+const Duration _mapTokensRateLimit = Duration(milliseconds: 1000);
+
+// Clean up old cache entries periodically
+void _cleanupRateLimitCache() {
+  final now = DateTime.now();
+  _mapTokensRequestCache.removeWhere((key, value) => 
+    now.difference(value) > Duration(minutes: 5));
+}
+
 Future<void> main(List<String> arguments) async {
   try {
     print('PFVTT backend main() started');
@@ -156,6 +167,11 @@ Future<void> main(List<String> arguments) async {
     );
 
     await _connectionPool.initialize();
+
+    // Start periodic cache cleanup
+    Timer.periodic(Duration(minutes: 1), (timer) {
+      _cleanupRateLimitCache();
+    });
 
     final server = await HttpServer.bind(InternetAddress.anyIPv4, serverPort);
     print('Backend running on http://$serverHost:$serverPort');
@@ -1903,7 +1919,51 @@ Future<void> main(List<String> arguments) async {
           try {
             // Extract path: /images/campaign/user_id/campaign_id/filename or /images/tokens/user_id/campaign_id/filename
             final pathSegments = request.uri.pathSegments;
-            if (pathSegments.length >= 5) {
+            
+            // Handle TokenBorders directory (special case)
+            if (pathSegments.length >= 3 && pathSegments[1] == 'TokenBorders') {
+              final filename = pathSegments.sublist(2).join('/');
+              final backendDir = Directory.current.path.endsWith('backend')
+                  ? Directory.current.path
+                  : '${Directory.current.path}/backend';
+              final filePath = '$backendDir/images/TokenBorders/$filename';
+              final file = File(filePath);
+              
+              if (await file.exists()) {
+                // Determine content type based on file extension
+                String contentType = 'application/octet-stream';
+                final extension = filename.toLowerCase().split('.').last;
+                switch (extension) {
+                  case 'jpg':
+                  case 'jpeg':
+                    contentType = 'image/jpeg';
+                    break;
+                  case 'png':
+                    contentType = 'image/png';
+                    break;
+                  case 'gif':
+                    contentType = 'image/gif';
+                    break;
+                  case 'webp':
+                    contentType = 'image/webp';
+                    break;
+                }
+                
+                request.response.headers.contentType = ContentType.parse(contentType);
+                request.response.headers.add('Cache-Control', 'public, max-age=3600');
+                
+                if (request.method == 'GET') {
+                  final fileBytes = await file.readAsBytes();
+                  request.response.add(fileBytes);
+                }
+                await request.response.close();
+              } else {
+                request.response.statusCode = HttpStatus.notFound;
+                await request.response.close();
+              }
+            }
+            // Handle campaign files (existing logic)
+            else if (pathSegments.length >= 5) {
               // Handle both old and new path structures
               String filePath;
               String filename;
@@ -2004,6 +2064,21 @@ Future<void> main(List<String> arguments) async {
               await request.response.close();
               return;
             }
+
+            // Rate limiting check
+            final now = DateTime.now();
+            final lastRequest = _mapTokensRequestCache[mapId];
+            if (lastRequest != null && now.difference(lastRequest) < _mapTokensRateLimit) {
+              print('GET /api/map-tokens - Rate limited for map_id: $mapId');
+              request.response.statusCode = 429;
+              request.response.headers.contentType = ContentType.json;
+              request.response.write(
+                jsonEncode({'success': false, 'error': 'Rate limit exceeded'}),
+              );
+              await request.response.close();
+              return;
+            }
+            _mapTokensRequestCache[mapId] = now;
 
             print('GET /api/map-tokens - Querying for map_id: $mapId');
             print('GET /api/map-tokens - About to execute database query...');
@@ -2581,6 +2656,75 @@ Future<void> main(List<String> arguments) async {
           );
           await request.response.close();
         }
+        // --- API for token borders ---
+        else if (request.uri.path == '/api/token-borders' && request.method == 'GET') {
+          try {
+            print('GET /api/token-borders - Request received');
+            
+            // Get the backend directory path
+            final backendDir = Directory.current.path.endsWith('backend')
+                ? Directory.current.path
+                : '${Directory.current.path}/backend';
+            
+            final tokenBordersDir = Directory('$backendDir/images/TokenBorders');
+            
+            if (!await tokenBordersDir.exists()) {
+              print('GET /api/token-borders - TokenBorders directory not found');
+              request.response.statusCode = HttpStatus.notFound;
+              request.response.headers.contentType = ContentType.json;
+              request.response.write(
+                jsonEncode({
+                  'success': false,
+                  'error': 'Token borders directory not found',
+                  'borders': []
+                }),
+              );
+              await request.response.close();
+              return;
+            }
+            
+            // List all PNG, JPG, JPEG files in the directory
+            final files = await tokenBordersDir.list().where((entity) {
+              if (entity is File) {
+                final fileName = entity.path.split(Platform.pathSeparator).last.toLowerCase();
+                return fileName.endsWith('.png') || 
+                       fileName.endsWith('.jpg') || 
+                       fileName.endsWith('.jpeg');
+              }
+              return false;
+            }).map((entity) {
+              final fileName = entity.path.split(Platform.pathSeparator).last;
+              return {
+                'name': fileName,
+                'url': '/images/TokenBorders/$fileName'
+              };
+            }).toList();
+            
+            print('GET /api/token-borders - Found ${files.length} token border files');
+            
+            request.response.headers.contentType = ContentType.json;
+            request.response.write(
+              jsonEncode({
+                'success': true,
+                'borders': files
+              }),
+            );
+            await request.response.close();
+          } catch (e, stack) {
+            print('ERROR in GET /api/token-borders: $e');
+            print('Stack trace: $stack');
+            request.response.statusCode = HttpStatus.internalServerError;
+            request.response.headers.contentType = ContentType.json;
+            request.response.write(
+              jsonEncode({
+                'success': false,
+                'error': 'Failed to fetch token borders: ${e.toString()}',
+                'borders': []
+              }),
+            );
+            await request.response.close();
+          }
+        }
         // --- API for file upload ---
         else if ((request.uri.path == '/upload' ||
                 request.uri.path == '/api/upload') &&
@@ -2839,8 +2983,8 @@ Future<void> main(List<String> arguments) async {
   } catch (e, stackTrace) {
     print('Fatal server error: $e');
     print('Stack trace: $stackTrace');
-    await _connectionPool.close();
-    exit(1);
+    // Don't exit the process, just log the error and continue
+    print('Server will continue running despite the error');
   }
 }
 

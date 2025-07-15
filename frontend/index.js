@@ -508,13 +508,26 @@ app.get('/api/map-tokens', async (req, res) => {
 });
 
 app.post('/api/map-tokens', async (req, res) => {
+  console.log(`[FRONTEND PROXY] POST /api/map-tokens - Request received`);
+  console.log(`[FRONTEND PROXY] POST /api/map-tokens - Request body:`, req.body);
   try {
-    const response = await axios.post(`${BACKEND_URL}/api/map-tokens`, req.body, {
+    const backendUrl = `${BACKEND_URL}/api/map-tokens`;
+    console.log(`[FRONTEND PROXY] POST /api/map-tokens - Sending to backend: ${backendUrl}`);
+    const response = await axios.post(backendUrl, req.body, {
       headers: { 'Content-Type': 'application/json' }
     });
+    console.log(`[FRONTEND PROXY] POST /api/map-tokens - Backend response:`, response.data);
     res.json(response.data);
   } catch (err) {
-    res.status(500).json({ error: 'Failed to place token' });
+    console.error(`[FRONTEND PROXY] POST /api/map-tokens - Error:`, err.message);
+    if (err.response) {
+      console.error(`[FRONTEND PROXY] POST /api/map-tokens - Backend error status:`, err.response.status);
+      console.error(`[FRONTEND PROXY] POST /api/map-tokens - Backend error response:`, err.response.data);
+      res.status(err.response.status).json(err.response.data);
+    } else {
+      console.error(`[FRONTEND PROXY] POST /api/map-tokens - No response from backend`);
+      res.status(500).json({ error: 'Failed to place token - no response from backend' });
+    }
   }
 });
 
@@ -755,6 +768,17 @@ app.post('/api/campaign_permissions', async (req, res) => {
     res.json(response.data);
   } catch (err) {
     res.status(500).json({ error: 'Failed to update campaign permissions' });
+  }
+});
+
+// Token borders API
+app.get('/api/token-borders', async (req, res) => {
+  try {
+    const response = await axios.get(`${BACKEND_URL}/api/token-borders`);
+    res.json(response.data);
+  } catch (err) {
+    console.error('Error fetching token borders from backend:', err);
+    res.status(500).json({ error: 'Failed to load token borders' });
   }
 });
 

@@ -1,0 +1,29 @@
+{
+  "name": "Hunter x Hunter",
+  "version": "1.0.0",
+  "description": "Sistema di gioco basato sull'universo di Hunter x Hunter con la classe Nen Master",
+  "author": "PFVTT Team",
+  "system_type": "custom",
+  "base_system": "d20",
+  "dice_system": "d20",
+  "attributes": [
+    "strength",
+    "dexterity",
+    "constitution",
+    "intelligence",
+    "wisdom",
+    "charisma"
+  ],
+  "core_mechanics": {
+    "nen_system": true,
+    "hunter_license": true,
+    "aura_points": true
+  },
+  "supported_features": [
+    "character_creation",
+    "nen_abilities",
+    "hunter_types",
+    "combat_system",
+    "skill_system"
+  ]
+}

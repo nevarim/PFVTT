@@ -1,0 +1,37 @@
+{
+  "strength": {
+    "name": "Forza",
+    "abbreviation": "FOR",
+    "description": "Misura la potenza fisica e la capacità di applicare forza bruta."
+  },
+  "dexterity": {
+    "name": "Destrezza",
+    "abbreviation": "DES",
+    "description": "Misura l'agilità, i riflessi e l'equilibrio."
+  },
+  "constitution": {
+    "name": "Costituzione",
+    "abbreviation": "COS",
+    "description": "Misura la salute, la resistenza e la forza vitale."
+  },
+  "intelligence": {
+    "name": "Intelligenza",
+    "abbreviation": "INT",
+    "description": "Misura il ragionamento, la memoria e la capacità analitica."
+  },
+  "wisdom": {
+    "name": "Saggezza",
+    "abbreviation": "SAG",
+    "description": "Misura la percezione, l'intuizione e la forza di volontà. Fondamentale per il controllo del Nen."
+  },
+  "charisma": {
+    "name": "Carisma",
+    "abbreviation": "CAR",
+    "description": "Misura la forza della personalità, la leadership e la presenza."
+  },
+  "aura_control": {
+    "name": "Controllo dell'Aura",
+    "abbreviation": "AUR",
+    "description": "Abilità speciale che misura la capacità di manipolare e controllare la propria aura vitale."
+  }
+}

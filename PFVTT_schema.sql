@@ -224,5 +224,6 @@ INSERT INTO game_rules (system, folder_name, rules_json) VALUES
   ('Pathfinder 1e', 'pathfinder_1e', '{"description": "Pathfinder 1st Edition core rules."}'),
   ('Pathfinder 2e', 'pathfinder_2e', '{"description": "Pathfinder 2nd Edition core rules."}'),
   ('D&D 3.5e', 'dnd_35e', '{"description": "Dungeons & Dragons 3.5 Edition core rules."}'),
-  ('Starfinder', 'starfinder', '{"description": "Starfinder RPG core rules."}');
+  ('Starfinder', 'starfinder', '{"description": "Starfinder RPG core rules."}'),
+  ('Hunter x Hunter', 'hunter_hunter', '{"description": "Sistema di gioco basato sull\u0027universo di Hunter x Hunter con la classe Nen Master."}');
 

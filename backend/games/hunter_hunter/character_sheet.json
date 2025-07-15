@@ -1,0 +1,156 @@
+{
+  "character_sheet_layout": {
+    "basic_info": {
+      "name": "Nome",
+      "race": "Razza",
+      "class": "Classe",
+      "level": "Livello",
+      "background": "Background",
+      "hunter_type": "Tipo di Cacciatore",
+      "nen_category": "Categoria Nen"
+    },
+    "ability_scores": {
+      "strength": "Forza",
+      "dexterity": "Destrezza",
+      "constitution": "Costituzione",
+      "intelligence": "Intelligenza",
+      "wisdom": "Saggezza",
+      "charisma": "Carisma",
+      "aura_control": "Controllo dell'Aura"
+    },
+    "combat_stats": {
+      "hit_points": "Punti Ferita",
+      "armor_class": "Classe Armatura",
+      "initiative": "Iniziativa",
+      "speed": "Velocità",
+      "nen_points": "Punti Nen",
+      "nen_points_max": "Punti Nen Massimi"
+    },
+    "saving_throws": {
+      "strength_save": "TS Forza",
+      "dexterity_save": "TS Destrezza",
+      "constitution_save": "TS Costituzione",
+      "intelligence_save": "TS Intelligenza",
+      "wisdom_save": "TS Saggezza",
+      "charisma_save": "TS Carisma"
+    },
+    "skills": {
+      "acrobatics": "Acrobazia",
+      "athletics": "Atletica",
+      "concentration": "Concentrazione",
+      "craft": "Artigianato",
+      "heal": "Guarigione",
+      "intimidate": "Intimidire",
+      "knowledge_arcana": "Conoscenze (Nen)",
+      "listen": "Ascoltare",
+      "profession": "Professione",
+      "sense_motive": "Intuire Intenzioni",
+      "spot": "Osservare",
+      "survival": "Sopravvivenza",
+      "nen_control": "Controllo Nen",
+      "hunter_knowledge": "Conoscenze da Cacciatore",
+      "aura_reading": "Lettura dell'Aura"
+    },
+    "nen_abilities": {
+      "primary_category": "Categoria Primaria",
+      "secondary_category": "Categoria Secondaria",
+      "hatsu_name": "Nome Hatsu",
+      "hatsu_description": "Descrizione Hatsu",
+      "known_techniques": "Tecniche Conosciute",
+      "nen_restrictions": "Restrizioni Nen"
+    },
+    "hunter_info": {
+      "license_number": "Numero Licenza",
+      "hunter_rank": "Grado Cacciatore",
+      "specialization": "Specializzazione",
+      "mentor": "Mentore",
+      "hunter_association_status": "Status Associazione Cacciatori"
+    },
+    "equipment": {
+      "weapons": "Armi",
+      "armor": "Armature",
+      "tools": "Strumenti",
+      "consumables": "Consumabili",
+      "treasure": "Tesori",
+      "currency": "Valuta"
+    },
+    "features_and_traits": {
+      "racial_traits": "Tratti Razziali",
+      "class_features": "Caratteristiche di Classe",
+      "feats": "Talenti",
+      "special_abilities": "Abilità Speciali"
+    },
+    "background_info": {
+      "personality_traits": "Tratti della Personalità",
+      "ideals": "Ideali",
+      "bonds": "Legami",
+      "flaws": "Difetti",
+      "backstory": "Storia Personale",
+      "goals": "Obiettivi"
+    }
+  },
+  "hunter_types": {
+    "beast_hunter": "Cacciatore di Bestie",
+    "blacklist_hunter": "Cacciatore della Lista Nera",
+    "bounty_hunter": "Cacciatore di Taglie",
+    "gourmet_hunter": "Cacciatore Gourmet",
+    "hacker_hunter": "Cacciatore Hacker",
+    "head_hunter": "Cacciatore di Teste",
+    "music_hunter": "Cacciatore Musicale",
+    "poison_hunter": "Cacciatore di Veleni",
+    "ruins_hunter": "Cacciatore di Rovine",
+    "sea_hunter": "Cacciatore Marino",
+    "treasure_hunter": "Cacciatore di Tesori",
+    "virus_hunter": "Cacciatore di Virus"
+  },
+  "nen_efficiency_chart": {
+    "enhancer": {
+      "enhancement": 100,
+      "transmutation": 80,
+      "emission": 80,
+      "manipulation": 60,
+      "conjuration": 60,
+      "specialization": 0
+    },
+    "transmuter": {
+      "transmutation": 100,
+      "enhancement": 80,
+      "conjuration": 80,
+      "emission": 60,
+      "manipulation": 60,
+      "specialization": 0
+    },
+    "emitter": {
+      "emission": 100,
+      "enhancement": 80,
+      "manipulation": 80,
+      "transmutation": 60,
+      "conjuration": 40,
+      "specialization": 0
+    },
+    "manipulator": {
+      "manipulation": 100,
+      "emission": 80,
+      "conjuration": 80,
+      "transmutation": 60,
+      "enhancement": 60,
+      "specialization": 0
+    },
+    "conjurer": {
+      "conjuration": 100,
+      "manipulation": 80,
+      "transmutation": 80,
+      "enhancement": 60,
+      "emission": 40,
+      "specialization": 0
+    },
+    "specialist": {
+      "specialization": 100,
+      "enhancement": 40,
+      "transmutation": 40,
+      "emission": 40,
+      "manipulation": 40,
+      "conjuration": 40
+    }
+  }
+}
