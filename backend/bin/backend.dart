@@ -7,6 +7,24 @@ import 'package:dotenv/dotenv.dart';
 import '../sheet_templates.dart';
 import '../game_system_manager.dart';
 
+// Logging functionality
+File? _logFile;
+
+Future<void> _initializeLogging() async {
+  _logFile = File('d:\\github\\PFVTT\\backend\\backend.log');
+  // Clear the log file on startup
+  await _logFile!.writeAsString('');
+  print('Backend log file initialized and cleared');
+}
+
+Future<void> _writeLog(String message) async {
+  if (_logFile != null) {
+    final timestamp = DateTime.now().toIso8601String();
+    final logEntry = '[$timestamp] $message\n';
+    await _logFile!.writeAsString(logEntry, mode: FileMode.append);
+  }
+}
+
 // MySQL Connection Pool
 class MySqlConnectionPool {
   final ConnectionSettings _settings;
@@ -120,20 +138,15 @@ class MySqlConnectionPool {
 
 late MySqlConnectionPool _connectionPool;
 
-// Rate limiting for map-tokens endpoint
-Map<String, DateTime> _mapTokensRequestCache = {};
-const Duration _mapTokensRateLimit = Duration(milliseconds: 1000);
-
-// Clean up old cache entries periodically
-void _cleanupRateLimitCache() {
-  final now = DateTime.now();
-  _mapTokensRequestCache.removeWhere((key, value) => 
-    now.difference(value) > Duration(minutes: 5));
-}
+// Rate limiting variables and cleanup function removed
 
 Future<void> main(List<String> arguments) async {
   try {
     print('PFVTT backend main() started');
+
+    // Initialize logging
+    await _initializeLogging();
+    await _writeLog('PFVTT backend started');
 
     // Load environment variables
     var env = DotEnv(includePlatformEnvironment: true)..load(['../.env']);
@@ -168,10 +181,7 @@ Future<void> main(List<String> arguments) async {
 
     await _connectionPool.initialize();
 
-    // Start periodic cache cleanup
-    Timer.periodic(Duration(minutes: 1), (timer) {
-      _cleanupRateLimitCache();
-    });
+    // Periodic cache cleanup removed
 
     final server = await HttpServer.bind(InternetAddress.anyIPv4, serverPort);
     print('Backend running on http://$serverHost:$serverPort');
@@ -209,6 +219,10 @@ Future<void> main(List<String> arguments) async {
 
         print('DEBUG: Received request: ${request.method} ${request.uri.path}');
         stdout.flush();
+        
+        // Log all API requests
+        await _writeLog('${request.method} ${request.uri.path} - ${request.connectionInfo?.remoteAddress}');
+        
         if (request.uri.path == '/login' && request.method == 'POST') {
           print('BACKEND /login chiamato');
           String content = await utf8.decoder.bind(request).join();
@@ -237,11 +251,13 @@ Future<void> main(List<String> arguments) async {
               BCrypt.checkpw(password, results.first[0])) {
             request.response.headers.contentType = ContentType.json;
             request.response.write(jsonEncode({'success': true}));
+            await _writeLog('LOGIN SUCCESS for user: $username');
           } else {
             request.response.headers.contentType = ContentType.json;
             request.response.write(
               jsonEncode({'success': false, 'error': 'Invalid credentials'}),
             );
+            await _writeLog('LOGIN FAILED for user: $username');
           }
           await request.response.close();
         } else if (request.uri.path == '/register' &&
@@ -284,6 +300,7 @@ Future<void> main(List<String> arguments) async {
           );
           request.response.headers.contentType = ContentType.json;
           request.response.write(jsonEncode({'success': true}));
+          await _writeLog('REGISTER SUCCESS for user: $username');
           await request.response.close();
         } else if (request.uri.path == '/api/reset_password' &&
             request.method == 'POST') {
@@ -2065,20 +2082,7 @@ Future<void> main(List<String> arguments) async {
               return;
             }
 
-            // Rate limiting check
-            final now = DateTime.now();
-            final lastRequest = _mapTokensRequestCache[mapId];
-            if (lastRequest != null && now.difference(lastRequest) < _mapTokensRateLimit) {
-              print('GET /api/map-tokens - Rate limited for map_id: $mapId');
-              request.response.statusCode = 429;
-              request.response.headers.contentType = ContentType.json;
-              request.response.write(
-                jsonEncode({'success': false, 'error': 'Rate limit exceeded'}),
-              );
-              await request.response.close();
-              return;
-            }
-            _mapTokensRequestCache[mapId] = now;
+            // Rate limiting removed - causing issues with legitimate requests
 
             print('GET /api/map-tokens - Querying for map_id: $mapId');
             print('GET /api/map-tokens - About to execute database query...');
@@ -2119,6 +2123,7 @@ Future<void> main(List<String> arguments) async {
               });
             }
             print('GET /api/map-tokens - Found ${tokens.length} tokens');
+            await _writeLog('GET /api/map-tokens SUCCESS - map_id: $mapId, tokens found: ${tokens.length}');
             request.response.headers.contentType = ContentType.json;
             request.response.write(
               jsonEncode({'success': true, 'tokens': tokens}),
@@ -2128,6 +2133,7 @@ Future<void> main(List<String> arguments) async {
             print('ERROR in GET /api/map-tokens for map_id=${mapId ?? 'unknown'}: $e');
             print('ERROR Stack trace: $stack');
             print('ERROR Type: ${e.runtimeType}');
+            await _writeLog('GET /api/map-tokens ERROR - map_id: ${mapId ?? 'unknown'}, error: $e');
             // Return empty but valid response when database is unavailable
             request.response.headers.contentType = ContentType.json;
             request.response.write(
@@ -2181,6 +2187,7 @@ Future<void> main(List<String> arguments) async {
               ],
             );
 
+            await _writeLog('POST /api/map-tokens SUCCESS - map_id: $mapId, token_id: ${result.insertId}');
             request.response.headers.contentType = ContentType.json;
             request.response.write(
               jsonEncode({'success': true, 'token_id': result.insertId}),
@@ -2189,6 +2196,7 @@ Future<void> main(List<String> arguments) async {
           } catch (e, stack) {
             print('Error in POST /api/map-tokens: $e');
             print('Stack trace: $stack');
+            await _writeLog('POST /api/map-tokens ERROR - error: $e');
             request.response.statusCode = HttpStatus.internalServerError;
             request.response.headers.contentType = ContentType.json;
             request.response.write(
@@ -2270,6 +2278,7 @@ Future<void> main(List<String> arguments) async {
             print('PUT /api/map-tokens - Query Values: $updateValues');
             await _connectionPool.query(query, updateValues);
             print('PUT /api/map-tokens - Query executed successfully');
+            await _writeLog('PUT /api/map-tokens SUCCESS - token_id: $tokenId, fields updated: ${updateFields.length - 1}');
 
             request.response.headers.contentType = ContentType.json;
             request.response.write(jsonEncode({'success': true}));
@@ -2279,6 +2288,7 @@ Future<void> main(List<String> arguments) async {
             final tokenId = pathParts.length > 3 ? pathParts[3] : 'unknown';
             print('Error in PUT /api/map-tokens/$tokenId: $e');
             print('Stack trace: $stack');
+            await _writeLog('PUT /api/map-tokens ERROR - token_id: $tokenId, error: $e');
             request.response.statusCode = HttpStatus.internalServerError;
             request.response.headers.contentType = ContentType.json;
             request.response.write(
