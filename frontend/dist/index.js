@@ -6,12 +6,28 @@ import { dirname } from 'path';
 import axios from 'axios';
 import fs from 'fs';
 import multer from 'multer';
+import FormData from 'form-data';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const app = express();
 const PORT = parseInt(process.env.FRONTEND_PORT || '3000');
 const BACKEND_URL = `http://${process.env.SERVER_HOST || 'localhost'}:${process.env.SERVER_PORT || 8080}`;
 const upload = multer();
+// Logging functionality
+const LOG_FILE = path.join(__dirname, '..', 'frontend.log');
+function initializeLogging() {
+    // Clear the log file on startup
+    fs.writeFileSync(LOG_FILE, '');
+    console.log('Frontend log file initialized and cleared');
+}
+function writeLog(message) {
+    const timestamp = new Date().toISOString();
+    const logEntry = `[${timestamp}] ${message}\n`;
+    fs.appendFileSync(LOG_FILE, logEntry);
+}
+// Initialize logging
+initializeLogging();
+writeLog('PFVTT frontend started');
 console.log(`[FRONTEND] Starting on port ${PORT}`);
 console.log(`[FRONTEND] Backend URL: ${BACKEND_URL}`);
 app.set('view engine', 'ejs');
@@ -477,73 +493,227 @@ app.post('/api/debug_log', (req, res) => {
 });
 // Proxy for map layer APIs
 app.get('/api/map-tokens', async (req, res) => {
+    const startTime = Date.now();
     try {
-        let url = `${BACKEND_URL}/api/map-tokens`;
-        if (req.query.map_id) {
-            url += `?map_id=${encodeURIComponent(req.query.map_id)}`;
+        // Validate map_id parameter
+        const mapId = req.query.map_id;
+        if (!mapId) {
+            writeLog(`[FRONTEND PROXY] GET /api/map-tokens - ERROR: Missing map_id parameter`);
+            res.status(400).json({ success: false, error: 'Missing map_id parameter' });
+            return;
         }
+        if (typeof mapId !== 'string' || !/^\d+$/.test(mapId)) {
+            writeLog(`[FRONTEND PROXY] GET /api/map-tokens - ERROR: Invalid map_id format: ${mapId}`);
+            res.status(400).json({ success: false, error: 'Invalid map_id format. Must be numeric.' });
+            return;
+        }
+        const url = `${BACKEND_URL}/api/map-tokens?map_id=${encodeURIComponent(mapId)}`;
+        writeLog(`[FRONTEND PROXY] GET /api/map-tokens - URL: ${url}`);
         console.log(`[FRONTEND PROXY] GET /api/map-tokens - URL: ${url}`);
-        const response = await axios.get(url);
-        console.log(`[FRONTEND PROXY] GET /api/map-tokens - Success: ${JSON.stringify(response.data)}`);
-        res.json(response.data);
+        // Add timeout and retry logic
+        let lastError;
+        for (let attempt = 1; attempt <= 3; attempt++) {
+            try {
+                const response = await axios.get(url, {
+                    timeout: 30000, // 30 second timeout
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                const duration = Date.now() - startTime;
+                writeLog(`[FRONTEND PROXY] GET /api/map-tokens - Success (${duration}ms, attempt ${attempt}): ${JSON.stringify(response.data)}`);
+                console.log(`[FRONTEND PROXY] GET /api/map-tokens - Success (${duration}ms):`, response.data);
+                // Validate response structure
+                if (!response.data || typeof response.data.success !== 'boolean') {
+                    throw new Error('Invalid response structure from backend');
+                }
+                res.json(response.data);
+                return;
+            }
+            catch (attemptError) {
+                lastError = attemptError;
+                writeLog(`[FRONTEND PROXY] GET /api/map-tokens - Attempt ${attempt} failed: ${attemptError.message}`);
+                if (attempt < 3 && (attemptError.code === 'ECONNRESET' || attemptError.code === 'ETIMEDOUT')) {
+                    await new Promise(resolve => setTimeout(resolve, 1000 * attempt)); // Exponential backoff
+                    continue;
+                }
+                break;
+            }
+        }
+        throw lastError;
     }
     catch (err) {
+        const duration = Date.now() - startTime;
+        writeLog(`[FRONTEND PROXY] GET /api/map-tokens - Error (${duration}ms): ${err.message}`);
         console.error(`[FRONTEND PROXY] GET /api/map-tokens - Error:`, err.message);
         if (err.response) {
+            writeLog(`[FRONTEND PROXY] GET /api/map-tokens - Backend error: ${JSON.stringify(err.response.data)}`);
             console.error(`[FRONTEND PROXY] GET /api/map-tokens - Backend error:`, err.response.data);
+            res.status(err.response.status).json(err.response.data);
         }
-        res.status(500).json({ error: 'Failed to fetch map tokens' });
+        else if (err.code === 'ETIMEDOUT' || err.code === 'ECONNRESET') {
+            res.status(504).json({ success: false, error: 'Backend service timeout' });
+        }
+        else {
+            res.status(500).json({ success: false, error: 'Internal server error' });
+        }
     }
 });
 app.post('/api/map-tokens', async (req, res) => {
+    const startTime = Date.now();
+    writeLog(`[FRONTEND PROXY] POST /api/map-tokens - Request received`);
+    writeLog(`[FRONTEND PROXY] POST /api/map-tokens - Request body: ${JSON.stringify(req.body)}`);
     console.log(`[FRONTEND PROXY] POST /api/map-tokens - Request received`);
     console.log(`[FRONTEND PROXY] POST /api/map-tokens - Request body:`, req.body);
     try {
+        // Validate required fields
+        const { map_id, asset_id, grid_x, grid_y } = req.body;
+        if (!map_id || !asset_id || grid_x === undefined || grid_y === undefined) {
+            writeLog(`[FRONTEND PROXY] POST /api/map-tokens - ERROR: Missing required fields`);
+            res.status(400).json({
+                success: false,
+                error: 'Missing required fields: map_id, asset_id, grid_x, grid_y'
+            });
+            return;
+        }
+        // Validate field types
+        if (isNaN(parseInt(map_id)) || isNaN(parseInt(asset_id))) {
+            writeLog(`[FRONTEND PROXY] POST /api/map-tokens - ERROR: Invalid field types`);
+            res.status(400).json({
+                success: false,
+                error: 'map_id and asset_id must be numeric'
+            });
+            return;
+        }
         const backendUrl = `${BACKEND_URL}/api/map-tokens`;
+        writeLog(`[FRONTEND PROXY] POST /api/map-tokens - Sending to backend: ${backendUrl}`);
         console.log(`[FRONTEND PROXY] POST /api/map-tokens - Sending to backend: ${backendUrl}`);
-        const response = await axios.post(backendUrl, req.body, {
-            headers: { 'Content-Type': 'application/json' }
-        });
-        console.log(`[FRONTEND PROXY] POST /api/map-tokens - Backend response:`, response.data);
-        res.json(response.data);
+        // Add timeout and retry logic
+        let lastError;
+        for (let attempt = 1; attempt <= 3; attempt++) {
+            try {
+                const response = await axios.post(backendUrl, req.body, {
+                    timeout: 30000, // 30 second timeout
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                const duration = Date.now() - startTime;
+                writeLog(`[FRONTEND PROXY] POST /api/map-tokens - Backend response (${duration}ms, attempt ${attempt}): ${JSON.stringify(response.data)}`);
+                console.log(`[FRONTEND PROXY] POST /api/map-tokens - Backend response (${duration}ms):`, response.data);
+                // Validate response structure
+                if (!response.data || typeof response.data.success !== 'boolean') {
+                    throw new Error('Invalid response structure from backend');
+                }
+                res.json(response.data);
+                return;
+            }
+            catch (attemptError) {
+                lastError = attemptError;
+                writeLog(`[FRONTEND PROXY] POST /api/map-tokens - Attempt ${attempt} failed: ${attemptError.message}`);
+                if (attempt < 3 && (attemptError.code === 'ECONNRESET' || attemptError.code === 'ETIMEDOUT')) {
+                    await new Promise(resolve => setTimeout(resolve, 1000 * attempt)); // Exponential backoff
+                    continue;
+                }
+                break;
+            }
+        }
+        throw lastError;
     }
     catch (err) {
+        const duration = Date.now() - startTime;
+        writeLog(`[FRONTEND PROXY] POST /api/map-tokens - Error (${duration}ms): ${err.message}`);
         console.error(`[FRONTEND PROXY] POST /api/map-tokens - Error:`, err.message);
         if (err.response) {
+            writeLog(`[FRONTEND PROXY] POST /api/map-tokens - Backend error status: ${err.response.status}`);
+            writeLog(`[FRONTEND PROXY] POST /api/map-tokens - Backend error response: ${JSON.stringify(err.response.data)}`);
             console.error(`[FRONTEND PROXY] POST /api/map-tokens - Backend error status:`, err.response.status);
             console.error(`[FRONTEND PROXY] POST /api/map-tokens - Backend error response:`, err.response.data);
             res.status(err.response.status).json(err.response.data);
         }
+        else if (err.code === 'ETIMEDOUT' || err.code === 'ECONNRESET') {
+            writeLog(`[FRONTEND PROXY] POST /api/map-tokens - Backend timeout`);
+            res.status(504).json({ success: false, error: 'Backend service timeout' });
+        }
         else {
+            writeLog(`[FRONTEND PROXY] POST /api/map-tokens - No response from backend`);
             console.error(`[FRONTEND PROXY] POST /api/map-tokens - No response from backend`);
-            res.status(500).json({ error: 'Failed to place token - no response from backend' });
+            res.status(500).json({ success: false, error: 'Internal server error' });
         }
     }
 });
 app.put('/api/map-tokens/:id', async (req, res) => {
+    writeLog(`[FRONTEND PROXY] PUT /api/map-tokens/${req.params.id} - Request received`);
+    writeLog(`[FRONTEND PROXY] PUT /api/map-tokens/${req.params.id} - Headers: ${JSON.stringify(req.headers)}`);
+    writeLog(`[FRONTEND PROXY] PUT /api/map-tokens/${req.params.id} - Request body: ${JSON.stringify(req.body)}`);
     console.log(`[FRONTEND PROXY] PUT /api/map-tokens/${req.params.id} - Request received`);
     console.log(`[FRONTEND PROXY] PUT /api/map-tokens/${req.params.id} - Headers:`, req.headers);
     console.log(`[FRONTEND PROXY] PUT /api/map-tokens/${req.params.id} - Request body:`, req.body);
     try {
         const backendUrl = `${BACKEND_URL}/api/map-tokens/${req.params.id}`;
+        writeLog(`[FRONTEND PROXY] PUT /api/map-tokens/${req.params.id} - Sending to backend: ${backendUrl}`);
         console.log(`[FRONTEND PROXY] PUT /api/map-tokens/${req.params.id} - Sending to backend: ${backendUrl}`);
         const response = await axios.put(backendUrl, req.body, {
-            headers: { 'Content-Type': 'application/json' }
+            headers: { 'Content-Type': 'application/json' },
+            timeout: 10000 // 10 seconds timeout
         });
+        writeLog(`[FRONTEND PROXY] PUT /api/map-tokens/${req.params.id} - Backend response: ${JSON.stringify(response.data)}`);
         console.log(`[FRONTEND PROXY] PUT /api/map-tokens/${req.params.id} - Backend response:`, response.data);
         res.json(response.data);
     }
     catch (err) {
+        writeLog(`[FRONTEND PROXY] PUT /api/map-tokens/${req.params.id} - Error: ${err.message}`);
+        writeLog(`[FRONTEND PROXY] PUT /api/map-tokens/${req.params.id} - Error stack: ${err.stack}`);
         console.error(`[FRONTEND PROXY] PUT /api/map-tokens/${req.params.id} - Error:`, err.message);
         console.error(`[FRONTEND PROXY] PUT /api/map-tokens/${req.params.id} - Error stack:`, err.stack);
         if (err.response) {
+            writeLog(`[FRONTEND PROXY] PUT /api/map-tokens/${req.params.id} - Backend error status: ${err.response.status}`);
+            writeLog(`[FRONTEND PROXY] PUT /api/map-tokens/${req.params.id} - Backend error response: ${JSON.stringify(err.response.data)}`);
             console.error(`[FRONTEND PROXY] PUT /api/map-tokens/${req.params.id} - Backend error status:`, err.response.status);
             console.error(`[FRONTEND PROXY] PUT /api/map-tokens/${req.params.id} - Backend error response:`, err.response.data);
             res.status(err.response.status).json(err.response.data);
         }
         else {
+            writeLog(`[FRONTEND PROXY] PUT /api/map-tokens/${req.params.id} - No response from backend`);
             console.error(`[FRONTEND PROXY] PUT /api/map-tokens/${req.params.id} - No response from backend`);
             res.status(500).json({ error: 'Failed to update token - no response from backend' });
+        }
+    }
+});
+// Batch update endpoint for map tokens
+app.put('/api/map-tokens/batch', async (req, res) => {
+    writeLog(`[FRONTEND PROXY] PUT /api/map-tokens/batch - Request received`);
+    writeLog(`[FRONTEND PROXY] PUT /api/map-tokens/batch - Request body: ${JSON.stringify(req.body)}`);
+    console.log(`[FRONTEND PROXY] PUT /api/map-tokens/batch - Request received`);
+    console.log(`[FRONTEND PROXY] PUT /api/map-tokens/batch - Request body:`, req.body);
+    try {
+        const backendUrl = `${BACKEND_URL}/api/map-tokens/batch`;
+        writeLog(`[FRONTEND PROXY] PUT /api/map-tokens/batch - Sending to backend: ${backendUrl}`);
+        console.log(`[FRONTEND PROXY] PUT /api/map-tokens/batch - Sending to backend: ${backendUrl}`);
+        const response = await axios.put(backendUrl, req.body, {
+            headers: { 'Content-Type': 'application/json' },
+            timeout: 30000 // 30 seconds timeout for batch operations
+        });
+        writeLog(`[FRONTEND PROXY] PUT /api/map-tokens/batch - Backend response: ${JSON.stringify(response.data)}`);
+        console.log(`[FRONTEND PROXY] PUT /api/map-tokens/batch - Backend response:`, response.data);
+        res.json(response.data);
+    }
+    catch (err) {
+        writeLog(`[FRONTEND PROXY] PUT /api/map-tokens/batch - Error: ${err.message}`);
+        writeLog(`[FRONTEND PROXY] PUT /api/map-tokens/batch - Error stack: ${err.stack}`);
+        console.error(`[FRONTEND PROXY] PUT /api/map-tokens/batch - Error:`, err.message);
+        console.error(`[FRONTEND PROXY] PUT /api/map-tokens/batch - Error stack:`, err.stack);
+        if (err.response) {
+            writeLog(`[FRONTEND PROXY] PUT /api/map-tokens/batch - Backend error status: ${err.response.status}`);
+            writeLog(`[FRONTEND PROXY] PUT /api/map-tokens/batch - Backend error response: ${JSON.stringify(err.response.data)}`);
+            console.error(`[FRONTEND PROXY] PUT /api/map-tokens/batch - Backend error status:`, err.response.status);
+            console.error(`[FRONTEND PROXY] PUT /api/map-tokens/batch - Backend error response:`, err.response.data);
+            res.status(err.response.status).json(err.response.data);
+        }
+        else {
+            writeLog(`[FRONTEND PROXY] PUT /api/map-tokens/batch - No response from backend`);
+            console.error(`[FRONTEND PROXY] PUT /api/map-tokens/batch - No response from backend`);
+            res.status(500).json({ error: 'Failed to batch update tokens - no response from backend' });
         }
     }
 });
@@ -773,7 +943,6 @@ app.post('/api/upload', upload.single('file'), async (req, res) => {
     fs.appendFileSync('frontend.log', logMsg);
     console.log(logMsg);
     try {
-        const FormData = require('form-data');
         const form = new FormData();
         if (req.file) {
             form.append('file', req.file.buffer, req.file.originalname || 'file.png');
@@ -811,7 +980,6 @@ app.post('/api/campaign-background-upload', upload.single('image'), async (req, 
     fs.appendFileSync('frontend.log', logMsg);
     console.log(logMsg);
     try {
-        const FormData = require('form-data');
         const form = new FormData();
         if (req.file) {
             form.append('image', req.file.buffer, req.file.originalname || 'image.png');

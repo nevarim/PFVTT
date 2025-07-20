@@ -70,25 +70,11 @@ async function loadCampaigns() {
                         return;
                     // Save campaign ID in session storage for map page
                     sessionStorage.setItem('current_campaign_id', campaignId);
-                    // Debug log before navigation
-                    console.log('CAMPAIGNS.TS: Navigating to map with campaign ID:', campaignId);
-                    console.log('CAMPAIGNS.TS: Current user in storage:', localStorage.getItem('pfvtt_user') || sessionStorage.getItem('pfvtt_user'));
-                    // Send debug log to backend
-                    fetch('/api/debug_log', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            message: 'CAMPAIGNS.TS: Navigating to map page',
-                            data: {
-                                campaignId: campaignId,
-                                user: localStorage.getItem('pfvtt_user') || sessionStorage.getItem('pfvtt_user'),
-                                localStorage: localStorage.getItem('pfvtt_user'),
-                                sessionStorage: sessionStorage.getItem('pfvtt_user'),
-                                timestamp: new Date().toISOString(),
-                                location: 'campaigns.ts click handler'
-                            }
-                        })
-                    }).catch(err => console.error('Failed to send debug log:', err));
+                    // Simplified debug log for navigation (only in development)
+                    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+                        console.log('CAMPAIGNS.TS: Navigating to map with campaign ID:', campaignId);
+                        console.log('CAMPAIGNS.TS: Current user in storage:', localStorage.getItem('pfvtt_user') || sessionStorage.getItem('pfvtt_user'));
+                    }
                     window.location.href = '/map';
                 });
             });

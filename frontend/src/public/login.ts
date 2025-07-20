@@ -132,21 +132,14 @@ document.addEventListener('DOMContentLoaded', function() {
           localStorage.setItem('pfvtt_user', username);
           sessionStorage.setItem('pfvtt_user', username);
           
-          // Debug log for login success
-          try {
-            await fetch('/api/debug_log', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                message: 'LOGIN SUCCESS - User stored',
-                data: {
-                  username: username,
-                  localStorage: localStorage.getItem('pfvtt_user'),
-                  sessionStorage: sessionStorage.getItem('pfvtt_user')
-                }
-              } as DebugLogData)
+          // Simplified debug log for login success (only in development)
+          if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+            console.log('LOGIN SUCCESS - User stored:', {
+              username: username,
+              localStorage: localStorage.getItem('pfvtt_user'),
+              sessionStorage: sessionStorage.getItem('pfvtt_user')
             });
-          } catch (e) { /* ignore debug errors */ }
+          }
           
           // Get and store user_id
           try {
@@ -156,21 +149,14 @@ document.addEventListener('DOMContentLoaded', function() {
               sessionStorage.setItem('pfvtt_user_id', userIdData.user_id.toString());
               localStorage.setItem('pfvtt_user_id', userIdData.user_id.toString());
               
-              // Debug log for user_id storage
-              try {
-                await fetch('/api/debug_log', {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({
-                    message: 'LOGIN - User ID stored',
-                    data: {
-                      user_id: userIdData.user_id,
-                      localStorage_user_id: localStorage.getItem('pfvtt_user_id'),
-                      sessionStorage_user_id: sessionStorage.getItem('pfvtt_user_id')
-                    }
-                  } as DebugLogData)
+              // Simplified debug log for user_id storage (only in development)
+              if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+                console.log('LOGIN - User ID stored:', {
+                  user_id: userIdData.user_id,
+                  localStorage_user_id: localStorage.getItem('pfvtt_user_id'),
+                  sessionStorage_user_id: sessionStorage.getItem('pfvtt_user_id')
                 });
-              } catch (e) { /* ignore debug errors */ }
+              }
             }
           } catch (err) {
             console.error('Failed to get user_id:', err);

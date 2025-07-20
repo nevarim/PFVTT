@@ -979,70 +979,203 @@
       try {
         Logger.info(`Loading tokens for map ID: ${mapId}`);
         
-        // Load tokens and sheets in parallel to reduce total request time
-        const [tokensRes, sheetsRes] = await Promise.all([
-          fetch(`/api/map-tokens?map_id=${encodeURIComponent(mapId)}`),
-          fetch(`/api/token-sheets?map_id=${encodeURIComponent(mapId)}`)
-        ]);
+        // Load tokens and sheets in parallel with timeout and retry logic
+        let tokensRes, sheetsRes;
+        let retryCount = 0;
+        const maxRetries = 3;
         
+        while (retryCount < maxRetries) {
+          try {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+            
+            [tokensRes, sheetsRes] = await Promise.all([
+              fetch(`/api/map-tokens?map_id=${encodeURIComponent(mapId)}`, {
+                signal: controller.signal,
+                headers: {
+                  'Content-Type': 'application/json'
+                }
+              }),
+              fetch(`/api/token-sheets?map_id=${encodeURIComponent(mapId)}`, {
+                signal: controller.signal,
+                headers: {
+                  'Content-Type': 'application/json'
+                }
+              })
+            ]);
+            
+            clearTimeout(timeoutId);
+            break; // Success, exit retry loop
+            
+          } catch (fetchError) {
+            retryCount++;
+            Logger.warn(`Fetch attempt ${retryCount} failed:`, fetchError.message);
+            
+            if (retryCount >= maxRetries) {
+              throw new Error(`Failed to fetch data after ${maxRetries} attempts: ${fetchError.message}`);
+            }
+            
+            // Exponential backoff: wait 1s, 2s, 4s
+            const delay = Math.pow(2, retryCount - 1) * 1000;
+            Logger.info(`Retrying in ${delay}ms...`);
+            await new Promise(resolve => setTimeout(resolve, delay));
+          }
+        }
+        
+        // Check response status
         if (!tokensRes.ok) {
           if (tokensRes.status === 429) {
             Logger.warn('Rate limit exceeded for tokens, retrying in 1200ms');
             setTimeout(() => loadActiveTokensAndSheets(true), 1200);
             return;
           }
+          if (tokensRes.status === 504) {
+            Logger.warn('Backend timeout for tokens, retrying in 2000ms');
+            setTimeout(() => loadActiveTokensAndSheets(true), 2000);
+            return;
+          }
           throw new Error(`Failed to fetch tokens: ${tokensRes.status} ${tokensRes.statusText}`);
         }
         
         if (!sheetsRes.ok) {
-          throw new Error(`Failed to fetch token sheets: ${sheetsRes.status} ${sheetsRes.statusText}`);
+          if (sheetsRes.status === 504) {
+            Logger.warn('Backend timeout for sheets, continuing with tokens only');
+            // Continue with empty sheets array
+          } else {
+            throw new Error(`Failed to fetch token sheets: ${sheetsRes.status} ${sheetsRes.statusText}`);
+          }
         }
         
-        const [tokensText, sheetsText] = await Promise.all([
-          tokensRes.text(),
-          sheetsRes.text()
-        ]);
+        // Parse response texts with error handling
+        let tokensText, sheetsText;
+        try {
+          const textPromises = [tokensRes.text()];
+          if (sheetsRes.ok) {
+            textPromises.push(sheetsRes.text());
+          }
+          
+          const textResults = await Promise.all(textPromises);
+          tokensText = textResults[0];
+          sheetsText = textResults[1] || '{"success": true, "sheets": []}';
+        } catch (textError) {
+          Logger.error('Failed to read response text:', textError);
+          throw new Error('Failed to read API response');
+        }
         
         Logger.debug('Tokens response text:', tokensText);
         Logger.debug('Sheets response text:', sheetsText);
         
+        // Parse JSON with comprehensive error handling
         let tokensData, sheetsData;
         try {
+          // Validate tokens response
+          if (!tokensText || tokensText.trim() === '') {
+            throw new Error('Empty tokens response');
+          }
+          
           tokensData = JSON.parse(tokensText);
-          sheetsData = JSON.parse(sheetsText);
+          if (!tokensData || typeof tokensData !== 'object') {
+            throw new Error('Invalid tokens data structure');
+          }
+          
+          if (typeof tokensData.success !== 'boolean') {
+            throw new Error('Missing success field in tokens response');
+          }
+          
+          if (!tokensData.success) {
+            throw new Error(`Tokens API error: ${tokensData.error || 'Unknown error'}`);
+          }
+          
+          // Validate sheets response
+          if (!sheetsText || sheetsText.trim() === '') {
+            Logger.warn('Empty sheets response, using default');
+            sheetsData = { success: true, sheets: [] };
+          } else {
+            sheetsData = JSON.parse(sheetsText);
+            if (!sheetsData || typeof sheetsData !== 'object') {
+              Logger.warn('Invalid sheets data structure, using default');
+              sheetsData = { success: true, sheets: [] };
+            }
+          }
+          
         } catch (parseError) {
           Logger.error('Failed to parse JSON response', parseError);
           Logger.error('Tokens response was:', tokensText);
           Logger.error('Sheets response was:', sheetsText);
-          throw new Error('Invalid JSON response from API endpoints');
+          throw new Error(`Invalid JSON response from API endpoints: ${parseError.message}`);
         }
         
-        const tokens = tokensData.tokens || [];
-        const sheets = sheetsData.sheets || [];
-        Logger.info(`Loaded ${tokens.length} tokens and ${sheets.length} token sheets`);
+        // Validate and extract data arrays
+        const tokens = Array.isArray(tokensData.tokens) ? tokensData.tokens : [];
+        const sheets = Array.isArray(sheetsData.sheets) ? sheetsData.sheets : [];
         
-        // Update UI
-        const list = document.getElementById('tokens-list');
-        if (!list) {
-          Logger.error('tokens-list element not found');
-          return;
-        }
+        // Validate token objects
+        const validTokens = tokens.filter(token => {
+          if (!token || typeof token !== 'object') {
+            Logger.warn('Invalid token object:', token);
+            return false;
+          }
+          if (!token.id || !token.name) {
+            Logger.warn('Token missing required fields:', token);
+            return false;
+          }
+          return true;
+        });
+        Logger.info(`Loaded ${validTokens.length}/${tokens.length} valid tokens and ${sheets.length} token sheets`);
         
-        list.innerHTML = '';
-        
-        if (tokens.length === 0) {
-          const li = document.createElement('li');
-          li.className = 'item';
-          li.innerHTML = `<div class='item-name' style='color: #999; font-style: italic;'>No tokens on this map</div>`;
-          list.appendChild(li);
-        } else {
-          tokens.forEach(token => {
+        // Update UI with validated tokens
+        try {
+          const list = document.getElementById('tokens-list');
+          if (!list) {
+            Logger.error('tokens-list element not found');
+            throw new Error('UI container not found');
+          }
+          
+          list.innerHTML = '';
+          
+          if (validTokens.length === 0) {
             const li = document.createElement('li');
             li.className = 'item';
-            const tokenSheet = sheets.find(s => s.map_token_id === token.id) || null;
-            li.innerHTML = `<div class='item-name'>${escapeHtml(token.name||'Token')}</div><div class='item-details'>ID: ${token.id} <button style='background:#444; color:white; border:none; border-radius:3px; padding:2px 8px; cursor:pointer; margin-left:8px;' onclick='openTokenSheetModal(${JSON.stringify(token)}, ${JSON.stringify(tokenSheet)})'>Sheet</button></div>`;
+            li.innerHTML = `<div class='item-name' style='color: #999; font-style: italic;'>No valid tokens on this map</div>`;
             list.appendChild(li);
-          });
+          } else {
+            validTokens.forEach(token => {
+              try {
+                const li = document.createElement('li');
+                li.className = 'item';
+                
+                // Safely find associated sheet
+                const tokenSheet = sheets.find(s => s && s.map_token_id === token.id) || null;
+                
+                // Validate token data before creating UI
+                const tokenName = escapeHtml(token.name || 'Token');
+                const tokenId = parseInt(token.id);
+                
+                if (isNaN(tokenId)) {
+                  Logger.warn(`Invalid token ID: ${token.id}`);
+                  return;
+                }
+                
+                // Safely serialize objects for onclick handlers
+                let tokenJson, sheetJson;
+                try {
+                  tokenJson = JSON.stringify(token);
+                  sheetJson = JSON.stringify(tokenSheet);
+                } catch (serializeError) {
+                  Logger.error(`Failed to serialize token data for ${token.id}:`, serializeError);
+                  return;
+                }
+                
+                li.innerHTML = `<div class='item-name'>${tokenName}</div><div class='item-details'>ID: ${tokenId} <button style='background:#444; color:white; border:none; border-radius:3px; padding:2px 8px; cursor:pointer; margin-left:8px;' onclick='openTokenSheetModal(${tokenJson}, ${sheetJson})'>Sheet</button><button style='background:#0066cc; color:white; border:none; border-radius:3px; padding:2px 8px; cursor:pointer; margin-left:4px;' onclick='centerOnToken(${tokenId})'>Center</button></div>`;
+                list.appendChild(li);
+              } catch (tokenError) {
+                Logger.error(`Failed to create UI element for token ${token.id}:`, tokenError);
+              }
+            });
+          }
+        } catch (uiError) {
+          Logger.error('Failed to update tokens UI:', uiError);
+          throw new Error('Failed to update user interface');
         }
         
         Logger.info('Tokens and sheets loaded successfully');
@@ -1131,6 +1264,113 @@
     }
     function closeTokenSheetModal() {
       document.getElementById('token-sheet-modal').style.display = 'none';
+    }
+    
+    // Custom input dialog to replace prompt()
+    function showInputDialog(message, placeholder = '') {
+      return new Promise((resolve) => {
+        // Create modal overlay
+        const overlay = document.createElement('div');
+        overlay.style.cssText = `
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: rgba(0, 0, 0, 0.7);
+          z-index: 10002;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        `;
+        
+        // Create modal content
+        const modal = document.createElement('div');
+        modal.style.cssText = `
+          background: #222;
+          color: white;
+          border-radius: 8px;
+          padding: 24px;
+          min-width: 300px;
+          max-width: 500px;
+          box-shadow: 0 4px 24px rgba(0, 0, 0, 0.7);
+        `;
+        
+        modal.innerHTML = `
+          <h3 style="margin: 0 0 16px 0; font-size: 18px;">${message}</h3>
+          <input type="text" id="input-dialog-field" placeholder="${placeholder}" style="
+            width: 100%;
+            padding: 8px;
+            background: #333;
+            color: white;
+            border: 1px solid #555;
+            border-radius: 4px;
+            margin-bottom: 16px;
+            font-size: 14px;
+          ">
+          <div style="display: flex; gap: 8px; justify-content: flex-end;">
+            <button id="input-dialog-cancel" style="
+              background: #666;
+              color: white;
+              border: none;
+              padding: 8px 16px;
+              border-radius: 4px;
+              cursor: pointer;
+            ">Cancel</button>
+            <button id="input-dialog-ok" style="
+              background: #0066cc;
+              color: white;
+              border: none;
+              padding: 8px 16px;
+              border-radius: 4px;
+              cursor: pointer;
+            ">OK</button>
+          </div>
+        `;
+        
+        overlay.appendChild(modal);
+        document.body.appendChild(overlay);
+        
+        const inputField = document.getElementById('input-dialog-field');
+        const okButton = document.getElementById('input-dialog-ok');
+        const cancelButton = document.getElementById('input-dialog-cancel');
+        
+        // Focus the input field
+        inputField.focus();
+        
+        // Handle OK button
+        const handleOk = () => {
+          const value = inputField.value.trim();
+          document.body.removeChild(overlay);
+          resolve(value || null);
+        };
+        
+        // Handle Cancel button
+        const handleCancel = () => {
+          document.body.removeChild(overlay);
+          resolve(null);
+        };
+        
+        // Event listeners
+        okButton.addEventListener('click', handleOk);
+        cancelButton.addEventListener('click', handleCancel);
+        
+        // Handle Enter key
+        inputField.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') {
+            handleOk();
+          } else if (e.key === 'Escape') {
+            handleCancel();
+          }
+        });
+        
+        // Handle clicking outside modal
+        overlay.addEventListener('click', (e) => {
+          if (e.target === overlay) {
+            handleCancel();
+          }
+        });
+      });
     }
     async function saveTokenSheet(e) {
       e.preventDefault();
@@ -1975,12 +2215,23 @@
           // Account for map-grid positioning:
           // map-grid is positioned at 50% of viewport with -1000px margin offset
           const viewportRect = viewport.getBoundingClientRect();
-          const gridOffsetX = viewport.clientWidth / 2 - 1000;
-          const gridOffsetY = viewport.clientHeight / 2 - 1000;
+          const mapGridRect = mapGrid.getBoundingClientRect();
+          
+          // Calculate the actual offset of map-grid relative to viewport
+          const gridOffsetX = mapGridRect.left - viewportRect.left;
+          const gridOffsetY = mapGridRect.top - viewportRect.top;
           
           // Adjust screen coordinates to account for grid offset
           const adjustedScreenX = screenX - gridOffsetX;
           const adjustedScreenY = screenY - gridOffsetY;
+          
+          Logger.debug('Screen to map coordinate conversion:', {
+            screenCoords: { x: screenX, y: screenY },
+            viewportRect: { left: viewportRect.left, top: viewportRect.top },
+            mapGridRect: { left: mapGridRect.left, top: mapGridRect.top },
+            gridOffset: { x: gridOffsetX, y: gridOffsetY },
+            adjustedScreen: { x: adjustedScreenX, y: adjustedScreenY }
+          });
           
           // Reverse the transformation to get map coordinates
           // Since map-grid has transform-origin: 0 0, we need to account for this
@@ -3334,7 +3585,7 @@
     
     // Create new map
     async function createNewMap() {
-      const mapName = prompt('Enter map name:');
+      const mapName = await showInputDialog('Enter map name:', 'Map Name');
       if (!mapName) return;
       
       try {
@@ -3388,44 +3639,160 @@
           return false;
         }
         
-        Logger.info('Loading assets for campaign:', campaignId);
+        const numericCampaignId = parseInt(campaignId);
+        Logger.info('Loading assets for campaign:', numericCampaignId);
         
-        const response = await fetch(`/api/assets?campaign_id=${campaignId}`);
-        
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        
-        const data = await response.json();
-        
-        if (!data || typeof data.success === 'undefined') {
-          Logger.warn('Invalid assets response data:', data);
-          return false;
-        }
-        
-        if (data.success) {
-          if (!Array.isArray(data.assets)) {
-            Logger.warn('Assets data is not an array:', data.assets);
-            assets = [];
-          } else {
-            assets = data.assets.filter(asset => {
-              if (!asset || typeof asset.id === 'undefined' || !asset.name) {
-                Logger.warn('Invalid asset data filtered out:', asset);
-                return false;
+        // Retry logic for loading assets
+        let lastError;
+        for (let attempt = 1; attempt <= 3; attempt++) {
+          try {
+            Logger.debug(`Load assets attempt ${attempt}/3 for campaign ${numericCampaignId}`);
+            
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+            
+            const response = await fetch(`/api/assets?campaign_id=${numericCampaignId}`, {
+              signal: controller.signal,
+              headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
               }
-              return true;
             });
+            
+            clearTimeout(timeoutId);
+            
+            if (!response.ok) {
+              if (response.status >= 500) {
+                throw new Error(`Server error: ${response.status} ${response.statusText}`);
+              } else if (response.status === 404) {
+                Logger.warn('Assets endpoint not found, using empty assets');
+                assets = [];
+                displayAssets();
+                return true;
+              } else {
+                throw new Error(`HTTP error: ${response.status} ${response.statusText}`);
+              }
+            }
+            
+            let data;
+            try {
+              const responseText = await response.text();
+              if (!responseText || responseText.trim() === '') {
+                Logger.warn('Empty response from assets API, using empty assets');
+                assets = [];
+                displayAssets();
+                return true;
+              }
+              
+              data = JSON.parse(responseText);
+            } catch (parseError) {
+              Logger.error('Failed to parse assets response:', parseError);
+              throw new Error('Invalid JSON response from assets API');
+            }
+            
+            // Validate response structure
+            if (!data || typeof data !== 'object') {
+              Logger.warn('Invalid assets response data structure:', data);
+              assets = [];
+              displayAssets();
+              return true;
+            }
+            
+            if (typeof data.success !== 'boolean') {
+              Logger.warn('Missing success field in assets response, assuming success');
+              data.success = true;
+            }
+            
+            if (data.success) {
+              // Validate and filter assets
+              if (!Array.isArray(data.assets)) {
+                Logger.warn('Assets data is not an array:', data.assets);
+                assets = [];
+              } else {
+                assets = data.assets.filter(asset => {
+                  if (!asset || typeof asset !== 'object') {
+                    Logger.warn('Invalid asset object filtered out:', asset);
+                    return false;
+                  }
+                  if (typeof asset.id === 'undefined' || asset.id === null) {
+                    Logger.warn('Asset missing ID filtered out:', asset);
+                    return false;
+                  }
+                  if (!asset.name || typeof asset.name !== 'string') {
+                    Logger.warn('Asset missing or invalid name filtered out:', asset);
+                    return false;
+                  }
+                  return true;
+                });
+              }
+              
+              Logger.info(`Loaded ${assets.length}/${data.assets?.length || 0} valid assets`);
+              
+              try {
+                displayAssets();
+              } catch (displayError) {
+                Logger.error('Failed to display assets:', displayError);
+                // Don't fail the entire operation if display fails
+              }
+              
+              return true;
+            } else {
+              const errorMsg = data.error || 'Unknown error from assets API';
+              Logger.error('Assets API returned error:', errorMsg);
+              throw new Error(errorMsg);
+            }
+            
+          } catch (error) {
+            lastError = error;
+            
+            if (error.name === 'AbortError') {
+              Logger.error(`Assets load request timeout on attempt ${attempt}`);
+            } else if (error.message.includes('fetch') || error.message.includes('network')) {
+              Logger.error(`Network error on assets load attempt ${attempt}:`, error.message);
+            } else {
+              Logger.error(`Assets load attempt ${attempt} failed:`, error.message);
+            }
+            
+            // Don't retry on certain errors
+            if (error.message.includes('Invalid campaign ID') || 
+                error.message.includes('403') ||
+                error.message.includes('Invalid JSON')) {
+              throw error;
+            }
+            
+            // Wait before retry (exponential backoff)
+            if (attempt < 3) {
+              const delay = Math.pow(2, attempt) * 1000; // 2s, 4s
+              Logger.debug(`Waiting ${delay}ms before retry...`);
+              await new Promise(resolve => setTimeout(resolve, delay));
+            }
           }
-          
-          Logger.info(`Loaded ${assets.length} valid assets`);
-          displayAssets();
-          return true;
-        } else {
-          Logger.error('Failed to load assets:', data.error || 'Unknown error');
-          return false;
         }
+        
+        // All attempts failed
+        Logger.error('All attempts to load assets failed:', lastError);
+        
+        // Fallback to empty assets to prevent UI breakage
+        assets = [];
+        try {
+          displayAssets();
+        } catch (displayError) {
+          Logger.error('Failed to display empty assets fallback:', displayError);
+        }
+        
+        return false;
+        
       } catch (error) {
         Logger.error('Exception during assets loading:', error);
+        
+        // Fallback to empty assets
+        assets = [];
+        try {
+          displayAssets();
+        } catch (displayError) {
+          Logger.error('Failed to display assets in error fallback:', displayError);
+        }
+        
         return false;
       }
     }
@@ -3494,7 +3861,7 @@
             li.dataset.assetType = asset.category || 'unknown';
             li.dataset.assetName = asset.name;
             
-            const fileSize = asset.file_size ? formatFileSize(asset.file_size) : 'Unknown size';
+            const fileSize = (asset.file_size !== null && asset.file_size !== undefined && asset.file_size !== '') ? formatFileSize(asset.file_size) : 'Unknown size';
             const category = asset.category || 'Unknown';
             
             li.innerHTML = `
@@ -3633,66 +4000,231 @@
     }
     
     async function processAssetUpload(file, selectedCategory, campaignId) {
-      // First upload the file to get the URL
-      const uploadFormData = new FormData();
-      uploadFormData.append('file', file);
-      uploadFormData.append('user_id', userId);
-      uploadFormData.append('campaign_id', campaignId);
-      uploadFormData.append('upload_type', selectedCategory);
-      
-      // Upload file first
-      const uploadResponse = await fetch('/api/upload', {
-        method: 'POST',
-        body: uploadFormData
-      });
-      
-      if (!uploadResponse.ok) {
-        throw new Error(`Upload HTTP error! status: ${uploadResponse.status}`);
-      }
-      
-      const uploadData = await uploadResponse.json();
-      if (!uploadData || !uploadData.success) {
-        const errorMsg = uploadData?.error || 'Unknown upload error';
-        Logger.error('File upload failed:', errorMsg);
-        alert('Failed to upload file: ' + errorMsg);
-        return;
-      }
-      
-      Logger.info('File uploaded successfully, creating asset record');
-      
-      // Then create asset record
-      const assetData = {
-        campaign_id: parseInt(campaignId),
-        name: file.name,
-        category: selectedCategory,
-        file_url: uploadData.url,
-        file_size: uploadData.size || file.size,
-        mime_type: file.type,
-        description: '',
-        tags: ''
-      };
-      
-      const assetResponse = await fetch('/api/assets', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(assetData)
-      });
-      
-      if (!assetResponse.ok) {
-        throw new Error(`Asset creation HTTP error! status: ${assetResponse.status}`);
-      }
-      
-      const assetResult = await assetResponse.json();
-      if (assetResult && assetResult.success) {
-        Logger.info('Asset created successfully:', file.name);
-        await loadAssets();
-        alert('Asset uploaded successfully!');
-      } else {
-        const errorMsg = assetResult?.error || 'Unknown asset creation error';
-        Logger.error('Asset creation failed:', errorMsg);
-        alert('Failed to create asset record: ' + errorMsg);
+      try {
+        // Validate inputs
+        if (!file || !selectedCategory || !campaignId) {
+          throw new Error('Missing required parameters for asset upload');
+        }
+        
+        if (!userId) {
+          throw new Error('User ID not available for upload');
+        }
+        
+        const numericCampaignId = parseInt(campaignId);
+        if (isNaN(numericCampaignId)) {
+          throw new Error('Invalid campaign ID for upload');
+        }
+        
+        Logger.info(`Starting asset upload: ${file.name} (${file.size} bytes) for category ${selectedCategory}`);
+        
+        // Step 1: Upload file with retry logic
+        let uploadData;
+        let lastUploadError;
+        
+        for (let attempt = 1; attempt <= 3; attempt++) {
+          try {
+            Logger.debug(`File upload attempt ${attempt}/3`);
+            
+            const uploadFormData = new FormData();
+            uploadFormData.append('file', file);
+            uploadFormData.append('user_id', userId.toString());
+            uploadFormData.append('campaign_id', numericCampaignId.toString());
+            uploadFormData.append('upload_type', selectedCategory);
+            
+            const uploadController = new AbortController();
+            const uploadTimeoutId = setTimeout(() => uploadController.abort(), 60000); // 60 second timeout for file upload
+            
+            const uploadResponse = await fetch('/api/upload', {
+              method: 'POST',
+              body: uploadFormData,
+              signal: uploadController.signal
+            });
+            
+            clearTimeout(uploadTimeoutId);
+            
+            if (!uploadResponse.ok) {
+              if (uploadResponse.status >= 500) {
+                throw new Error(`Server error during upload: ${uploadResponse.status} ${uploadResponse.statusText}`);
+              } else if (uploadResponse.status === 413) {
+                throw new Error('File too large for upload');
+              } else if (uploadResponse.status === 415) {
+                throw new Error('Unsupported file type');
+              } else {
+                throw new Error(`Upload HTTP error: ${uploadResponse.status} ${uploadResponse.statusText}`);
+              }
+            }
+            
+            let responseText;
+            try {
+              responseText = await uploadResponse.text();
+              if (!responseText || responseText.trim() === '') {
+                throw new Error('Empty response from upload API');
+              }
+              
+              uploadData = JSON.parse(responseText);
+            } catch (parseError) {
+              Logger.error('Failed to parse upload response:', parseError);
+              throw new Error('Invalid JSON response from upload API');
+            }
+            
+            if (!uploadData || typeof uploadData !== 'object') {
+              throw new Error('Invalid upload response structure');
+            }
+            
+            if (!uploadData.success) {
+              const errorMsg = uploadData.error || 'Unknown upload error';
+              throw new Error(`Upload failed: ${errorMsg}`);
+            }
+            
+            if (!uploadData.url) {
+              throw new Error('Upload response missing file URL');
+            }
+            
+            Logger.info('File uploaded successfully:', uploadData.url);
+            break; // Success, exit retry loop
+            
+          } catch (error) {
+            lastUploadError = error;
+            
+            if (error.name === 'AbortError') {
+              Logger.error(`Upload request timeout on attempt ${attempt}`);
+            } else if (error.message.includes('File too large') || 
+                       error.message.includes('Unsupported file type') ||
+                       error.message.includes('413') ||
+                       error.message.includes('415')) {
+              // Don't retry these errors
+              throw error;
+            } else {
+              Logger.error(`Upload attempt ${attempt} failed:`, error.message);
+            }
+            
+            // Wait before retry (exponential backoff)
+            if (attempt < 3) {
+              const delay = Math.pow(2, attempt) * 1000; // 2s, 4s
+              Logger.debug(`Waiting ${delay}ms before upload retry...`);
+              await new Promise(resolve => setTimeout(resolve, delay));
+            }
+          }
+        }
+        
+        if (!uploadData) {
+          throw lastUploadError || new Error('All upload attempts failed');
+        }
+        
+        // Step 2: Create asset record with retry logic
+        let lastAssetError;
+        
+        for (let attempt = 1; attempt <= 3; attempt++) {
+          try {
+            Logger.debug(`Asset creation attempt ${attempt}/3`);
+            
+            const assetData = {
+              campaign_id: numericCampaignId,
+              name: file.name || 'Unnamed Asset',
+              category: selectedCategory,
+              file_url: uploadData.url,
+              file_size: uploadData.size || file.size || 0,
+              mime_type: file.type || 'application/octet-stream',
+              description: '',
+              tags: ''
+            };
+            
+            // Validate asset data
+            if (!assetData.name || !assetData.file_url) {
+              throw new Error('Invalid asset data: missing name or file URL');
+            }
+            
+            const assetController = new AbortController();
+            const assetTimeoutId = setTimeout(() => assetController.abort(), 30000); // 30 second timeout
+            
+            const assetResponse = await fetch('/api/assets', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+              },
+              body: JSON.stringify(assetData),
+              signal: assetController.signal
+            });
+            
+            clearTimeout(assetTimeoutId);
+            
+            if (!assetResponse.ok) {
+              if (assetResponse.status >= 500) {
+                throw new Error(`Server error during asset creation: ${assetResponse.status} ${assetResponse.statusText}`);
+              } else if (assetResponse.status === 409) {
+                throw new Error('Asset with this name already exists');
+              } else {
+                throw new Error(`Asset creation HTTP error: ${assetResponse.status} ${assetResponse.statusText}`);
+              }
+            }
+            
+            let assetResponseText;
+            try {
+              assetResponseText = await assetResponse.text();
+              if (!assetResponseText || assetResponseText.trim() === '') {
+                throw new Error('Empty response from asset creation API');
+              }
+              
+              const assetResult = JSON.parse(assetResponseText);
+              
+              if (!assetResult || typeof assetResult !== 'object') {
+                throw new Error('Invalid asset creation response structure');
+              }
+              
+              if (assetResult.success) {
+                Logger.info('Asset created successfully:', file.name);
+                
+                // Reload assets to show the new one
+                try {
+                  await loadAssets();
+                } catch (reloadError) {
+                  Logger.warn('Failed to reload assets after upload:', reloadError);
+                  // Don't fail the entire operation if reload fails
+                }
+                
+                alert('Asset uploaded successfully!');
+                return; // Success
+                
+              } else {
+                const errorMsg = assetResult.error || 'Unknown asset creation error';
+                throw new Error(`Asset creation failed: ${errorMsg}`);
+              }
+              
+            } catch (parseError) {
+              Logger.error('Failed to parse asset creation response:', parseError);
+              throw new Error('Invalid JSON response from asset creation API');
+            }
+            
+          } catch (error) {
+            lastAssetError = error;
+            
+            if (error.name === 'AbortError') {
+              Logger.error(`Asset creation request timeout on attempt ${attempt}`);
+            } else if (error.message.includes('Asset with this name already exists') ||
+                       error.message.includes('409')) {
+              // Don't retry conflicts
+              throw error;
+            } else {
+              Logger.error(`Asset creation attempt ${attempt} failed:`, error.message);
+            }
+            
+            // Wait before retry (exponential backoff)
+            if (attempt < 3) {
+              const delay = Math.pow(2, attempt) * 1000; // 2s, 4s
+              Logger.debug(`Waiting ${delay}ms before asset creation retry...`);
+              await new Promise(resolve => setTimeout(resolve, delay));
+            }
+          }
+        }
+        
+        // All asset creation attempts failed
+        throw lastAssetError || new Error('All asset creation attempts failed');
+        
+      } catch (error) {
+        Logger.error('Exception during asset upload process:', error);
+        alert('Failed to upload asset: ' + (error.message || 'Unknown error'));
+        throw error;
       }
     }
      
@@ -3748,7 +4280,15 @@
            </select>
          </div>
          
-         <canvas id="token-result-canvas" style="border: 1px solid #000; margin: 10px 0; max-width: 100%;"></canvas>
+         <div style="display: flex; align-items: center; margin: 10px 0; gap: 10px;">
+           <div style="display: flex; flex-direction: column; align-items: center; gap: 5px;">
+             <button id="token-zoom-in" style="width: 30px; height: 30px; background: #007bff; color: white; border: none; border-radius: 3px; cursor: pointer; font-size: 16px; font-weight: bold;">+</button>
+             <input type="range" id="token-zoom-slider" min="10" max="500" value="100" orient="vertical" style="writing-mode: bt-lr; -webkit-appearance: slider-vertical; width: 20px; height: 100px; background: #ddd; outline: none;">
+             <button id="token-zoom-out" style="width: 30px; height: 30px; background: #007bff; color: white; border: none; border-radius: 3px; cursor: pointer; font-size: 16px; font-weight: bold;">-</button>
+             <span id="token-zoom-display" style="font-size: 12px; color: #666;">100%</span>
+           </div>
+           <canvas id="token-result-canvas" style="border: 1px solid #000; max-width: calc(100% - 80px);"></canvas>
+         </div>
          
          <div style="margin: 10px 0;">
            <button id="token-finalize-button" style="margin: 5px; padding: 10px 20px; background: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer;">Genera e Carica Token</button>
@@ -3758,7 +4298,7 @@
          <div style="margin: 10px 0; font-size: 12px; color: #666;">
            <p>Istruzioni:</p>
            <p>• Trascina con il mouse per spostare il livello selezionato</p>
-           <p>• Usa la rotella del mouse per ridimensionare</p>
+           <p>• Usa la rotella del mouse, i pulsanti +/- o la barra di zoom per ridimensionare</p>
            <p>• Il cerchio rosso mostra l'area di ritaglio</p>
          </div>
        `;
@@ -3891,6 +4431,9 @@
            layers.circle.x = CANVAS_SIZE / 2;
            layers.circle.y = CANVAS_SIZE / 2;
            layers.circle.radius = CANVAS_SIZE / 8;
+           
+           // Update zoom display after initialization
+           updateZoomDisplay();
          }
          
          ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -3930,6 +4473,7 @@
        // Layer selection
        layerSelect.addEventListener('change', (event) => {
          currentLayer = event.target.value;
+         updateZoomDisplay();
        });
        
        // Mouse movement and zoom
@@ -3957,8 +4501,63 @@
            layer.scale += event.deltaY * -0.001;
            layer.scale = Math.max(0.1, Math.min(layer.scale, 5));
          }
+         updateZoomDisplay();
          drawTokenCanvas();
        });
+       
+       // Zoom controls
+       const zoomInBtn = document.getElementById('token-zoom-in');
+       const zoomOutBtn = document.getElementById('token-zoom-out');
+       const zoomSlider = document.getElementById('token-zoom-slider');
+       const zoomDisplay = document.getElementById('token-zoom-display');
+       
+       function updateZoomDisplay() {
+         if (!zoomDisplay || !zoomSlider) return;
+         const layer = layers[currentLayer];
+         let zoomValue;
+         if (currentLayer === 'circle') {
+           zoomValue = Math.round((layer.radius / 50) * 100); // 50 is base radius
+         } else if (currentLayer === 'background') {
+           zoomValue = Math.round(layer.scale * 100);
+         }
+         zoomDisplay.textContent = zoomValue + '%';
+         zoomSlider.value = zoomValue;
+       }
+       
+       function applyZoom(zoomPercent) {
+         const layer = layers[currentLayer];
+         if (currentLayer === 'circle') {
+           layer.radius = Math.max(10, (zoomPercent / 100) * 50); // 50 is base radius
+         } else if (currentLayer === 'background') {
+           layer.scale = Math.max(0.1, Math.min(zoomPercent / 100, 5));
+         }
+         updateZoomDisplay();
+         drawTokenCanvas();
+       }
+       
+       if (zoomInBtn) {
+         zoomInBtn.addEventListener('click', () => {
+           const currentZoom = parseInt(zoomSlider.value) || 100;
+           const newZoom = Math.min(currentZoom + 10, 500);
+           applyZoom(newZoom);
+         });
+       }
+       
+       if (zoomOutBtn) {
+         zoomOutBtn.addEventListener('click', () => {
+           const currentZoom = parseInt(zoomSlider.value) || 100;
+           const newZoom = Math.max(currentZoom - 10, 10);
+           applyZoom(newZoom);
+         });
+       }
+       
+       if (zoomSlider) {
+         zoomSlider.addEventListener('input', (event) => {
+           applyZoom(parseInt(event.target.value));
+         });
+       }
+       
+
        
        // Cancel button
        cancelButton.addEventListener('click', () => {
@@ -4046,6 +4645,8 @@
           return;
         }
         
+        const numericAssetId = parseInt(assetId);
+        
         // Validate assets array
         if (!Array.isArray(assets)) {
           Logger.error('Assets array is not valid:', assets);
@@ -4053,22 +4654,33 @@
           return;
         }
         
-        const asset = assets.find(a => a && a.id == assetId);
+        const asset = assets.find(a => a && a.id == numericAssetId);
         if (!asset) {
-          Logger.error('Asset not found for editing:', assetId);
+          Logger.error('Asset not found for editing:', numericAssetId);
           alert('Error: Asset not found.');
           return;
         }
         
-        Logger.info('Editing asset:', asset.name, 'ID:', assetId);
+        if (!asset.name || typeof asset.name !== 'string') {
+          Logger.error('Asset has invalid name:', asset);
+          alert('Error: Asset has invalid name.');
+          return;
+        }
         
-        const newName = prompt('Enter new name:', asset.name);
+        Logger.info('Editing asset:', asset.name, 'ID:', numericAssetId);
+        
+        const newName = await showInputDialog('Enter new name:', asset.name);
         if (!newName || typeof newName !== 'string' || newName.trim().length === 0) {
           Logger.warn('Asset edit cancelled or invalid name provided');
           return;
         }
         
         const trimmedName = newName.trim();
+        if (trimmedName.length > 255) {
+          alert('Error: Asset name too long (maximum 255 characters).');
+          return;
+        }
+        
         if (trimmedName === asset.name) {
           Logger.info('Asset name unchanged, no update needed');
           return;
@@ -4076,30 +4688,111 @@
         
         Logger.info('Updating asset name from', asset.name, 'to', trimmedName);
         
-        const response = await fetch(`/api/assets/${assetId}`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            name: trimmedName
-          })
-        });
-        
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
+        // Update asset with retry logic
+        let lastError;
+        for (let attempt = 1; attempt <= 3; attempt++) {
+          try {
+            Logger.debug(`Asset update attempt ${attempt}/3 for asset ${numericAssetId}`);
+            
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+            
+            const response = await fetch(`/api/assets/${numericAssetId}`, {
+              method: 'PUT',
+              headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+              },
+              body: JSON.stringify({
+                name: trimmedName
+              }),
+              signal: controller.signal
+            });
+            
+            clearTimeout(timeoutId);
+            
+            if (!response.ok) {
+              if (response.status >= 500) {
+                throw new Error(`Server error: ${response.status} ${response.statusText}`);
+              } else if (response.status === 404) {
+                throw new Error('Asset not found on server');
+              } else if (response.status === 409) {
+                throw new Error('Asset name already exists');
+              } else if (response.status === 403) {
+                throw new Error('Permission denied to update asset');
+              } else {
+                throw new Error(`HTTP error: ${response.status} ${response.statusText}`);
+              }
+            }
+            
+            let data;
+            try {
+              const responseText = await response.text();
+              if (!responseText || responseText.trim() === '') {
+                throw new Error('Empty response from asset update API');
+              }
+              
+              data = JSON.parse(responseText);
+            } catch (parseError) {
+              Logger.error('Failed to parse asset update response:', parseError);
+              throw new Error('Invalid JSON response from asset update API');
+            }
+            
+            if (!data || typeof data !== 'object') {
+              throw new Error('Invalid asset update response structure');
+            }
+            
+            if (data.success) {
+              Logger.info('Asset updated successfully:', trimmedName);
+              
+              // Update local asset data
+              asset.name = trimmedName;
+              
+              // Reload assets to ensure consistency
+              try {
+                await loadAssets();
+              } catch (reloadError) {
+                Logger.warn('Failed to reload assets after update:', reloadError);
+                // Don't fail the entire operation if reload fails
+              }
+              
+              alert('Asset updated successfully!');
+              return; // Success
+              
+            } else {
+              const errorMsg = data.error || 'Unknown error occurred';
+              throw new Error(`Asset update failed: ${errorMsg}`);
+            }
+            
+          } catch (error) {
+            lastError = error;
+            
+            if (error.name === 'AbortError') {
+              Logger.error(`Asset update request timeout on attempt ${attempt}`);
+            } else if (error.message.includes('Asset not found') ||
+                       error.message.includes('Asset name already exists') ||
+                       error.message.includes('Permission denied') ||
+                       error.message.includes('404') ||
+                       error.message.includes('409') ||
+                       error.message.includes('403')) {
+              // Don't retry these errors
+              throw error;
+            } else {
+              Logger.error(`Asset update attempt ${attempt} failed:`, error.message);
+            }
+            
+            // Wait before retry (exponential backoff)
+            if (attempt < 3) {
+              const delay = Math.pow(2, attempt) * 1000; // 2s, 4s
+              Logger.debug(`Waiting ${delay}ms before retry...`);
+              await new Promise(resolve => setTimeout(resolve, delay));
+            }
+          }
         }
         
-        const data = await response.json();
-        if (data && data.success) {
-          Logger.info('Asset updated successfully:', trimmedName);
-          await loadAssets();
-          alert('Asset updated successfully!');
-        } else {
-          const errorMsg = data?.error || 'Unknown error occurred';
-          Logger.error('Failed to update asset:', errorMsg);
-          alert('Failed to update asset: ' + errorMsg);
-        }
+        // All attempts failed
+        throw lastError || new Error('All asset update attempts failed');
+        
       } catch (error) {
         Logger.error('Exception during asset editing:', error);
         alert('Failed to update asset: ' + (error.message || 'Network error'));
@@ -4124,7 +4817,7 @@
         const currentName = assetData.assetName || 'Token';
         Logger.info('Editing token name:', currentName, 'Asset ID:', assetData.assetId);
         
-        const newName = prompt('Inserisci il nuovo nome del token:', currentName);
+        const newName = await showInputDialog('Inserisci il nuovo nome del token:', currentName);
         if (!newName || typeof newName !== 'string' || newName.trim().length === 0) {
           Logger.warn('Token name edit cancelled or invalid name provided');
           return;
@@ -4260,10 +4953,12 @@
           return;
         }
         
+        const numericAssetId = parseInt(assetId);
+        
         // Find asset for confirmation
         let assetName = 'this asset';
         if (Array.isArray(assets)) {
-          const asset = assets.find(a => a && a.id == assetId);
+          const asset = assets.find(a => a && a.id == numericAssetId);
           if (asset && asset.name) {
             assetName = asset.name;
           }
@@ -4274,37 +4969,128 @@
           return;
         }
         
-        Logger.info('Deleting asset:', assetName, 'ID:', assetId);
+        Logger.info('Deleting asset:', assetName, 'ID:', numericAssetId);
         
-        const response = await fetch(`/api/assets/${assetId}`, {
-          method: 'DELETE'
-        });
-        
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
+        // Retry logic for delete operation
+        let lastError;
+        for (let attempt = 1; attempt <= 3; attempt++) {
+          try {
+            Logger.debug(`Delete attempt ${attempt}/3 for asset ${numericAssetId}`);
+            
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+            
+            const response = await fetch(`/api/assets/${numericAssetId}`, {
+              method: 'DELETE',
+              signal: controller.signal,
+              headers: {
+                'Content-Type': 'application/json'
+              }
+            });
+            
+            clearTimeout(timeoutId);
+            
+            if (response.ok) {
+              let data;
+              try {
+                const responseText = await response.text();
+                if (responseText && responseText.trim()) {
+                  data = JSON.parse(responseText);
+                } else {
+                  data = { success: true }; // Assume success if empty response
+                }
+              } catch (parseError) {
+                Logger.warn('Failed to parse delete response, assuming success:', parseError);
+                data = { success: true };
+              }
+              
+              if (data.success !== false) {
+                Logger.info('Asset deleted successfully:', assetName);
+                
+                // Update local assets array
+                if (Array.isArray(assets)) {
+                  const index = assets.findIndex(a => a && a.id == numericAssetId);
+                  if (index !== -1) {
+                    assets.splice(index, 1);
+                  }
+                }
+                
+                // Reload assets to ensure consistency
+                try {
+                  await loadAssets();
+                } catch (reloadError) {
+                  Logger.warn('Failed to reload assets after deletion:', reloadError);
+                }
+                
+                alert('Asset deleted successfully!');
+                return;
+              } else {
+                throw new Error(data.error || 'Delete operation failed');
+              }
+            } else if (response.status === 404) {
+              Logger.warn('Asset not found, may have been already deleted:', numericAssetId);
+              alert('Asset not found. It may have been already deleted.');
+              await loadAssets(); // Refresh to sync state
+              return;
+            } else if (response.status >= 500) {
+              throw new Error(`Server error: ${response.status} ${response.statusText}`);
+            } else {
+              throw new Error(`HTTP error: ${response.status} ${response.statusText}`);
+            }
+            
+          } catch (error) {
+            lastError = error;
+            
+            if (error.name === 'AbortError') {
+              Logger.error(`Delete request timeout on attempt ${attempt}`);
+            } else if (error.message.includes('fetch')) {
+              Logger.error(`Network error on delete attempt ${attempt}:`, error.message);
+            } else {
+              Logger.error(`Delete attempt ${attempt} failed:`, error.message);
+            }
+            
+            // Don't retry on certain errors
+            if (error.message.includes('Invalid asset ID') || 
+                error.message.includes('404') ||
+                error.message.includes('403')) {
+              throw error;
+            }
+            
+            // Wait before retry (exponential backoff)
+            if (attempt < 3) {
+              const delay = Math.pow(2, attempt) * 1000; // 2s, 4s
+              Logger.debug(`Waiting ${delay}ms before retry...`);
+              await new Promise(resolve => setTimeout(resolve, delay));
+            }
+          }
         }
         
-        const data = await response.json();
-        if (data && data.success) {
-          Logger.info('Asset deleted successfully:', assetName);
-          await loadAssets();
-          alert('Asset deleted successfully!');
-        } else {
-          const errorMsg = data?.error || 'Unknown error occurred';
-          Logger.error('Failed to delete asset:', errorMsg);
-          alert('Failed to delete asset: ' + errorMsg);
-        }
+        // All attempts failed
+        throw lastError || new Error('All delete attempts failed');
+        
       } catch (error) {
         Logger.error('Exception during asset deletion:', error);
-        alert('Failed to delete asset: ' + (error.message || 'Network error'));
+        
+        let errorMessage = 'Failed to delete asset';
+        if (error.name === 'AbortError') {
+          errorMessage += ': Request timeout';
+        } else if (error.message.includes('fetch') || error.message.includes('network')) {
+          errorMessage += ': Network error';
+        } else {
+          errorMessage += ': ' + (error.message || 'Unknown error');
+        }
+        
+        alert(errorMessage);
       }
     }
     
     function formatFileSize(bytes) {
       try {
-        // Validate input
-        if (typeof bytes !== 'number' || isNaN(bytes) || bytes < 0) {
-          Logger.warn('Invalid bytes value for formatFileSize:', bytes);
+        // Validate input - handle null, undefined, empty string, and non-numeric values
+        if (bytes === null || bytes === undefined || bytes === '' || typeof bytes !== 'number' || isNaN(bytes) || bytes < 0) {
+          if (bytes !== null && bytes !== undefined && bytes !== '') {
+            Logger.warn('Invalid bytes value for formatFileSize:', bytes);
+          }
           return 'Unknown size';
         }
         
@@ -4515,114 +5301,646 @@
        }
      }
      
-     async function updateTokenPositionOnServer(tokenElement, x, y) {
-        try {
-          const tokenId = tokenElement.dataset.tokenId;
-          if (!tokenId) {
-            Logger.warn('Token element missing tokenId for server update');
-            return;
-          }
-          
-          const mapId = getCurrentMapId();
-          if (!mapId) {
-            Logger.warn('No current map ID for token position update');
-            return;
-          }
-          
-          // Convert pixel coordinates to map coordinates if needed
-          const mapCoords = screenToMapCoordinates(x, y);
-          const gridCoords = mapToGridCoordinates(mapCoords.x, mapCoords.y);
-          
-          const response = await fetch(`/api/map-tokens/${tokenId}`, {
-            method: 'PUT',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-              grid_x: gridCoords.x,
-              grid_y: gridCoords.y
-            })
-          });
-          
-          if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-          }
-          
-          const data = await response.json();
-          if (!data.success) {
-            throw new Error('Server reported failure updating token position');
-          }
-          
-          Logger.debug('Token position updated on server:', { tokenId, x: mapCoords.x, y: mapCoords.y });
-          
-        } catch (error) {
-          Logger.error('Failed to update token position on server:', error);
+     // ===== MODULAR TOKEN POSITION UPDATE SYSTEM =====
+     
+     // Configuration constants
+     const TOKEN_UPDATE_CONFIG = {
+       BATCH_DELAY_MS: 300,
+       MAX_BATCH_SIZE: 20,
+       MAX_RETRY_ATTEMPTS: 3,
+       DEBOUNCE_TIMEOUT: 100
+     };
+     
+     // State management
+     const tokenUpdateState = {
+       pendingUpdates: new Map(),
+       batchTimeout: null,
+       isProcessing: false,
+       retryQueue: new Map()
+     };
+     
+     // ===== COORDINATE CONVERSION UTILITIES =====
+     
+     function validateTokenElement(tokenElement) {
+       if (!tokenElement) {
+         throw new Error('Token element is null or undefined');
+       }
+       
+       const tokenId = tokenElement.dataset.tokenId;
+       if (!tokenId) {
+         throw new Error('Token element missing tokenId');
+       }
+       
+       return tokenId;
+     }
+     
+     function validateCoordinates(x, y) {
+       if (typeof x !== 'number' || typeof y !== 'number' || isNaN(x) || isNaN(y)) {
+         throw new Error(`Invalid coordinates: x=${x}, y=${y}`);
+       }
+       return { x, y };
+     }
+     
+     function convertPixelToGridCoordinates(x, y) {
+       try {
+         const mapCoords = screenToMapCoordinates(x, y);
+         const gridCoords = mapToGridCoordinates(mapCoords.x, mapCoords.y);
+         
+         Logger.debug('convertPixelToGridCoordinates:', {
+           input: { x, y },
+           mapCoords: { x: mapCoords.x, y: mapCoords.y },
+           gridCoords: { x: gridCoords.x, y: gridCoords.y },
+           transform: CoordinateSystem.getGridTransformMatrix(),
+           gridSize: CoordinateSystem.getGridSize()
+         });
+         
+         if (isNaN(gridCoords.x) || isNaN(gridCoords.y)) {
+           throw new Error('Grid coordinate conversion failed');
+         }
+         
+         return gridCoords;
+       } catch (error) {
+         Logger.error('Coordinate conversion error:', error);
+         throw error;
+       }
+     }
+     
+     // Convert grid coordinates back to pixel coordinates
+     function gridToPixelCoordinates(gridX, gridY) {
+       try {
+         // gridToMapCoordinates already returns pixel coordinates within the map
+         const pixelCoords = gridToMapCoordinates(gridX, gridY);
+         
+         if (isNaN(pixelCoords.x) || isNaN(pixelCoords.y)) {
+           throw new Error('Pixel coordinate conversion failed');
+         }
+         
+         return pixelCoords;
+       } catch (error) {
+         Logger.error('Grid to pixel conversion error:', error);
+         throw error;
+       }
+     }
+     
+     // ===== TOKEN UPDATE QUEUE MANAGEMENT =====
+     
+     function queueTokenUpdate(tokenId, tokenElement, x, y, gridCoords) {
+       const updateData = {
+         tokenElement,
+         pixelCoords: { x, y },
+         gridCoords,
+         timestamp: Date.now(),
+         originalPosition: {
+           left: tokenElement.style.left,
+           top: tokenElement.style.top
+         }
+       };
+       
+       tokenUpdateState.pendingUpdates.set(tokenId, updateData);
+       
+       Logger.debug('Token update queued:', {
+         tokenId,
+         gridCoords,
+         queueSize: tokenUpdateState.pendingUpdates.size
+       });
+       
+       return updateData;
+     }
+     
+     function shouldProcessImmediately() {
+       return tokenUpdateState.pendingUpdates.size >= TOKEN_UPDATE_CONFIG.MAX_BATCH_SIZE;
+     }
+     
+     function scheduleTokenBatchUpdate() {
+       // Clear existing timeout
+       if (tokenUpdateState.batchTimeout) {
+         clearTimeout(tokenUpdateState.batchTimeout);
+         tokenUpdateState.batchTimeout = null;
+       }
+       
+       if (shouldProcessImmediately()) {
+         Logger.info('Processing token batch immediately due to size limit');
+         processPendingTokenUpdates();
+       } else {
+         tokenUpdateState.batchTimeout = setTimeout(() => {
+           processPendingTokenUpdates();
+         }, TOKEN_UPDATE_CONFIG.BATCH_DELAY_MS);
+       }
+     }
+     
+     // ===== MAIN TOKEN UPDATE FUNCTION =====
+     
+     function updateTokenPositionOnServer(tokenElement, x, y) {
+       try {
+         // Step 1: Validate inputs
+         const tokenId = validateTokenElement(tokenElement);
+         validateCoordinates(x, y);
+         
+         const mapId = getCurrentMapId();
+         if (!mapId) {
+           throw new Error('No current map ID available');
+         }
+         
+         // Step 2: Convert coordinates
+         const gridCoords = convertPixelToGridCoordinates(x, y);
+         
+         // Step 3: Queue the update
+         queueTokenUpdate(tokenId, tokenElement, x, y, gridCoords);
+         
+         // Step 4: Schedule batch processing
+         scheduleTokenBatchUpdate();
+         
+       } catch (error) {
+         Logger.error('Error in updateTokenPositionOnServer:', error);
+         showNotification('Failed to update token position', 'error');
+       }
+     }
+     
+     // ===== BATCH PROCESSING FUNCTIONS =====
+     
+     function prepareBatchUpdateData() {
+       const tokensToUpdate = [];
+       const updateMap = new Map();
+       
+       for (const [tokenId, updateData] of tokenUpdateState.pendingUpdates) {
+         const tokenUpdate = {
+           id: tokenId,
+           grid_x: updateData.gridCoords.x,
+           grid_y: updateData.gridCoords.y
+         };
+         
+         tokensToUpdate.push(tokenUpdate);
+         updateMap.set(tokenId, updateData);
+       }
+       
+       return { tokensToUpdate, updateMap };
+     }
+     
+     function clearBatchTimeout() {
+       if (tokenUpdateState.batchTimeout) {
+         clearTimeout(tokenUpdateState.batchTimeout);
+         tokenUpdateState.batchTimeout = null;
+       }
+     }
+     
+     function resetBatchState() {
+       tokenUpdateState.pendingUpdates.clear();
+       tokenUpdateState.isProcessing = false;
+       clearBatchTimeout();
+     }
+     
+     async function executeBatchUpdate(tokensToUpdate, updateMap) {
+       try {
+         Logger.info(`Executing batch update for ${tokensToUpdate.length} tokens`);
+         
+         const success = await sendBatchUpdateWithRetry(tokensToUpdate, updateMap);
+         
+         if (success) {
+           Logger.info('Batch update completed successfully');
+           // Update visual positions to match server state
+           updateTokenVisualPositions(updateMap);
+           showNotification(`${tokensToUpdate.length} tokens updated successfully`, 'success');
+         } else {
+           Logger.error('Batch update failed after all retries');
+           await handleBatchUpdateFailure(updateMap);
+         }
+         
+         return success;
+       } catch (error) {
+         Logger.error('Critical error during batch update:', error);
+         await handleBatchUpdateFailure(updateMap);
+         return false;
+       }
+     }
+     
+     // Update visual positions after successful batch update
+     function updateTokenVisualPositions(updateMap) {
+       try {
+         Logger.debug('Updating visual positions after successful batch update');
+         
+         for (const [tokenId, updateData] of updateMap) {
+           const tokenElement = updateData.tokenElement;
+           if (tokenElement) {
+             // Convert grid coordinates back to pixel coordinates for visual update
+             const pixelCoords = gridToPixelCoordinates(updateData.gridCoords.x, updateData.gridCoords.y);
+             
+             // Update the visual position to match the server state
+             tokenElement.style.left = pixelCoords.x + 'px';
+             tokenElement.style.top = pixelCoords.y + 'px';
+             
+             // Update any stored position data
+             tokenElement.dataset.gridX = updateData.gridCoords.x.toString();
+             tokenElement.dataset.gridY = updateData.gridCoords.y.toString();
+             
+             Logger.debug(`Updated visual position for token ${tokenId}:`, {
+               gridCoords: updateData.gridCoords,
+               pixelCoords: pixelCoords
+             });
+           }
+         }
+       } catch (error) {
+         Logger.error('Error updating visual positions:', error);
+       }
+     }
+     
+     async function handleBatchUpdateFailure(updateMap) {
+       Logger.warn('Handling batch update failure - rolling back visual changes');
+       
+       for (const [tokenId, updateData] of updateMap) {
+         try {
+           const tokenElement = updateData.tokenElement;
+           if (tokenElement && updateData.originalPosition) {
+             tokenElement.style.left = updateData.originalPosition.left;
+             tokenElement.style.top = updateData.originalPosition.top;
+           }
+         } catch (rollbackError) {
+           Logger.error(`Failed to rollback token ${tokenId}:`, rollbackError);
+         }
+       }
+       
+       showNotification('Token update failed - positions restored', 'error');
+     }
+     
+     // Main batch processing function
+     async function processPendingTokenUpdates() {
+       // Prevent concurrent processing
+       if (tokenUpdateState.isProcessing || tokenUpdateState.pendingUpdates.size === 0) {
+         return;
+       }
+       
+       tokenUpdateState.isProcessing = true;
+       
+       try {
+         // Step 1: Clear timeout and prepare data
+         clearBatchTimeout();
+         const { tokensToUpdate, updateMap } = prepareBatchUpdateData();
+         
+         // Step 2: Clear pending updates immediately
+         tokenUpdateState.pendingUpdates.clear();
+         
+         // Step 3: Execute the batch update
+         await executeBatchUpdate(tokensToUpdate, updateMap);
+         
+       } catch (error) {
+         Logger.error('Critical error in processPendingTokenUpdates:', error);
+         showNotification('Failed to process token updates', 'error');
+       } finally {
+         tokenUpdateState.isProcessing = false;
+       }
+     }
+     
+     // Send batch update with retry logic
+     async function sendBatchUpdateWithRetry(tokensToUpdate, updateMap, attempt = 1) {
+       try {
+         const response = await fetch('/api/map-tokens/batch', {
+           method: 'PUT',
+           headers: {
+             'Content-Type': 'application/json'
+           },
+           body: JSON.stringify({
+             tokens: tokensToUpdate
+           }),
+           signal: AbortSignal.timeout(15000) // 15 second timeout
+         });
+         
+         if (!response.ok) {
+           throw new Error(`HTTP error! status: ${response.status}`);
+         }
+         
+         const data = await response.json();
+         
+         if (!data.success) {
+           throw new Error('Server reported batch update failure');
+         }
+         
+         Logger.info('Batch update successful:', {
+           totalTokens: data.total_tokens,
+           successful: data.successful_updates,
+           failed: data.failed_updates
+         });
+         
+         // Log any individual failures
+         if (data.errors && data.errors.length > 0) {
+           Logger.warn('Some tokens failed to update:', data.errors);
+         }
+         
+         return true;
+         
+       } catch (error) {
+         Logger.error(`Batch update attempt ${attempt} failed:`, error);
+         
+         // Retry logic
+         if (attempt < TOKEN_UPDATE_CONFIG.MAX_RETRY_ATTEMPTS) {
+           const delay = Math.pow(2, attempt) * 1000; // Exponential backoff
+           Logger.info(`Retrying batch update in ${delay}ms (attempt ${attempt + 1}/${TOKEN_UPDATE_CONFIG.MAX_RETRY_ATTEMPTS})`);
+           
+           await new Promise(resolve => setTimeout(resolve, delay));
+           return sendBatchUpdateWithRetry(tokensToUpdate, updateMap, attempt + 1);
+         }
+         
+         return false;
+       }
+     }
+     
+     // Rollback visual changes for failed updates
+     function rollbackFailedUpdates(updateMap) {
+       try {
+         Logger.warn('Rolling back visual changes for failed token updates');
+         
+         for (const [tokenId, updateData] of updateMap) {
+           const tokenElement = updateData.tokenElement;
+           if (tokenElement && updateData.originalPosition) {
+             tokenElement.style.left = updateData.originalPosition.left;
+             tokenElement.style.top = updateData.originalPosition.top;
+             
+             // Add visual indication of failure
+             tokenElement.style.border = '2px solid red';
+             setTimeout(() => {
+               tokenElement.style.border = '';
+             }, 2000);
+           }
+         }
+         
+         // Show user notification
+         showNotification('Some token positions could not be saved. Changes have been reverted.', 'error');
+         
+       } catch (error) {
+         Logger.error('Error in rollbackFailedUpdates:', error);
+       }
+     }
+     
+     // Force process any pending updates (called on page unload, etc.)
+     function flushPendingTokenUpdates() {
+       if (tokenUpdateState.pendingUpdates.size > 0) {
+         Logger.info('Flushing pending token updates');
+         processPendingTokenUpdates();
+       }
+     }
+     
+     // Enhanced notification system
+     function showNotification(message, type = 'info') {
+       try {
+         // Create notification element
+         const notification = document.createElement('div');
+         notification.className = `notification notification-${type}`;
+         notification.style.cssText = `
+           position: fixed;
+           top: 20px;
+           right: 20px;
+           padding: 12px 20px;
+           border-radius: 4px;
+           color: white;
+           font-weight: bold;
+           z-index: 10000;
+           max-width: 300px;
+           word-wrap: break-word;
+           ${type === 'error' ? 'background-color: #dc3545;' : ''}
+           ${type === 'success' ? 'background-color: #28a745;' : ''}
+           ${type === 'warning' ? 'background-color: #ffc107; color: black;' : ''}
+           ${type === 'info' ? 'background-color: #17a2b8;' : ''}
+         `;
+         notification.textContent = message;
+         
+         document.body.appendChild(notification);
+         
+         // Auto-remove after 5 seconds
+         setTimeout(() => {
+           if (notification.parentNode) {
+             notification.parentNode.removeChild(notification);
+           }
+         }, 5000);
+         
+       } catch (error) {
+         Logger.error('Error showing notification:', error);
+         // Fallback to console
+         console.log(`[${type.toUpperCase()}] ${message}`);
+       }
+     }
+      
+      // ===== MULTI-TOKEN DROP SYSTEM =====
+      
+      function validateMultiTokenDropInputs(e, dragData) {
+        if (!e || !dragData) {
+          throw new Error('Invalid parameters for multi-token drop');
         }
+        
+        if (!dragData.tokens || !Array.isArray(dragData.tokens) || dragData.tokens.length === 0) {
+          throw new Error('Invalid or empty tokens array in drag data');
+        }
+        
+        if (typeof dragData.dragStartX !== 'number' || typeof dragData.dragStartY !== 'number') {
+          throw new Error('Invalid drag start coordinates');
+        }
+        
+        return true;
       }
       
+      function calculateDropDelta(e, dragData) {
+        const mapGrid = document.getElementById('map-grid');
+        if (!mapGrid) {
+          throw new Error('Map grid not found');
+        }
+        
+        const rect = mapGrid.getBoundingClientRect();
+        const dropX = e.clientX - rect.left;
+        const dropY = e.clientY - rect.top;
+        
+        if (isNaN(dropX) || isNaN(dropY)) {
+          throw new Error(`Invalid drop coordinates: x=${dropX}, y=${dropY}`);
+        }
+        
+        // dragData.dragStartX and dragData.dragStartY are already absolute screen coordinates
+        // Convert them to map-grid-relative coordinates
+        const dragStartX = dragData.dragStartX - rect.left;
+        const dragStartY = dragData.dragStartY - rect.top;
+        
+        const deltaX = dropX - dragStartX;
+        const deltaY = dropY - dragStartY;
+        
+        Logger.debug('Multi-token drop delta calculated:', {
+          dropPosition: { x: dropX, y: dropY },
+          dragStart: { x: dragStartX, y: dragStartY },
+          delta: { x: deltaX, y: deltaY },
+          absoluteDragStart: { x: dragData.dragStartX, y: dragData.dragStartY },
+          mapGridRect: { left: rect.left, top: rect.top }
+        });
+        
+        return { deltaX, deltaY };
+      }
+      
+      function validateAndProcessTokens(dragData, deltaX, deltaY) {
+        const validTokens = [];
+        const invalidTokens = [];
+        
+        dragData.tokens.forEach((tokenData, index) => {
+          try {
+            // Validate token data structure
+            if (!tokenData || typeof tokenData !== 'object') {
+              invalidTokens.push({ index, reason: 'Invalid token data structure' });
+              return;
+            }
+            
+            if (!tokenData.assetId) {
+              invalidTokens.push({ index, reason: 'Missing asset ID' });
+              return;
+            }
+            
+            if (typeof tokenData.currentX !== 'number' || typeof tokenData.currentY !== 'number') {
+              invalidTokens.push({ index, reason: 'Invalid current position coordinates' });
+              return;
+            }
+            
+            const tokenElement = document.querySelector(`[data-token-id="${tokenData.assetId}"]`);
+            if (!tokenElement) {
+              invalidTokens.push({ index, reason: 'Token element not found in DOM' });
+              return;
+            }
+            
+            // Calculate new position (relative to map-grid)
+            const newX = tokenData.currentX + deltaX;
+            const newY = tokenData.currentY + deltaY;
+            
+            if (isNaN(newX) || isNaN(newY)) {
+              invalidTokens.push({ index, reason: 'Invalid calculated position' });
+              return;
+            }
+            
+            // Convert map-grid relative coordinates to absolute map coordinates
+            // newX and newY are relative to map-grid, so we need to convert them to screen coordinates first
+            const mapGrid = document.getElementById('map-grid');
+            if (!mapGrid) {
+              invalidTokens.push({ index, reason: 'Map grid element not found' });
+              return;
+            }
+            
+            const mapGridRect = mapGrid.getBoundingClientRect();
+            const absoluteScreenX = newX + mapGridRect.left;
+            const absoluteScreenY = newY + mapGridRect.top;
+            
+            // Convert absolute screen coordinates to map coordinates
+            const mapCoords = screenToMapCoordinates(absoluteScreenX, absoluteScreenY);
+            const gridCoords = mapToGridCoordinates(mapCoords.x, mapCoords.y);
+            
+            Logger.debug('Token coordinate conversion:', {
+              tokenId: tokenData.assetId,
+              currentPosition: { x: tokenData.currentX, y: tokenData.currentY },
+              delta: { x: deltaX, y: deltaY },
+              newPosition: { x: newX, y: newY },
+              mapCoords: { x: mapCoords.x, y: mapCoords.y },
+              gridCoords: { x: gridCoords.x, y: gridCoords.y }
+            });
+            
+            if (isNaN(gridCoords.x) || isNaN(gridCoords.y)) {
+              invalidTokens.push({ index, reason: 'Invalid grid coordinates' });
+              return;
+            }
+            
+            const pixelCenter = gridCellToPixelCenter(gridCoords.x, gridCoords.y);
+            
+            if (isNaN(pixelCenter.x) || isNaN(pixelCenter.y)) {
+              invalidTokens.push({ index, reason: 'Invalid pixel center calculation' });
+              return;
+            }
+            
+            validTokens.push({
+              tokenData,
+              tokenElement,
+              newX,
+              newY,
+              gridCoords,
+              pixelCenter
+            });
+            
+          } catch (tokenError) {
+            Logger.error(`Error processing token at index ${index}:`, tokenError);
+            invalidTokens.push({ index, reason: `Processing error: ${tokenError.message}` });
+          }
+        });
+        
+        return { validTokens, invalidTokens };
+      }
+      
+      function executeMultiTokenMove(validTokens) {
+        let successfulMoves = 0;
+        
+        validTokens.forEach(({ tokenData, tokenElement, pixelCenter, gridCoords }) => {
+          try {
+            // Update token visual position
+            tokenElement.style.left = pixelCenter.x + 'px';
+            tokenElement.style.top = pixelCenter.y + 'px';
+            
+            // Add visual feedback during update
+            tokenElement.style.opacity = '0.7';
+            setTimeout(() => {
+              if (tokenElement.style.opacity === '0.7') {
+                tokenElement.style.opacity = '1';
+              }
+            }, 1000);
+            
+            // Queue server update (will be batched automatically)
+            updateTokenPositionOnServer(tokenElement, pixelCenter.x, pixelCenter.y);
+            
+            successfulMoves++;
+            
+            Logger.debug('Token moved in multi-drop:', {
+              tokenId: tokenData.assetId,
+              from: { x: tokenData.currentX, y: tokenData.currentY },
+              to: { x: pixelCenter.x, y: pixelCenter.y },
+              grid: { x: gridCoords.x, y: gridCoords.y }
+            });
+            
+          } catch (moveError) {
+            Logger.error(`Error moving token ${tokenData.assetId}:`, moveError);
+          }
+        });
+        
+        return successfulMoves;
+      }
+      
+      // Main multi-token drop handler
       function handleMultiTokenDrop(e, dragData) {
         try {
-          const viewport = document.getElementById('map-viewport');
-          if (!viewport) {
-            Logger.error('Map viewport not found during multi-token drop');
+          // Step 1: Validate inputs
+          validateMultiTokenDropInputs(e, dragData);
+          
+          // Step 2: Calculate movement delta
+          const { deltaX, deltaY } = calculateDropDelta(e, dragData);
+          
+          // Step 3: Validate and process tokens
+          const { validTokens, invalidTokens } = validateAndProcessTokens(dragData, deltaX, deltaY);
+          
+          // Step 4: Log validation results
+          if (invalidTokens.length > 0) {
+            Logger.warn(`${invalidTokens.length} tokens failed validation:`, invalidTokens);
+            showNotification(`${invalidTokens.length} tokens could not be moved due to validation errors.`, 'warning');
+          }
+          
+          if (validTokens.length === 0) {
+            Logger.error('No valid tokens to move');
+            showNotification('No tokens could be moved. Please try again.', 'error');
             return;
           }
           
-          const rect = viewport.getBoundingClientRect();
-          const dropX = e.clientX - rect.left;
-          const dropY = e.clientY - rect.top;
+          Logger.info(`Moving ${validTokens.length} valid tokens (${invalidTokens.length} invalid)`);
           
-          // Calculate the offset from the original drag start position in screen coordinates
-          const dragStartRect = viewport.getBoundingClientRect();
-          const dragStartX = dragData.dragStartX - dragStartRect.left;
-          const dragStartY = dragData.dragStartY - dragStartRect.top;
+          // Step 5: Execute the move
+          const successfulMoves = executeMultiTokenMove(validTokens);
           
-          const deltaX = dropX - dragStartX;
-          const deltaY = dropY - dragStartY;
+          // Step 6: Show success notification
+          if (successfulMoves > 0) {
+            const message = successfulMoves === 1 
+              ? 'Token moved successfully' 
+              : `${successfulMoves} tokens moved successfully`;
+            showNotification(message, 'success');
+          }
           
-          Logger.debug('Multi-token drop:', {
-            dropPosition: { x: dropX, y: dropY },
-            dragStart: { x: dragStartX, y: dragStartY },
-            delta: { x: deltaX, y: deltaY },
-            tokensCount: dragData.tokens.length
-          });
-          
-          // Move each token by the same delta
-          dragData.tokens.forEach(tokenData => {
-            const tokenElement = document.querySelector(`[data-token-id="${tokenData.assetId}"]`);
-            if (tokenElement) {
-              // Calculate new position based on original position + delta
-              const newX = tokenData.currentX + deltaX;
-              const newY = tokenData.currentY + deltaY;
-              
-              // Snap to grid - convert viewport coordinates to map coordinates
-              const mapCoords = screenToMapCoordinates(newX, newY);
-              const gridCoords = mapToGridCoordinates(mapCoords.x, mapCoords.y);
-              const pixelCenter = gridCellToPixelCenter(gridCoords.x, gridCoords.y);
-              
-              // Update token position
-              tokenElement.style.left = pixelCenter.x + 'px';
-              tokenElement.style.top = pixelCenter.y + 'px';
-              
-              // Update position on server
-              updateTokenPositionOnServer(tokenElement, pixelCenter.x, pixelCenter.y);
-              
-              Logger.debug('Token moved in multi-drop:', {
-                tokenId: tokenData.assetId,
-                from: { x: tokenData.currentX, y: tokenData.currentY },
-                to: { x: pixelCenter.x, y: pixelCenter.y },
-                grid: { x: gridCoords.x, y: gridCoords.y },
-                delta: { x: deltaX, y: deltaY }
-              });
-            }
-          });
-          
-          Logger.info(`Moved ${dragData.tokens.length} tokens via drag and drop`);
+          Logger.info(`Multi-token drop completed: ${successfulMoves} successful moves`);
           
         } catch (error) {
-          Logger.error('Error in handleMultiTokenDrop:', error);
-        }
-      }
+           Logger.error('Critical error in handleMultiTokenDrop:', error);
+           showNotification('An error occurred while moving tokens. Please try again.', 'error');
+         }
+       }
      
      // ===== SELECTION BOX SYSTEM =====
      function startSelectionBox(e) {
@@ -5224,107 +6542,157 @@
           }
         });
       
+        // ===== MAIN DROP SYSTEM =====
+        
+        function parseDropData(dataText) {
+          if (!dataText) {
+            throw new Error('No data found in drop event');
+          }
+          
+          try {
+            return JSON.parse(dataText);
+          } catch (parseError) {
+            // Only ignore if it looks like a URL or other non-JSON content
+            if (dataText.startsWith('http') || dataText.startsWith('www.') || !dataText.includes('{')) {
+              Logger.debug('Drop data appears to be URL or non-JSON content, ignoring:', dataText.substring(0, 50) + '...');
+              return null;
+            }
+            // If it looks like it should be JSON but failed to parse, log the error
+            Logger.error('Failed to parse drop data as JSON:', parseError, 'Data:', dataText.substring(0, 100));
+            throw parseError;
+          }
+        }
+        
+        function validateDropEnvironment() {
+          const viewport = document.getElementById('map-viewport');
+          if (!viewport) {
+            throw new Error('Map viewport not found during drop');
+          }
+          
+          // Validate coordinate functions
+          if (typeof screenToMapCoordinates !== 'function' || 
+              typeof mapToGridCoordinates !== 'function' || 
+              typeof gridCellToPixelCenter !== 'function') {
+            throw new Error('Required coordinate conversion functions not available');
+          }
+          
+          return viewport;
+        }
+        
+        function calculateDropCoordinates(e, viewport) {
+          const rect = viewport.getBoundingClientRect();
+          const mouseX = e.clientX - rect.left;
+          const mouseY = e.clientY - rect.top;
+          
+          // Use Roll20-inspired coordinate system
+          const mapCoords = screenToMapCoordinates(mouseX, mouseY);
+          const gridCoords = mapToGridCoordinates(mapCoords.x, mapCoords.y);
+          const pixelCenter = gridCellToPixelCenter(gridCoords.x, gridCoords.y);
+          
+          const coordinates = {
+            screen: { x: mouseX, y: mouseY },
+            map: mapCoords,
+            grid: gridCoords,
+            pixel: pixelCenter
+          };
+          
+          Logger.debug('=== DROP COORDINATES DEBUG ===');
+          Logger.debug(`Target cell: Grid (${coordinates.grid.x}, ${coordinates.grid.y})`);
+          Logger.debug(`Screen coordinates: (${coordinates.screen.x}, ${coordinates.screen.y})`);
+          Logger.debug(`Map coordinates: (${coordinates.map.x.toFixed(2)}, ${coordinates.map.y.toFixed(2)})`);
+          Logger.debug(`Calculated pixels: (${coordinates.pixel.x}, ${coordinates.pixel.y})`);
+          Logger.debug('===============================');
+          
+          return coordinates;
+        }
+        
+        function determineTargetLayer(assetType) {
+          switch(assetType.toLowerCase()) {
+            case 'token':
+              // Tokens can only be dropped on 'tokens' or 'gm' layers
+              if (currentLayer === 'tokens' || currentLayer === 'gm') {
+                return currentLayer;
+              } else {
+                // Show warning and prevent drop on invalid layers
+                Logger.warn(`Tokens can only be dropped on 'Tokens' or 'GM' layers. Current layer: ${currentLayer}`);
+                alert('I token possono essere posizionati solo sui layer "Tokens" o "GM". Seleziona uno di questi layer prima di trascinare il token.');
+                return null;
+              }
+            case 'background':
+              return 'map';
+            case 'audio':
+              // Audio can only be dropped on 'audio' layer
+              if (currentLayer === 'audio') {
+                return 'audio';
+              } else {
+                // Show warning and prevent drop on invalid layers
+                Logger.warn(`Audio can only be dropped on 'Audio' layer. Current layer: ${currentLayer}`);
+                alert('Gli audio possono essere posizionati solo sul layer "Audio". Seleziona il layer Audio prima di trascinare l\'audio.');
+                return null;
+              }
+            case 'props':
+              return 'props';
+            default:
+              return currentLayer || 'tokens'; // Use current active layer as fallback
+          }
+        }
+        
+        function handleSingleAssetDrop(e, data) {
+          // Validate asset data
+          if (!data || !data.assetId || !data.assetType) {
+            Logger.error('Invalid asset data in drop event:', data);
+            return;
+          }
+          
+          // Validate environment
+          const viewport = validateDropEnvironment();
+          
+          // Calculate coordinates
+          const coordinates = calculateDropCoordinates(e, viewport);
+          
+          // Determine target layer
+          const targetLayer = determineTargetLayer(data.assetType);
+          if (!targetLayer) {
+            return; // Layer validation failed, user was already notified
+          }
+          
+          // Create asset on the appropriate layer
+          createAssetOnLayer(
+            data, 
+            coordinates.grid.x, 
+            coordinates.grid.y, 
+            coordinates.pixel.x, 
+            coordinates.pixel.y, 
+            targetLayer
+          );
+        }
+        
+        // Main drop event handler
         mapViewport.addEventListener('drop', function(e) {
           try {
             e.preventDefault();
             mapViewport.classList.remove('drag-over');
             
-            // Validate drop data
+            // Step 1: Parse drop data
             const dataText = e.dataTransfer.getData('text/plain');
-            if (!dataText) {
-              Logger.warn('No data found in drop event');
-              return;
+            const data = parseDropData(dataText);
+            
+            if (!data) {
+              return; // Parsing failed or data was ignored
             }
             
-            const data = JSON.parse(dataText);
-            
-            // Handle multi-token movement
+            // Step 2: Route to appropriate handler
             if (data.type === 'multitoken' && data.tokens) {
+              // Handle multi-token movement
               handleMultiTokenDrop(e, data);
-              return;
+            } else {
+              // Handle single asset drop (new assets from library)
+              handleSingleAssetDrop(e, data);
             }
-            
-            // Handle single asset drop (new assets from library)
-            if (!data || !data.assetId || !data.assetType) {
-              Logger.error('Invalid asset data in drop event:', data);
-              return;
-            }
-            
-            const viewport = document.getElementById('map-viewport');
-            if (!viewport) {
-              Logger.error('Map viewport not found during drop');
-              return;
-            }
-            
-            const rect = viewport.getBoundingClientRect();
-            const mouseX = e.clientX - rect.left;
-            const mouseY = e.clientY - rect.top;
-            
-            // Validate coordinate functions
-            if (typeof screenToMapCoordinates !== 'function' || 
-                typeof mapToGridCoordinates !== 'function' || 
-                typeof gridCellToPixelCenter !== 'function') {
-              Logger.error('Required coordinate conversion functions not available');
-              return;
-            }
-            
-            // Use Roll20-inspired coordinate system
-            const mapCoords = screenToMapCoordinates(mouseX, mouseY);
-            const gridCoords = mapToGridCoordinates(mapCoords.x, mapCoords.y);
-            const pixelCenter = gridCellToPixelCenter(gridCoords.x, gridCoords.y);
-            
-            const gridX = gridCoords.x;
-            const gridY = gridCoords.y;
-            const pixelX = pixelCenter.x;
-            const pixelY = pixelCenter.y;
-            
-            Logger.debug('=== TOKEN DROP DEBUG ===');
-            Logger.debug(`Target cell: Grid (${gridX}, ${gridY})`);
-            Logger.debug(`Screen coordinates: (${mouseX}, ${mouseY})`);
-            Logger.debug(`Map coordinates: (${mapCoords.x.toFixed(2)}, ${mapCoords.y.toFixed(2)})`);
-            Logger.debug(`Calculated pixels: (${pixelX}, ${pixelY})`);
-            Logger.debug('========================');
-          
-            // Determine target layer based on asset type
-            let targetLayer;
-            switch(data.assetType.toLowerCase()) {
-              case 'token':
-                // Tokens can only be dropped on 'tokens' or 'gm' layers
-                if (currentLayer === 'tokens' || currentLayer === 'gm') {
-                  targetLayer = currentLayer;
-                } else {
-                  // Show warning and prevent drop on invalid layers
-                  Logger.warn(`Tokens can only be dropped on 'Tokens' or 'GM' layers. Current layer: ${currentLayer}`);
-                  alert('I token possono essere posizionati solo sui layer "Tokens" o "GM". Seleziona uno di questi layer prima di trascinare il token.');
-                  return; // Exit without creating the token
-                }
-                break;
-              case 'background':
-                targetLayer = 'map';
-                break;
-              case 'audio':
-                // Audio can only be dropped on 'audio' layer
-                if (currentLayer === 'audio') {
-                  targetLayer = 'audio';
-                } else {
-                  // Show warning and prevent drop on invalid layers
-                  Logger.warn(`Audio can only be dropped on 'Audio' layer. Current layer: ${currentLayer}`);
-                  alert('Gli audio possono essere posizionati solo sul layer "Audio". Seleziona il layer Audio prima di trascinare l\'audio.');
-                  return; // Exit without creating the audio
-                }
-                break;
-              case 'props':
-                targetLayer = 'props';
-                break;
-              default:
-                targetLayer = currentLayer || 'tokens'; // Use current active layer as fallback
-            }
-            
-            // Create asset on the appropriate layer
-            createAssetOnLayer(data, gridX, gridY, pixelX, pixelY, targetLayer);
             
           } catch (error) {
             Logger.error('Error handling drop event:', error);
+            showNotification('An error occurred while dropping the item. Please try again.', 'error');
           }
         });
         
@@ -5647,12 +7015,24 @@
             selectedTokens.forEach(tokenId => {
               const tokenEl = document.querySelector(`[data-token-id="${tokenId}"]`);
               if (tokenEl) {
+                // Get the current position in pixels relative to the map-grid
+                const rect = tokenEl.getBoundingClientRect();
+                const mapGrid = document.getElementById('map-grid');
+                const mapGridRect = mapGrid.getBoundingClientRect();
+                
                 selectedTokensData.push({
                   assetId: tokenId,
                   assetType: 'token',
                   assetName: tokenEl.title || 'Token',
-                  currentX: parseInt(tokenEl.style.left) || 0,
-                  currentY: parseInt(tokenEl.style.top) || 0
+                  currentX: rect.left - mapGridRect.left,
+                  currentY: rect.top - mapGridRect.top
+                });
+                
+                Logger.debug('Token drag start position:', {
+                  tokenId: tokenId,
+                  tokenRect: { left: rect.left, top: rect.top },
+                  mapGridRect: { left: mapGridRect.left, top: mapGridRect.top },
+                  relativePosition: { x: rect.left - mapGridRect.left, y: rect.top - mapGridRect.top }
                 });
               }
             });
@@ -5958,6 +7338,206 @@
       } catch (error) {
         Logger.error('Critical error during initialization:', error);
         alert('Failed to initialize the map: ' + error.message);
+      }
+    }
+    
+    // Function to center the view on a specific token
+    async function centerOnToken(tokenId) {
+      try {
+        // Validate input
+        if (!tokenId || (typeof tokenId !== 'string' && typeof tokenId !== 'number')) {
+          Logger.error('Invalid token ID provided for centering:', tokenId);
+          alert('Errore: ID token non valido.');
+          return;
+        }
+        
+        Logger.info(`Centering view on token ID: ${tokenId}`);
+        
+        const mapId = MapState.getCurrentMapId();
+        if (!mapId) {
+          Logger.warn('No map ID available for centering on token');
+          alert('Errore: Nessuna mappa attiva disponibile.');
+          return;
+        }
+        
+        // Show loading indicator
+        const loadingMsg = 'Centrando sulla vista del token...';
+        Logger.debug(loadingMsg);
+        
+        // Fetch token data to get its position with timeout
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+        
+        let response;
+        try {
+          response = await fetch(`/api/map-tokens?map_id=${encodeURIComponent(mapId)}`, {
+            signal: controller.signal
+          });
+        } catch (fetchError) {
+          clearTimeout(timeoutId);
+          if (fetchError.name === 'AbortError') {
+            Logger.error('Token fetch request timed out');
+            alert('Errore: Timeout durante il recupero dei token. Il server potrebbe essere sovraccarico.');
+          } else {
+            Logger.error('Network error fetching tokens:', fetchError);
+            alert('Errore di rete durante il recupero dei token.');
+          }
+          return;
+        }
+        
+        clearTimeout(timeoutId);
+        
+        if (!response.ok) {
+          const errorText = await response.text();
+          Logger.error(`Failed to fetch tokens: ${response.status} ${response.statusText}`, errorText);
+          alert(`Errore durante il recupero dei token: ${response.status} ${response.statusText}`);
+          return;
+        }
+        
+        const tokensData = await response.json();
+        
+        // Validate response structure
+        if (!tokensData || typeof tokensData !== 'object') {
+          Logger.error('Invalid tokens data structure received:', tokensData);
+          alert('Errore: Dati dei token non validi ricevuti dal server.');
+          return;
+        }
+        
+        if (!tokensData.success) {
+          const errorMsg = tokensData.error || 'Unknown error';
+          Logger.error('Server returned error for tokens:', errorMsg);
+          alert(`Errore del server: ${errorMsg}`);
+          return;
+        }
+        
+        const tokens = tokensData.tokens || [];
+        
+        if (!Array.isArray(tokens)) {
+          Logger.error('Tokens data is not an array:', tokens);
+          alert('Errore: Formato dati dei token non valido.');
+          return;
+        }
+        
+        // Find the specific token (convert both to string for comparison)
+        const token = tokens.find(t => t.id === String(tokenId) || t.id === Number(tokenId));
+        
+        if (!token) {
+          Logger.warn(`Token with ID ${tokenId} not found in ${tokens.length} available tokens`);
+          Logger.debug('Available token IDs:', tokens.map(t => t.id));
+          alert(`Token con ID ${tokenId} non trovato. Il token potrebbe essere stato eliminato o spostato su un'altra mappa.`);
+          
+          // Optionally refresh the token list to update the UI
+          if (typeof loadActiveTokensAndSheets === 'function') {
+            Logger.debug('Refreshing token list after failed centering attempt');
+            loadActiveTokensAndSheets();
+          }
+          return;
+        }
+        
+        // Validate token data structure
+        if (!token.hasOwnProperty('grid_x') || !token.hasOwnProperty('grid_y')) {
+          Logger.error(`Token ${tokenId} missing coordinate properties:`, token);
+          alert(`Errore: Token ${tokenId} ha dati di posizione mancanti.`);
+          return;
+        }
+        
+        // Get token's grid coordinates
+        const gridX = token.grid_x;
+        const gridY = token.grid_y;
+        
+        // Validate coordinates
+        if (gridX === null || gridX === undefined || gridY === null || gridY === undefined) {
+          Logger.warn(`Token ${tokenId} has null/undefined coordinates: grid_x=${gridX}, grid_y=${gridY}`);
+          alert(`Errore: Token ${tokenId} ha coordinate non valide (${gridX}, ${gridY}).`);
+          return;
+        }
+        
+        if (typeof gridX !== 'number' || typeof gridY !== 'number') {
+          Logger.warn(`Token ${tokenId} has non-numeric coordinates: grid_x=${gridX} (${typeof gridX}), grid_y=${gridY} (${typeof gridY})`);
+          alert(`Errore: Token ${tokenId} ha coordinate non numeriche.`);
+          return;
+        }
+        
+        if (!isFinite(gridX) || !isFinite(gridY)) {
+          Logger.warn(`Token ${tokenId} has infinite coordinates: grid_x=${gridX}, grid_y=${gridY}`);
+          alert(`Errore: Token ${tokenId} ha coordinate infinite.`);
+          return;
+        }
+        
+        Logger.debug(`Token ${tokenId} (${token.name || 'Unnamed'}) is at grid coordinates: (${gridX}, ${gridY})`);
+        
+        // Validate coordinate system functions
+        if (!CoordinateSystem || typeof CoordinateSystem.gridToMapCoordinates !== 'function') {
+          Logger.error('CoordinateSystem.gridToMapCoordinates function not available');
+          alert('Errore: Sistema di coordinate non disponibile.');
+          return;
+        }
+        
+        // Convert grid coordinates to map coordinates (pixel position)
+        const mapCoords = CoordinateSystem.gridToMapCoordinates(gridX, gridY);
+        
+        if (!mapCoords || typeof mapCoords.x !== 'number' || typeof mapCoords.y !== 'number') {
+          Logger.error('Invalid map coordinates calculated:', mapCoords);
+          alert('Errore: Impossibile calcolare le coordinate della mappa.');
+          return;
+        }
+        
+        // Get viewport dimensions to calculate center offset
+        const viewport = document.getElementById('map-viewport');
+        if (!viewport) {
+          Logger.error('Map viewport not found for centering');
+          alert('Errore: Viewport della mappa non trovato.');
+          return;
+        }
+        
+        const viewportRect = viewport.getBoundingClientRect();
+        if (!viewportRect || viewportRect.width <= 0 || viewportRect.height <= 0) {
+          Logger.error('Invalid viewport dimensions:', viewportRect);
+          alert('Errore: Dimensioni del viewport non valide.');
+          return;
+        }
+        
+        const centerX = viewportRect.width / 2;
+        const centerY = viewportRect.height / 2;
+        
+        // Calculate the pan needed to center the token
+        // We need to account for the grid offset (50% - 1000px)
+        const gridOffsetX = viewport.clientWidth / 2 - 1000;
+        const gridOffsetY = viewport.clientHeight / 2 - 1000;
+        
+        // Calculate new pan values to center the token
+        const newPanX = centerX - mapCoords.x - gridOffsetX;
+        const newPanY = centerY - mapCoords.y - gridOffsetY;
+        
+        // Validate pan values
+        if (!isFinite(newPanX) || !isFinite(newPanY)) {
+          Logger.error('Invalid pan values calculated:', { newPanX, newPanY });
+          alert('Errore: Impossibile calcolare la nuova posizione della vista.');
+          return;
+        }
+        
+        // Validate MapNavigation functions
+        if (!MapNavigation || typeof MapNavigation.setPan !== 'function' || typeof MapNavigation.updateMapTransform !== 'function') {
+          Logger.error('MapNavigation functions not available');
+          alert('Errore: Sistema di navigazione della mappa non disponibile.');
+          return;
+        }
+        
+        // Apply the new pan
+        if (MapNavigation.setPan(newPanX, newPanY)) {
+          MapNavigation.updateMapTransform();
+          Logger.info(`Successfully centered view on token ${tokenId} (${token.name || 'Unnamed'}) at grid (${gridX}, ${gridY})`);
+          
+          // Optional: Show success feedback
+          Logger.debug(`Vista centrata su token "${token.name || 'Unnamed'}" alle coordinate (${gridX}, ${gridY})`);
+        } else {
+          Logger.warn(`Failed to set pan for centering on token ${tokenId}`);
+          alert(`Errore: Impossibile centrare la vista sul token ${tokenId}.`);
+        }
+        
+      } catch (error) {
+        Logger.error(`Error centering on token ${tokenId}:`, error);
+        alert(`Errore durante il centramento sul token ${tokenId}: ${error.message || 'Errore sconosciuto'}`);
       }
     }
     

@@ -7,22 +7,66 @@ import 'package:dotenv/dotenv.dart';
 import '../sheet_templates.dart';
 import '../game_system_manager.dart';
 
-// Logging functionality
+// Enhanced Logging functionality
 File? _logFile;
+File? _errorLogFile;
+File? _debugLogFile;
 
 Future<void> _initializeLogging() async {
-  _logFile = File('d:\\github\\PFVTT\\backend\\backend.log');
-  // Clear the log file on startup
-  await _logFile!.writeAsString('');
-  print('Backend log file initialized and cleared');
+  try {
+    _logFile = File('d:\\github\\PFVTT\\backend\\backend.log');
+    _errorLogFile = File('d:\\github\\PFVTT\\backend\\error.log');
+    _debugLogFile = File('d:\\github\\PFVTT\\backend\\debug.log');
+    
+    // Clear log files on startup
+    await _logFile!.writeAsString('');
+    await _errorLogFile!.writeAsString('');
+    await _debugLogFile!.writeAsString('');
+    
+    print('Backend log files initialized and cleared');
+    await _writeLog('SYSTEM', 'Backend logging system initialized');
+  } catch (e) {
+    print('Failed to initialize logging: $e');
+  }
 }
 
-Future<void> _writeLog(String message) async {
-  if (_logFile != null) {
+Future<void> _writeLog(String level, String message, [String? stackTrace]) async {
+  try {
     final timestamp = DateTime.now().toIso8601String();
-    final logEntry = '[$timestamp] $message\n';
-    await _logFile!.writeAsString(logEntry, mode: FileMode.append);
+    final logEntry = '[$timestamp] [$level] $message${stackTrace != null ? '\nStack: $stackTrace' : ''}\n';
+    
+    // Write to main log
+    if (_logFile != null) {
+      await _logFile!.writeAsString(logEntry, mode: FileMode.append);
+    }
+    
+    // Write errors to separate error log
+    if (level == 'ERROR' && _errorLogFile != null) {
+      await _errorLogFile!.writeAsString(logEntry, mode: FileMode.append);
+    }
+    
+    // Write debug info to debug log
+    if (level == 'DEBUG' && _debugLogFile != null) {
+      await _debugLogFile!.writeAsString(logEntry, mode: FileMode.append);
+    }
+    
+    // Also print to console for immediate visibility
+    print('[$level] $message');
+  } catch (e) {
+    print('Failed to write log: $e');
   }
+}
+
+Future<void> _logError(String message, dynamic error, [StackTrace? stackTrace]) async {
+  await _writeLog('ERROR', '$message: $error', stackTrace?.toString());
+}
+
+Future<void> _logDebug(String message) async {
+  await _writeLog('DEBUG', message);
+}
+
+Future<void> _logInfo(String message) async {
+  await _writeLog('INFO', message);
 }
 
 // MySQL Connection Pool
@@ -63,58 +107,77 @@ class MySqlConnectionPool {
   }
 
   Future<MySqlConnection> _getConnection() async {
+    print('[POOL] Getting connection - Available: ${_availableConnections.length}, Used: ${_usedConnections.length}');
+    
     // Try to get an available connection
     if (_availableConnections.isNotEmpty) {
       final conn = _availableConnections.removeAt(0);
       _usedConnections.add(conn);
+      print('[POOL] Reusing existing connection');
       return conn;
     }
 
     // Create new connection if under limit
     if (_usedConnections.length < _maxConnections) {
       try {
+        print('[POOL] Creating new connection (${_usedConnections.length + 1}/$_maxConnections)');
         final conn = await MySqlConnection.connect(
           _settings,
         ).timeout(_connectionTimeout);
         _usedConnections.add(conn);
+        print('[POOL] New connection created successfully');
         return conn;
       } catch (e) {
+        print('[POOL] Failed to create new connection: $e');
         throw Exception('Failed to create new connection: $e');
       }
     }
 
-    // Wait for a connection to become available
+    // Wait for a connection to become available (increased timeout)
+    print('[POOL] Pool exhausted, waiting for available connection...');
     int attempts = 0;
-    while (_availableConnections.isEmpty && attempts < 50) {
+    while (_availableConnections.isEmpty && attempts < 200) { // Increased from 50 to 200
       await Future.delayed(Duration(milliseconds: 100));
       attempts++;
+      if (attempts % 50 == 0) {
+        print('[POOL] Still waiting... attempt $attempts/200');
+      }
     }
 
     if (_availableConnections.isNotEmpty) {
       final conn = _availableConnections.removeAt(0);
       _usedConnections.add(conn);
+      print('[POOL] Got connection after waiting');
       return conn;
     }
 
-    throw Exception('Connection pool exhausted');
+    print('[POOL] Connection pool exhausted after 20 seconds');
+    throw Exception('Connection pool exhausted after 20 seconds');
   }
 
   void _releaseConnection(MySqlConnection conn) {
     _usedConnections.remove(conn);
     _availableConnections.add(conn);
+    print('[POOL] Connection released - Available: ${_availableConnections.length}, Used: ${_usedConnections.length}');
   }
 
   Future<Results> query(String sql, [List<Object?>? values]) async {
+    print('[POOL] Executing query: ${sql.substring(0, sql.length > 50 ? 50 : sql.length)}...');
     final conn = await _getConnection();
     try {
       final result = await conn.query(sql, values).timeout(_connectionTimeout);
+      print('[POOL] Query executed successfully');
       return result;
     } catch (e) {
+      print('[POOL] Query failed: $e');
       // If connection is broken, don't return it to pool
       _usedConnections.remove(conn);
       try {
         await conn.close();
-      } catch (_) {}
+        print('[POOL] Broken connection closed');
+      } catch (closeError) {
+        print('[POOL] Error closing broken connection: $closeError');
+      }
       rethrow;
     } finally {
       if (_usedConnections.contains(conn)) {
@@ -146,11 +209,13 @@ Future<void> main(List<String> arguments) async {
 
     // Initialize logging
     await _initializeLogging();
-    await _writeLog('PFVTT backend started');
+    await _logInfo('PFVTT backend started - PID: $pid');
+    await _logInfo('Dart version: ${Platform.version}');
+    await _logInfo('Operating system: ${Platform.operatingSystem}');
 
     // Load environment variables
     var env = DotEnv(includePlatformEnvironment: true)..load(['../.env']);
-    
+
     final dbHost = env['DB_HOST'] ?? 'localhost';
     final dbPort = int.tryParse(env['DB_PORT'] ?? '3306') ?? 3306;
     final dbUser = env['DB_USER'] ?? 'PFVTT';
@@ -159,7 +224,7 @@ Future<void> main(List<String> arguments) async {
     final serverHost = env['SERVER_HOST'] ?? 'localhost';
     final serverPort = int.tryParse(env['SERVER_PORT'] ?? '8080') ?? 8080;
     final frontendPort = env['FRONTEND_PORT'] ?? '3000';
-    
+
     print('[BACKEND] Database: $dbHost:$dbPort/$dbName');
     print('[BACKEND] Server will run on: $serverHost:$serverPort');
     print('[BACKEND] Frontend expected on port: $frontendPort');
@@ -172,24 +237,31 @@ Future<void> main(List<String> arguments) async {
       db: dbName,
     );
 
-    // Initialize connection pool
+    // Initialize connection pool with increased capacity
     _connectionPool = MySqlConnectionPool(
       settings: settings,
-      maxConnections: 10,
+      maxConnections: 20, // Increased from 10 to 20 for better concurrency
       connectionTimeout: Duration(seconds: 30),
     );
 
     await _connectionPool.initialize();
+    await _logInfo('MySQL connection pool initialized successfully');
 
     // Periodic cache cleanup removed
 
     final server = await HttpServer.bind(InternetAddress.anyIPv4, serverPort);
+    await _logInfo('HTTP server bound to ${InternetAddress.anyIPv4}:$serverPort');
     print('Backend running on http://$serverHost:$serverPort');
 
-    await for (HttpRequest request in server) {
+    // Wrap the server loop in a more robust error handler
+    await _logInfo('Starting main server loop');
+    int requestCount = 0;
+    while (true) {
       try {
-        print('DEBUG: Request received');
-        stdout.flush();
+        await for (HttpRequest request in server) {
+          requestCount++;
+          try {
+            await _logDebug('Request #$requestCount received: ${request.method} ${request.uri.path}');
 
         // Add CORS headers
         request.response.headers.add(
@@ -205,24 +277,15 @@ Future<void> main(List<String> arguments) async {
           'Content-Type, Authorization',
         );
 
-        print('DEBUG: CORS headers added');
-        stdout.flush();
-
         // Handle preflight OPTIONS requests
         if (request.method == 'OPTIONS') {
-          print('DEBUG: OPTIONS request');
-          stdout.flush();
           request.response.statusCode = HttpStatus.ok;
           await request.response.close();
           continue;
         }
 
-        print('DEBUG: Received request: ${request.method} ${request.uri.path}');
-        stdout.flush();
-        
-        // Log all API requests
-        await _writeLog('${request.method} ${request.uri.path} - ${request.connectionInfo?.remoteAddress}');
-        
+        // Logging removed to prevent file contention
+
         if (request.uri.path == '/login' && request.method == 'POST') {
           print('BACKEND /login chiamato');
           String content = await utf8.decoder.bind(request).join();
@@ -251,13 +314,13 @@ Future<void> main(List<String> arguments) async {
               BCrypt.checkpw(password, results.first[0])) {
             request.response.headers.contentType = ContentType.json;
             request.response.write(jsonEncode({'success': true}));
-            await _writeLog('LOGIN SUCCESS for user: $username');
+            // Logging removed to prevent file contention
           } else {
             request.response.headers.contentType = ContentType.json;
             request.response.write(
               jsonEncode({'success': false, 'error': 'Invalid credentials'}),
             );
-            await _writeLog('LOGIN FAILED for user: $username');
+            // Logging removed to prevent file contention
           }
           await request.response.close();
         } else if (request.uri.path == '/register' &&
@@ -300,7 +363,7 @@ Future<void> main(List<String> arguments) async {
           );
           request.response.headers.contentType = ContentType.json;
           request.response.write(jsonEncode({'success': true}));
-          await _writeLog('REGISTER SUCCESS for user: $username');
+          // Logging removed to prevent file contention
           await request.response.close();
         } else if (request.uri.path == '/api/reset_password' &&
             request.method == 'POST') {
@@ -336,9 +399,9 @@ Future<void> main(List<String> arguments) async {
               jsonEncode({'success': false, 'error': 'Missing map_id'}),
             );
             await request.response.close();
-            return;
+            continue;
           }
-          
+
           try {
             print('DEBUG: Checking if map $mapId exists...');
             var results = await _connectionPool.query(
@@ -346,29 +409,31 @@ Future<void> main(List<String> arguments) async {
               [mapId],
             );
             print('DEBUG: Query completed. Found ${results.length} maps');
-            
+
             if (results.isEmpty) {
               print('DEBUG: Map $mapId does NOT exist');
               request.response.headers.contentType = ContentType.json;
               request.response.write(
                 jsonEncode({
-                  'success': true, 
-                  'exists': false, 
+                  'success': true,
+                  'exists': false,
                   'map_id': mapId,
-                  'message': 'Map does not exist'
+                  'message': 'Map does not exist',
                 }),
               );
             } else {
               var row = results.first;
-              print('DEBUG: Map $mapId EXISTS - Name: ${row[1]}, Campaign: ${row[2]}');
+              print(
+                'DEBUG: Map $mapId EXISTS - Name: ${row[1]}, Campaign: ${row[2]}',
+              );
               request.response.headers.contentType = ContentType.json;
               request.response.write(
                 jsonEncode({
-                  'success': true, 
-                  'exists': true, 
+                  'success': true,
+                  'exists': true,
                   'map_id': mapId,
                   'name': row[1]?.toString() ?? '',
-                  'campaign_id': row[2]?.toString() ?? ''
+                  'campaign_id': row[2]?.toString() ?? '',
                 }),
               );
             }
@@ -383,6 +448,7 @@ Future<void> main(List<String> arguments) async {
             );
             await request.response.close();
           }
+          continue;
         } else if (request.uri.path == '/map' ||
             request.uri.path == '/api/maps') {
           if (request.method == 'GET') {
@@ -395,7 +461,7 @@ Future<void> main(List<String> arguments) async {
                 jsonEncode({'success': false, 'error': 'Missing campaign_id'}),
               );
               await request.response.close();
-              return;
+              continue;
             }
 
             int campaignId;
@@ -411,7 +477,7 @@ Future<void> main(List<String> arguments) async {
                 }),
               );
               await request.response.close();
-              return;
+              continue;
             }
 
             var results = await _connectionPool.query(
@@ -444,6 +510,7 @@ Future<void> main(List<String> arguments) async {
             request.response.headers.contentType = ContentType.json;
             request.response.write(jsonEncode({'success': true, 'maps': maps}));
             await request.response.close();
+            continue;
           } else if (request.method == 'POST') {
             // Create new map
             final body = await utf8.decoder.bind(request).join();
@@ -463,7 +530,7 @@ Future<void> main(List<String> arguments) async {
                 }),
               );
               await request.response.close();
-              return;
+              continue;
             }
 
             var userRes = await _connectionPool.query(
@@ -477,7 +544,7 @@ Future<void> main(List<String> arguments) async {
                 jsonEncode({'success': false, 'error': 'User not found'}),
               );
               await request.response.close();
-              return;
+              continue;
             }
             final userId = userRes.first[0];
 
@@ -488,15 +555,18 @@ Future<void> main(List<String> arguments) async {
             request.response.headers.contentType = ContentType.json;
             request.response.write(jsonEncode({'success': true}));
             await request.response.close();
+            continue;
           }
         } else if ((request.uri.path.startsWith('/maps/') ||
                 request.uri.path.startsWith('/api/maps/')) &&
             request.method == 'GET') {
+          print('DEBUG: Maps GET handler triggered for: ${request.uri.path}');
           // Get single map by ID
           final pathParts = request.uri.path.split('/');
-          final mapId = request.uri.path.startsWith('/api/')
-              ? pathParts[3]
-              : pathParts[2];
+          final mapId =
+              request.uri.path.startsWith('/api/')
+                  ? pathParts[3]
+                  : pathParts[2];
 
           var results = await _connectionPool.query(
             'SELECT id, name, data, created_by, created_at FROM maps WHERE id = ?',
@@ -509,7 +579,7 @@ Future<void> main(List<String> arguments) async {
               jsonEncode({'success': false, 'error': 'Map not found'}),
             );
             await request.response.close();
-            return;
+            continue;
           }
 
           var row = results.first;
@@ -532,14 +602,18 @@ Future<void> main(List<String> arguments) async {
           request.response.headers.contentType = ContentType.json;
           request.response.write(jsonEncode({'success': true, 'map': map}));
           await request.response.close();
+          continue;
         } else if ((request.uri.path.startsWith('/maps/') ||
                 request.uri.path.startsWith('/api/maps/')) &&
+            !request.uri.path.startsWith('/api/map-') &&
             request.method == 'PUT') {
+
           // Update map
           final pathParts = request.uri.path.split('/');
-          final mapId = request.uri.path.startsWith('/api/')
-              ? pathParts[3]
-              : pathParts[2];
+          final mapId =
+              request.uri.path.startsWith('/api/')
+                  ? pathParts[3]
+                  : pathParts[2];
           final body = await utf8.decoder.bind(request).join();
           final params = jsonDecode(body);
 
@@ -550,7 +624,7 @@ Future<void> main(List<String> arguments) async {
             updateFields.add('name = ?');
             updateValues.add(params['name']);
           }
-          
+
           // Complete the map update operation
           if (updateFields.isNotEmpty) {
             updateValues.add(mapId);
@@ -559,22 +633,27 @@ Future<void> main(List<String> arguments) async {
               updateValues,
             );
           }
-          
+
           request.response.headers.contentType = ContentType.json;
           request.response.write(jsonEncode({'success': true}));
           await request.response.close();
+          continue;
         }
         // === TOKEN SHEETS API ===
-        else if (request.uri.path == '/api/token-sheets' && request.method == 'GET') {
+        else if (request.uri.path == '/api/token-sheets' &&
+            request.method == 'GET') {
+          print('SUCCESS: Reached token-sheets GET handler');
           try {
             // List all token sheets for a map (by map_id)
             final mapId = request.uri.queryParameters['map_id'];
             if (mapId == null) {
               request.response.statusCode = 400;
               request.response.headers.contentType = ContentType.json;
-              request.response.write(jsonEncode({'success': false, 'error': 'Missing map_id'}));
+              request.response.write(
+                jsonEncode({'success': false, 'error': 'Missing map_id'}),
+              );
               await request.response.close();
-              return;
+              continue;
             }
             var results = await _connectionPool.query(
               'SELECT ts.id, ts.map_token_id, ts.actor_id, ts.sheet_json, ts.created_at, ts.updated_at, mt.name as token_name FROM token_sheets ts JOIN map_tokens mt ON ts.map_token_id = mt.id WHERE mt.map_id = ?',
@@ -582,29 +661,46 @@ Future<void> main(List<String> arguments) async {
             );
             List<Map<String, dynamic>> sheets = [];
             for (var row in results) {
+              // Convert sheet_json from Blob to String, then parse as JSON
+              dynamic sheetJsonData;
+              try {
+                final sheetJsonString = row[3]?.toString() ?? '{}';
+                sheetJsonData = jsonDecode(sheetJsonString);
+              } catch (e) {
+                print('Warning: Failed to parse sheet_json for token sheet ${row[0]}: $e');
+                sheetJsonData = {};
+              }
+              
               sheets.add({
                 'id': row[0],
                 'map_token_id': row[1],
                 'actor_id': row[2],
-                'sheet_json': row[3],
+                'sheet_json': sheetJsonData,
                 'created_at': row[4]?.toString() ?? '',
                 'updated_at': row[5]?.toString() ?? '',
                 'token_name': row[6]?.toString() ?? '',
               });
             }
             request.response.headers.contentType = ContentType.json;
-            request.response.write(jsonEncode({'success': true, 'sheets': sheets}));
+            request.response.write(
+              jsonEncode({'success': true, 'sheets': sheets}),
+            );
             await request.response.close();
           } catch (e) {
             print('Error in GET /api/token-sheets: $e');
             request.response.statusCode = 500;
             request.response.headers.contentType = ContentType.json;
-            request.response.write(jsonEncode({'success': false, 'error': 'Database error: ${e.toString()}'}));
+            request.response.write(
+              jsonEncode({
+                'success': false,
+                'error': 'Database error: ${e.toString()}',
+              }),
+            );
             await request.response.close();
           }
-          return;
-        }
-        else if (request.uri.path == '/api/token-sheets' && request.method == 'POST') {
+          continue;
+        } else if (request.uri.path == '/api/token-sheets' &&
+            request.method == 'POST') {
           // Create a new token sheet
           final body = await utf8.decoder.bind(request).join();
           final params = jsonDecode(body);
@@ -614,20 +710,27 @@ Future<void> main(List<String> arguments) async {
           if (mapTokenId == null || sheetJson == null) {
             request.response.statusCode = 400;
             request.response.headers.contentType = ContentType.json;
-            request.response.write(jsonEncode({'success': false, 'error': 'Missing map_token_id or sheet_json'}));
+            request.response.write(
+              jsonEncode({
+                'success': false,
+                'error': 'Missing map_token_id or sheet_json',
+              }),
+            );
             await request.response.close();
-            return;
+            continue;
           }
           var result = await _connectionPool.query(
             'INSERT INTO token_sheets (map_token_id, actor_id, sheet_json) VALUES (?, ?, ?)',
             [mapTokenId, actorId, jsonEncode(sheetJson)],
           );
           request.response.headers.contentType = ContentType.json;
-          request.response.write(jsonEncode({'success': true, 'id': result.insertId}));
+          request.response.write(
+            jsonEncode({'success': true, 'id': result.insertId}),
+          );
           await request.response.close();
-          return;
-        }
-        else if (request.uri.path.startsWith('/api/token-sheets/') && request.method == 'GET') {
+          continue;
+        } else if (request.uri.path.startsWith('/api/token-sheets/') &&
+            request.method == 'GET') {
           // Get a single token sheet by ID
           final id = request.uri.path.split('/').last;
           var results = await _connectionPool.query(
@@ -637,27 +740,42 @@ Future<void> main(List<String> arguments) async {
           if (results.isEmpty) {
             request.response.statusCode = 404;
             request.response.headers.contentType = ContentType.json;
-            request.response.write(jsonEncode({'success': false, 'error': 'Token sheet not found'}));
+            request.response.write(
+              jsonEncode({'success': false, 'error': 'Token sheet not found'}),
+            );
             await request.response.close();
-            return;
+            continue;
           }
           var row = results.first;
+          
+          // Convert sheet_json from Blob to String, then parse as JSON
+          dynamic sheetJsonData;
+          try {
+            final sheetJsonString = row[3]?.toString() ?? '{}';
+            sheetJsonData = jsonDecode(sheetJsonString);
+          } catch (e) {
+            print('Warning: Failed to parse sheet_json for token sheet ${row[0]}: $e');
+            sheetJsonData = {};
+          }
+          
           request.response.headers.contentType = ContentType.json;
-          request.response.write(jsonEncode({
-            'success': true,
-            'sheet': {
-              'id': row[0],
-              'map_token_id': row[1],
-              'actor_id': row[2],
-              'sheet_json': row[3],
-              'created_at': row[4]?.toString() ?? '',
-              'updated_at': row[5]?.toString() ?? ''
-            }
-          }));
+          request.response.write(
+            jsonEncode({
+              'success': true,
+              'sheet': {
+                'id': row[0],
+                'map_token_id': row[1],
+                'actor_id': row[2],
+                'sheet_json': sheetJsonData,
+                'created_at': row[4]?.toString() ?? '',
+                'updated_at': row[5]?.toString() ?? '',
+              },
+            }),
+          );
           await request.response.close();
-          return;
-        }
-        else if (request.uri.path.startsWith('/api/token-sheets/') && request.method == 'PUT') {
+          continue;
+        } else if (request.uri.path.startsWith('/api/token-sheets/') &&
+            request.method == 'PUT') {
           // Update a token sheet by ID
           final id = request.uri.path.split('/').last;
           final body = await utf8.decoder.bind(request).join();
@@ -667,9 +785,11 @@ Future<void> main(List<String> arguments) async {
           if (sheetJson == null) {
             request.response.statusCode = 400;
             request.response.headers.contentType = ContentType.json;
-            request.response.write(jsonEncode({'success': false, 'error': 'Missing sheet_json'}));
+            request.response.write(
+              jsonEncode({'success': false, 'error': 'Missing sheet_json'}),
+            );
             await request.response.close();
-            return;
+            continue;
           }
           await _connectionPool.query(
             'UPDATE token_sheets SET sheet_json = ?, actor_id = ? WHERE id = ?',
@@ -678,289 +798,475 @@ Future<void> main(List<String> arguments) async {
           request.response.headers.contentType = ContentType.json;
           request.response.write(jsonEncode({'success': true}));
           await request.response.close();
-          return;
-        }
-        else if (request.uri.path.startsWith('/api/token-sheets/') && request.method == 'DELETE') {
+          continue;
+        } else if (request.uri.path.startsWith('/api/token-sheets/') &&
+            request.method == 'DELETE') {
           // Delete a token sheet by ID
           final id = request.uri.path.split('/').last;
-          await _connectionPool.query('DELETE FROM token_sheets WHERE id = ?', [id]);
+          await _connectionPool.query('DELETE FROM token_sheets WHERE id = ?', [
+            id,
+          ]);
           request.response.headers.contentType = ContentType.json;
           request.response.write(jsonEncode({'success': true}));
           await request.response.close();
-          return;
-        }
-        else if (request.uri.path == '/api/token-sheets/auto-create' && request.method == 'POST') {
+          continue;
+        } else if (request.uri.path == '/api/token-sheets/auto-create' &&
+            request.method == 'POST') {
           // Auto-create a token sheet based on campaign game rules
           final body = await utf8.decoder.bind(request).join();
           final params = jsonDecode(body);
           final mapTokenId = params['map_token_id'];
           final tokenName = params['token_name'] ?? 'Token';
-          
+
           if (mapTokenId == null) {
             request.response.statusCode = 400;
             request.response.headers.contentType = ContentType.json;
-            request.response.write(jsonEncode({'success': false, 'error': 'Missing map_token_id'}));
+            request.response.write(
+              jsonEncode({'success': false, 'error': 'Missing map_token_id'}),
+            );
             await request.response.close();
-            return;
+            continue;
           }
-          
+
           try {
             // Get campaign and game rules for this token
             var tokenResults = await _connectionPool.query(
               'SELECT mt.map_id, m.campaign_id FROM map_tokens mt JOIN maps m ON mt.map_id = m.id WHERE mt.id = ?',
               [mapTokenId],
             );
-            
+
             if (tokenResults.isEmpty) {
               request.response.statusCode = 404;
               request.response.headers.contentType = ContentType.json;
-              request.response.write(jsonEncode({'success': false, 'error': 'Token not found'}));
+              request.response.write(
+                jsonEncode({'success': false, 'error': 'Token not found'}),
+              );
               await request.response.close();
-              return;
+              continue;
             }
-            
+
             final campaignId = tokenResults.first[1];
-            
+
             // Check if token already has a sheet
             var existingSheetResults = await _connectionPool.query(
               'SELECT id FROM token_sheets WHERE map_token_id = ?',
               [mapTokenId],
             );
-            
+
             if (existingSheetResults.isNotEmpty) {
               request.response.statusCode = 409;
               request.response.headers.contentType = ContentType.json;
-              request.response.write(jsonEncode({
-                'success': false, 
-                'error': 'Token already has a sheet',
-                'existing_sheet_id': existingSheetResults.first[0]
-              }));
+              request.response.write(
+                jsonEncode({
+                  'success': false,
+                  'error': 'Token already has a sheet',
+                  'existing_sheet_id': existingSheetResults.first[0],
+                }),
+              );
               await request.response.close();
-              return;
+              continue;
             }
-            
+
             // Get a connection for the SheetTemplates call
             final conn = await _connectionPool._getConnection();
             try {
               // Generate template based on campaign's game system
-              Map<String, dynamic> sheetTemplate = await SheetTemplates.getCharacterSheetTemplate(conn, campaignId);
-              
+              Map<String, dynamic> sheetTemplate =
+                  await SheetTemplates.getCharacterSheetTemplate(
+                    conn,
+                    campaignId,
+                  );
+
               // Set the character name from token name
               if (sheetTemplate.containsKey('name')) {
                 sheetTemplate['name'] = tokenName;
               }
-              
+
               // Create the token sheet
               var result = await _connectionPool.query(
                 'INSERT INTO token_sheets (map_token_id, actor_id, sheet_json) VALUES (?, ?, ?)',
                 [mapTokenId, null, jsonEncode(sheetTemplate)],
               );
-              
+
               request.response.headers.contentType = ContentType.json;
-              request.response.write(jsonEncode({
-                'success': true, 
-                'id': result.insertId,
-                'system': sheetTemplate['system'] ?? 'Generic',
-                'sheet_json': sheetTemplate
-              }));
+              request.response.write(
+                jsonEncode({
+                  'success': true,
+                  'id': result.insertId,
+                  'system': sheetTemplate['system'] ?? 'Generic',
+                  'sheet_json': sheetTemplate,
+                }),
+              );
               await request.response.close();
-              return;
+              continue;
             } finally {
               _connectionPool._releaseConnection(conn);
             }
-
-            
           } catch (e, stack) {
             print('Error in auto-create token sheet: $e');
             print(stack);
             request.response.statusCode = HttpStatus.internalServerError;
             request.response.headers.contentType = ContentType.json;
-            request.response.write(jsonEncode({
-              'success': false, 
-              'error': 'Failed to create token sheet: ${e.toString()}'
-            }));
+            request.response.write(
+              jsonEncode({
+                'success': false,
+                'error': 'Failed to create token sheet: ${e.toString()}',
+              }),
+            );
             await request.response.close();
-            return;
+            continue;
           }
         } else if ((request.uri.path.startsWith('/maps/') ||
                 request.uri.path.startsWith('/api/maps/')) &&
             request.method == 'DELETE') {
           // Delete map
           final pathParts = request.uri.path.split('/');
-          final mapId = request.uri.path.startsWith('/api/')
-              ? pathParts[3]
-              : pathParts[2];
+          final mapId =
+              request.uri.path.startsWith('/api/')
+                  ? pathParts[3]
+                  : pathParts[2];
 
           await _connectionPool.query('DELETE FROM maps WHERE id = ?', [mapId]);
 
           request.response.headers.contentType = ContentType.json;
           request.response.write(jsonEncode({'success': true}));
           await request.response.close();
+          continue;
         } else if (request.uri.path == '/assets' ||
             request.uri.path == '/api/assets') {
           if (request.method == 'GET') {
             // Fetch assets for a campaign
-            final campaignId = request.uri.queryParameters['campaign_id'];
-            if (campaignId == null) {
+            try {
+              final campaignId = request.uri.queryParameters['campaign_id'];
+              if (campaignId == null || campaignId.trim().isEmpty) {
+                request.response.statusCode = 400;
+                request.response.headers.contentType = ContentType.json;
+                request.response.write(
+                  jsonEncode({'success': false, 'error': 'Missing or empty campaign_id'}),
+                );
+                await request.response.close();
+                continue;
+              }
+
+              // Validate campaign_id format (should be numeric)
+              if (int.tryParse(campaignId) == null) {
+                request.response.statusCode = 400;
+                request.response.headers.contentType = ContentType.json;
+                request.response.write(
+                  jsonEncode({'success': false, 'error': 'Invalid campaign_id format'}),
+                );
+                await request.response.close();
+                continue;
+              }
+
+              var results = await _connectionPool.query(
+                'SELECT id, name, category, file_url, file_size, mime_type, description, tags, created_at FROM assets WHERE campaign_id = ?',
+                [campaignId],
+              ).timeout(Duration(seconds: 30));
+              
+              List<Map<String, dynamic>> assets = [];
+              for (var row in results) {
+                var tagsValue = row[7];
+                if (tagsValue is String && tagsValue.isNotEmpty) {
+                  try {
+                    tagsValue = jsonDecode(tagsValue);
+                  } catch (e) {
+                    print('Warning: Failed to parse tags for asset ${row[0]}: $e');
+                    tagsValue = [];
+                  }
+                } else {
+                  tagsValue = [];
+                }
+                assets.add({
+                  'id': row[0]?.toString() ?? '',
+                  'name': row[1]?.toString() ?? '',
+                  'category': row[2]?.toString() ?? '',
+                  'file_url': row[3]?.toString() ?? '',
+                  'file_size': row[4]?.toString() ?? '0',
+                  'mime_type': row[5]?.toString() ?? '',
+                  'description': row[6]?.toString() ?? '',
+                  'tags': tagsValue,
+                  'created_at': row[8]?.toString() ?? '',
+                });
+              }
+              request.response.headers.contentType = ContentType.json;
+              request.response.write(
+                jsonEncode({'success': true, 'assets': assets}),
+              );
+              await request.response.close();
+            } catch (e, stack) {
+              print('ERROR in GET /api/assets: $e');
+              print('ERROR Stack trace: $stack');
+              request.response.statusCode = 500;
+              request.response.headers.contentType = ContentType.json;
+              request.response.write(
+                jsonEncode({'success': false, 'error': 'Internal server error'}),
+              );
+              await request.response.close();
+            }
+          } else if (request.method == 'POST') {
+            // Create new asset (simplified - in real implementation would handle file upload)
+            try {
+              final body = await utf8.decoder.bind(request).join().timeout(Duration(seconds: 30));
+              
+              Map<String, dynamic> params;
+              try {
+                params = jsonDecode(body);
+              } catch (e) {
+                request.response.statusCode = 400;
+                request.response.headers.contentType = ContentType.json;
+                request.response.write(
+                  jsonEncode({'success': false, 'error': 'Invalid JSON format'}),
+                );
+                await request.response.close();
+                continue;
+              }
+              
+              final campaignId = params['campaign_id'];
+              final name = params['name'];
+              final category = params['category'];
+              final fileUrl = params['file_url'];
+              final fileSize = params['file_size'];
+              final mimeType = params['mime_type'];
+              final description = params['description'] ?? '';
+              final tags = params['tags'] ?? [];
+
+              // Validate required fields
+              if (campaignId == null || campaignId.toString().trim().isEmpty ||
+                  name == null || name.toString().trim().isEmpty ||
+                  category == null || category.toString().trim().isEmpty ||
+                  fileUrl == null || fileUrl.toString().trim().isEmpty) {
+                request.response.statusCode = 400;
+                request.response.headers.contentType = ContentType.json;
+                request.response.write(
+                  jsonEncode({
+                    'success': false,
+                    'error': 'Missing or empty required fields: campaign_id, name, category, file_url',
+                  }),
+                );
+                await request.response.close();
+                continue;
+              }
+
+              // Validate campaign_id format
+              if (int.tryParse(campaignId.toString()) == null) {
+                request.response.statusCode = 400;
+                request.response.headers.contentType = ContentType.json;
+                request.response.write(
+                  jsonEncode({'success': false, 'error': 'Invalid campaign_id format'}),
+                );
+                await request.response.close();
+                continue;
+              }
+
+              // Validate name length
+              if (name.toString().length > 255) {
+                request.response.statusCode = 400;
+                request.response.headers.contentType = ContentType.json;
+                request.response.write(
+                  jsonEncode({'success': false, 'error': 'Asset name too long (max 255 characters)'}),
+                );
+                await request.response.close();
+                continue;
+              }
+
+              var result = await _connectionPool.query(
+                'INSERT INTO assets (campaign_id, name, category, file_url, file_size, mime_type, description, tags) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+                [
+                  campaignId,
+                  name,
+                  category,
+                  fileUrl,
+                  fileSize,
+                  mimeType,
+                  description,
+                  jsonEncode(tags),
+                ],
+              ).timeout(Duration(seconds: 30));
+
+              request.response.headers.contentType = ContentType.json;
+              request.response.write(
+                jsonEncode({
+                  'success': true,
+                  'asset_id': result.insertId,
+                  'file_url': fileUrl,
+                }),
+              );
+              await request.response.close();
+            } catch (e, stack) {
+              print('ERROR in POST /api/assets: $e');
+              print('ERROR Stack trace: $stack');
+              request.response.statusCode = 500;
+              request.response.headers.contentType = ContentType.json;
+              request.response.write(
+                jsonEncode({'success': false, 'error': 'Internal server error'}),
+              );
+              await request.response.close();
+            }
+          }
+        } else if ((request.uri.path.startsWith('/assets/') ||
+                request.uri.path.startsWith('/api/assets/')) &&
+            request.method == 'PUT') {
+          // Update asset
+          try {
+            final pathParts = request.uri.path.split('/');
+            final assetId =
+                request.uri.path.startsWith('/api/')
+                    ? pathParts[3]
+                    : pathParts[2];
+            
+            // Validate asset ID
+            if (assetId.isEmpty || int.tryParse(assetId) == null) {
               request.response.statusCode = 400;
               request.response.headers.contentType = ContentType.json;
               request.response.write(
-                jsonEncode({'success': false, 'error': 'Missing campaign_id'}),
+                jsonEncode({'success': false, 'error': 'Invalid asset ID format'}),
+              );
+              await request.response.close();
+              continue;
+            }
+            
+            final body = await utf8.decoder.bind(request).join().timeout(Duration(seconds: 30));
+            
+            Map<String, dynamic> params;
+            try {
+              params = jsonDecode(body);
+            } catch (e) {
+              request.response.statusCode = 400;
+              request.response.headers.contentType = ContentType.json;
+              request.response.write(
+                jsonEncode({'success': false, 'error': 'Invalid JSON format'}),
+              );
+              await request.response.close();
+              continue;
+            }
+
+            List<String> updateFields = [];
+            List<dynamic> updateValues = [];
+
+            if (params['name'] != null) {
+              final name = params['name'].toString().trim();
+              if (name.isEmpty) {
+                request.response.statusCode = 400;
+                request.response.headers.contentType = ContentType.json;
+                request.response.write(
+                  jsonEncode({'success': false, 'error': 'Asset name cannot be empty'}),
+                );
+                await request.response.close();
+                continue;
+              }
+              if (name.length > 255) {
+                request.response.statusCode = 400;
+                request.response.headers.contentType = ContentType.json;
+                request.response.write(
+                  jsonEncode({'success': false, 'error': 'Asset name too long (max 255 characters)'}),
+                );
+                await request.response.close();
+                continue;
+              }
+              updateFields.add('name = ?');
+              updateValues.add(name);
+            }
+            if (params['description'] != null) {
+              updateFields.add('description = ?');
+              updateValues.add(params['description']);
+            }
+            if (params['tags'] != null) {
+              updateFields.add('tags = ?');
+              updateValues.add(jsonEncode(params['tags']));
+            }
+
+            if (updateFields.isEmpty) {
+              request.response.statusCode = 400;
+              request.response.headers.contentType = ContentType.json;
+              request.response.write(
+                jsonEncode({'success': false, 'error': 'No fields to update'}),
               );
               await request.response.close();
               return;
             }
 
-            var results = await _connectionPool.query(
-              'SELECT id, name, category, file_url, file_size, mime_type, description, tags, created_at FROM assets WHERE campaign_id = ?',
-              [campaignId],
-            );
-            List<Map<String, dynamic>> assets = [];
-            for (var row in results) {
-              var tagsValue = row[7];
-              if (tagsValue is String && tagsValue.isNotEmpty) {
-                try {
-                  tagsValue = jsonDecode(tagsValue);
-                } catch (e) {
-                  tagsValue = [];
-                }
-              } else {
-                tagsValue = [];
-              }
-              assets.add({
-                'id': row[0]?.toString() ?? '',
-                'name': row[1]?.toString() ?? '',
-                'category': row[2]?.toString() ?? '',
-                'file_url': row[3]?.toString() ?? '',
-                'file_size': row[4]?.toString() ?? '0',
-                'mime_type': row[5]?.toString() ?? '',
-                'description': row[6]?.toString() ?? '',
-                'tags': tagsValue,
-                'created_at': row[8]?.toString() ?? '',
-              });
+            updateValues.add(assetId);
+            var result = await _connectionPool.query(
+              'UPDATE assets SET ${updateFields.join(', ')} WHERE id = ?',
+              updateValues,
+            ).timeout(Duration(seconds: 30));
+            
+            // Check if asset was found and updated
+            if (result.affectedRows == 0) {
+              request.response.statusCode = 404;
+              request.response.headers.contentType = ContentType.json;
+              request.response.write(
+                jsonEncode({'success': false, 'error': 'Asset not found'}),
+              );
+              await request.response.close();
+              return;
             }
+
+            request.response.headers.contentType = ContentType.json;
+            request.response.write(jsonEncode({'success': true}));
+            await request.response.close();
+          } catch (e, stack) {
+            print('ERROR in PUT /api/assets: $e');
+            print('ERROR Stack trace: $stack');
+            request.response.statusCode = 500;
             request.response.headers.contentType = ContentType.json;
             request.response.write(
-              jsonEncode({'success': true, 'assets': assets}),
+              jsonEncode({'success': false, 'error': 'Internal server error'}),
             );
             await request.response.close();
-          } else if (request.method == 'POST') {
-            // Create new asset (simplified - in real implementation would handle file upload)
-            final body = await utf8.decoder.bind(request).join();
-            final params = jsonDecode(body);
-            final campaignId = params['campaign_id'];
-            final name = params['name'];
-            final category = params['category'];
-            final fileUrl = params['file_url'];
-            final fileSize = params['file_size'];
-            final mimeType = params['mime_type'];
-            final description = params['description'] ?? '';
-            final tags = params['tags'] ?? [];
-
-            if (campaignId == null ||
-                name == null ||
-                category == null ||
-                fileUrl == null) {
+          }
+        } else if ((request.uri.path.startsWith('/assets/') ||
+                request.uri.path.startsWith('/api/assets/')) &&
+            request.method == 'DELETE') {
+          // Delete asset
+          try {
+            final pathParts = request.uri.path.split('/');
+            final assetId =
+                request.uri.path.startsWith('/api/')
+                    ? pathParts[3]
+                    : pathParts[2];
+            
+            // Validate asset ID
+            if (assetId.isEmpty || int.tryParse(assetId) == null) {
               request.response.statusCode = 400;
               request.response.headers.contentType = ContentType.json;
               request.response.write(
-                jsonEncode({
-                  'success': false,
-                  'error': 'Missing required fields',
-                }),
+                jsonEncode({'success': false, 'error': 'Invalid asset ID format'}),
               );
               await request.response.close();
               return;
             }
 
             var result = await _connectionPool.query(
-              'INSERT INTO assets (campaign_id, name, category, file_url, file_size, mime_type, description, tags) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-              [
-                campaignId,
-                name,
-                category,
-                fileUrl,
-                fileSize,
-                mimeType,
-                description,
-                jsonEncode(tags),
-              ],
-            );
+              'DELETE FROM assets WHERE id = ?',
+              [assetId],
+            ).timeout(Duration(seconds: 30));
+            
+            // Check if asset was found and deleted
+            if (result.affectedRows == 0) {
+              request.response.statusCode = 404;
+              request.response.headers.contentType = ContentType.json;
+              request.response.write(
+                jsonEncode({'success': false, 'error': 'Asset not found'}),
+              );
+              await request.response.close();
+              return;
+            }
 
             request.response.headers.contentType = ContentType.json;
+            request.response.write(jsonEncode({'success': true}));
+            await request.response.close();
+          } catch (e, stack) {
+            print('ERROR in DELETE /api/assets: $e');
+            print('ERROR Stack trace: $stack');
+            request.response.statusCode = 500;
+            request.response.headers.contentType = ContentType.json;
             request.response.write(
-              jsonEncode({
-                'success': true,
-                'asset_id': result.insertId,
-                'file_url': fileUrl,
-              }),
+              jsonEncode({'success': false, 'error': 'Internal server error'}),
             );
             await request.response.close();
           }
-        } else if ((request.uri.path.startsWith('/assets/') ||
-                request.uri.path.startsWith('/api/assets/')) &&
-            request.method == 'PUT') {
-          // Update asset
-          final pathParts = request.uri.path.split('/');
-          final assetId =
-              request.uri.path.startsWith('/api/')
-                  ? pathParts[3]
-                  : pathParts[2];
-          final body = await utf8.decoder.bind(request).join();
-          final params = jsonDecode(body);
-
-          List<String> updateFields = [];
-          List<dynamic> updateValues = [];
-
-          if (params['name'] != null) {
-            updateFields.add('name = ?');
-            updateValues.add(params['name']);
-          }
-          if (params['description'] != null) {
-            updateFields.add('description = ?');
-            updateValues.add(params['description']);
-          }
-          if (params['tags'] != null) {
-            updateFields.add('tags = ?');
-            updateValues.add(jsonEncode(params['tags']));
-          }
-
-          if (updateFields.isEmpty) {
-            request.response.statusCode = 400;
-            request.response.headers.contentType = ContentType.json;
-            request.response.write(
-              jsonEncode({'success': false, 'error': 'No fields to update'}),
-            );
-            await request.response.close();
-            return;
-          }
-
-          updateValues.add(assetId);
-          await _connectionPool.query(
-            'UPDATE assets SET ${updateFields.join(', ')} WHERE id = ?',
-            updateValues,
-          );
-
-          request.response.headers.contentType = ContentType.json;
-          request.response.write(jsonEncode({'success': true}));
-          await request.response.close();
-        } else if ((request.uri.path.startsWith('/assets/') ||
-                request.uri.path.startsWith('/api/assets/')) &&
-            request.method == 'DELETE') {
-          // Delete asset
-          final pathParts = request.uri.path.split('/');
-          final assetId =
-              request.uri.path.startsWith('/api/')
-                  ? pathParts[3]
-                  : pathParts[2];
-
-          await _connectionPool.query('DELETE FROM assets WHERE id = ?', [
-            assetId,
-          ]);
-
-          request.response.headers.contentType = ContentType.json;
-          request.response.write(jsonEncode({'success': true}));
-          await request.response.close();
         } else if ((request.uri.path.startsWith('/campaigns/') ||
                 request.uri.path.startsWith('/api/campaigns/')) &&
             request.uri.path.endsWith('/settings')) {
@@ -984,7 +1290,7 @@ Future<void> main(List<String> arguments) async {
                   jsonEncode({'success': false, 'error': 'Campaign not found'}),
                 );
                 await request.response.close();
-                return;
+                continue;
               }
 
               var settingsValue = results.first[0];
@@ -1184,17 +1490,18 @@ Future<void> main(List<String> arguments) async {
             request.response.write('Method not allowed');
             await request.response.close();
           }
-        } else if (request.uri.path == '/api/game-systems' && request.method == 'GET') {
+        } else if (request.uri.path == '/api/game-systems' &&
+            request.method == 'GET') {
           // Get all available game systems
           try {
             final conn = await _connectionPool._getConnection();
             try {
-              final gameSystems = await GameSystemManager.getAvailableGameSystems(conn);
+              final gameSystems =
+                  await GameSystemManager.getAvailableGameSystems(conn);
               request.response.headers.contentType = ContentType.json;
-              request.response.write(jsonEncode({
-                'success': true,
-                'game_systems': gameSystems
-              }));
+              request.response.write(
+                jsonEncode({'success': true, 'game_systems': gameSystems}),
+              );
             } finally {
               _connectionPool._releaseConnection(conn);
             }
@@ -1203,62 +1510,67 @@ Future<void> main(List<String> arguments) async {
             print(stack);
             request.response.statusCode = HttpStatus.internalServerError;
             request.response.headers.contentType = ContentType.json;
-            request.response.write(jsonEncode({
-              'success': false,
-              'error': e.toString()
-            }));
+            request.response.write(
+              jsonEncode({'success': false, 'error': e.toString()}),
+            );
           }
           await request.response.close();
-        } else if (request.uri.path.startsWith('/api/game-systems/') && request.method == 'GET') {
+        } else if (request.uri.path.startsWith('/api/game-systems/') &&
+            request.method == 'GET') {
           // Get specific game system data
           try {
             final pathParts = request.uri.path.split('/');
             if (pathParts.length < 4) {
               request.response.statusCode = HttpStatus.badRequest;
               request.response.headers.contentType = ContentType.json;
-              request.response.write(jsonEncode({
-                'success': false,
-                'error': 'Invalid path format'
-              }));
+              request.response.write(
+                jsonEncode({'success': false, 'error': 'Invalid path format'}),
+              );
               await request.response.close();
               return;
             }
-            
+
             final folderName = pathParts[3];
-            final dataType = request.uri.queryParameters['type'] ?? 'character_sheet';
-            
+            final dataType =
+                request.uri.queryParameters['type'] ?? 'character_sheet';
+
             Map<String, dynamic>? gameData;
             if (dataType == 'character_sheet') {
-              gameData = await GameSystemManager.getCharacterSheetTemplate(folderName);
+              gameData = await GameSystemManager.getCharacterSheetTemplate(
+                folderName,
+              );
             } else if (dataType == 'metadata') {
               gameData = await GameSystemManager.getGameMetadata(folderName);
             } else {
-              gameData = await GameSystemManager.getGameData(folderName, dataType);
+              gameData = await GameSystemManager.getGameData(
+                folderName,
+                dataType,
+              );
             }
-            
+
             if (gameData == null) {
               request.response.statusCode = HttpStatus.notFound;
               request.response.headers.contentType = ContentType.json;
-              request.response.write(jsonEncode({
-                'success': false,
-                'error': 'Game system data not found'
-              }));
+              request.response.write(
+                jsonEncode({
+                  'success': false,
+                  'error': 'Game system data not found',
+                }),
+              );
             } else {
               request.response.headers.contentType = ContentType.json;
-              request.response.write(jsonEncode({
-                'success': true,
-                'data': gameData
-              }));
+              request.response.write(
+                jsonEncode({'success': true, 'data': gameData}),
+              );
             }
           } catch (e, stack) {
             print('Error in GET /api/game-systems/[folder]: $e');
             print(stack);
             request.response.statusCode = HttpStatus.internalServerError;
             request.response.headers.contentType = ContentType.json;
-            request.response.write(jsonEncode({
-              'success': false,
-              'error': e.toString()
-            }));
+            request.response.write(
+              jsonEncode({'success': false, 'error': e.toString()}),
+            );
           }
           await request.response.close();
         } else if ((request.uri.path == '/campaigns' ||
@@ -1362,10 +1674,12 @@ Future<void> main(List<String> arguments) async {
               } else if (imageUrlValue != null) {
                 imageUrlValue = imageUrlValue.toString();
               }
-              
+
               var backgroundImageUrlValue = row[6];
               if (backgroundImageUrlValue is Blob) {
-                backgroundImageUrlValue = utf8.decode(backgroundImageUrlValue.toBytes());
+                backgroundImageUrlValue = utf8.decode(
+                  backgroundImageUrlValue.toBytes(),
+                );
               } else if (backgroundImageUrlValue is List<int>) {
                 backgroundImageUrlValue = utf8.decode(backgroundImageUrlValue);
               } else if (backgroundImageUrlValue is String) {
@@ -1373,7 +1687,7 @@ Future<void> main(List<String> arguments) async {
               } else if (backgroundImageUrlValue != null) {
                 backgroundImageUrlValue = backgroundImageUrlValue.toString();
               }
-              
+
               campaigns.add({
                 'id': row[0],
                 'name': row[1]?.toString(),
@@ -1407,9 +1721,10 @@ Future<void> main(List<String> arguments) async {
             !request.uri.path.endsWith('/settings')) {
           // Get single campaign by ID
           final pathParts = request.uri.path.split('/');
-          final campaignId = request.uri.path.startsWith('/api/')
-              ? pathParts[3]
-              : pathParts[2];
+          final campaignId =
+              request.uri.path.startsWith('/api/')
+                  ? pathParts[3]
+                  : pathParts[2];
 
           var results = await _connectionPool.query(
             'SELECT c.id, c.name, c.description, c.game_rules_id, c.image_url, c.created_at, c.background_image_url, gr.system FROM campaigns c LEFT JOIN game_rules gr ON c.game_rules_id = gr.id WHERE c.id = ?',
@@ -1436,10 +1751,12 @@ Future<void> main(List<String> arguments) async {
           } else if (imageUrlValue != null) {
             imageUrlValue = imageUrlValue.toString();
           }
-          
+
           var backgroundImageUrlValue = row[6];
           if (backgroundImageUrlValue is Blob) {
-            backgroundImageUrlValue = utf8.decode(backgroundImageUrlValue.toBytes());
+            backgroundImageUrlValue = utf8.decode(
+              backgroundImageUrlValue.toBytes(),
+            );
           } else if (backgroundImageUrlValue is List<int>) {
             backgroundImageUrlValue = utf8.decode(backgroundImageUrlValue);
           } else if (backgroundImageUrlValue is String) {
@@ -1638,9 +1955,10 @@ Future<void> main(List<String> arguments) async {
             request.method == 'PUT') {
           // Update scene
           final pathParts = request.uri.path.split('/');
-          final sceneId = request.uri.path.startsWith('/api/')
-              ? pathParts[3]
-              : pathParts[2];
+          final sceneId =
+              request.uri.path.startsWith('/api/')
+                  ? pathParts[3]
+                  : pathParts[2];
 
           String content = await utf8.decoder.bind(request).join();
           Map<String, dynamic> params = jsonDecode(content);
@@ -1670,14 +1988,14 @@ Future<void> main(List<String> arguments) async {
             request.method == 'DELETE') {
           // Delete scene
           final pathParts = request.uri.path.split('/');
-          final sceneId = request.uri.path.startsWith('/api/')
-              ? pathParts[3]
-              : pathParts[2];
+          final sceneId =
+              request.uri.path.startsWith('/api/')
+                  ? pathParts[3]
+                  : pathParts[2];
 
-          await _connectionPool.query(
-            'DELETE FROM scenes WHERE id = ?',
-            [sceneId],
-          );
+          await _connectionPool.query('DELETE FROM scenes WHERE id = ?', [
+            sceneId,
+          ]);
 
           request.response.headers.contentType = ContentType.json;
           request.response.write(jsonEncode({'success': true}));
@@ -1936,16 +2254,17 @@ Future<void> main(List<String> arguments) async {
           try {
             // Extract path: /images/campaign/user_id/campaign_id/filename or /images/tokens/user_id/campaign_id/filename
             final pathSegments = request.uri.pathSegments;
-            
+
             // Handle TokenBorders directory (special case)
             if (pathSegments.length >= 3 && pathSegments[1] == 'TokenBorders') {
               final filename = pathSegments.sublist(2).join('/');
-              final backendDir = Directory.current.path.endsWith('backend')
-                  ? Directory.current.path
-                  : '${Directory.current.path}/backend';
+              final backendDir =
+                  Directory.current.path.endsWith('backend')
+                      ? Directory.current.path
+                      : '${Directory.current.path}/backend';
               final filePath = '$backendDir/images/TokenBorders/$filename';
               final file = File(filePath);
-              
+
               if (await file.exists()) {
                 // Determine content type based on file extension
                 String contentType = 'application/octet-stream';
@@ -1965,10 +2284,15 @@ Future<void> main(List<String> arguments) async {
                     contentType = 'image/webp';
                     break;
                 }
-                
-                request.response.headers.contentType = ContentType.parse(contentType);
-                request.response.headers.add('Cache-Control', 'public, max-age=3600');
-                
+
+                request.response.headers.contentType = ContentType.parse(
+                  contentType,
+                );
+                request.response.headers.add(
+                  'Cache-Control',
+                  'public, max-age=3600',
+                );
+
                 if (request.method == 'GET') {
                   final fileBytes = await file.readAsBytes();
                   request.response.add(fileBytes);
@@ -1986,11 +2310,13 @@ Future<void> main(List<String> arguments) async {
               String filename;
               if (pathSegments[1] == 'campaign' && pathSegments.length >= 6) {
                 // New structure: /images/campaign/category/userId/campaignId/filename
-                final category = pathSegments[2]; // tokens, backgrounds, audio, props
+                final category =
+                    pathSegments[2]; // tokens, backgrounds, audio, props
                 final userId = pathSegments[3];
                 final campaignId = pathSegments[4];
                 filename = pathSegments.sublist(5).join('/');
-                filePath = 'images/campaign/$category/$userId/$campaignId/$filename';
+                filePath =
+                    'images/campaign/$category/$userId/$campaignId/$filename';
               } else {
                 // Old structure: /images/type/userId/campaignId/filename
                 final imageType = pathSegments[1];
@@ -2070,27 +2396,49 @@ Future<void> main(List<String> arguments) async {
           String? mapId;
           try {
             print('GET /api/map-tokens - Request received');
+            
+            // Set CORS headers
+            request.response.headers.set('Access-Control-Allow-Origin', '*');
+            request.response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+            request.response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+            request.response.headers.contentType = ContentType.json;
+            
             mapId = request.uri.queryParameters['map_id'];
-            if (mapId == null) {
-              print('GET /api/map-tokens - ERROR: Missing map_id parameter');
+            if (mapId == null || mapId.isEmpty) {
+              print('GET /api/map-tokens - ERROR: Missing or empty map_id parameter');
               request.response.statusCode = 400;
-              request.response.headers.contentType = ContentType.json;
               request.response.write(
-                jsonEncode({'success': false, 'error': 'Missing map_id'}),
+                jsonEncode({'success': false, 'error': 'Missing or empty map_id parameter'}),
+              );
+              await request.response.close();
+              return;
+            }
+            
+            // Validate map_id is numeric
+            if (int.tryParse(mapId) == null) {
+              print('GET /api/map-tokens - ERROR: Invalid map_id format: $mapId');
+              request.response.statusCode = 400;
+              request.response.write(
+                jsonEncode({'success': false, 'error': 'Invalid map_id format. Must be numeric.'}),
               );
               await request.response.close();
               return;
             }
 
-            // Rate limiting removed - causing issues with legitimate requests
-
             print('GET /api/map-tokens - Querying for map_id: $mapId');
             print('GET /api/map-tokens - About to execute database query...');
+            
+            // Add timeout to database query
             var results = await _connectionPool.query(
               'SELECT id, map_id, asset_id, name, grid_x, grid_y, grid_z, scale_x, scale_y, rotation, visible, locked, properties, created_at, updated_at FROM map_tokens WHERE map_id = ?',
               [mapId],
+            ).timeout(Duration(seconds: 30), onTimeout: () {
+              throw TimeoutException('Database query timeout', Duration(seconds: 30));
+            });
+            
+            print(
+              'GET /api/map-tokens - Database query completed successfully',
             );
-            print('GET /api/map-tokens - Database query completed successfully');
             print('GET /api/map-tokens - Raw results count: ${results.length}');
             List<Map<String, dynamic>> tokens = [];
             for (var row in results) {
@@ -2123,29 +2471,74 @@ Future<void> main(List<String> arguments) async {
               });
             }
             print('GET /api/map-tokens - Found ${tokens.length} tokens');
-            await _writeLog('GET /api/map-tokens SUCCESS - map_id: $mapId, tokens found: ${tokens.length}');
+            // Logging removed to prevent file contention
             request.response.headers.contentType = ContentType.json;
             request.response.write(
               jsonEncode({'success': true, 'tokens': tokens}),
             );
             await request.response.close();
           } catch (e, stack) {
-            print('ERROR in GET /api/map-tokens for map_id=${mapId ?? 'unknown'}: $e');
+            print(
+              'ERROR in GET /api/map-tokens for map_id=${mapId ?? 'unknown'}: $e',
+            );
             print('ERROR Stack trace: $stack');
             print('ERROR Type: ${e.runtimeType}');
-            await _writeLog('GET /api/map-tokens ERROR - map_id: ${mapId ?? 'unknown'}, error: $e');
+            // Logging removed to prevent file contention
             // Return empty but valid response when database is unavailable
             request.response.headers.contentType = ContentType.json;
-            request.response.write(
-              jsonEncode({'success': true, 'tokens': []}),
-            );
+            request.response.write(jsonEncode({'success': true, 'tokens': []}));
             await request.response.close();
           }
         } else if (request.uri.path == '/api/map-tokens' &&
             request.method == 'POST') {
           try {
-            final body = await utf8.decoder.bind(request).join();
-            final params = jsonDecode(body);
+            // Set CORS headers
+            request.response.headers.set('Access-Control-Allow-Origin', '*');
+            request.response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+            request.response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+            request.response.headers.contentType = ContentType.json;
+            
+            print('POST /api/map-tokens - Request received at ${DateTime.now()}');
+            // Logging removed to prevent file contention
+            
+            // Read body with timeout
+            final body = await utf8.decoder.bind(request).join().timeout(
+              Duration(seconds: 10),
+              onTimeout: () => throw TimeoutException('Request body read timeout', Duration(seconds: 10))
+            );
+            
+            print('POST /api/map-tokens - Body read successfully, length: ${body.length}');
+            // Logging removed to prevent file contention
+            
+            if (body.isEmpty) {
+              print('POST /api/map-tokens - ERROR: Empty request body');
+              request.response.statusCode = 400;
+              request.response.write(
+                jsonEncode({
+                  'success': false,
+                  'error': 'Request body cannot be empty',
+                }),
+              );
+              await request.response.close();
+              return;
+            }
+            
+            Map<String, dynamic> params;
+            try {
+              params = jsonDecode(body) as Map<String, dynamic>;
+            } catch (e) {
+              print('POST /api/map-tokens - ERROR: Invalid JSON: $e');
+              request.response.statusCode = 400;
+              request.response.write(
+                jsonEncode({
+                  'success': false,
+                  'error': 'Invalid JSON format in request body',
+                }),
+              );
+              await request.response.close();
+              return;
+            }
+            
             final mapId = params['map_id'];
             final assetId = params['asset_id'];
             final gridX = params['grid_x'];
@@ -2153,22 +2546,50 @@ Future<void> main(List<String> arguments) async {
 
             print('POST /api/map-tokens - Received params: $params');
 
-            if (mapId == null ||
-                assetId == null ||
-                gridX == null ||
-                gridY == null) {
+            // Validate required fields
+            if (mapId == null || assetId == null || gridX == null || gridY == null) {
+              print('POST /api/map-tokens - ERROR: Missing required fields');
               request.response.statusCode = 400;
-              request.response.headers.contentType = ContentType.json;
               request.response.write(
                 jsonEncode({
                   'success': false,
-                  'error': 'Missing required fields',
+                  'error': 'Missing required fields: map_id, asset_id, grid_x, grid_y',
+                }),
+              );
+              await request.response.close();
+              return;
+            }
+            
+            // Validate field types
+            if (int.tryParse(mapId.toString()) == null) {
+              print('POST /api/map-tokens - ERROR: Invalid map_id format');
+              request.response.statusCode = 400;
+              request.response.write(
+                jsonEncode({
+                  'success': false,
+                  'error': 'map_id must be numeric',
+                }),
+              );
+              await request.response.close();
+              return;
+            }
+            
+            if (int.tryParse(assetId.toString()) == null) {
+              print('POST /api/map-tokens - ERROR: Invalid asset_id format');
+              request.response.statusCode = 400;
+              request.response.write(
+                jsonEncode({
+                  'success': false,
+                  'error': 'asset_id must be numeric',
                 }),
               );
               await request.response.close();
               return;
             }
 
+            // Execute database insert with timeout
+            print('POST /api/map-tokens - Starting database insert at ${DateTime.now()}');
+            
             var result = await _connectionPool.query(
               'INSERT INTO map_tokens (map_id, asset_id, name, grid_x, grid_y, grid_z, scale_x, scale_y, rotation, visible, locked, properties) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
               [
@@ -2185,18 +2606,31 @@ Future<void> main(List<String> arguments) async {
                 params['locked'] ?? false,
                 jsonEncode(params['properties'] ?? {}),
               ],
-            );
+            ).timeout(Duration(seconds: 30), onTimeout: () {
+              throw TimeoutException('Database insert timeout', Duration(seconds: 30));
+            });
+            
+            print('POST /api/map-tokens - Database insert completed at ${DateTime.now()}');
+            
+            if (result.insertId == null) {
+              throw Exception('Failed to insert token - no insert ID returned');
+            }
 
-            await _writeLog('POST /api/map-tokens SUCCESS - map_id: $mapId, token_id: ${result.insertId}');
+            // Logging removed to prevent file contention
+            
+            print('POST /api/map-tokens - Sending response at ${DateTime.now()}');
+            
             request.response.headers.contentType = ContentType.json;
             request.response.write(
               jsonEncode({'success': true, 'token_id': result.insertId}),
             );
             await request.response.close();
+            
+            print('POST /api/map-tokens - Response sent and closed at ${DateTime.now()}');
           } catch (e, stack) {
             print('Error in POST /api/map-tokens: $e');
             print('Stack trace: $stack');
-            await _writeLog('POST /api/map-tokens ERROR - error: $e');
+            // Removed _writeLog call to prevent deadlock
             request.response.statusCode = HttpStatus.internalServerError;
             request.response.headers.contentType = ContentType.json;
             request.response.write(
@@ -2204,97 +2638,459 @@ Future<void> main(List<String> arguments) async {
             );
             await request.response.close();
           }
-        } else if (request.uri.path.startsWith('/api/map-tokens/') &&
+        } else if (request.uri.path == '/api/map-tokens/batch' &&
             request.method == 'PUT') {
+          // Batch update map tokens - New endpoint for handling multiple token updates
           try {
-            // Update map token
-            print('PUT /api/map-tokens - Request received');
-            final pathParts = request.uri.path.split('/');
-            final tokenId = pathParts[3];
-            print('PUT /api/map-tokens - Token ID: $tokenId');
-            final body = await utf8.decoder.bind(request).join();
-            print('PUT /api/map-tokens - Request body: $body');
-            final params = jsonDecode(body);
-            print('PUT /api/map-tokens - Parsed params: $params');
+            // Set CORS headers
+            request.response.headers.set('Access-Control-Allow-Origin', '*');
+            request.response.headers.set(
+              'Access-Control-Allow-Methods',
+              'GET, POST, PUT, DELETE, OPTIONS',
+            );
+            request.response.headers.set(
+              'Access-Control-Allow-Headers',
+              'Content-Type, Authorization',
+            );
+            request.response.headers.contentType = ContentType.json;
 
-            List<String> updateFields = [];
-            List<dynamic> updateValues = [];
+            print('[PUT /api/map-tokens/batch] Request received at ${DateTime.now()}');
+            // Logging removed to prevent file contention
 
-            if (params['name'] != null) {
-              updateFields.add('name = ?');
-              updateValues.add(params['name']);
-            }
-            if (params['grid_x'] != null) {
-              updateFields.add('grid_x = ?');
-              updateValues.add(params['grid_x']);
-            }
-            if (params['grid_y'] != null) {
-              updateFields.add('grid_y = ?');
-              updateValues.add(params['grid_y']);
-            }
-            if (params['grid_z'] != null) {
-              updateFields.add('grid_z = ?');
-              updateValues.add(params['grid_z']);
-            }
-            if (params['scale_x'] != null) {
-              updateFields.add('scale_x = ?');
-              updateValues.add(params['scale_x']);
-            }
-            if (params['scale_y'] != null) {
-              updateFields.add('scale_y = ?');
-              updateValues.add(params['scale_y']);
-            }
-            if (params['rotation'] != null) {
-              updateFields.add('rotation = ?');
-              updateValues.add(params['rotation']);
-            }
-            if (params['visible'] != null) {
-              updateFields.add('visible = ?');
-              updateValues.add(params['visible']);
-            }
-            if (params['locked'] != null) {
-              updateFields.add('locked = ?');
-              updateValues.add(params['locked']);
-            }
-            if (params['properties'] != null) {
-              updateFields.add('properties = ?');
-              updateValues.add(jsonEncode(params['properties']));
-            }
-
-            if (updateFields.isEmpty) {
-              request.response.statusCode = 400;
-              request.response.headers.contentType = ContentType.json;
+            // Read and parse request body
+            String body;
+            try {
+              body = await utf8.decoder.bind(request).join().timeout(
+                Duration(seconds: 10),
+                onTimeout: () => throw TimeoutException('Request body read timeout', Duration(seconds: 10))
+              );
+            } catch (e) {
+              print('[PUT /api/map-tokens/batch] ERROR: Failed to read request body: $e');
+              request.response.statusCode = HttpStatus.badRequest;
               request.response.write(
-                jsonEncode({'success': false, 'error': 'No fields to update'}),
+                jsonEncode({
+                  'success': false,
+                  'error': 'Failed to read request body',
+                }),
               );
               await request.response.close();
               return;
             }
 
-            updateFields.add('updated_at = CURRENT_TIMESTAMP');
-            updateValues.add(tokenId);
-            final query = 'UPDATE map_tokens SET ${updateFields.join(', ')} WHERE id = ?';
-            print('PUT /api/map-tokens - SQL Query: $query');
-            print('PUT /api/map-tokens - Query Values: $updateValues');
-            await _connectionPool.query(query, updateValues);
-            print('PUT /api/map-tokens - Query executed successfully');
-            await _writeLog('PUT /api/map-tokens SUCCESS - token_id: $tokenId, fields updated: ${updateFields.length - 1}');
+            if (body.isEmpty) {
+              print('[PUT /api/map-tokens/batch] ERROR: Empty request body');
+              request.response.statusCode = HttpStatus.badRequest;
+              request.response.write(
+                jsonEncode({
+                  'success': false,
+                  'error': 'Request body cannot be empty',
+                }),
+              );
+              await request.response.close();
+              return;
+            }
 
-            request.response.headers.contentType = ContentType.json;
-            request.response.write(jsonEncode({'success': true}));
-            await request.response.close();
-          } catch (e, stack) {
-            final pathParts = request.uri.path.split('/');
-            final tokenId = pathParts.length > 3 ? pathParts[3] : 'unknown';
-            print('Error in PUT /api/map-tokens/$tokenId: $e');
-            print('Stack trace: $stack');
-            await _writeLog('PUT /api/map-tokens ERROR - token_id: $tokenId, error: $e');
-            request.response.statusCode = HttpStatus.internalServerError;
-            request.response.headers.contentType = ContentType.json;
+            // Parse JSON
+            Map<String, dynamic> requestData;
+            try {
+              requestData = jsonDecode(body) as Map<String, dynamic>;
+            } catch (e) {
+              print('[PUT /api/map-tokens/batch] ERROR: Invalid JSON format: $e');
+              request.response.statusCode = HttpStatus.badRequest;
+              request.response.write(
+                jsonEncode({
+                  'success': false,
+                  'error': 'Invalid JSON format in request body',
+                }),
+              );
+              await request.response.close();
+              return;
+            }
+
+            // Validate batch data structure
+            if (!requestData.containsKey('tokens') || requestData['tokens'] is! List) {
+              print('[PUT /api/map-tokens/batch] ERROR: Invalid batch data structure');
+              request.response.statusCode = HttpStatus.badRequest;
+              request.response.write(
+                jsonEncode({
+                  'success': false,
+                  'error': 'Request must contain a "tokens" array',
+                }),
+              );
+              await request.response.close();
+              return;
+            }
+
+            final List<dynamic> tokens = requestData['tokens'];
+            if (tokens.isEmpty) {
+              print('[PUT /api/map-tokens/batch] ERROR: Empty tokens array');
+              request.response.statusCode = HttpStatus.badRequest;
+              request.response.write(
+                jsonEncode({
+                  'success': false,
+                  'error': 'Tokens array cannot be empty',
+                }),
+              );
+              await request.response.close();
+              return;
+            }
+
+            if (tokens.length > 50) { // Limit batch size to prevent abuse
+              print('[PUT /api/map-tokens/batch] ERROR: Batch size too large: ${tokens.length}');
+              request.response.statusCode = HttpStatus.badRequest;
+              request.response.write(
+                jsonEncode({
+                  'success': false,
+                  'error': 'Batch size cannot exceed 50 tokens',
+                }),
+              );
+              await request.response.close();
+              return;
+            }
+
+            print('[PUT /api/map-tokens/batch] Processing ${tokens.length} tokens');
+
+            // Process batch updates
+            final List<Map<String, dynamic>> results = [];
+            final List<String> errors = [];
+            int successCount = 0;
+
+            for (int i = 0; i < tokens.length; i++) {
+              final tokenData = tokens[i];
+              
+              if (tokenData is! Map<String, dynamic>) {
+                errors.add('Token at index $i: Invalid token data format');
+                continue;
+              }
+
+              final tokenId = tokenData['id']?.toString();
+              if (tokenId == null || tokenId.isEmpty) {
+                errors.add('Token at index $i: Missing or empty token ID');
+                continue;
+              }
+
+              try {
+                // Build update query for this token
+                final List<String> updateFields = [];
+                final List<dynamic> updateValues = [];
+
+                // Define allowed fields for security
+                final allowedFields = {
+                  'name': 'name',
+                  'grid_x': 'grid_x',
+                  'grid_y': 'grid_y',
+                  'grid_z': 'grid_z',
+                  'scale_x': 'scale_x',
+                  'scale_y': 'scale_y',
+                  'rotation': 'rotation',
+                  'visible': 'visible',
+                  'locked': 'locked',
+                  'properties': 'properties',
+                };
+
+                for (final entry in allowedFields.entries) {
+                  if (tokenData.containsKey(entry.key) && tokenData[entry.key] != null) {
+                    updateFields.add('${entry.value} = ?');
+                    if (entry.key == 'properties') {
+                      updateValues.add(jsonEncode(tokenData[entry.key]));
+                    } else {
+                      updateValues.add(tokenData[entry.key]);
+                    }
+                  }
+                }
+
+                if (updateFields.isEmpty) {
+                  errors.add('Token $tokenId: No valid fields to update');
+                  continue;
+                }
+
+                // Add timestamp and token ID
+                updateFields.add('updated_at = CURRENT_TIMESTAMP');
+                updateValues.add(tokenId);
+
+                final query = 'UPDATE map_tokens SET ${updateFields.join(', ')} WHERE id = ?';
+                
+                // Execute database update
+                final result = await _connectionPool.query(query, updateValues);
+                
+                if (result.affectedRows == 0) {
+                  errors.add('Token $tokenId: Not found or no changes made');
+                } else {
+                  results.add({
+                    'token_id': tokenId,
+                    'updated_fields': updateFields.length - 1,
+                    'success': true,
+                  });
+                  successCount++;
+                }
+              } catch (e) {
+                print('[PUT /api/map-tokens/batch] Error updating token $tokenId: $e');
+                errors.add('Token $tokenId: Database error - ${e.toString()}');
+              }
+            }
+
+            // Logging removed to prevent file contention
+
+            // Send response
+            request.response.statusCode = HttpStatus.ok;
             request.response.write(
-              jsonEncode({'success': false, 'error': e.toString()}),
+              jsonEncode({
+                'success': true,
+                'message': 'Batch update completed',
+                'total_tokens': tokens.length,
+                'successful_updates': successCount,
+                'failed_updates': errors.length,
+                'results': results,
+                'errors': errors,
+              }),
             );
             await request.response.close();
+          } catch (e, stackTrace) {
+            print('[PUT /api/map-tokens/batch] UNEXPECTED ERROR: $e');
+            print('[PUT /api/map-tokens/batch] Stack trace: $stackTrace');
+            // Logging removed to prevent file contention
+
+            try {
+              request.response.statusCode = HttpStatus.internalServerError;
+              request.response.headers.contentType = ContentType.json;
+              request.response.write(
+                jsonEncode({
+                  'success': false,
+                  'error': 'Internal server error occurred during batch update',
+                }),
+              );
+              await request.response.close();
+            } catch (responseError) {
+              print(
+                '[PUT /api/map-tokens/batch] ERROR: Failed to send error response: $responseError',
+              );
+            }
+          }
+        } else if (request.uri.path.startsWith('/api/map-tokens/') &&
+            request.method == 'PUT') {
+          // Update map token - Completely rewritten for better error handling
+          String? tokenId;
+          try {
+            // Set CORS headers first
+            request.response.headers.set('Access-Control-Allow-Origin', '*');
+            request.response.headers.set(
+              'Access-Control-Allow-Methods',
+              'GET, POST, PUT, DELETE, OPTIONS',
+            );
+            request.response.headers.set(
+              'Access-Control-Allow-Headers',
+              'Content-Type, Authorization',
+            );
+            request.response.headers.contentType = ContentType.json;
+
+            print(
+              '[PUT /api/map-tokens] Request received at ${DateTime.now()}',
+            );
+
+            // Extract token ID from path
+            final pathParts = request.uri.path.split('/');
+            if (pathParts.length < 4) {
+              print('[PUT /api/map-tokens] ERROR: Invalid path format');
+              request.response.statusCode = HttpStatus.badRequest;
+              request.response.write(
+                jsonEncode({
+                  'success': false,
+                  'error': 'Invalid path format. Expected /api/map-tokens/{id}',
+                }),
+              );
+              await request.response.close();
+              return;
+            }
+
+            tokenId = pathParts[3];
+            if (tokenId.isEmpty) {
+              print('[PUT /api/map-tokens] ERROR: Empty token ID');
+              request.response.statusCode = HttpStatus.badRequest;
+              request.response.write(
+                jsonEncode({
+                  'success': false,
+                  'error': 'Token ID cannot be empty',
+                }),
+              );
+              await request.response.close();
+              return;
+            }
+
+            print('[PUT /api/map-tokens] Processing token ID: $tokenId');
+
+            // Read and parse request body
+            String body;
+            try {
+              body = await utf8.decoder.bind(request).join();
+              print('[PUT /api/map-tokens] Request body received: $body');
+            } catch (e) {
+              print(
+                '[PUT /api/map-tokens] ERROR: Failed to read request body: $e',
+              );
+              request.response.statusCode = HttpStatus.badRequest;
+              request.response.write(
+                jsonEncode({
+                  'success': false,
+                  'error': 'Failed to read request body',
+                }),
+              );
+              await request.response.close();
+              return;
+            }
+
+            if (body.isEmpty) {
+              print('[PUT /api/map-tokens] ERROR: Empty request body');
+              request.response.statusCode = HttpStatus.badRequest;
+              request.response.write(
+                jsonEncode({
+                  'success': false,
+                  'error': 'Request body cannot be empty',
+                }),
+              );
+              await request.response.close();
+              return;
+            }
+
+            // Parse JSON
+            Map<String, dynamic> params;
+            try {
+              params = jsonDecode(body) as Map<String, dynamic>;
+              print('[PUT /api/map-tokens] Parsed parameters: $params');
+            } catch (e) {
+              print('[PUT /api/map-tokens] ERROR: Invalid JSON format: $e');
+              request.response.statusCode = HttpStatus.badRequest;
+              request.response.write(
+                jsonEncode({
+                  'success': false,
+                  'error': 'Invalid JSON format in request body',
+                }),
+              );
+              await request.response.close();
+              return;
+            }
+
+            // Build update query dynamically
+            final List<String> updateFields = [];
+            final List<dynamic> updateValues = [];
+
+            // Define allowed fields for security
+            final allowedFields = {
+              'name': 'name',
+              'grid_x': 'grid_x',
+              'grid_y': 'grid_y',
+              'grid_z': 'grid_z',
+              'scale_x': 'scale_x',
+              'scale_y': 'scale_y',
+              'rotation': 'rotation',
+              'visible': 'visible',
+              'locked': 'locked',
+              'properties': 'properties',
+            };
+
+            for (final entry in allowedFields.entries) {
+              if (params.containsKey(entry.key) && params[entry.key] != null) {
+                updateFields.add('${entry.value} = ?');
+                if (entry.key == 'properties') {
+                  updateValues.add(jsonEncode(params[entry.key]));
+                } else {
+                  updateValues.add(params[entry.key]);
+                }
+              }
+            }
+
+            if (updateFields.isEmpty) {
+              print('[PUT /api/map-tokens] ERROR: No valid fields to update');
+              request.response.statusCode = HttpStatus.badRequest;
+              request.response.write(
+                jsonEncode({
+                  'success': false,
+                  'error': 'No valid fields provided for update',
+                }),
+              );
+              await request.response.close();
+              return;
+            }
+
+            // Add timestamp and token ID
+            updateFields.add('updated_at = CURRENT_TIMESTAMP');
+            updateValues.add(tokenId);
+
+            final query =
+                'UPDATE map_tokens SET ${updateFields.join(', ')} WHERE id = ?';
+            print('[PUT /api/map-tokens] Executing query: $query');
+            print('[PUT /api/map-tokens] Query values: $updateValues');
+
+            // Execute database update
+            try {
+              final result = await _connectionPool.query(query, updateValues);
+              print(
+                '[PUT /api/map-tokens] Database query executed successfully',
+              );
+              print(
+                '[PUT /api/map-tokens] Affected rows: ${result.affectedRows}',
+              );
+
+              if (result.affectedRows == 0) {
+                print(
+                  '[PUT /api/map-tokens] WARNING: No rows affected - token may not exist',
+                );
+                request.response.statusCode = HttpStatus.notFound;
+                request.response.write(
+                  jsonEncode({
+                    'success': false,
+                    'error': 'Token not found or no changes made',
+                  }),
+                );
+                await request.response.close();
+                return;
+              }
+
+              // Logging removed to prevent file contention
+
+              // Success response
+              request.response.statusCode = HttpStatus.ok;
+              request.response.write(
+                jsonEncode({
+                  'success': true,
+                  'message': 'Token updated successfully',
+                  'token_id': tokenId,
+                  'updated_fields': updateFields.length - 1,
+                }),
+              );
+              await request.response.close();
+            } catch (dbError) {
+              print('[PUT /api/map-tokens] DATABASE ERROR: $dbError');
+              // Logging removed to prevent file contention
+              request.response.statusCode = HttpStatus.internalServerError;
+              request.response.write(
+                jsonEncode({
+                  'success': false,
+                  'error': 'Database operation failed',
+                }),
+              );
+              await request.response.close();
+              return;
+            }
+          } catch (e, stackTrace) {
+            print('[PUT /api/map-tokens] UNEXPECTED ERROR: $e');
+            print('[PUT /api/map-tokens] Stack trace: $stackTrace');
+            // Logging removed to prevent file contention
+
+            try {
+              request.response.statusCode = HttpStatus.internalServerError;
+              request.response.headers.contentType = ContentType.json;
+              request.response.write(
+                jsonEncode({
+                  'success': false,
+                  'error': 'Internal server error occurred',
+                }),
+              );
+              await request.response.close();
+            } catch (responseError) {
+              print(
+                '[PUT /api/map-tokens] ERROR: Failed to send error response: $responseError',
+              );
+            }
           }
         }
         // Map Backgrounds API
@@ -2305,7 +3101,9 @@ Future<void> main(List<String> arguments) async {
             print('GET /api/map-backgrounds - Request received');
             mapId = request.uri.queryParameters['map_id'];
             if (mapId == null) {
-              print('GET /api/map-backgrounds - ERROR: Missing map_id parameter');
+              print(
+                'GET /api/map-backgrounds - ERROR: Missing map_id parameter',
+              );
               request.response.statusCode = 400;
               request.response.headers.contentType = ContentType.json;
               request.response.write(
@@ -2316,13 +3114,19 @@ Future<void> main(List<String> arguments) async {
             }
 
             print('GET /api/map-backgrounds - Querying for map_id: $mapId');
-            print('GET /api/map-backgrounds - About to execute database query...');
+            print(
+              'GET /api/map-backgrounds - About to execute database query...',
+            );
             var results = await _connectionPool.query(
               'SELECT id, map_id, asset_id, grid_x, grid_y, grid_z, grid_width, grid_height, scale_x, scale_y, rotation, visible, locked, properties, created_at, updated_at FROM map_backgrounds WHERE map_id = ?',
               [mapId],
             );
-            print('GET /api/map-backgrounds - Database query completed successfully');
-            print('GET /api/map-backgrounds - Raw results count: ${results.length}');
+            print(
+              'GET /api/map-backgrounds - Database query completed successfully',
+            );
+            print(
+              'GET /api/map-backgrounds - Raw results count: ${results.length}',
+            );
             List<Map<String, dynamic>> backgrounds = [];
             for (var row in results) {
               var propertiesValue = row[13];
@@ -2354,14 +3158,18 @@ Future<void> main(List<String> arguments) async {
                 'updated_at': row[15]?.toString() ?? '',
               });
             }
-            print('GET /api/map-backgrounds - Found ${backgrounds.length} backgrounds');
+            print(
+              'GET /api/map-backgrounds - Found ${backgrounds.length} backgrounds',
+            );
             request.response.headers.contentType = ContentType.json;
             request.response.write(
               jsonEncode({'success': true, 'backgrounds': backgrounds}),
             );
             await request.response.close();
           } catch (e, stack) {
-            print('ERROR in GET /api/map-backgrounds for map_id=${mapId ?? 'unknown'}: $e');
+            print(
+              'ERROR in GET /api/map-backgrounds for map_id=${mapId ?? 'unknown'}: $e',
+            );
             print('ERROR Stack trace: $stack');
             print('ERROR Type: ${e.runtimeType}');
             // Return empty but valid response when database is unavailable
@@ -2478,21 +3286,23 @@ Future<void> main(List<String> arguments) async {
                 'updated_at': row[15]?.toString() ?? '',
               });
             }
-            print('GET /api/map-audio - Found ${audioItems.length} audio items');
+            print(
+              'GET /api/map-audio - Found ${audioItems.length} audio items',
+            );
             request.response.headers.contentType = ContentType.json;
             request.response.write(
               jsonEncode({'success': true, 'audio': audioItems}),
             );
             await request.response.close();
           } catch (e, stack) {
-            print('ERROR in GET /api/map-audio for map_id=${mapId ?? 'unknown'}: $e');
+            print(
+              'ERROR in GET /api/map-audio for map_id=${mapId ?? 'unknown'}: $e',
+            );
             print('ERROR Stack trace: $stack');
             print('ERROR Type: ${e.runtimeType}');
             // Return empty but valid response when database is unavailable
             request.response.headers.contentType = ContentType.json;
-            request.response.write(
-              jsonEncode({'success': true, 'audio': []}),
-            );
+            request.response.write(jsonEncode({'success': true, 'audio': []}));
             await request.response.close();
           }
         } else if (request.uri.path == '/api/map-audio' &&
@@ -2603,17 +3413,19 @@ Future<void> main(List<String> arguments) async {
             }
             print('GET /api/map-props - Found ${props.length} props');
             request.response.headers.contentType = ContentType.json;
-            request.response.write(jsonEncode({'success': true, 'props': props}));
+            request.response.write(
+              jsonEncode({'success': true, 'props': props}),
+            );
             await request.response.close();
           } catch (e, stack) {
-            print('ERROR in GET /api/map-props for map_id=${mapId ?? 'unknown'}: $e');
+            print(
+              'ERROR in GET /api/map-props for map_id=${mapId ?? 'unknown'}: $e',
+            );
             print('ERROR Stack trace: $stack');
             print('ERROR Type: ${e.runtimeType}');
             // Return empty but valid response when database is unavailable
             request.response.headers.contentType = ContentType.json;
-            request.response.write(
-              jsonEncode({'success': true, 'props': []}),
-            );
+            request.response.write(jsonEncode({'success': true, 'props': []}));
             await request.response.close();
           }
         } else if (request.uri.path == '/api/map-props' &&
@@ -2667,57 +3479,75 @@ Future<void> main(List<String> arguments) async {
           await request.response.close();
         }
         // --- API for token borders ---
-        else if (request.uri.path == '/api/token-borders' && request.method == 'GET') {
+        else if (request.uri.path == '/api/token-borders' &&
+            request.method == 'GET') {
           try {
             print('GET /api/token-borders - Request received');
-            
+
             // Get the backend directory path
-            final backendDir = Directory.current.path.endsWith('backend')
-                ? Directory.current.path
-                : '${Directory.current.path}/backend';
+            final backendDir =
+                Directory.current.path.endsWith('backend')
+                    ? Directory.current.path
+                    : '${Directory.current.path}${Platform.pathSeparator}backend';
+
+            final tokenBordersDir = Directory(
+              '$backendDir${Platform.pathSeparator}images${Platform.pathSeparator}TokenBorders',
+            );
             
-            final tokenBordersDir = Directory('$backendDir/images/TokenBorders');
-            
+            print('GET /api/token-borders - Looking for directory: ${tokenBordersDir.path}');
+            print('GET /api/token-borders - Current directory: ${Directory.current.path}');
+
             if (!await tokenBordersDir.exists()) {
-              print('GET /api/token-borders - TokenBorders directory not found');
+              print(
+                'GET /api/token-borders - TokenBorders directory not found',
+              );
               request.response.statusCode = HttpStatus.notFound;
               request.response.headers.contentType = ContentType.json;
               request.response.write(
                 jsonEncode({
                   'success': false,
                   'error': 'Token borders directory not found',
-                  'borders': []
+                  'borders': [],
                 }),
               );
               await request.response.close();
               return;
             }
-            
+
             // List all PNG, JPG, JPEG files in the directory
-            final files = await tokenBordersDir.list().where((entity) {
-              if (entity is File) {
-                final fileName = entity.path.split(Platform.pathSeparator).last.toLowerCase();
-                return fileName.endsWith('.png') || 
-                       fileName.endsWith('.jpg') || 
-                       fileName.endsWith('.jpeg');
-              }
-              return false;
-            }).map((entity) {
-              final fileName = entity.path.split(Platform.pathSeparator).last;
-              return {
-                'name': fileName,
-                'url': '/images/TokenBorders/$fileName'
-              };
-            }).toList();
-            
-            print('GET /api/token-borders - Found ${files.length} token border files');
-            
+            final files =
+                await tokenBordersDir
+                    .list()
+                    .where((entity) {
+                      if (entity is File) {
+                        final fileName =
+                            entity.path
+                                .split(Platform.pathSeparator)
+                                .last
+                                .toLowerCase();
+                        return fileName.endsWith('.png') ||
+                            fileName.endsWith('.jpg') ||
+                            fileName.endsWith('.jpeg');
+                      }
+                      return false;
+                    })
+                    .map((entity) {
+                      final fileName =
+                          entity.path.split(Platform.pathSeparator).last;
+                      return {
+                        'name': fileName,
+                        'url': '/images/TokenBorders/$fileName',
+                      };
+                    })
+                    .toList();
+
+            print(
+              'GET /api/token-borders - Found ${files.length} token border files',
+            );
+
             request.response.headers.contentType = ContentType.json;
             request.response.write(
-              jsonEncode({
-                'success': true,
-                'borders': files
-              }),
+              jsonEncode({'success': true, 'borders': files}),
             );
             await request.response.close();
           } catch (e, stack) {
@@ -2729,7 +3559,7 @@ Future<void> main(List<String> arguments) async {
               jsonEncode({
                 'success': false,
                 'error': 'Failed to fetch token borders: ${e.toString()}',
-                'borders': []
+                'borders': [],
               }),
             );
             await request.response.close();
@@ -2741,6 +3571,10 @@ Future<void> main(List<String> arguments) async {
             request.method == 'POST') {
           try {
             print('POST /api/upload - Upload request received');
+            
+            // Set timeout for the entire upload process
+            final uploadTimeout = Duration(minutes: 5);
+            
             // Parse multipart form data
             final contentType = request.headers.contentType;
             if (contentType?.mimeType != 'multipart/form-data') {
@@ -2764,6 +3598,22 @@ Future<void> main(List<String> arguments) async {
                 jsonEncode({
                   'success': false,
                   'error': 'Missing boundary in Content-Type',
+                }),
+              );
+              await request.response.close();
+              return;
+            }
+            
+            // Check Content-Length header for file size validation
+            final contentLength = request.headers.contentLength;
+            const maxFileSize = 50 * 1024 * 1024; // 50MB
+            if (contentLength > maxFileSize) {
+              request.response.statusCode = HttpStatus.requestEntityTooLarge;
+              request.response.headers.contentType = ContentType.json;
+              request.response.write(
+                jsonEncode({
+                  'success': false,
+                  'error': 'File too large. Maximum size is 50MB',
                 }),
               );
               await request.response.close();
@@ -2852,11 +3702,13 @@ Future<void> main(List<String> arguments) async {
               }
             }
 
-            print('POST /api/upload - Parsed fields: userId=$userId, campaignId=$campaignId, filename=$filename, fileBytes=${fileBytes?.length}');
+            print(
+              'POST /api/upload - Parsed fields: userId=$userId, campaignId=$campaignId, filename=$filename, fileBytes=${fileBytes?.length}',
+            );
 
-            if (userId == null ||
-                campaignId == null ||
-                filename == null ||
+            if (userId == null || userId.trim().isEmpty ||
+                campaignId == null || campaignId.trim().isEmpty ||
+                filename == null || filename.trim().isEmpty ||
                 fileBytes == null) {
               print('POST /api/upload - Missing required fields');
               request.response.statusCode = HttpStatus.badRequest;
@@ -2870,6 +3722,61 @@ Future<void> main(List<String> arguments) async {
               );
               await request.response.close();
               return;
+            }
+            
+            // Validate user_id and campaign_id format
+            if (int.tryParse(userId) == null || int.tryParse(campaignId) == null) {
+              request.response.statusCode = HttpStatus.badRequest;
+              request.response.headers.contentType = ContentType.json;
+              request.response.write(
+                jsonEncode({
+                  'success': false,
+                  'error': 'Invalid user_id or campaign_id format',
+                }),
+              );
+              await request.response.close();
+              return;
+            }
+            
+            // Validate file size
+            if (fileBytes.length > maxFileSize) {
+              request.response.statusCode = HttpStatus.requestEntityTooLarge;
+              request.response.headers.contentType = ContentType.json;
+              request.response.write(
+                jsonEncode({
+                  'success': false,
+                  'error': 'File too large. Maximum size is 50MB',
+                }),
+              );
+              await request.response.close();
+              return;
+            }
+            
+            // Validate filename and file extension
+            final allowedExtensions = {
+              'jpg', 'jpeg', 'png', 'gif', 'webp', 'svg', // Images
+              'mp3', 'wav', 'ogg', 'mp4', 'webm', // Audio/Video
+              'pdf', 'txt', 'json' // Documents
+            };
+            
+            final fileExtension = filename.split('.').last.toLowerCase();
+            if (!allowedExtensions.contains(fileExtension)) {
+              request.response.statusCode = HttpStatus.unsupportedMediaType;
+              request.response.headers.contentType = ContentType.json;
+              request.response.write(
+                jsonEncode({
+                  'success': false,
+                  'error': 'Unsupported file type. Allowed: ${allowedExtensions.join(', ')}',
+                }),
+              );
+              await request.response.close();
+              return;
+            }
+            
+            // Sanitize filename to prevent path traversal
+            final sanitizedFilename = filename.replaceAll(RegExp(r'[^a-zA-Z0-9._-]'), '_');
+            if (sanitizedFilename != filename) {
+              print('POST /api/upload - Filename sanitized: $filename -> $sanitizedFilename');
             }
 
             // Determine upload directory based on upload_type - using generic campaign folders
@@ -2913,48 +3820,89 @@ Future<void> main(List<String> arguments) async {
 
             // Generate unique filename to avoid conflicts
             final timestamp = DateTime.now().millisecondsSinceEpoch;
-            final uniqueFilename = '${timestamp}_$filename';
+            final uniqueFilename = '${timestamp}_$sanitizedFilename';
             final filePath = '${uploadDir.path}/$uniqueFilename';
 
-            // Write file
+            // Write file with timeout
             final file = File(filePath);
-            await file.writeAsBytes(fileBytes);
+            await file.writeAsBytes(fileBytes).timeout(uploadTimeout);
+            
+            // Verify file was written correctly
+            if (!await file.exists()) {
+              request.response.statusCode = HttpStatus.internalServerError;
+              request.response.headers.contentType = ContentType.json;
+              request.response.write(
+                jsonEncode({
+                  'success': false,
+                  'error': 'Failed to save file',
+                }),
+              );
+              await request.response.close();
+              return;
+            }
+            
+            final actualFileSize = await file.length();
+            if (actualFileSize != fileBytes.length) {
+              // Clean up incomplete file
+              await file.delete();
+              request.response.statusCode = HttpStatus.internalServerError;
+              request.response.headers.contentType = ContentType.json;
+              request.response.write(
+                jsonEncode({
+                  'success': false,
+                  'error': 'File upload incomplete',
+                }),
+              );
+              await request.response.close();
+              return;
+            }
 
             // Generate URL for frontend - using generic campaign structure
             String urlPath;
             switch (uploadType?.toLowerCase()) {
               case 'background':
               case 'campaign':
-                urlPath = '/images/campaign/$userId/$campaignId/$uniqueFilename';
+                urlPath =
+                    '/images/campaign/$userId/$campaignId/$uniqueFilename';
                 break;
               case 'tokens':
               case 'token':
-                urlPath = '/images/campaign/tokens/$userId/$campaignId/$uniqueFilename';
+                urlPath =
+                    '/images/campaign/tokens/$userId/$campaignId/$uniqueFilename';
                 break;
               case 'props':
-                urlPath = '/images/campaign/props/$userId/$campaignId/$uniqueFilename';
+                urlPath =
+                    '/images/campaign/props/$userId/$campaignId/$uniqueFilename';
                 break;
               case 'audio':
-                urlPath = '/images/campaign/audio/$userId/$campaignId/$uniqueFilename';
+                urlPath =
+                    '/images/campaign/audio/$userId/$campaignId/$uniqueFilename';
                 break;
               case 'backgrounds':
-                urlPath = '/images/campaign/backgrounds/$userId/$campaignId/$uniqueFilename';
+                urlPath =
+                    '/images/campaign/backgrounds/$userId/$campaignId/$uniqueFilename';
                 break;
               default:
-                urlPath = '/images/campaign/tokens/$userId/$campaignId/$uniqueFilename';
+                urlPath =
+                    '/images/campaign/tokens/$userId/$campaignId/$uniqueFilename';
                 break;
             }
             final fileUrl = urlPath;
 
             print('POST /api/upload - File uploaded successfully: $fileUrl');
-            
+            print('POST /api/upload - Original filename: $filename');
+            print('POST /api/upload - Sanitized filename: $sanitizedFilename');
+            print('POST /api/upload - Final unique filename: $uniqueFilename');
+
             request.response.headers.contentType = ContentType.json;
             request.response.write(
               jsonEncode({
                 'success': true,
                 'url': fileUrl,
                 'filename': uniqueFilename,
-                'size': fileBytes.length,
+                'original_filename': filename,
+                'size': actualFileSize,
+                'upload_type': uploadType ?? 'token',
               }),
             );
             await request.response.close();
@@ -2972,28 +3920,64 @@ Future<void> main(List<String> arguments) async {
             await request.response.close();
           }
         } else {
+          print('DEBUG: No handler found for ${request.method} ${request.uri.path}');
           request.response.statusCode = HttpStatus.notFound;
           await request.response.close();
         }
-      } catch (e, stackTrace) {
-        print('Error handling request: $e');
-        print('Stack trace: $stackTrace');
-        try {
-          request.response.statusCode = HttpStatus.internalServerError;
-          request.response.headers.contentType = ContentType.json;
-          request.response.write(
-            jsonEncode({'error': 'Internal server error'}),
-          );
-          await request.response.close();
-        } catch (responseError) {
-          print('Error sending error response: $responseError');
+          } catch (e, stackTrace) {
+            await _logError('Error handling request #$requestCount (${request.method} ${request.uri.path})', e, stackTrace);
+            print('Error handling request: $e');
+            print('Stack trace: $stackTrace');
+            try {
+              request.response.statusCode = HttpStatus.internalServerError;
+              request.response.headers.contentType = ContentType.json;
+              request.response.write(
+                jsonEncode({'error': 'Internal server error'}),
+              );
+              await request.response.close();
+              await _logDebug('Error response sent successfully for request #$requestCount');
+            } catch (responseError) {
+              await _logError('Error sending error response for request #$requestCount', responseError);
+              print('Error sending error response: $responseError');
+            }
+          }
         }
+      } catch (serverLoopError, stackTrace) {
+        await _logError('CRITICAL: Server loop error after $requestCount requests', serverLoopError, stackTrace);
+        print('Server loop error: $serverLoopError');
+        print('Stack trace: $stackTrace');
+        
+        // Check if server is still listening
+        try {
+          await _logInfo('Checking server status after loop error...');
+          final testSocket = await Socket.connect('127.0.0.1', serverPort, timeout: Duration(seconds: 5));
+          await testSocket.close();
+          await _logInfo('Server is still listening on port $serverPort');
+        } catch (connectError) {
+          await _logError('Server is no longer listening on port $serverPort', connectError);
+        }
+        
+        // Wait a bit before restarting the loop
+        await Future.delayed(Duration(seconds: 1));
+        await _logInfo('Restarting server loop after error...');
+        print('Restarting server loop...');
       }
     }
   } catch (e, stackTrace) {
+    await _logError('FATAL: Server error in main function', e, stackTrace);
     print('Fatal server error: $e');
     print('Stack trace: $stackTrace');
+    
+    // Try to close connection pool gracefully
+    try {
+      await _connectionPool.close();
+      await _logInfo('Connection pool closed gracefully after fatal error');
+    } catch (poolError) {
+      await _logError('Error closing connection pool after fatal error', poolError);
+    }
+    
     // Don't exit the process, just log the error and continue
+    await _logInfo('Server will continue running despite the fatal error');
     print('Server will continue running despite the error');
   }
 }
