@@ -5757,12 +5757,44 @@
         const deltaX = dropX - dragStartX;
         const deltaY = dropY - dragStartY;
         
+        // DEBUG: Informazioni dettagliate sul rilascio del token
+        console.log('=== DEBUG RILASCIO TOKEN ===');
+        console.log('Posizione mouse assoluta:', { x: e.clientX, y: e.clientY });
+        console.log('Rettangolo map-grid:', { left: rect.left, top: rect.top, width: rect.width, height: rect.height });
+        console.log('Posizione rilascio relativa a map-grid:', { x: dropX, y: dropY });
+        console.log('Posizione inizio drag relativa a map-grid:', { x: dragStartX, y: dragStartY });
+        console.log('Delta movimento:', { x: deltaX, y: deltaY });
+        console.log('Posizione inizio drag assoluta:', { x: dragData.dragStartX, y: dragData.dragStartY });
+        
+        // VERIFICA: Controllo se le coordinate di inizio drag sono corrette
+        const transform = CoordinateSystem.getGridTransformMatrix();
+        console.log('Trasformazione griglia:', transform);
+        
+        // Converti le coordinate di inizio drag in coordinate mappa per verifica
+        const dragStartMapCoords = screenToMapCoordinates(dragData.dragStartX, dragData.dragStartY);
+        const dragStartGridCoords = mapToGridCoordinates(dragStartMapCoords.x, dragStartMapCoords.y);
+        console.log('Coordinate mappa inizio drag:', dragStartMapCoords);
+        console.log('Coordinate griglia inizio drag:', dragStartGridCoords);
+        
+        // Converti le coordinate di rilascio in coordinate della mappa
+        const absoluteDropX = e.clientX;
+        const absoluteDropY = e.clientY;
+        const mapDropCoords = screenToMapCoordinates(absoluteDropX, absoluteDropY);
+        const gridDropCoords = mapToGridCoordinates(mapDropCoords.x, mapDropCoords.y);
+        
+        console.log('Coordinate mappa del punto di rilascio:', mapDropCoords);
+        console.log('Coordinate griglia del punto di rilascio:', gridDropCoords);
+        console.log('===============================');
+        
         Logger.debug('Multi-token drop delta calculated:', {
           dropPosition: { x: dropX, y: dropY },
           dragStart: { x: dragStartX, y: dragStartY },
           delta: { x: deltaX, y: deltaY },
           absoluteDragStart: { x: dragData.dragStartX, y: dragData.dragStartY },
-          mapGridRect: { left: rect.left, top: rect.top }
+          mapGridRect: { left: rect.left, top: rect.top },
+          mousePosition: { x: e.clientX, y: e.clientY },
+          mapDropCoords: mapDropCoords,
+          gridDropCoords: gridDropCoords
         });
         
         return { deltaX, deltaY };
@@ -5796,38 +5828,66 @@
               return;
             }
             
-            // Calculate new position (relative to map-grid)
-            const newX = tokenData.currentX + deltaX;
-            const newY = tokenData.currentY + deltaY;
+            // CORREZIONE: tokenData.currentX e currentY sono coordinate relative al map-grid, non assolute
+            // Dobbiamo convertirle in coordinate mappa direttamente
+            const transform = CoordinateSystem.getGridTransformMatrix();
+            const currentMapCoords = {
+              x: tokenData.currentX / transform.scale,
+              y: tokenData.currentY / transform.scale
+            };
             
-            if (isNaN(newX) || isNaN(newY)) {
-              invalidTokens.push({ index, reason: 'Invalid calculated position' });
+            // Apply delta in map coordinate space
+            // deltaX/deltaY sono già in coordinate relative al map-grid, quindi li convertiamo in spazio mappa
+            const mapDeltaX = deltaX / transform.scale;
+            const mapDeltaY = deltaY / transform.scale;
+            
+            // Calculate new map coordinates
+            const newMapX = currentMapCoords.x + mapDeltaX;
+            const newMapY = currentMapCoords.y + mapDeltaY;
+            
+            if (isNaN(newMapX) || isNaN(newMapY)) {
+              invalidTokens.push({ index, reason: 'Invalid calculated map position' });
               return;
             }
             
-            // Convert map-grid relative coordinates to absolute map coordinates
-            // newX and newY are relative to map-grid, so we need to convert them to screen coordinates first
-            const mapGrid = document.getElementById('map-grid');
-            if (!mapGrid) {
-              invalidTokens.push({ index, reason: 'Map grid element not found' });
-              return;
-            }
+            // Convert to grid coordinates
+            const gridCoords = mapToGridCoordinates(newMapX, newMapY);
             
-            const mapGridRect = mapGrid.getBoundingClientRect();
-            const absoluteScreenX = newX + mapGridRect.left;
-            const absoluteScreenY = newY + mapGridRect.top;
+            // DEBUG: Informazioni dettagliate sulla conversione coordinate del token
+            console.log('=== DEBUG CONVERSIONE COORDINATE TOKEN ===');
+            console.log('Token ID:', tokenData.assetId);
+            console.log('Posizione corrente (assoluta):', { x: tokenData.currentX, y: tokenData.currentY });
+            console.log('Coordinate mappa correnti:', { x: currentMapCoords.x, y: currentMapCoords.y });
             
-            // Convert absolute screen coordinates to map coordinates
-            const mapCoords = screenToMapCoordinates(absoluteScreenX, absoluteScreenY);
-            const gridCoords = mapToGridCoordinates(mapCoords.x, mapCoords.y);
+            // Verifica: calcola le coordinate griglia correnti del token
+            const currentGridCoords = mapToGridCoordinates(currentMapCoords.x, currentMapCoords.y);
+            console.log('Coordinate griglia correnti del token:', { x: currentGridCoords.x, y: currentGridCoords.y });
+            
+            console.log('Delta schermo:', { x: deltaX, y: deltaY });
+            console.log('Delta mappa (scalato):', { x: mapDeltaX, y: mapDeltaY });
+            console.log('Scala trasformazione:', transform.scale);
+            console.log('Nuove coordinate mappa:', { x: newMapX, y: newMapY });
+            console.log('Coordinate griglia finali:', { x: gridCoords.x, y: gridCoords.y });
+            
+            // Calcola il delta effettivo in coordinate griglia
+            const gridDeltaX = gridCoords.x - currentGridCoords.x;
+            const gridDeltaY = gridCoords.y - currentGridCoords.y;
+            console.log('Delta griglia effettivo:', { x: gridDeltaX, y: gridDeltaY });
+            
+            const pixelCenterPreview = gridCellToPixelCenter(gridCoords.x, gridCoords.y);
+            console.log('Centro pixel finale:', { x: pixelCenterPreview.x, y: pixelCenterPreview.y });
+            console.log('==========================================');
             
             Logger.debug('Token coordinate conversion:', {
               tokenId: tokenData.assetId,
-              currentPosition: { x: tokenData.currentX, y: tokenData.currentY },
-              delta: { x: deltaX, y: deltaY },
-              newPosition: { x: newX, y: newY },
-              mapCoords: { x: mapCoords.x, y: mapCoords.y },
-              gridCoords: { x: gridCoords.x, y: gridCoords.y }
+              currentPositionAbsolute: { x: tokenData.currentX, y: tokenData.currentY },
+              currentMapCoords: { x: currentMapCoords.x, y: currentMapCoords.y },
+              deltaScreen: { x: deltaX, y: deltaY },
+              deltaMap: { x: mapDeltaX, y: mapDeltaY },
+              transformScale: transform.scale,
+              newMapCoords: { x: newMapX, y: newMapY },
+              gridCoords: { x: gridCoords.x, y: gridCoords.y },
+              pixelCenter: { x: pixelCenterPreview.x, y: pixelCenterPreview.y }
             });
             
             if (isNaN(gridCoords.x) || isNaN(gridCoords.y)) {
@@ -5845,8 +5905,8 @@
             validTokens.push({
               tokenData,
               tokenElement,
-              newX,
-              newY,
+              newMapX,
+              newMapY,
               gridCoords,
               pixelCenter
             });
@@ -7000,77 +7060,178 @@
           selectToken(assetElement, e.shiftKey);
         });
         
-        // Add drag and drop support for existing tokens
-        assetElement.draggable = true;
-        assetElement.addEventListener('dragstart', function(e) {
+        // Add modern drag and drop support for existing tokens
+        let isDragging = false;
+        let dragStartPos = { x: 0, y: 0 };
+        let dragOffset = { x: 0, y: 0 };
+        let draggedTokens = new Map();
+        
+        // Mouse down - start drag preparation
+        assetElement.addEventListener('mousedown', function(e) {
           try {
+            // Only handle left mouse button
+            if (e.button !== 0) return;
+            
+            e.preventDefault();
+            e.stopPropagation();
+            
             // If this token is not selected, select it and clear others
             if (!selectedTokens.has(assetData.assetId)) {
               clearTokenSelection();
               selectToken(assetElement, false);
             }
             
-            // Prepare drag data for all selected tokens
-            const selectedTokensData = [];
+            // Prepare for potential drag
+            const rect = assetElement.getBoundingClientRect();
+            const mapGrid = document.getElementById('map-grid');
+            const mapGridRect = mapGrid.getBoundingClientRect();
+            
+            dragStartPos = {
+              x: e.clientX,
+              y: e.clientY
+            };
+            
+            dragOffset = {
+              x: e.clientX - rect.left,
+              y: e.clientY - rect.top
+            };
+            
+            // Store initial positions of all selected tokens
+            draggedTokens.clear();
             selectedTokens.forEach(tokenId => {
               const tokenEl = document.querySelector(`[data-token-id="${tokenId}"]`);
               if (tokenEl) {
-                // Get the current position in pixels relative to the map-grid
-                const rect = tokenEl.getBoundingClientRect();
-                const mapGrid = document.getElementById('map-grid');
-                const mapGridRect = mapGrid.getBoundingClientRect();
-                
-                selectedTokensData.push({
-                  assetId: tokenId,
-                  assetType: 'token',
-                  assetName: tokenEl.title || 'Token',
-                  currentX: rect.left - mapGridRect.left,
-                  currentY: rect.top - mapGridRect.top
-                });
-                
-                Logger.debug('Token drag start position:', {
-                  tokenId: tokenId,
-                  tokenRect: { left: rect.left, top: rect.top },
-                  mapGridRect: { left: mapGridRect.left, top: mapGridRect.top },
-                  relativePosition: { x: rect.left - mapGridRect.left, y: rect.top - mapGridRect.top }
+                const tokenRect = tokenEl.getBoundingClientRect();
+                draggedTokens.set(tokenId, {
+                  element: tokenEl,
+                  startX: tokenRect.left - mapGridRect.left,
+                  startY: tokenRect.top - mapGridRect.top,
+                  currentX: tokenRect.left - mapGridRect.left,
+                  currentY: tokenRect.top - mapGridRect.top
                 });
               }
             });
             
-            const dragData = {
-              type: 'multitoken',
-              tokens: selectedTokensData,
-              dragStartX: e.clientX,
-              dragStartY: e.clientY
-            };
+            // Add global mouse event listeners
+            document.addEventListener('mousemove', handleTokenMouseMove);
+            document.addEventListener('mouseup', handleTokenMouseUp);
             
-            e.dataTransfer.setData('text/plain', JSON.stringify(dragData));
-            e.dataTransfer.effectAllowed = 'move';
-            Logger.info('Multi-token drag started:', selectedTokensData.length, 'tokens');
-          } catch (dragError) {
-            Logger.error('Error setting token drag data:', dragError);
+            Logger.debug('Token drag preparation completed for', draggedTokens.size, 'tokens');
+            
+          } catch (error) {
+            Logger.error('Error in token mousedown:', error);
           }
         });
         
-        // Add dragend event listener to save position when drag ends
-        assetElement.addEventListener('dragend', function(e) {
+        function handleTokenMouseMove(e) {
           try {
-            // Get the current position of the token after drag
-            const currentX = parseInt(assetElement.style.left) || 0;
-            const currentY = parseInt(assetElement.style.top) || 0;
+            if (draggedTokens.size === 0) return;
             
-            // Update position on server for this token
-            updateTokenPositionOnServer(assetElement, currentX, currentY);
+            // Calculate movement threshold to start dragging
+            const deltaX = e.clientX - dragStartPos.x;
+            const deltaY = e.clientY - dragStartPos.y;
+            const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
             
-            Logger.debug('Token drag ended, position saved:', {
-              tokenId: assetData.assetId,
-              x: currentX,
-              y: currentY
-            });
-          } catch (dragEndError) {
-            Logger.error('Error handling token dragend:', dragEndError);
+            // Start dragging if moved more than 5 pixels
+            if (!isDragging && distance > 5) {
+              isDragging = true;
+              
+              // Add visual feedback for all selected tokens
+              draggedTokens.forEach((tokenData) => {
+                tokenData.element.style.opacity = '0.7';
+                tokenData.element.style.zIndex = '9999';
+                tokenData.element.style.transform = 'scale(1.1)';
+                tokenData.element.style.boxShadow = '0 4px 12px rgba(0, 123, 255, 0.5)';
+              });
+              
+              Logger.debug('Token dragging started');
+            }
+            
+            if (isDragging) {
+              // Update positions of all dragged tokens
+              draggedTokens.forEach((tokenData) => {
+                const newX = tokenData.startX + deltaX;
+                const newY = tokenData.startY + deltaY;
+                
+                tokenData.element.style.left = newX + 'px';
+                tokenData.element.style.top = newY + 'px';
+                tokenData.currentX = newX;
+                tokenData.currentY = newY;
+              });
+              
+              // Update cursor
+              document.body.style.cursor = 'grabbing';
+            }
+            
+          } catch (error) {
+            Logger.error('Error in token mouse move:', error);
           }
-        });
+        }
+        
+        function handleTokenMouseUp(e) {
+          try {
+            // Remove global event listeners
+            document.removeEventListener('mousemove', handleTokenMouseMove);
+            document.removeEventListener('mouseup', handleTokenMouseUp);
+            
+            if (isDragging) {
+              // Reset visual feedback
+              draggedTokens.forEach((tokenData) => {
+                tokenData.element.style.opacity = '';
+                tokenData.element.style.zIndex = '';
+                tokenData.element.style.transform = '';
+                tokenData.element.style.boxShadow = '';
+              });
+              
+              // Reset cursor
+              document.body.style.cursor = '';
+              
+              // Save positions using the existing release function
+              const tokensToUpdate = [];
+              draggedTokens.forEach((tokenData, tokenId) => {
+                tokensToUpdate.push({
+                  assetId: tokenId,
+                  assetType: 'token',
+                  assetName: tokenData.element.title || 'Token',
+                  currentX: tokenData.currentX,
+                  currentY: tokenData.currentY
+                });
+              });
+              
+              // Use the existing multi-token drop handler to save positions
+              if (tokensToUpdate.length > 0) {
+                const mockDropEvent = {
+                  preventDefault: () => {},
+                  clientX: e.clientX,
+                  clientY: e.clientY
+                };
+                
+                const dragData = {
+                  type: 'multitoken',
+                  tokens: tokensToUpdate,
+                  dragStartX: dragStartPos.x,
+                  dragStartY: dragStartPos.y
+                };
+                
+                // Call the existing drop handler to save positions
+                handleMultiTokenDrop(mockDropEvent, dragData);
+              }
+              
+              Logger.debug('Token drag completed, positions saved for', tokensToUpdate.length, 'tokens');
+            }
+            
+            // Reset drag state
+            isDragging = false;
+            draggedTokens.clear();
+            
+          } catch (error) {
+            Logger.error('Error in token mouse up:', error);
+            // Ensure cleanup even on error
+            isDragging = false;
+            draggedTokens.clear();
+            document.body.style.cursor = '';
+          }
+        }
         
         // Add data attributes for selection management
         assetElement.dataset.tokenId = assetData.tokenId || assetData.assetId;
@@ -7540,6 +7701,42 @@
         alert(`Errore durante il centramento sul token ${tokenId}: ${error.message || 'Errore sconosciuto'}`);
       }
     }
+    
+    // Function to force reload current map and fix token drag and drop
+    function forceReloadCurrentMap() {
+      try {
+        const currentMapId = MapState.getCurrentMapId();
+        if (!currentMapId) {
+          Logger.warn('No current map ID available for reload');
+          alert('Nessuna mappa attiva da ricaricare.');
+          return;
+        }
+        
+        Logger.info('Force reloading current map to fix token attributes', { mapId: currentMapId });
+        
+        // Clear all layers first
+        clearAllLayers();
+        
+        // Reload map assets
+        loadMapAssets(currentMapId).then(() => {
+          Logger.info('Map assets reloaded successfully');
+          // Also reload the token list
+          if (typeof loadActiveTokensAndSheets === 'function') {
+            loadActiveTokensAndSheets(true);
+          }
+        }).catch(error => {
+          Logger.error('Failed to reload map assets', error);
+          alert('Errore durante il ricaricamento degli asset della mappa.');
+        });
+        
+      } catch (error) {
+        Logger.error('Failed to force reload current map', error);
+        alert('Errore durante il ricaricamento forzato della mappa.');
+      }
+    }
+    
+    // Make the function globally available for debugging
+    window.forceReloadCurrentMap = forceReloadCurrentMap;
     
     // Start initialization
     initialize();
