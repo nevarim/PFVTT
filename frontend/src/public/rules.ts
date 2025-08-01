@@ -31,7 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
           try {
             const json: RuleDescription = JSON.parse(rule.rules_json);
             desc = json.description || '';
-          } catch { 
+          } catch (e) { 
             desc = rule.rules_json; 
           }
           
@@ -75,7 +75,7 @@ document.addEventListener('DOMContentLoaded', () => {
             try {
               const json: RuleDescription = JSON.parse(system.rules_json);
               description = json.description || 'No description';
-            } catch {
+            } catch (e) {
               description = 'No description';
             }
             
@@ -116,7 +116,7 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
       const json: RuleDescription = JSON.parse(rule.rules_json);
       ruleDescInput.value = json.description || '';
-    } catch { 
+    } catch (e) { 
       ruleDescInput.value = rule.rules_json; 
     }
     

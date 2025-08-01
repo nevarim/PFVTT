@@ -1,0 +1,12 @@
+{
+  "map_id": 19,
+  "name": "test_hero_4",
+  "grid_x": 7,
+  "grid_y": 7,
+  "grid_z": 0,
+  "scale": 1.0,
+  "rotation": 0,
+  "visible": true,
+  "locked": false,
+  "color": "#ff6b6b"
+}

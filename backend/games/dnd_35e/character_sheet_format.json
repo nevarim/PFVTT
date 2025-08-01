@@ -1,0 +1,68 @@
+{
+  "sections": [
+    {
+      "name": "Informazioni Base",
+      "fields": [
+        { "key": "name", "label": "Nome", "type": "text" },
+        { "key": "race", "label": "Razza", "type": "text" },
+        { "key": "class", "label": "Classe", "type": "text" },
+        { "key": "background", "label": "Background", "type": "text" },
+        { "key": "alignment", "label": "Allineamento", "type": "text" },
+        { "key": "level", "label": "Livello", "type": "number" },
+        { "key": "experience_points", "label": "Punti Esperienza", "type": "number" }
+      ]
+    },
+    {
+      "name": "Caratteristiche",
+      "fields": [
+        { "key": "ability_scores.strength", "label": "Forza", "type": "number" },
+        { "key": "ability_scores.dexterity", "label": "Destrezza", "type": "number" },
+        { "key": "ability_scores.constitution", "label": "Costituzione", "type": "number" },
+        { "key": "ability_scores.intelligence", "label": "Intelligenza", "type": "number" },
+        { "key": "ability_scores.wisdom", "label": "Saggezza", "type": "number" },
+        { "key": "ability_scores.charisma", "label": "Carisma", "type": "number" }
+      ]
+    },
+    {
+      "name": "Combattimento",
+      "fields": [
+        { "key": "hit_points.max", "label": "PF Massimi", "type": "number" },
+        { "key": "hit_points.current", "label": "PF Attuali", "type": "number" },
+        { "key": "hit_points.temporary", "label": "PF Temporanei", "type": "number" },
+        { "key": "armor_class", "label": "Classe Armatura", "type": "number" },
+        { "key": "initiative", "label": "Iniziativa", "type": "number" },
+        { "key": "speed", "label": "Velocità", "type": "number" }
+      ]
+    },
+    {
+      "name": "Abilità e Talenti",
+      "fields": [
+        { "key": "skills", "label": "Abilità", "type": "list" },
+        { "key": "feats", "label": "Talenti", "type": "list" },
+        { "key": "features_traits", "label": "Caratteristiche/Tratti", "type": "list" },
+        { "key": "proficiencies_languages", "label": "Competenze/Linguaggi", "type": "list" }
+      ]
+    },
+    {
+      "name": "Equipaggiamento",
+      "fields": [
+        { "key": "equipment", "label": "Equipaggiamento", "type": "list" }
+      ]
+    },
+    {
+      "name": "Incantesimi",
+      "fields": [
+        { "key": "spellcasting.class", "label": "Classe Incantatore", "type": "text" },
+        { "key": "spellcasting.spell_slots", "label": "Slot Incantesimi", "type": "object" },
+        { "key": "spellcasting.prepared_spells", "label": "Incantesimi Preparati", "type": "list" },
+        { "key": "spells", "label": "Incantesimi Conosciuti", "type": "list" }
+      ]
+    },
+    {
+      "name": "Note",
+      "fields": [
+        { "key": "notes", "label": "Note", "type": "textarea" }
+      ]
+    }
+  ]
+}

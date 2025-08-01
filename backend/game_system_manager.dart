@@ -8,7 +8,7 @@ class GameSystemManager {
   /// Get the character sheet template for a specific game system
   static Future<Map<String, dynamic>?> getCharacterSheetTemplate(String folderName) async {
     try {
-      final file = File('$gamesPath/$folderName/character_sheet.json');
+      final file = File('$gamesPath/$folderName/character_sheet_format.json');
       if (!await file.exists()) {
         print('Character sheet template not found for system: $folderName');
         return null;
@@ -125,7 +125,7 @@ class GameSystemManager {
   static Future<bool> validateGameSystemFolder(String folderName) async {
     try {
       final directory = Directory('$gamesPath/$folderName');
-      final characterSheetFile = File('$gamesPath/$folderName/character_sheet.json');
+      final characterSheetFile = File('$gamesPath/$folderName/character_sheet_format.json');
       
       return await directory.exists() && await characterSheetFile.exists();
     } catch (e) {
@@ -148,7 +148,7 @@ class GameSystemManager {
       for (final file in files) {
         if (file is File && file.path.endsWith('.json')) {
           final fileName = file.path.split('/').last.replaceAll('.json', '');
-          if (fileName != 'character_sheet' && fileName != 'metadata') {
+          if (fileName != 'character_sheet_format' && fileName != 'metadata') {
             dataTypes.add(fileName);
           }
         }

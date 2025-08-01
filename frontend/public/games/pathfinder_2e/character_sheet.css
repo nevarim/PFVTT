@@ -1,0 +1,480 @@
+/* Pathfinder 2e Character Sheet CSS - MINIMALIST MODERN THEME */
+
+.pathfinder_2e-sheet {
+  font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
+  color: #2d3748;
+  background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 
+    0 4px 6px rgba(0, 0, 0, 0.05),
+    0 1px 3px rgba(0, 0, 0, 0.1);
+  padding: 32px;
+  max-width: 900px;
+  margin: 20px auto;
+  position: relative;
+  backdrop-filter: blur(10px);
+}
+
+.pathfinder_2e-sheet::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="dots" width="20" height="20" patternUnits="userSpaceOnUse"><circle cx="10" cy="10" r="1" fill="%23cbd5e0" opacity="0.4"/></pattern></defs><rect width="100" height="100" fill="url(%23dots)"/></svg>');
+  border-radius: 12px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.pathfinder_2e-sheet > * {
+  position: relative;
+  z-index: 2;
+}
+
+.pathfinder_2e-sheet h1 {
+  font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
+  color: #1a202c;
+  text-align: center;
+  border-bottom: 2px solid #4299e1;
+  padding-bottom: 16px;
+  margin-bottom: 32px;
+  font-size: 28px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  position: relative;
+}
+
+.pathfinder_2e-sheet h1::after {
+  content: "";
+  position: absolute;
+  bottom: -2px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 2px;
+  background: linear-gradient(90deg, #4299e1, #63b3ed);
+  border-radius: 1px;
+}
+
+.pathfinder_2e-sheet h1::before,
+.pathfinder_2e-sheet h1::after {
+  content: "";
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="%23b12c2c" d="M12 2L14.5 9H22L16 13.5L18.5 20.5L12 16L5.5 20.5L8 13.5L2 9H9.5L12 2Z"/></svg>');
+  background-repeat: no-repeat;
+  background-position: center;
+  position: absolute;
+  top: 0;
+}
+
+.pathfinder_2e-sheet h1::before {
+  left: 0;
+}
+
+.pathfinder_2e-sheet h1::after {
+  right: 0;
+}
+
+.pathfinder_2e-sheet .section {
+  margin-bottom: 24px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 20px;
+  background-color: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(5px);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease;
+}
+
+.pathfinder_2e-sheet .section:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border-color: #cbd5e0;
+  transform: translateY(-1px);
+}
+
+.pathfinder_2e-sheet .section-header {
+  font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
+  font-size: 18px;
+  font-weight: 600;
+  color: #2d3748;
+  margin-bottom: 16px;
+  border-bottom: 1px solid #e2e8f0;
+  padding-bottom: 8px;
+  display: flex;
+  align-items: center;
+}
+
+.pathfinder_2e-sheet .section-header::before {
+  content: "";
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  margin-right: 8px;
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path fill="%23b12c2c" d="M10 2L11.5 7H17L12.5 10L14 15L10 12L6 15L7.5 10L3 7H8.5L10 2Z"/></svg>');
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.pathfinder_2e-sheet .field-row {
+  display: flex;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+
+.pathfinder_2e-sheet .field {
+  flex: 1 0 200px;
+  margin-right: 15px;
+  margin-bottom: 10px;
+}
+
+.pathfinder_2e-sheet .field-label {
+  font-weight: 600;
+  font-size: 14px;
+  margin-bottom: 5px;
+  color: #444;
+}
+
+.pathfinder_2e-sheet input[type="text"],
+.pathfinder_2e-sheet input[type="number"] {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  background-color: #ffffff;
+  color: #2d3748;
+  font-family: inherit;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.pathfinder_2e-sheet input[type="text"]:focus,
+.pathfinder_2e-sheet input[type="number"]:focus {
+  border-color: #4299e1;
+  box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.1);
+  outline: none;
+}
+
+.pathfinder_2e-sheet input[type="text"]:focus,
+.pathfinder_2e-sheet input[type="number"]:focus,
+.pathfinder_2e-sheet textarea:focus {
+  border-color: #b12c2c;
+  box-shadow: 0 0 0 2px rgba(177, 44, 44, 0.2);
+  outline: none;
+}
+
+.pathfinder_2e-sheet textarea {
+  width: 100%;
+  min-height: 80px;
+  padding: 10px;
+  border: 1px solid #c0b090;
+  border-radius: 6px;
+  background-color: rgba(255, 255, 255, 0.9);
+  color: #2c1810;
+  font-family: inherit;
+  resize: vertical;
+  transition: border-color 0.2s, box-shadow 0.2s, background-color 0.2s;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.pathfinder_2e-sheet .ability-scores {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 15px;
+}
+
+.pathfinder_2e-sheet .ability-score {
+  text-align: center;
+  border: 1px solid #c0b090;
+  border-radius: 10px;
+  padding: 14px;
+  background-color: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.pathfinder_2e-sheet .ability-score:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.pathfinder_2e-sheet .ability-name {
+  font-weight: bold;
+  margin-bottom: 5px;
+  color: #b12c2c;
+}
+
+.pathfinder_2e-sheet .ability-value {
+  font-size: 26px;
+  font-weight: bold;
+  color: #2c1810;
+  margin-bottom: 5px;
+}
+
+.pathfinder_2e-sheet .ability-modifier {
+  font-size: 16px;
+  color: #666;
+  margin-top: 8px;
+  border: 1px solid #c0b090;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 8px auto 0;
+  background-color: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.pathfinder_2e-sheet .proficiency-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 10px;
+}
+
+.pathfinder_2e-sheet .proficiency-item {
+  display: flex;
+  align-items: center;
+}
+
+.pathfinder_2e-sheet .proficiency-level {
+  width: 20px;
+  height: 20px;
+  margin-right: 5px;
+  border: 1px solid #c0b090;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  color: #b12c2c;
+  font-weight: bold;
+}
+
+.pathfinder_2e-sheet .saving-throws {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+}
+
+.pathfinder_2e-sheet .saving-throw {
+  text-align: center;
+  border: 1px solid #c0b090;
+  border-radius: 8px;
+  padding: 10px;
+  background-color: rgba(255, 255, 255, 0.7);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.pathfinder_2e-sheet .saving-throw-name {
+  font-weight: bold;
+  margin-bottom: 5px;
+  color: #b12c2c;
+}
+
+.pathfinder_2e-sheet .saving-throw-value {
+  font-size: 20px;
+  font-weight: bold;
+  color: #333;
+}
+
+.pathfinder_2e-sheet .combat-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 15px;
+}
+
+.pathfinder_2e-sheet .combat-stat {
+  text-align: center;
+  border: 1px solid #c0b090;
+  border-radius: 8px;
+  padding: 10px;
+  background-color: rgba(255, 255, 255, 0.7);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.pathfinder_2e-sheet .combat-stat-label {
+  font-weight: bold;
+  margin-bottom: 5px;
+  color: #b12c2c;
+  font-size: 14px;
+}
+
+.pathfinder_2e-sheet .combat-stat-value {
+  font-size: 20px;
+  font-weight: bold;
+  color: #333;
+}
+
+.pathfinder_2e-sheet .skills {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 10px;
+}
+
+.pathfinder_2e-sheet .skill {
+  display: flex;
+  align-items: center;
+  border: 1px solid #c0b090;
+  border-radius: 4px;
+  padding: 5px;
+  background-color: rgba(255, 255, 255, 0.5);
+}
+
+.pathfinder_2e-sheet .skill-name {
+  flex: 1;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.pathfinder_2e-sheet .skill-value {
+  width: 30px;
+  height: 30px;
+  border: 1px solid #c0b090;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  color: #333;
+}
+
+.pathfinder_2e-sheet .action-icons {
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 10px;
+}
+
+.pathfinder_2e-sheet .action-icon {
+  width: 40px;
+  height: 40px;
+  border: 2px solid #b12c2c;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  color: #b12c2c;
+  font-size: 20px;
+}
+
+.pathfinder_2e-sheet .list-container {
+  border: 1px solid #c0b090;
+  border-radius: 4px;
+  padding: 10px;
+  background-color: rgba(255, 255, 255, 0.7);
+  min-height: 80px;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.pathfinder_2e-sheet .list-item {
+  padding: 8px;
+  border-bottom: 1px solid #e0d8c8;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.pathfinder_2e-sheet .list-item:last-child {
+  border-bottom: none;
+}
+
+.pathfinder_2e-sheet .list-item-actions {
+  display: flex;
+  align-items: center;
+}
+
+.pathfinder_2e-sheet .list-item-action {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 5px;
+  border: 1px solid #c0b090;
+  border-radius: 4px;
+  cursor: pointer;
+  color: #b12c2c;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.pathfinder_2e-sheet .add-item-btn {
+  background-color: #b12c2c;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 12px;
+  margin-top: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pathfinder_2e-sheet .add-item-btn::before {
+  content: "+";
+  margin-right: 5px;
+  font-weight: bold;
+}
+
+.pathfinder_2e-sheet .add-item-btn:hover {
+  background-color: #8f2323;
+}
+
+.pathfinder_2e-sheet .currency-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.pathfinder_2e-sheet .currency-item {
+  display: flex;
+  align-items: center;
+  background-color: rgba(255, 255, 255, 0.7);
+  border: 1px solid #c0b090;
+  border-radius: 4px;
+  padding: 5px 10px;
+}
+
+.pathfinder_2e-sheet .currency-label {
+  margin-right: 5px;
+  font-weight: bold;
+  color: #666;
+}
+
+.pathfinder_2e-sheet .currency-value {
+  width: 60px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+  .pathfinder_2e-sheet {
+    padding: 15px;
+  }
+  
+  .pathfinder_2e-sheet .field {
+    flex: 1 0 100%;
+    margin-right: 0;
+  }
+  
+  .pathfinder_2e-sheet .ability-scores,
+  .pathfinder_2e-sheet .combat-stats,
+  .pathfinder_2e-sheet .saving-throws {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .pathfinder_2e-sheet .skills {
+    grid-template-columns: 1fr;
+  }
+}

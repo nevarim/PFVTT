@@ -1,0 +1,164 @@
+{
+  "sections": [
+    {
+      "name": "Informazioni Base",
+      "fields": [
+        { "key": "name", "label": "Nome", "type": "text" },
+        { "key": "ancestry", "label": "Stirpe", "type": "text" },
+        { "key": "heritage", "label": "Retaggio", "type": "text" },
+        { "key": "background", "label": "Background", "type": "text" },
+        { "key": "class", "label": "Classe", "type": "text" },
+        { "key": "level", "label": "Livello", "type": "number" },
+        { "key": "experience_points", "label": "Punti Esperienza", "type": "number" },
+        { "key": "alignment", "label": "Allineamento", "type": "text" },
+        { "key": "deity", "label": "Divinità", "type": "text" },
+        { "key": "size", "label": "Taglia", "type": "text" },
+        { "key": "traits", "label": "Tratti", "type": "text" }
+      ]
+    },
+    {
+      "name": "Caratteristiche",
+      "fields": [
+        { "key": "ability_scores.strength", "label": "Forza", "type": "number" },
+        { "key": "ability_scores.dexterity", "label": "Destrezza", "type": "number" },
+        { "key": "ability_scores.constitution", "label": "Costituzione", "type": "number" },
+        { "key": "ability_scores.intelligence", "label": "Intelligenza", "type": "number" },
+        { "key": "ability_scores.wisdom", "label": "Saggezza", "type": "number" },
+        { "key": "ability_scores.charisma", "label": "Carisma", "type": "number" }
+      ]
+    },
+    {
+      "name": "Modificatori di Caratteristica",
+      "fields": [
+        { "key": "ability_modifiers.strength", "label": "Mod. Forza", "type": "number" },
+        { "key": "ability_modifiers.dexterity", "label": "Mod. Destrezza", "type": "number" },
+        { "key": "ability_modifiers.constitution", "label": "Mod. Costituzione", "type": "number" },
+        { "key": "ability_modifiers.intelligence", "label": "Mod. Intelligenza", "type": "number" },
+        { "key": "ability_modifiers.wisdom", "label": "Mod. Saggezza", "type": "number" },
+        { "key": "ability_modifiers.charisma", "label": "Mod. Carisma", "type": "number" }
+      ]
+    },
+    {
+      "name": "Proficiency",
+      "fields": [
+        { "key": "proficiency_bonus", "label": "Bonus di Competenza", "type": "number" },
+        { "key": "perception", "label": "Percezione", "type": "number" },
+        { "key": "class_dc", "label": "CD di Classe", "type": "number" }
+      ]
+    },
+    {
+      "name": "Tiri Salvezza",
+      "fields": [
+        { "key": "saving_throws.fortitude", "label": "Tempra", "type": "number" },
+        { "key": "saving_throws.reflex", "label": "Riflessi", "type": "number" },
+        { "key": "saving_throws.will", "label": "Volontà", "type": "number" }
+      ]
+    },
+    {
+      "name": "Combattimento",
+      "fields": [
+        { "key": "hit_points.max", "label": "PF Massimi", "type": "number" },
+        { "key": "hit_points.current", "label": "PF Attuali", "type": "number" },
+        { "key": "hit_points.temporary", "label": "PF Temporanei", "type": "number" },
+        { "key": "armor_class", "label": "Classe Armatura", "type": "number" },
+        { "key": "initiative", "label": "Iniziativa", "type": "number" },
+        { "key": "speed", "label": "Velocità", "type": "text" },
+        { "key": "hero_points", "label": "Punti Eroe", "type": "number" },
+        { "key": "resistances", "label": "Resistenze", "type": "text" },
+        { "key": "immunities", "label": "Immunità", "type": "text" },
+        { "key": "weaknesses", "label": "Debolezze", "type": "text" },
+        { "key": "conditions", "label": "Condizioni", "type": "text" }
+      ]
+    },
+    {
+      "name": "Abilità",
+      "fields": [
+        { "key": "skills.acrobatics", "label": "Acrobazia", "type": "number" },
+        { "key": "skills.arcana", "label": "Arcano", "type": "number" },
+        { "key": "skills.athletics", "label": "Atletica", "type": "number" },
+        { "key": "skills.crafting", "label": "Artigianato", "type": "number" },
+        { "key": "skills.deception", "label": "Inganno", "type": "number" },
+        { "key": "skills.diplomacy", "label": "Diplomazia", "type": "number" },
+        { "key": "skills.intimidation", "label": "Intimidazione", "type": "number" },
+        { "key": "skills.lore", "label": "Sapienza", "type": "number" },
+        { "key": "skills.medicine", "label": "Medicina", "type": "number" },
+        { "key": "skills.nature", "label": "Natura", "type": "number" },
+        { "key": "skills.occultism", "label": "Occultismo", "type": "number" },
+        { "key": "skills.performance", "label": "Esibizione", "type": "number" },
+        { "key": "skills.religion", "label": "Religione", "type": "number" },
+        { "key": "skills.society", "label": "Società", "type": "number" },
+        { "key": "skills.stealth", "label": "Furtività", "type": "number" },
+        { "key": "skills.survival", "label": "Sopravvivenza", "type": "number" },
+        { "key": "skills.thievery", "label": "Furto", "type": "number" }
+      ]
+    },
+    {
+      "name": "Attacchi",
+      "fields": [
+        { "key": "attacks.melee", "label": "Attacchi in Mischia", "type": "list" },
+        { "key": "attacks.ranged", "label": "Attacchi a Distanza", "type": "list" }
+      ]
+    },
+    {
+      "name": "Azioni",
+      "fields": [
+        { "key": "actions", "label": "Azioni", "type": "list" },
+        { "key": "reactions", "label": "Reazioni", "type": "list" },
+        { "key": "free_actions", "label": "Azioni Gratuite", "type": "list" }
+      ]
+    },
+    {
+      "name": "Equipaggiamento",
+      "fields": [
+        { "key": "equipment", "label": "Equipaggiamento", "type": "list" },
+        { "key": "bulk.carried", "label": "Ingombro Trasportato", "type": "number" },
+        { "key": "bulk.max", "label": "Ingombro Massimo", "type": "number" },
+        { "key": "currency.cp", "label": "Monete di Rame", "type": "number" },
+        { "key": "currency.sp", "label": "Monete d'Argento", "type": "number" },
+        { "key": "currency.gp", "label": "Monete d'Oro", "type": "number" },
+        { "key": "currency.pp", "label": "Monete di Platino", "type": "number" }
+      ]
+    },
+    {
+      "name": "Talenti e Capacità",
+      "fields": [
+        { "key": "feats.ancestry", "label": "Talenti di Stirpe", "type": "list" },
+        { "key": "feats.skill", "label": "Talenti di Abilità", "type": "list" },
+        { "key": "feats.general", "label": "Talenti Generici", "type": "list" },
+        { "key": "feats.class", "label": "Talenti di Classe", "type": "list" },
+        { "key": "class_features", "label": "Capacità di Classe", "type": "list" }
+      ]
+    },
+    {
+      "name": "Incantesimi",
+      "fields": [
+        { "key": "spellcasting.tradition", "label": "Tradizione", "type": "text" },
+        { "key": "spellcasting.ability", "label": "Caratteristica Incantesimi", "type": "text" },
+        { "key": "spellcasting.proficiency", "label": "Grado di Competenza", "type": "text" },
+        { "key": "spellcasting.dc", "label": "CD Incantesimi", "type": "number" },
+        { "key": "spellcasting.attack", "label": "Attacco Incantesimi", "type": "number" },
+        { "key": "spellcasting.cantrips", "label": "Trucchetti", "type": "list" },
+        { "key": "spellcasting.slots_level_1", "label": "Slot Livello 1", "type": "number" },
+        { "key": "spellcasting.slots_level_2", "label": "Slot Livello 2", "type": "number" },
+        { "key": "spellcasting.slots_level_3", "label": "Slot Livello 3", "type": "number" },
+        { "key": "spellcasting.slots_level_4", "label": "Slot Livello 4", "type": "number" },
+        { "key": "spellcasting.slots_level_5", "label": "Slot Livello 5", "type": "number" },
+        { "key": "spellcasting.slots_level_6", "label": "Slot Livello 6", "type": "number" },
+        { "key": "spellcasting.slots_level_7", "label": "Slot Livello 7", "type": "number" },
+        { "key": "spellcasting.slots_level_8", "label": "Slot Livello 8", "type": "number" },
+        { "key": "spellcasting.slots_level_9", "label": "Slot Livello 9", "type": "number" },
+        { "key": "spellcasting.slots_level_10", "label": "Slot Livello 10", "type": "number" },
+        { "key": "spells", "label": "Incantesimi", "type": "list" },
+        { "key": "focus_points.max", "label": "Punti Focalizzazione Massimi", "type": "number" },
+        { "key": "focus_points.current", "label": "Punti Focalizzazione Attuali", "type": "number" },
+        { "key": "focus_spells", "label": "Incantesimi di Focalizzazione", "type": "list" }
+      ]
+    },
+    {
+      "name": "Note",
+      "fields": [
+        { "key": "notes", "label": "Note", "type": "textarea" }
+      ]
+    }
+  ]
+}

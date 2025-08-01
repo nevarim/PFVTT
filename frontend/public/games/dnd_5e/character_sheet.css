@@ -1,0 +1,351 @@
+/* D&D 5e Character Sheet CSS - ROYAL ELEGANCE THEME */
+
+.dnd_5e-sheet {
+  font-family: 'Playfair Display', 'Georgia', serif;
+  color: #2c1810;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background-attachment: fixed;
+  border-radius: 20px;
+  border: 3px solid #ffd700;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), inset 0 0 50px rgba(255, 215, 0, 0.1);
+  padding: 30px;
+  max-width: 900px;
+  margin: 20px auto;
+  position: relative;
+  overflow: hidden;
+}
+
+.dnd_5e-sheet::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="royal" patternUnits="userSpaceOnUse" width="20" height="20"><path d="M10 0L15 10L10 20L5 10Z" fill="%23ffd700" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23royal)"/></svg>');
+  pointer-events: none;
+  z-index: 1;
+}
+
+.dnd_5e-sheet > * {
+  position: relative;
+  z-index: 2;
+}
+
+.dnd_5e-sheet h1 {
+  font-family: 'Playfair Display', 'Georgia', serif;
+  color: #ffd700;
+  text-align: center;
+  border-bottom: 3px solid #ffd700;
+  padding-bottom: 15px;
+  margin-bottom: 30px;
+  font-size: 36px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 4px;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5), 0 0 20px rgba(255, 215, 0, 0.6);
+  background: linear-gradient(45deg, #ffd700, #ffed4e, #ffd700);
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shimmer 3s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+.dnd_5e-sheet .section {
+  margin-bottom: 25px;
+  border: 2px solid rgba(255, 215, 0, 0.3);
+  border-radius: 15px;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 215, 0, 0.2);
+  transition: all 0.3s ease;
+}
+
+.dnd_5e-sheet .section:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 215, 0, 0.3);
+  border-color: rgba(255, 215, 0, 0.5);
+}
+
+.dnd_5e-sheet .section-header {
+  font-family: 'Playfair Display', 'Georgia', serif;
+  font-size: 22px;
+  font-weight: 600;
+  color: #4a148c;
+  margin-bottom: 18px;
+  border-bottom: 2px solid rgba(255, 215, 0, 0.4);
+  padding-bottom: 8px;
+  display: flex;
+  align-items: center;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.dnd_5e-sheet .section-header::before {
+  content: "";
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  margin-right: 8px;
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path fill="%237b2cbf" d="M10 0L12 6H18L13 10L15 16L10 12L5 16L7 10L2 6H8L10 0Z"/></svg>');
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.dnd_5e-sheet .field-row {
+  display: flex;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+
+.dnd_5e-sheet .field {
+  flex: 1 0 200px;
+  margin-right: 15px;
+  margin-bottom: 10px;
+}
+
+.dnd_5e-sheet .field-label {
+  font-weight: 600;
+  font-size: 14px;
+  margin-bottom: 5px;
+  color: #444;
+}
+
+.dnd_5e-sheet input[type="text"],
+.dnd_5e-sheet input[type="number"] {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background-color: rgba(255, 255, 255, 0.7);
+  font-family: inherit;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.dnd_5e-sheet input[type="text"]:focus,
+.dnd_5e-sheet input[type="number"]:focus,
+.dnd_5e-sheet textarea:focus {
+  border-color: #7b2cbf;
+  box-shadow: 0 0 0 2px rgba(123, 44, 191, 0.2);
+  outline: none;
+}
+
+.dnd_5e-sheet input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: #7b2cbf;
+}
+
+.dnd_5e-sheet textarea {
+  width: 100%;
+  min-height: 80px;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background-color: rgba(255, 255, 255, 0.7);
+  font-family: inherit;
+  resize: vertical;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.dnd_5e-sheet .ability-scores {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 15px;
+}
+
+.dnd_5e-sheet .ability-score {
+  text-align: center;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 10px;
+  background-color: rgba(255, 255, 255, 0.7);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.dnd_5e-sheet .ability-name {
+  font-weight: bold;
+  margin-bottom: 5px;
+  color: #7b2cbf;
+}
+
+.dnd_5e-sheet .ability-value {
+  font-size: 24px;
+  font-weight: bold;
+  color: #333;
+}
+
+.dnd_5e-sheet .ability-modifier {
+  font-size: 16px;
+  color: #666;
+  margin-top: 5px;
+}
+
+.dnd_5e-sheet .saving-throws,
+.dnd_5e-sheet .skills {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 10px;
+}
+
+.dnd_5e-sheet .saving-throw,
+.dnd_5e-sheet .skill {
+  display: flex;
+  align-items: center;
+}
+
+.dnd_5e-sheet .saving-throw input[type="checkbox"],
+.dnd_5e-sheet .skill input[type="checkbox"] {
+  margin-right: 5px;
+}
+
+.dnd_5e-sheet .combat-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 15px;
+}
+
+.dnd_5e-sheet .combat-stat {
+  text-align: center;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 10px;
+  background-color: rgba(255, 255, 255, 0.7);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.dnd_5e-sheet .combat-stat-label {
+  font-weight: bold;
+  margin-bottom: 5px;
+  color: #7b2cbf;
+  font-size: 14px;
+}
+
+.dnd_5e-sheet .combat-stat-value {
+  font-size: 20px;
+  font-weight: bold;
+  color: #333;
+}
+
+.dnd_5e-sheet .death-saves {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 10px;
+}
+
+.dnd_5e-sheet .death-save-group {
+  text-align: center;
+}
+
+.dnd_5e-sheet .death-save-label {
+  font-size: 12px;
+  margin-bottom: 5px;
+}
+
+.dnd_5e-sheet .death-save-circles {
+  display: flex;
+}
+
+.dnd_5e-sheet .death-save-circle {
+  width: 15px;
+  height: 15px;
+  border: 1px solid #666;
+  border-radius: 50%;
+  margin: 0 2px;
+}
+
+.dnd_5e-sheet .death-save-circle.filled {
+  background-color: #7b2cbf;
+  border-color: #7b2cbf;
+}
+
+.dnd_5e-sheet .list-container {
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 10px;
+  background-color: rgba(255, 255, 255, 0.7);
+  min-height: 80px;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.dnd_5e-sheet .list-item {
+  padding: 8px;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.dnd_5e-sheet .list-item:last-child {
+  border-bottom: none;
+}
+
+.dnd_5e-sheet .add-item-btn {
+  background-color: #7b2cbf;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 12px;
+  margin-top: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.2s;
+}
+
+.dnd_5e-sheet .add-item-btn:hover {
+  background-color: #6a24a5;
+}
+
+.dnd_5e-sheet .currency-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.dnd_5e-sheet .currency-item {
+  display: flex;
+  align-items: center;
+  background-color: rgba(255, 255, 255, 0.7);
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 5px 10px;
+}
+
+.dnd_5e-sheet .currency-label {
+  margin-right: 5px;
+  font-weight: bold;
+  color: #666;
+}
+
+.dnd_5e-sheet .currency-value {
+  width: 60px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .dnd_5e-sheet {
+    padding: 15px;
+  }
+  
+  .dnd_5e-sheet .field {
+    flex: 1 0 100%;
+    margin-right: 0;
+  }
+  
+  .dnd_5e-sheet .ability-scores,
+  .dnd_5e-sheet .combat-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .dnd_5e-sheet .saving-throws,
+  .dnd_5e-sheet .skills {
+    grid-template-columns: 1fr;
+  }
+}

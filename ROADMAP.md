@@ -23,6 +23,13 @@
   - [x] Scenes API
   - [x] Journals API
   - [x] Campaign permissions API
+  - [x] Token Sheets API
+    - [x] GET /api/token-sheets (list sheets by map)
+    - [x] GET /api/token-sheets/:id (get specific sheet)
+    - [x] POST /api/token-sheets (create sheet)
+    - [x] PUT /api/token-sheets/:id (update sheet)
+    - [x] DELETE /api/token-sheets/:id (delete sheet)
+    - [x] POST /api/token-sheets/auto-create (auto-generate based on game rules)
 
 - [ ] **Integration & Deployment**
   - [x] Frontend-backend API integration
@@ -103,7 +110,7 @@
 - [x] Navigation integration
 
 ### 🟢 Map Page (NEARLY COMPLETE)
-**Status**: 95% complete, advanced features in development
+**Status**: 98% complete, advanced features in development
 
 #### ✅ Completed Features
 - [x] Basic map page UI with Roll20-style interface
@@ -121,10 +128,20 @@
   - [x] File upload with automatic categorization
   - [x] Asset library with search functionality
 - [x] Campaign settings interface
+- [x] Token Sheets Management
+  - [x] Dynamic character sheet system based on game rules
+  - [x] Auto-creation of sheets from campaign game system
+  - [x] CRUD operations for token sheets
+  - [x] System-specific form generation (D&D 5e, Pathfinder, etc.)
+  - [x] Integration with token management
+- [x] Token positioning improvements
+  - [x] Fixed grid snapping to center tokens properly
+  - [x] Improved coordinate system calculations
 - [x] UI improvements and bug fixes
   - [x] Resolved token duplication issue
   - [x] Improved asset categorization logic
   - [x] Enhanced file path handling
+  - [x] Robust error handling and retry logic for API calls
 
 #### 🔄 In Development
 - [ ] **Advanced Map Features**
@@ -149,6 +166,23 @@
     - [x] Category filtering system
     - [x] File type validation and categorization
 
+- [x] **Token Sheets Management** (COMPLETED)
+  - [x] Database schema (token_sheets table)
+  - [x] API documentation
+  - [x] Backend implementation
+    - [x] GET `/api/token-sheets?map_id=ID`
+    - [x] GET `/api/token-sheets/:id`
+    - [x] POST `/api/token-sheets`
+    - [x] PUT `/api/token-sheets/:id`
+    - [x] DELETE `/api/token-sheets/:id`
+    - [x] POST `/api/token-sheets/auto-create`
+  - [x] Frontend UI
+    - [x] Dynamic sheet generation based on game system
+    - [x] Modal interface for sheet editing
+    - [x] Auto-creation from campaign rules
+    - [x] Integration with token management
+    - [x] Support for multiple game systems (D&D 5e, Pathfinder, etc.)
+
 - [x] **Campaign Settings**
   - [x] Database schema (settings JSON field)
   - [x] API documentation
@@ -163,8 +197,7 @@
 
 - [ ] **Advanced Map Features**
   - [ ] Real-time collaboration
-  - [ ] Drawing tools
-  - [ ] Token management
+  - [ ] Advanced drawing tools
   - [ ] Fog of war
   - [ ] Dynamic lighting
 
@@ -197,12 +230,14 @@
 
 ## Development Priorities
 
-1. **High Priority**: Advanced map features (token management, drawing tools, real-time collaboration)
+1. **High Priority**: Advanced map features (advanced drawing tools, real-time collaboration)
 2. **Medium Priority**: Dynamic lighting system and fog of war
 3. **Low Priority**: Additional game system support and advanced features
 
 ## Notes
-- Focus on completing Map Page functionality before adding new features
+- Token management and character sheets system completed
+- Focus on completing remaining Map Page functionality before adding new features
 - Maintain security and performance standards
 - Ensure mobile compatibility for all new features
 - Consider real-time features for future releases
+- Token positioning and grid snapping improvements completed

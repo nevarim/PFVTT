@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
           try {
             const json = JSON.parse(rule.rules_json);
             desc = json.description || '';
-          } catch { desc = rule.rules_json; }
+          } catch (e) { desc = rule.rules_json; }
           const tr = document.createElement('tr');
           tr.innerHTML = `<td>${rule.id}</td><td>${rule.system}</td><td>${rule.folder_name || 'N/A'}</td><td>${desc}</td>
             <td>
@@ -74,7 +74,7 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
       const json = JSON.parse(rule.rules_json);
       ruleDescInput.value = json.description || '';
-    } catch { ruleDescInput.value = rule.rules_json; }
+    } catch (e) { ruleDescInput.value = rule.rules_json; }
     cancelEditBtn.style.display = '';
   }
 

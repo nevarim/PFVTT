@@ -64,11 +64,30 @@ async function loadCampaigns() {
       document.querySelectorAll('.enter-campaign-btn').forEach(btn => {
         btn.addEventListener('click', function() {
           const campaignId = this.getAttribute('data-id');
+          
+          // Find the campaign data from the loaded campaigns
+          const campaign = data.campaigns.find(c => c.id == campaignId);
+          
           // Save campaign ID in session storage for map page
           sessionStorage.setItem('current_campaign_id', campaignId);
           
+          // Save complete campaign data in localStorage
+          if (campaign) {
+            localStorage.setItem('current_campaign_data', JSON.stringify({
+              id: campaign.id,
+              name: campaign.name,
+              description: campaign.description,
+              system: campaign.system,
+              game_rules_id: campaign.game_rules_id,
+              image_url: campaign.image_url,
+              background_image_url: campaign.background_image_url,
+              created_at: campaign.created_at
+            }));
+          }
+          
           // Debug log before navigation
           console.log('CAMPAIGNS.JS: Navigating to map with campaign ID:', campaignId);
+          console.log('CAMPAIGNS.JS: Campaign data saved to localStorage:', campaign);
           console.log('CAMPAIGNS.JS: Current user in storage:', localStorage.getItem('pfvtt_user') || sessionStorage.getItem('pfvtt_user'));
           
           // Send debug log to backend
@@ -79,6 +98,7 @@ async function loadCampaigns() {
               message: 'CAMPAIGNS.JS: Navigating to map page',
               data: {
                 campaignId: campaignId,
+                campaignData: campaign,
                 user: localStorage.getItem('pfvtt_user') || sessionStorage.getItem('pfvtt_user'),
                 localStorage: localStorage.getItem('pfvtt_user'),
                 sessionStorage: sessionStorage.getItem('pfvtt_user'),
@@ -94,28 +114,80 @@ async function loadCampaigns() {
       document.querySelectorAll('.actors-btn').forEach(btn => {
         btn.addEventListener('click', function() {
           const campaignId = this.getAttribute('data-id');
+          const campaign = data.campaigns.find(c => c.id == campaignId);
           sessionStorage.setItem('current_campaign_id', campaignId);
+          if (campaign) {
+            localStorage.setItem('current_campaign_data', JSON.stringify({
+              id: campaign.id,
+              name: campaign.name,
+              description: campaign.description,
+              system: campaign.system,
+              game_rules_id: campaign.game_rules_id,
+              image_url: campaign.image_url,
+              background_image_url: campaign.background_image_url,
+              created_at: campaign.created_at
+            }));
+          }
           window.location.href = '/actors';
         });
       });
       document.querySelectorAll('.scenes-btn').forEach(btn => {
         btn.addEventListener('click', function() {
           const campaignId = this.getAttribute('data-id');
+          const campaign = data.campaigns.find(c => c.id == campaignId);
           sessionStorage.setItem('current_campaign_id', campaignId);
+          if (campaign) {
+            localStorage.setItem('current_campaign_data', JSON.stringify({
+              id: campaign.id,
+              name: campaign.name,
+              description: campaign.description,
+              system: campaign.system,
+              game_rules_id: campaign.game_rules_id,
+              image_url: campaign.image_url,
+              background_image_url: campaign.background_image_url,
+              created_at: campaign.created_at
+            }));
+          }
           window.location.href = '/scenes';
         });
       });
       document.querySelectorAll('.journals-btn').forEach(btn => {
         btn.addEventListener('click', function() {
           const campaignId = this.getAttribute('data-id');
+          const campaign = data.campaigns.find(c => c.id == campaignId);
           sessionStorage.setItem('current_campaign_id', campaignId);
+          if (campaign) {
+            localStorage.setItem('current_campaign_data', JSON.stringify({
+              id: campaign.id,
+              name: campaign.name,
+              description: campaign.description,
+              system: campaign.system,
+              game_rules_id: campaign.game_rules_id,
+              image_url: campaign.image_url,
+              background_image_url: campaign.background_image_url,
+              created_at: campaign.created_at
+            }));
+          }
           window.location.href = '/journals';
         });
       });
       document.querySelectorAll('.permissions-btn').forEach(btn => {
         btn.addEventListener('click', function() {
           const campaignId = this.getAttribute('data-id');
+          const campaign = data.campaigns.find(c => c.id == campaignId);
           sessionStorage.setItem('current_campaign_id', campaignId);
+          if (campaign) {
+            localStorage.setItem('current_campaign_data', JSON.stringify({
+              id: campaign.id,
+              name: campaign.name,
+              description: campaign.description,
+              system: campaign.system,
+              game_rules_id: campaign.game_rules_id,
+              image_url: campaign.image_url,
+              background_image_url: campaign.background_image_url,
+              created_at: campaign.created_at
+            }));
+          }
           window.location.href = '/permissions';
         });
       });

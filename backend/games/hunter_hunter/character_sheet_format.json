@@ -1,0 +1,110 @@
+{
+  "sections": [
+    {
+      "name": "Informazioni Base",
+      "fields": [
+        { "key": "name", "label": "Nome", "type": "text" },
+        { "key": "age", "label": "Età", "type": "number" },
+        { "key": "gender", "label": "Genere", "type": "text" },
+        { "key": "height", "label": "Altezza", "type": "text" },
+        { "key": "weight", "label": "Peso", "type": "text" },
+        { "key": "appearance", "label": "Aspetto", "type": "textarea" },
+        { "key": "background", "label": "Background", "type": "textarea" },
+        { "key": "hunter_license", "label": "Licenza Hunter", "type": "boolean" },
+        { "key": "hunter_type", "label": "Tipo di Hunter", "type": "text" }
+      ]
+    },
+    {
+      "name": "Caratteristiche",
+      "fields": [
+        { "key": "attributes.strength", "label": "Forza", "type": "number" },
+        { "key": "attributes.endurance", "label": "Resistenza", "type": "number" },
+        { "key": "attributes.dexterity", "label": "Destrezza", "type": "number" },
+        { "key": "attributes.mind", "label": "Mente", "type": "number" },
+        { "key": "attributes.intuition", "label": "Intuizione", "type": "number" },
+        { "key": "attributes.charisma", "label": "Carisma", "type": "number" }
+      ]
+    },
+    {
+      "name": "Statistiche Vitali",
+      "fields": [
+        { "key": "health.max", "label": "Salute Massima", "type": "number" },
+        { "key": "health.current", "label": "Salute Attuale", "type": "number" },
+        { "key": "aura.max", "label": "Aura Massima", "type": "number" },
+        { "key": "aura.current", "label": "Aura Attuale", "type": "number" },
+        { "key": "fatigue", "label": "Fatica", "type": "number" },
+        { "key": "initiative", "label": "Iniziativa", "type": "number" },
+        { "key": "defense", "label": "Difesa", "type": "number" },
+        { "key": "evasion", "label": "Evasione", "type": "number" }
+      ]
+    },
+    {
+      "name": "Abilità",
+      "fields": [
+        { "key": "skills.athletics", "label": "Atletica", "type": "number" },
+        { "key": "skills.stealth", "label": "Furtività", "type": "number" },
+        { "key": "skills.survival", "label": "Sopravvivenza", "type": "number" },
+        { "key": "skills.perception", "label": "Percezione", "type": "number" },
+        { "key": "skills.medicine", "label": "Medicina", "type": "number" },
+        { "key": "skills.investigation", "label": "Investigazione", "type": "number" },
+        { "key": "skills.knowledge", "label": "Conoscenza", "type": "number" },
+        { "key": "skills.deception", "label": "Inganno", "type": "number" },
+        { "key": "skills.intimidation", "label": "Intimidazione", "type": "number" },
+        { "key": "skills.persuasion", "label": "Persuasione", "type": "number" },
+        { "key": "skills.technology", "label": "Tecnologia", "type": "number" },
+        { "key": "skills.crafting", "label": "Artigianato", "type": "number" }
+      ]
+    },
+    {
+      "name": "Combattimento",
+      "fields": [
+        { "key": "combat.melee", "label": "Combattimento in Mischia", "type": "number" },
+        { "key": "combat.ranged", "label": "Combattimento a Distanza", "type": "number" },
+        { "key": "combat.unarmed", "label": "Combattimento Disarmato", "type": "number" },
+        { "key": "combat.weapons", "label": "Armi", "type": "list" }
+      ]
+    },
+    {
+      "name": "Nen",
+      "fields": [
+        { "key": "nen.category", "label": "Categoria Nen", "type": "text" },
+        { "key": "nen.ten", "label": "Ten (Avvolgere)", "type": "number" },
+        { "key": "nen.zetsu", "label": "Zetsu (Sopprimere)", "type": "number" },
+        { "key": "nen.ren", "label": "Ren (Affinare)", "type": "number" },
+        { "key": "nen.hatsu", "label": "Hatsu (Rilasciare)", "type": "number" },
+        { "key": "nen.gyo", "label": "Gyo (Concentrare)", "type": "number" },
+        { "key": "nen.in", "label": "In (Nascondere)", "type": "number" },
+        { "key": "nen.en", "label": "En (Estendere)", "type": "number" },
+        { "key": "nen.shu", "label": "Shu (Avvolgere Oggetti)", "type": "number" },
+        { "key": "nen.ko", "label": "Ko (Concentrare Tutto)", "type": "number" },
+        { "key": "nen.ken", "label": "Ken (Fortificare)", "type": "number" },
+        { "key": "nen.ryu", "label": "Ryu (Fluire)", "type": "number" }
+      ]
+    },
+    {
+      "name": "Abilità Nen",
+      "fields": [
+        { "key": "nen_abilities", "label": "Abilità Nen", "type": "list" }
+      ]
+    },
+    {
+      "name": "Equipaggiamento",
+      "fields": [
+        { "key": "equipment", "label": "Equipaggiamento", "type": "list" },
+        { "key": "jenny", "label": "Jenny (Valuta)", "type": "number" }
+      ]
+    },
+    {
+      "name": "Contatti e Alleati",
+      "fields": [
+        { "key": "contacts", "label": "Contatti", "type": "list" }
+      ]
+    },
+    {
+      "name": "Note",
+      "fields": [
+        { "key": "notes", "label": "Note", "type": "textarea" }
+      ]
+    }
+  ]
+}

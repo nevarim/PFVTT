@@ -1,0 +1,325 @@
+/* Pathfinder 1e Character Sheet CSS - ORGANIC FOREST THEME */
+
+.pathfinder_1e-sheet {
+  font-family: 'Merriweather', 'Georgia', serif;
+  color: #2d5016;
+  background: radial-gradient(ellipse at center, #8fbc8f 0%, #556b2f 100%);
+  background-image: 
+    url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="leaves" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M10 2C12 2 14 4 14 8C14 12 12 14 10 14C8 14 6 12 6 8C6 4 8 2 10 2Z" fill="%23228b22" opacity="0.2"/><path d="M5 10C7 8 9 8 11 10C13 12 13 14 11 16C9 18 7 18 5 16C3 14 3 12 5 10Z" fill="%23006400" opacity="0.15"/></pattern></defs><rect width="100" height="100" fill="url(%23leaves)"/></svg>'),
+    linear-gradient(45deg, transparent 30%, rgba(34, 139, 34, 0.1) 50%, transparent 70%);
+  border-radius: 25px;
+  border: 3px solid #228b22;
+  box-shadow: 
+    0 0 30px rgba(34, 139, 34, 0.4),
+    inset 0 0 20px rgba(255, 255, 255, 0.1),
+    0 8px 32px rgba(0, 0, 0, 0.2);
+  padding: 30px;
+  max-width: 900px;
+  margin: 20px auto;
+  position: relative;
+  overflow: hidden;
+}
+
+.pathfinder_1e-sheet::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><path d="M50 20C70 20 80 40 80 60C80 80 70 100 50 100C30 100 20 80 20 60C20 40 30 20 50 20Z" fill="%23228b22" opacity="0.05"/><path d="M150 120C170 120 180 140 180 160C180 180 170 200 150 200C130 200 120 180 120 160C120 140 130 120 150 120Z" fill="%23006400" opacity="0.05"/></svg>');
+  animation: floatLeaves 20s linear infinite;
+  pointer-events: none;
+  z-index: 1;
+}
+
+@keyframes floatLeaves {
+  0% { transform: translateX(-100%) translateY(-100%) rotate(0deg); }
+  100% { transform: translateX(100%) translateY(100%) rotate(360deg); }
+}
+
+.pathfinder_1e-sheet > * {
+  position: relative;
+  z-index: 2;
+}
+
+.pathfinder_1e-sheet h1 {
+  font-family: 'Merriweather', 'Georgia', serif;
+  color: #2d5016;
+  text-align: center;
+  border-bottom: 3px solid #228b22;
+  padding-bottom: 15px;
+  margin-bottom: 30px;
+  font-size: 34px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 4px;
+  text-shadow: 
+    2px 2px 4px rgba(0, 0, 0, 0.3),
+    0 0 10px rgba(34, 139, 34, 0.5);
+  position: relative;
+}
+
+.pathfinder_1e-sheet h1::before,
+.pathfinder_1e-sheet h1::after {
+  content: "🌿";
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 24px;
+  animation: sway 3s ease-in-out infinite alternate;
+}
+
+.pathfinder_1e-sheet h1::before {
+  left: 20px;
+}
+
+.pathfinder_1e-sheet h1::after {
+  right: 20px;
+  animation-delay: 1.5s;
+}
+
+@keyframes sway {
+  from { transform: translateY(-50%) rotate(-5deg); }
+  to { transform: translateY(-50%) rotate(5deg); }
+}
+
+.pathfinder_1e-sheet .section {
+  margin-bottom: 20px;
+  border: 1px solid #d4c8a8;
+  border-radius: 10px;
+  padding: 18px;
+  background-color: rgba(255, 255, 255, 0.85);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  transition: box-shadow 0.3s ease, transform 0.2s ease;
+}
+
+.pathfinder_1e-sheet .section:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  transform: translateY(-1px);
+}
+
+.pathfinder_1e-sheet .section-header {
+  font-family: 'Trajan Pro', 'Times New Roman', serif;
+  font-size: 19px;
+  color: #8b0000;
+  margin-bottom: 18px;
+  border-bottom: 2px solid #d4c8a8;
+  padding-bottom: 8px;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16"><path fill="%238b0000" d="M8 0L9.6 5.2H15L10.5 8.4L12.1 13.6L8 10.4L3.9 13.6L5.5 8.4L1 5.2H6.4L8 0Z"/></svg>');
+  background-repeat: no-repeat;
+  background-position: left center;
+  padding-left: 22px;
+}
+
+.pathfinder_1e-sheet .field-row {
+  display: flex;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+
+.pathfinder_1e-sheet .field {
+  flex: 1 0 200px;
+  margin-right: 10px;
+  margin-bottom: 5px;
+}
+
+.pathfinder_1e-sheet .field-label {
+  font-weight: bold;
+  font-size: 14px;
+  margin-bottom: 3px;
+  color: #333;
+}
+
+.pathfinder_1e-sheet input[type="text"],
+.pathfinder_1e-sheet input[type="number"] {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #d4c8a8;
+  border-radius: 6px;
+  background-color: rgba(255, 255, 255, 0.9);
+  color: #2c1810;
+  font-family: inherit;
+  transition: border-color 0.2s, box-shadow 0.2s, background-color 0.2s;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.pathfinder_1e-sheet input[type="text"]:hover,
+.pathfinder_1e-sheet input[type="number"]:hover {
+  border-color: #8b0000;
+  background-color: rgba(255, 255, 255, 1);
+}
+
+.pathfinder_1e-sheet input[type="text"]:focus,
+.pathfinder_1e-sheet input[type="number"]:focus {
+  outline: none;
+  border-color: #8b0000;
+  box-shadow: 0 0 0 2px rgba(139, 0, 0, 0.2);
+  background-color: rgba(255, 255, 255, 1);
+}
+
+.pathfinder_1e-sheet textarea {
+  width: 100%;
+  min-height: 80px;
+  padding: 10px;
+  border: 1px solid #d4c8a8;
+  border-radius: 6px;
+  background-color: rgba(255, 255, 255, 0.9);
+  color: #2c1810;
+  font-family: inherit;
+  resize: vertical;
+  transition: border-color 0.2s, box-shadow 0.2s, background-color 0.2s;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.pathfinder_1e-sheet textarea:hover {
+  border-color: #8b0000;
+  background-color: rgba(255, 255, 255, 1);
+}
+
+.pathfinder_1e-sheet textarea:focus {
+  outline: none;
+  border-color: #8b0000;
+  box-shadow: 0 0 0 2px rgba(139, 0, 0, 0.2);
+  background-color: rgba(255, 255, 255, 1);
+}
+
+.pathfinder_1e-sheet .ability-scores {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 10px;
+}
+
+.pathfinder_1e-sheet .ability-score {
+  text-align: center;
+  border: 1px solid #8b0000;
+  border-radius: 10px;
+  padding: 14px;
+  background-color: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.pathfinder_1e-sheet .ability-score:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.pathfinder_1e-sheet .ability-name {
+  font-weight: bold;
+  margin-bottom: 8px;
+  color: #8b0000;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.pathfinder_1e-sheet .combat-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 10px;
+}
+
+.pathfinder_1e-sheet .combat-stat {
+  text-align: center;
+  border: 1px solid #8b0000;
+  border-radius: 10px;
+  padding: 14px;
+  background-color: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.pathfinder_1e-sheet .combat-stat:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.pathfinder_1e-sheet .saving-throws {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.pathfinder_1e-sheet .saving-throw {
+  text-align: center;
+  border: 1px solid #8b0000;
+  border-radius: 10px;
+  padding: 14px;
+  background-color: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.pathfinder_1e-sheet .saving-throw:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.pathfinder_1e-sheet .list-container {
+  border: 1px solid #d4c8a8;
+  border-radius: 8px;
+  padding: 12px;
+  background-color: rgba(255, 255, 255, 0.9);
+  min-height: 80px;
+  max-height: 200px;
+  overflow-y: auto;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.pathfinder_1e-sheet .list-item {
+  padding: 8px;
+  border-bottom: 1px solid #e8dcc0;
+  transition: background-color 0.2s ease;
+}
+
+.pathfinder_1e-sheet .list-item:hover {
+  background-color: rgba(139, 0, 0, 0.05);
+}
+
+.pathfinder_1e-sheet .list-item:last-child {
+  border-bottom: none;
+}
+
+.pathfinder_1e-sheet .add-item-btn {
+  background-color: #8b0000;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 16px;
+  margin-top: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.pathfinder_1e-sheet .add-item-btn:hover {
+  background-color: #6b0000;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.pathfinder_1e-sheet .add-item-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+  .pathfinder_1e-sheet {
+    padding: 10px;
+  }
+  
+  .pathfinder_1e-sheet .field {
+    flex: 1 0 100%;
+  }
+  
+  .pathfinder_1e-sheet .ability-scores,
+  .pathfinder_1e-sheet .combat-stats,
+  .pathfinder_1e-sheet .saving-throws {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

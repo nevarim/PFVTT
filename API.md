@@ -4,7 +4,7 @@
 
 ### Database Connection Pooling
 The backend uses MySQL connection pooling for improved performance and reliability:
-- **Pool Size**: Maximum 10 concurrent connections
+- **Pool Size**: Maximum 20 concurrent connections
 - **Connection Timeout**: 30 seconds
 - **Automatic Retry**: Failed connections are automatically retried
 - **Resource Management**: Connections are automatically acquired and released
@@ -76,6 +76,19 @@ This ensures optimal database performance under load and prevents connection exh
 - Request Body (JSON):
   - username: string
   - campaign_id: int
+- Response (JSON):
+  - success: boolean
+  - error: string (if failed)
+
+### POST /api/campaigns/edit
+- Description: Edit an existing campaign.
+- Request Body (JSON):
+  - campaign_id: int (required)
+  - name: string
+  - description: string
+  - game_rules_id: int
+  - image_url: string
+  - background_image_url: string
 - Response (JSON):
   - success: boolean
   - error: string (if failed)
@@ -248,12 +261,12 @@ This ensures optimal database performance under load and prevents connection exh
   - map_id: int
   - asset_id: int
   - name: string (optional)
-  - x_position: decimal
-  - y_position: decimal
+  - x_position: decimal (or grid_x for compatibility)
+  - y_position: decimal (or grid_y for compatibility)
+  - grid_z: decimal (optional, default 0)
   - scale_x: decimal (optional, default 1.0)
   - scale_y: decimal (optional, default 1.0)
   - rotation: decimal (optional, default 0.0)
-  - z_index: int (optional, default 0)
   - visible: boolean (optional, default true)
   - locked: boolean (optional, default false)
   - properties: object (optional)
@@ -264,7 +277,17 @@ This ensures optimal database performance under load and prevents connection exh
 
 #### PUT /api/map-tokens/:id
 - Description: Update a token on the map.
-- Request Body (JSON): Same as POST, all fields optional
+- Request Body (JSON): All fields optional
+  - name: string
+  - grid_x: decimal (or x_position for compatibility)
+  - grid_y: decimal (or y_position for compatibility)
+  - grid_z: decimal
+  - scale_x: decimal
+  - scale_y: decimal
+  - rotation: decimal
+  - visible: boolean
+  - locked: boolean
+  - properties: object
 - Response (JSON):
   - success: boolean
   - error: string (if failed)
@@ -273,6 +296,38 @@ This ensures optimal database performance under load and prevents connection exh
 - Description: Remove a token from the map.
 - Response (JSON):
   - success: boolean
+  - error: string (if failed)
+
+#### PUT /api/map-tokens/batch
+- Description: Batch update multiple tokens on the map.
+- Request Body (JSON):
+  - tokens: array of token objects with id and fields to update
+    - id: int (required)
+    - name: string (optional)
+    - grid_x: decimal (optional)
+    - grid_y: decimal (optional)
+    - grid_z: decimal (optional)
+    - scale_x: decimal (optional)
+    - scale_y: decimal (optional)
+    - rotation: decimal (optional)
+    - visible: boolean (optional)
+    - locked: boolean (optional)
+    - properties: object (optional)
+- Response (JSON):
+  - success: boolean
+  - updated_count: int
+  - errors: array of error messages
+  - error: string (if failed)
+
+### Token Management (Legacy API)
+
+#### GET /api/tokens?map_id=MAP_ID
+- Description: Get all tokens for a specific map (legacy endpoint, use /api/map-tokens instead).
+- Query Parameter:
+  - map_id: int
+- Response (JSON):
+  - success: boolean
+  - tokens: array of {id, map_id, asset_id, name, grid_x, grid_y, grid_z, scale_x, scale_y, rotation, visible, locked, properties, created_at, updated_at}
   - error: string (if failed)
 
 ### Map Backgrounds
@@ -447,6 +502,19 @@ This ensures optimal database performance under load and prevents connection exh
   - users: array of {id, username}
   - error: string (if failed)
 
+### GET /api/debug/check-map?map_id=MAP_ID
+- Description: Debug endpoint to check if a map exists.
+- Query Parameter:
+  - map_id: int
+- Response (JSON):
+  - success: boolean
+  - exists: boolean
+  - map_id: string
+  - name: string (if exists)
+  - campaign_id: string (if exists)
+  - message: string (if not exists)
+  - error: string (if failed)
+
 ### POST /api/upload
 - Description: Upload campaign images.
 - Request: multipart/form-data
@@ -458,11 +526,88 @@ This ensures optimal database performance under load and prevents connection exh
   - image_url: string
   - error: string (if failed)
 
+### POST /api/campaign-background-upload
+- Description: Upload campaign background images (mock implementation).
+- Request: multipart/form-data with 'image' field
+- Response (JSON):
+  - success: boolean
+  - url: string (image URL)
+  - error: string (if failed)
+
 ### POST /api/fix-image-paths
 - Description: Fix existing image paths to include /backend/ prefix.
 - Response (JSON):
   - success: boolean
   - message: string
+  - error: string (if failed)
+
+### GET /api/token-borders
+- Description: Get all available token border images from the backend.
+- Response (JSON):
+  - success: boolean
+  - borders: array of {name, url}
+  - error: string (if failed)
+
+## Token Sheets Management
+
+### GET /api/token-sheets?map_id=MAP_ID
+- Description: Get all token sheets for a specific map.
+- Query Parameter:
+  - map_id: int
+- Response (JSON):
+  - success: boolean
+  - sheets: array of {id, map_token_id, actor_id, sheet_json, created_at, updated_at}
+  - error: string (if failed)
+
+### GET /api/token-sheets/:id
+- Description: Get a specific token sheet by ID.
+- Path Parameter:
+  - id: int
+- Response (JSON):
+  - success: boolean
+  - sheet: object {id, map_token_id, actor_id, sheet_json, created_at, updated_at}
+  - error: string (if failed)
+
+### POST /api/token-sheets
+- Description: Create a new token sheet.
+- Request Body (JSON):
+  - map_token_id: int
+  - actor_id: int (optional)
+  - sheet_json: object (character sheet data)
+- Response (JSON):
+  - success: boolean
+  - id: int (new sheet ID)
+  - error: string (if failed)
+
+### PUT /api/token-sheets/:id
+- Description: Update an existing token sheet.
+- Path Parameter:
+  - id: int
+- Request Body (JSON):
+  - sheet_json: object (updated character sheet data)
+  - actor_id: int (optional)
+- Response (JSON):
+  - success: boolean
+  - error: string (if failed)
+
+### DELETE /api/token-sheets/:id
+- Description: Delete a token sheet.
+- Path Parameter:
+  - id: int
+- Response (JSON):
+  - success: boolean
+  - error: string (if failed)
+
+### POST /api/token-sheets/auto-create
+- Description: Auto-create a token sheet based on campaign game rules.
+- Request Body (JSON):
+  - map_token_id: int
+  - token_name: string
+- Response (JSON):
+  - success: boolean
+  - id: int (new sheet ID)
+  - sheet_json: object (generated character sheet)
+  - system: string (game system used)
   - error: string (if failed)
 
 ## Map

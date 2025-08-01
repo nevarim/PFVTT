@@ -1,0 +1,272 @@
+/* Pathfinder 1e Character Sheet CSS */
+
+.pathfinder_1e-sheet {
+  font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, serif;
+  color: #2c1810;
+  background-color: #f9f7f0;
+  background-image: url('data:image/svg+xml;utf8,<svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path fill="%23e8dcc0" d="M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z"/></svg>');
+  border-radius: 12px;
+  border: 1px solid #8b0000;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  padding: 25px;
+  max-width: 850px;
+  margin: 0 auto;
+  position: relative;
+}
+
+.pathfinder_1e-sheet h1 {
+  font-family: 'Trajan Pro', 'Times New Roman', serif;
+  color: #8b0000;
+  text-align: center;
+  border-bottom: 3px solid #8b0000;
+  padding-bottom: 12px;
+  margin-bottom: 25px;
+  font-size: 28px;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20"><path fill="%238b0000" d="M10 0L12 6H18L13 10L15 16L10 12L5 16L7 10L2 6H8L10 0Z"/></svg>');
+  background-repeat: no-repeat;
+  background-position: left center;
+  padding-left: 30px;
+}
+
+.pathfinder_1e-sheet .section {
+  margin-bottom: 20px;
+  border: 1px solid #d4c8a8;
+  border-radius: 10px;
+  padding: 18px;
+  background-color: rgba(255, 255, 255, 0.85);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  transition: box-shadow 0.3s ease, transform 0.2s ease;
+}
+
+.pathfinder_1e-sheet .section:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  transform: translateY(-1px);
+}
+
+.pathfinder_1e-sheet .section-header {
+  font-family: 'Trajan Pro', 'Times New Roman', serif;
+  font-size: 19px;
+  color: #8b0000;
+  margin-bottom: 18px;
+  border-bottom: 2px solid #d4c8a8;
+  padding-bottom: 8px;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16"><path fill="%238b0000" d="M8 0L9.6 5.2H15L10.5 8.4L12.1 13.6L8 10.4L3.9 13.6L5.5 8.4L1 5.2H6.4L8 0Z"/></svg>');
+  background-repeat: no-repeat;
+  background-position: left center;
+  padding-left: 22px;
+}
+
+.pathfinder_1e-sheet .field-row {
+  display: flex;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+
+.pathfinder_1e-sheet .field {
+  flex: 1 0 200px;
+  margin-right: 10px;
+  margin-bottom: 5px;
+}
+
+.pathfinder_1e-sheet .field-label {
+  font-weight: bold;
+  font-size: 14px;
+  margin-bottom: 3px;
+  color: #333;
+}
+
+.pathfinder_1e-sheet input[type="text"],
+.pathfinder_1e-sheet input[type="number"] {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #d4c8a8;
+  border-radius: 6px;
+  background-color: rgba(255, 255, 255, 0.9);
+  color: #2c1810;
+  font-family: inherit;
+  transition: border-color 0.2s, box-shadow 0.2s, background-color 0.2s;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.pathfinder_1e-sheet input[type="text"]:hover,
+.pathfinder_1e-sheet input[type="number"]:hover {
+  border-color: #8b0000;
+  background-color: rgba(255, 255, 255, 1);
+}
+
+.pathfinder_1e-sheet input[type="text"]:focus,
+.pathfinder_1e-sheet input[type="number"]:focus {
+  outline: none;
+  border-color: #8b0000;
+  box-shadow: 0 0 0 2px rgba(139, 0, 0, 0.2);
+  background-color: rgba(255, 255, 255, 1);
+}
+
+.pathfinder_1e-sheet textarea {
+  width: 100%;
+  min-height: 80px;
+  padding: 10px;
+  border: 1px solid #d4c8a8;
+  border-radius: 6px;
+  background-color: rgba(255, 255, 255, 0.9);
+  color: #2c1810;
+  font-family: inherit;
+  resize: vertical;
+  transition: border-color 0.2s, box-shadow 0.2s, background-color 0.2s;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.pathfinder_1e-sheet textarea:hover {
+  border-color: #8b0000;
+  background-color: rgba(255, 255, 255, 1);
+}
+
+.pathfinder_1e-sheet textarea:focus {
+  outline: none;
+  border-color: #8b0000;
+  box-shadow: 0 0 0 2px rgba(139, 0, 0, 0.2);
+  background-color: rgba(255, 255, 255, 1);
+}
+
+.pathfinder_1e-sheet .ability-scores {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 10px;
+}
+
+.pathfinder_1e-sheet .ability-score {
+  text-align: center;
+  border: 1px solid #8b0000;
+  border-radius: 10px;
+  padding: 14px;
+  background-color: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.pathfinder_1e-sheet .ability-score:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.pathfinder_1e-sheet .ability-name {
+  font-weight: bold;
+  margin-bottom: 8px;
+  color: #8b0000;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.pathfinder_1e-sheet .combat-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 10px;
+}
+
+.pathfinder_1e-sheet .combat-stat {
+  text-align: center;
+  border: 1px solid #8b0000;
+  border-radius: 10px;
+  padding: 14px;
+  background-color: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.pathfinder_1e-sheet .combat-stat:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.pathfinder_1e-sheet .saving-throws {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.pathfinder_1e-sheet .saving-throw {
+  text-align: center;
+  border: 1px solid #8b0000;
+  border-radius: 10px;
+  padding: 14px;
+  background-color: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.pathfinder_1e-sheet .saving-throw:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.pathfinder_1e-sheet .list-container {
+  border: 1px solid #d4c8a8;
+  border-radius: 8px;
+  padding: 12px;
+  background-color: rgba(255, 255, 255, 0.9);
+  min-height: 80px;
+  max-height: 200px;
+  overflow-y: auto;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.pathfinder_1e-sheet .list-item {
+  padding: 8px;
+  border-bottom: 1px solid #e8dcc0;
+  transition: background-color 0.2s ease;
+}
+
+.pathfinder_1e-sheet .list-item:hover {
+  background-color: rgba(139, 0, 0, 0.05);
+}
+
+.pathfinder_1e-sheet .list-item:last-child {
+  border-bottom: none;
+}
+
+.pathfinder_1e-sheet .add-item-btn {
+  background-color: #8b0000;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 16px;
+  margin-top: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.pathfinder_1e-sheet .add-item-btn:hover {
+  background-color: #6b0000;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.pathfinder_1e-sheet .add-item-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+  .pathfinder_1e-sheet {
+    padding: 10px;
+  }
+  
+  .pathfinder_1e-sheet .field {
+    flex: 1 0 100%;
+  }
+  
+  .pathfinder_1e-sheet .ability-scores,
+  .pathfinder_1e-sheet .combat-stats,
+  .pathfinder_1e-sheet .saving-throws {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

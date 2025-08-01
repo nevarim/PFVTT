@@ -1,0 +1,473 @@
+/* Starfinder Character Sheet CSS */
+
+.starfinder-sheet {
+  font-family: 'Exo 2', 'Roboto', sans-serif;
+  color: #e0e0e0;
+  background-color: #1a1a2e;
+  background-image: url('data:image/svg+xml;utf8,<svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path fill="%23252550" d="M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z"/></svg>');
+  border-radius: 10px;
+  border: 1px solid #4a4a82;
+  box-shadow: 0 0 20px rgba(0, 200, 255, 0.1);
+  padding: 20px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.starfinder-sheet h1 {
+  font-family: 'Orbitron', 'Exo 2', sans-serif;
+  color: #00c8ff;
+  text-align: center;
+  border-bottom: 2px solid #00c8ff;
+  padding-bottom: 10px;
+  margin-bottom: 20px;
+  font-size: 24px;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  text-shadow: 0 0 10px rgba(0, 200, 255, 0.5);
+}
+
+.starfinder-sheet .section {
+  margin-bottom: 20px;
+  border: 1px solid #4a4a82;
+  border-radius: 8px;
+  padding: 15px;
+  background-color: rgba(26, 26, 46, 0.8);
+  box-shadow: 0 0 10px rgba(0, 200, 255, 0.1);
+}
+
+.starfinder-sheet .section-header {
+  font-family: 'Orbitron', 'Exo 2', sans-serif;
+  font-size: 18px;
+  color: #00c8ff;
+  margin-bottom: 15px;
+  border-bottom: 1px solid #4a4a82;
+  padding-bottom: 5px;
+  display: flex;
+  align-items: center;
+  text-shadow: 0 0 5px rgba(0, 200, 255, 0.5);
+}
+
+.starfinder-sheet .section-header::before {
+  content: "";
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  margin-right: 8px;
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path fill="%2300c8ff" d="M10 0L12 6H18L13 10L15 16L10 12L5 16L7 10L2 6H8L10 0Z"/></svg>');
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.starfinder-sheet .field-row {
+  display: flex;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+
+.starfinder-sheet .field {
+  flex: 1 0 200px;
+  margin-right: 15px;
+  margin-bottom: 10px;
+}
+
+.starfinder-sheet .field-label {
+  font-weight: 600;
+  font-size: 14px;
+  margin-bottom: 5px;
+  color: #00c8ff;
+}
+
+.starfinder-sheet input[type="text"],
+.starfinder-sheet input[type="number"] {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #4a4a82;
+  border-radius: 4px;
+  background-color: rgba(26, 26, 46, 0.9);
+  color: #e0e0e0;
+  font-family: inherit;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.starfinder-sheet input[type="text"]:focus,
+.starfinder-sheet input[type="number"]:focus,
+.starfinder-sheet textarea:focus {
+  border-color: #00c8ff;
+  box-shadow: 0 0 10px rgba(0, 200, 255, 0.3);
+  outline: none;
+}
+
+.starfinder-sheet textarea {
+  width: 100%;
+  min-height: 80px;
+  padding: 8px;
+  border: 1px solid #4a4a82;
+  border-radius: 4px;
+  background-color: rgba(26, 26, 46, 0.9);
+  color: #e0e0e0;
+  font-family: inherit;
+  resize: vertical;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.starfinder-sheet .ability-scores {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 15px;
+}
+
+.starfinder-sheet .ability-score {
+  text-align: center;
+  border: 1px solid #4a4a82;
+  border-radius: 8px;
+  padding: 10px;
+  background-color: rgba(10, 10, 30, 0.7);
+  box-shadow: 0 0 10px rgba(0, 200, 255, 0.1);
+}
+
+.starfinder-sheet .ability-name {
+  font-weight: bold;
+  margin-bottom: 5px;
+  color: #00c8ff;
+}
+
+.starfinder-sheet .ability-value {
+  font-size: 24px;
+  font-weight: bold;
+  color: #e0e0e0;
+}
+
+.starfinder-sheet .ability-modifier {
+  font-size: 16px;
+  color: #00c8ff;
+  margin-top: 5px;
+  border: 1px solid #4a4a82;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 5px auto 0;
+  box-shadow: 0 0 5px rgba(0, 200, 255, 0.2);
+}
+
+.starfinder-sheet .saving-throws {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+}
+
+.starfinder-sheet .saving-throw {
+  text-align: center;
+  border: 1px solid #4a4a82;
+  border-radius: 8px;
+  padding: 10px;
+  background-color: rgba(10, 10, 30, 0.7);
+  box-shadow: 0 0 10px rgba(0, 200, 255, 0.1);
+}
+
+.starfinder-sheet .saving-throw-name {
+  font-weight: bold;
+  margin-bottom: 5px;
+  color: #00c8ff;
+}
+
+.starfinder-sheet .saving-throw-value {
+  font-size: 20px;
+  font-weight: bold;
+  color: #e0e0e0;
+}
+
+.starfinder-sheet .combat-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 15px;
+}
+
+.starfinder-sheet .combat-stat {
+  text-align: center;
+  border: 1px solid #4a4a82;
+  border-radius: 8px;
+  padding: 10px;
+  background-color: rgba(10, 10, 30, 0.7);
+  box-shadow: 0 0 10px rgba(0, 200, 255, 0.1);
+}
+
+.starfinder-sheet .combat-stat-label {
+  font-weight: bold;
+  margin-bottom: 5px;
+  color: #00c8ff;
+  font-size: 14px;
+}
+
+.starfinder-sheet .combat-stat-value {
+  font-size: 20px;
+  font-weight: bold;
+  color: #e0e0e0;
+}
+
+.starfinder-sheet .health-resolve-stamina {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+  margin-bottom: 15px;
+}
+
+.starfinder-sheet .health-container,
+.starfinder-sheet .resolve-container,
+.starfinder-sheet .stamina-container {
+  text-align: center;
+  border: 1px solid #4a4a82;
+  border-radius: 8px;
+  padding: 10px;
+  background-color: rgba(10, 10, 30, 0.7);
+  box-shadow: 0 0 10px rgba(0, 200, 255, 0.1);
+}
+
+.starfinder-sheet .health-container {
+  border-color: #ff5555;
+}
+
+.starfinder-sheet .resolve-container {
+  border-color: #55aaff;
+}
+
+.starfinder-sheet .stamina-container {
+  border-color: #55ff55;
+}
+
+.starfinder-sheet .health-label,
+.starfinder-sheet .resolve-label,
+.starfinder-sheet .stamina-label {
+  font-weight: bold;
+  margin-bottom: 5px;
+  font-size: 14px;
+}
+
+.starfinder-sheet .health-label {
+  color: #ff5555;
+}
+
+.starfinder-sheet .resolve-label {
+  color: #55aaff;
+}
+
+.starfinder-sheet .stamina-label {
+  color: #55ff55;
+}
+
+.starfinder-sheet .health-value,
+.starfinder-sheet .resolve-value,
+.starfinder-sheet .stamina-value {
+  font-size: 20px;
+  font-weight: bold;
+  color: #e0e0e0;
+}
+
+.starfinder-sheet .armor-class-container {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+  margin-bottom: 15px;
+}
+
+.starfinder-sheet .eac-container,
+.starfinder-sheet .kac-container {
+  text-align: center;
+  border: 1px solid #4a4a82;
+  border-radius: 8px;
+  padding: 10px;
+  background-color: rgba(10, 10, 30, 0.7);
+  box-shadow: 0 0 10px rgba(0, 200, 255, 0.1);
+}
+
+.starfinder-sheet .eac-label,
+.starfinder-sheet .kac-label {
+  font-weight: bold;
+  margin-bottom: 5px;
+  color: #00c8ff;
+  font-size: 14px;
+}
+
+.starfinder-sheet .eac-value,
+.starfinder-sheet .kac-value {
+  font-size: 20px;
+  font-weight: bold;
+  color: #e0e0e0;
+}
+
+.starfinder-sheet .skills {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 10px;
+}
+
+.starfinder-sheet .skill {
+  display: flex;
+  align-items: center;
+  border: 1px solid #4a4a82;
+  border-radius: 4px;
+  padding: 5px;
+  background-color: rgba(10, 10, 30, 0.7);
+}
+
+.starfinder-sheet .skill-name {
+  flex: 1;
+  font-weight: 600;
+  font-size: 14px;
+  color: #e0e0e0;
+}
+
+.starfinder-sheet .skill-value {
+  width: 30px;
+  height: 30px;
+  border: 1px solid #4a4a82;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  color: #00c8ff;
+  background-color: rgba(0, 200, 255, 0.1);
+}
+
+.starfinder-sheet .list-container {
+  border: 1px solid #4a4a82;
+  border-radius: 4px;
+  padding: 10px;
+  background-color: rgba(10, 10, 30, 0.7);
+  min-height: 80px;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.starfinder-sheet .list-item {
+  padding: 8px;
+  border-bottom: 1px solid #4a4a82;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #e0e0e0;
+}
+
+.starfinder-sheet .list-item:last-child {
+  border-bottom: none;
+}
+
+.starfinder-sheet .list-item-actions {
+  display: flex;
+  align-items: center;
+}
+
+.starfinder-sheet .list-item-action {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 5px;
+  border: 1px solid #4a4a82;
+  border-radius: 4px;
+  cursor: pointer;
+  color: #00c8ff;
+  font-weight: bold;
+  font-size: 14px;
+  background-color: rgba(0, 200, 255, 0.1);
+}
+
+.starfinder-sheet .add-item-btn {
+  background-color: rgba(0, 200, 255, 0.2);
+  color: #00c8ff;
+  border: 1px solid #00c8ff;
+  border-radius: 4px;
+  padding: 8px 12px;
+  margin-top: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.2s, box-shadow 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.starfinder-sheet .add-item-btn::before {
+  content: "+";
+  margin-right: 5px;
+  font-weight: bold;
+}
+
+.starfinder-sheet .add-item-btn:hover {
+  background-color: rgba(0, 200, 255, 0.3);
+  box-shadow: 0 0 10px rgba(0, 200, 255, 0.3);
+}
+
+.starfinder-sheet .currency-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.starfinder-sheet .currency-item {
+  display: flex;
+  align-items: center;
+  background-color: rgba(10, 10, 30, 0.7);
+  border: 1px solid #4a4a82;
+  border-radius: 4px;
+  padding: 5px 10px;
+}
+
+.starfinder-sheet .currency-label {
+  margin-right: 5px;
+  font-weight: bold;
+  color: #00c8ff;
+}
+
+.starfinder-sheet .currency-value {
+  width: 60px;
+  color: #e0e0e0;
+}
+
+.starfinder-sheet ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.starfinder-sheet ::-webkit-scrollbar-track {
+  background: rgba(10, 10, 30, 0.7);
+  border-radius: 4px;
+}
+
+.starfinder-sheet ::-webkit-scrollbar-thumb {
+  background: #4a4a82;
+  border-radius: 4px;
+}
+
+.starfinder-sheet ::-webkit-scrollbar-thumb:hover {
+  background: #00c8ff;
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+  .starfinder-sheet {
+    padding: 15px;
+  }
+  
+  .starfinder-sheet .field {
+    flex: 1 0 100%;
+    margin-right: 0;
+  }
+  
+  .starfinder-sheet .ability-scores,
+  .starfinder-sheet .combat-stats,
+  .starfinder-sheet .saving-throws,
+  .starfinder-sheet .health-resolve-stamina,
+  .starfinder-sheet .armor-class-container {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .starfinder-sheet .skills {
+    grid-template-columns: 1fr;
+  }
+}

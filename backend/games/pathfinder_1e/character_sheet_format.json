@@ -1,0 +1,96 @@
+{
+  "sections": [
+    {
+      "name": "Informazioni Base",
+      "fields": [
+        { "key": "name", "label": "Nome", "type": "text" },
+        { "key": "race", "label": "Razza", "type": "text" },
+        { "key": "class", "label": "Classe", "type": "text" },
+        { "key": "alignment", "label": "Allineamento", "type": "text" },
+        { "key": "level", "label": "Livello", "type": "number" },
+        { "key": "experience_points", "label": "Punti Esperienza", "type": "number" },
+        { "key": "deity", "label": "Divinità", "type": "text" },
+        { "key": "homeland", "label": "Patria", "type": "text" },
+        { "key": "size", "label": "Taglia", "type": "text" }
+      ]
+    },
+    {
+      "name": "Caratteristiche",
+      "fields": [
+        { "key": "ability_scores.strength", "label": "Forza", "type": "number" },
+        { "key": "ability_scores.dexterity", "label": "Destrezza", "type": "number" },
+        { "key": "ability_scores.constitution", "label": "Costituzione", "type": "number" },
+        { "key": "ability_scores.intelligence", "label": "Intelligenza", "type": "number" },
+        { "key": "ability_scores.wisdom", "label": "Saggezza", "type": "number" },
+        { "key": "ability_scores.charisma", "label": "Carisma", "type": "number" }
+      ]
+    },
+    {
+      "name": "Combattimento",
+      "fields": [
+        { "key": "hit_points.max", "label": "PF Massimi", "type": "number" },
+        { "key": "hit_points.current", "label": "PF Attuali", "type": "number" },
+        { "key": "hit_points.temporary", "label": "PF Temporanei", "type": "number" },
+        { "key": "armor_class.total", "label": "CA Totale", "type": "number" },
+        { "key": "armor_class.touch", "label": "CA Contatto", "type": "number" },
+        { "key": "armor_class.flat_footed", "label": "CA Impreparato", "type": "number" },
+        { "key": "initiative", "label": "Iniziativa", "type": "number" },
+        { "key": "speed", "label": "Velocità", "type": "text" },
+        { "key": "base_attack_bonus", "label": "Bonus Attacco Base", "type": "text" }
+      ]
+    },
+    {
+      "name": "Tiri Salvezza",
+      "fields": [
+        { "key": "saving_throws.fortitude", "label": "Tempra", "type": "number" },
+        { "key": "saving_throws.reflex", "label": "Riflessi", "type": "number" },
+        { "key": "saving_throws.will", "label": "Volontà", "type": "number" }
+      ]
+    },
+    {
+      "name": "Abilità",
+      "fields": [
+        { "key": "skills", "label": "Abilità", "type": "list" }
+      ]
+    },
+    {
+      "name": "Talenti e Tratti",
+      "fields": [
+        { "key": "feats", "label": "Talenti", "type": "list" },
+        { "key": "traits", "label": "Tratti", "type": "list" },
+        { "key": "special_abilities", "label": "Abilità Speciali", "type": "list" }
+      ]
+    },
+    {
+      "name": "Equipaggiamento",
+      "fields": [
+        { "key": "equipment", "label": "Equipaggiamento", "type": "list" },
+        { "key": "wealth", "label": "Ricchezza", "type": "object" }
+      ]
+    },
+    {
+      "name": "Armi",
+      "fields": [
+        { "key": "weapons", "label": "Armi", "type": "list" }
+      ]
+    },
+    {
+      "name": "Incantesimi",
+      "fields": [
+        { "key": "spellcasting.class", "label": "Classe Incantatore", "type": "text" },
+        { "key": "spellcasting.ability", "label": "Caratteristica Incantesimi", "type": "text" },
+        { "key": "spellcasting.concentration", "label": "Bonus Concentrazione", "type": "number" },
+        { "key": "spellcasting.spell_resistance", "label": "Resistenza agli Incantesimi", "type": "number" },
+        { "key": "spellcasting.spell_slots", "label": "Slot Incantesimi", "type": "object" },
+        { "key": "spellcasting.spells_per_day", "label": "Incantesimi al Giorno", "type": "object" },
+        { "key": "spells", "label": "Incantesimi Conosciuti", "type": "list" }
+      ]
+    },
+    {
+      "name": "Note",
+      "fields": [
+        { "key": "notes", "label": "Note", "type": "textarea" }
+      ]
+    }
+  ]
+}

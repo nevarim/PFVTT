@@ -1,0 +1,616 @@
+/* D&D 3.5e Character Sheet CSS - Ancient Scroll Theme */
+
+.dnd35e-sheet {
+  font-family: 'Cinzel', 'Trajan Pro', 'Book Antiqua', serif;
+  color: #3a2817;
+  background: linear-gradient(135deg, #f4ead5 0%, #e8dcc6 25%, #f0e6d2 50%, #e5d9c1 75%, #f2e8d4 100%);
+  background-image: 
+    radial-gradient(circle at 20% 80%, rgba(139, 69, 19, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(160, 82, 45, 0.08) 0%, transparent 50%),
+    radial-gradient(circle at 40% 40%, rgba(210, 180, 140, 0.15) 0%, transparent 30%),
+    url('data:image/svg+xml;utf8,<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><defs><filter id="paper"><feTurbulence baseFrequency="0.04" numOctaves="5" result="noise" seed="1"/><feDiffuseLighting in="noise" lighting-color="%23f4ead5" surfaceScale="1"><feDistantLight azimuth="45" elevation="60"/></feDiffuseLighting></filter></defs><rect width="200" height="200" filter="url(%23paper)" opacity="0.3"/></svg>');
+  border: 3px solid transparent;
+  border-image: linear-gradient(45deg, #b8860b, #cd853f, #daa520, #b8860b) 1;
+  border-radius: 15px;
+  box-shadow: 
+    0 0 0 2px #8b4513,
+    0 8px 32px rgba(139, 69, 19, 0.3),
+    inset 0 1px 0 rgba(255, 248, 220, 0.8),
+    inset 0 -1px 0 rgba(139, 69, 19, 0.2);
+  padding: 35px;
+  max-width: 900px;
+  margin: 20px auto;
+  position: relative;
+  overflow: hidden;
+}
+
+.dnd35e-sheet::before {
+  content: "";
+  position: absolute;
+  top: -5px;
+  left: -5px;
+  right: -5px;
+  bottom: -5px;
+  background: linear-gradient(45deg, #daa520, #b8860b, #cd853f, #daa520);
+  border-radius: 18px;
+  z-index: -1;
+  animation: borderGlow 3s ease-in-out infinite alternate;
+}
+
+@keyframes borderGlow {
+  0% { opacity: 0.7; }
+  100% { opacity: 1; }
+}
+
+.dnd35e-sheet::after {
+  content: "";
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  right: 15px;
+  bottom: 15px;
+  border: 1px solid rgba(184, 134, 11, 0.3);
+  border-radius: 10px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.dnd35e-sheet h1 {
+  font-family: 'Cinzel Decorative', 'Trajan Pro', 'Cinzel', serif;
+  background: linear-gradient(135deg, #daa520 0%, #b8860b 25%, #ffd700 50%, #b8860b 75%, #daa520 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-align: center;
+  border: none;
+  padding: 20px 0;
+  margin: 0 0 30px 0;
+  font-size: 32px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 4px;
+  text-shadow: 
+    2px 2px 0 rgba(139, 69, 19, 0.3),
+    4px 4px 8px rgba(0, 0, 0, 0.2);
+  position: relative;
+  z-index: 2;
+}
+
+.dnd35e-sheet h1::before {
+  content: "";
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80%;
+  height: 60px;
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 60"><defs><linearGradient id="gold" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="%23daa520"/><stop offset="50%" stop-color="%23ffd700"/><stop offset="100%" stop-color="%23daa520"/></linearGradient></defs><path fill="url(%23gold)" d="M20 30 Q50 10, 100 25 Q150 15, 200 30 Q250 15, 300 25 Q350 10, 380 30 Q350 50, 300 35 Q250 45, 200 30 Q150 45, 100 35 Q50 50, 20 30 Z" opacity="0.8"/><circle cx="200" cy="30" r="8" fill="%23b8860b"/><circle cx="120" cy="25" r="4" fill="%23cd853f"/><circle cx="280" cy="25" r="4" fill="%23cd853f"/><circle cx="80" cy="35" r="3" fill="%23daa520"/><circle cx="320" cy="35" r="3" fill="%23daa520"/></svg>');
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  z-index: -1;
+}
+
+.dnd35e-sheet h1::after {
+  content: "⚔️ DUNGEONS & DRAGONS 3.5E ⚔️";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: 2px;
+  color: #8b4513;
+  text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.5);
+  background: none;
+  -webkit-text-fill-color: #8b4513;
+}
+
+.dnd35e-sheet .section {
+  margin-bottom: 25px;
+  border: 2px solid transparent;
+  border-image: linear-gradient(45deg, #daa520, #cd853f, #b8860b, #daa520) 1;
+  border-radius: 12px;
+  padding: 20px;
+  background: linear-gradient(135deg, rgba(255, 248, 220, 0.95) 0%, rgba(250, 240, 210, 0.9) 50%, rgba(255, 248, 220, 0.95) 100%);
+  box-shadow: 
+    0 4px 12px rgba(139, 69, 19, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6),
+    inset 0 -1px 0 rgba(139, 69, 19, 0.1);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.dnd35e-sheet .section::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: url('data:image/svg+xml;utf8,<svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="parchment" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse"><circle cx="10" cy="10" r="1" fill="%23daa520" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23parchment)"/></svg>');
+  opacity: 0.3;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.dnd35e-sheet .section:hover {
+  transform: translateY(-2px);
+  box-shadow: 
+    0 8px 20px rgba(139, 69, 19, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8),
+    inset 0 -1px 0 rgba(139, 69, 19, 0.15);
+}
+
+.dnd35e-sheet .section-header {
+  font-family: 'Cinzel', 'Trajan Pro', serif;
+  font-size: 20px;
+  font-weight: 600;
+  background: linear-gradient(135deg, #b8860b 0%, #daa520 50%, #b8860b 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 18px;
+  border-bottom: 2px solid transparent;
+  border-image: linear-gradient(90deg, transparent 0%, #daa520 20%, #b8860b 50%, #daa520 80%, transparent 100%) 1;
+  padding-bottom: 10px;
+  display: flex;
+  align-items: center;
+  text-shadow: 1px 1px 2px rgba(139, 69, 19, 0.2);
+  position: relative;
+  z-index: 1;
+}
+
+.dnd35e-sheet .section-header::before {
+  content: "";
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  margin-right: 12px;
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><defs><linearGradient id="iconGold" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="%23daa520"/><stop offset="50%" stop-color="%23ffd700"/><stop offset="100%" stop-color="%23b8860b"/></linearGradient></defs><path fill="url(%23iconGold)" d="M12 2L15 9H22L17 13L19 20L12 16L5 20L7 13L2 9H9L12 2Z" stroke="%23b8860b" stroke-width="0.5"/><circle cx="12" cy="12" r="2" fill="%23b8860b" opacity="0.8"/></svg>');
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  filter: drop-shadow(1px 1px 2px rgba(139, 69, 19, 0.3));
+}
+
+.dnd35e-sheet .field-row {
+  display: flex;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+
+.dnd35e-sheet .field {
+  flex: 1 0 200px;
+  margin-right: 10px;
+  margin-bottom: 5px;
+}
+
+.dnd35e-sheet .field-label {
+  font-weight: bold;
+  font-size: 14px;
+  margin-bottom: 3px;
+  color: #333;
+}
+
+.dnd35e-sheet input[type="text"],
+.dnd35e-sheet input[type="number"] {
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid transparent;
+  border-image: linear-gradient(45deg, #cd853f, #daa520, #b8860b, #cd853f) 1;
+  border-radius: 8px;
+  background: linear-gradient(135deg, rgba(255, 248, 220, 0.9) 0%, rgba(250, 240, 210, 0.95) 100%);
+  color: #3a2817;
+  font-family: 'Cinzel', inherit;
+  font-size: 14px;
+  font-weight: 500;
+  box-shadow: 
+    inset 0 2px 4px rgba(139, 69, 19, 0.1),
+    0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.dnd35e-sheet input[type="text"]:focus,
+.dnd35e-sheet input[type="number"]:focus,
+.dnd35e-sheet textarea:focus {
+  border-image: linear-gradient(45deg, #daa520, #ffd700, #daa520, #b8860b) 1;
+  box-shadow: 
+    inset 0 2px 4px rgba(139, 69, 19, 0.15),
+    0 0 0 3px rgba(218, 165, 32, 0.3),
+    0 2px 8px rgba(139, 69, 19, 0.2);
+  outline: none;
+  transform: translateY(-1px);
+}
+
+.dnd35e-sheet textarea {
+  width: 100%;
+  min-height: 100px;
+  padding: 12px 16px;
+  border: 2px solid transparent;
+  border-image: linear-gradient(45deg, #cd853f, #daa520, #b8860b, #cd853f) 1;
+  border-radius: 8px;
+  background: linear-gradient(135deg, rgba(255, 248, 220, 0.9) 0%, rgba(250, 240, 210, 0.95) 100%);
+  color: #3a2817;
+  font-family: 'Cinzel', inherit;
+  font-size: 14px;
+  font-weight: 500;
+  resize: vertical;
+  box-shadow: 
+    inset 0 2px 4px rgba(139, 69, 19, 0.1),
+    0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.dnd35e-sheet .ability-scores {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 15px;
+  margin: 20px 0;
+}
+
+.dnd35e-sheet .ability-score {
+  text-align: center;
+  border: 3px solid transparent;
+  border-image: linear-gradient(135deg, #daa520, #b8860b, #cd853f, #daa520) 1;
+  border-radius: 15px;
+  padding: 18px 12px;
+  background: radial-gradient(ellipse at center, rgba(255, 248, 220, 0.95) 0%, rgba(250, 240, 210, 0.9) 70%, rgba(245, 235, 205, 0.95) 100%);
+  box-shadow: 
+    0 6px 15px rgba(139, 69, 19, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.7),
+    inset 0 -1px 0 rgba(139, 69, 19, 0.1);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.dnd35e-sheet .ability-score::before {
+  content: "";
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: linear-gradient(135deg, #daa520, #ffd700, #b8860b, #daa520);
+  border-radius: 18px;
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.dnd35e-sheet .ability-score:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 
+    0 10px 25px rgba(139, 69, 19, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8),
+    inset 0 -1px 0 rgba(139, 69, 19, 0.15);
+}
+
+.dnd35e-sheet .ability-score:hover::before {
+  opacity: 0.3;
+}
+
+.dnd35e-sheet .ability-name {
+  font-family: 'Cinzel', serif;
+  font-weight: 700;
+  margin-bottom: 10px;
+  background: linear-gradient(135deg, #b8860b 0%, #daa520 50%, #b8860b 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  text-shadow: 1px 1px 2px rgba(139, 69, 19, 0.2);
+}
+
+.dnd35e-sheet .ability-value {
+  font-size: 28px;
+  font-weight: 800;
+  color: #3a2817;
+  margin-bottom: 8px;
+  text-shadow: 
+    1px 1px 0 rgba(255, 255, 255, 0.8),
+    2px 2px 4px rgba(139, 69, 19, 0.2);
+  font-family: 'Cinzel', serif;
+}
+
+.dnd35e-sheet .ability-modifier {
+  font-size: 16px;
+  font-weight: 700;
+  color: #3a2817;
+  border: 2px solid transparent;
+  border-image: linear-gradient(45deg, #daa520, #b8860b, #daa520) 1;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 8px auto 0;
+  background: radial-gradient(circle, rgba(255, 248, 220, 0.95) 0%, rgba(245, 235, 205, 0.9) 100%);
+  box-shadow: 
+    0 3px 8px rgba(139, 69, 19, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  transition: all 0.2s ease;
+  font-family: 'Cinzel', serif;
+}
+
+.dnd35e-sheet .ability-modifier:hover {
+  transform: scale(1.1);
+  box-shadow: 
+    0 4px 12px rgba(139, 69, 19, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+.dnd35e-sheet .combat-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 10px;
+}
+
+.dnd35e-sheet .combat-stat {
+  text-align: center;
+  border: 1px solid #a89078;
+  border-radius: 8px;
+  padding: 12px;
+  background-color: rgba(255, 255, 255, 0.8);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.dnd35e-sheet .combat-stat:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.dnd35e-sheet .combat-stat-label {
+  font-weight: bold;
+  margin-bottom: 8px;
+  color: #7b0d0d;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.dnd35e-sheet .combat-stat-value {
+  font-size: 20px;
+  font-weight: bold;
+  color: #2c1810;
+}
+
+.dnd35e-sheet .list-container {
+  border: 1px solid #c0b090;
+  border-radius: 4px;
+  padding: 10px;
+  background-color: rgba(255, 255, 255, 0.8);
+  min-height: 80px;
+  max-height: 200px;
+  overflow-y: auto;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.dnd35e-sheet .list-item {
+  padding: 8px;
+  border-bottom: 1px solid #e8dcc0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: background-color 0.2s ease;
+}
+
+.dnd35e-sheet .list-item:hover {
+  background-color: rgba(255, 255, 255, 0.9);
+}
+
+.dnd35e-sheet .list-item:last-child {
+  border-bottom: none;
+}
+
+.dnd35e-sheet .list-item-actions {
+  display: flex;
+  align-items: center;
+}
+
+.dnd35e-sheet .list-item-action {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 5px;
+  border: 1px solid #c0b090;
+  border-radius: 4px;
+  cursor: pointer;
+  color: #7b0d0d;
+  font-weight: bold;
+  font-size: 14px;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.dnd35e-sheet .list-item-action:hover {
+  background-color: #7b0d0d;
+  color: white;
+}
+
+.dnd35e-sheet .add-item-btn {
+  background: linear-gradient(135deg, #b8860b 0%, #daa520 50%, #b8860b 100%);
+  color: #fff;
+  border: 2px solid transparent;
+  border-image: linear-gradient(45deg, #daa520, #ffd700, #daa520) 1;
+  border-radius: 8px;
+  padding: 12px 18px;
+  margin-top: 12px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: 'Cinzel', serif;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 
+    0 4px 12px rgba(139, 69, 19, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.dnd35e-sheet .add-item-btn::before {
+  content: "⚜";
+  margin-right: 8px;
+  font-size: 16px;
+  font-weight: bold;
+  filter: drop-shadow(1px 1px 1px rgba(0, 0, 0, 0.3));
+}
+
+.dnd35e-sheet .add-item-btn:hover {
+  background: linear-gradient(135deg, #daa520 0%, #ffd700 50%, #daa520 100%);
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 
+    0 6px 18px rgba(139, 69, 19, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  border-image: linear-gradient(45deg, #ffd700, #ffed4e, #ffd700) 1;
+}
+
+.dnd35e-sheet .add-item-btn:active {
+  transform: translateY(-1px) scale(1.01);
+  box-shadow: 
+    0 3px 10px rgba(139, 69, 19, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.dnd35e-sheet .saving-throws {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+}
+
+.dnd35e-sheet .saving-throw {
+  text-align: center;
+  border: 1px solid #a89078;
+  border-radius: 8px;
+  padding: 12px;
+  background-color: rgba(255, 255, 255, 0.8);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.dnd35e-sheet .saving-throw:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.dnd35e-sheet .saving-throw-name {
+  font-weight: bold;
+  margin-bottom: 8px;
+  color: #7b0d0d;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.dnd35e-sheet .saving-throw-value {
+  font-size: 20px;
+  font-weight: bold;
+  color: #2c1810;
+}
+
+/* Ancient Scroll Scrollbar Styling */
+.dnd35e-sheet ::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+.dnd35e-sheet ::-webkit-scrollbar-track {
+  background: linear-gradient(135deg, rgba(245, 235, 205, 0.8) 0%, rgba(250, 240, 210, 0.6) 100%);
+  border-radius: 6px;
+  border: 1px solid rgba(184, 134, 11, 0.2);
+  box-shadow: inset 0 1px 3px rgba(139, 69, 19, 0.1);
+}
+
+.dnd35e-sheet ::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, #b8860b 0%, #daa520 50%, #b8860b 100%);
+  border-radius: 6px;
+  border: 1px solid rgba(139, 69, 19, 0.3);
+  box-shadow: 
+    0 2px 4px rgba(139, 69, 19, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  transition: all 0.2s ease;
+}
+
+.dnd35e-sheet ::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, #daa520 0%, #ffd700 50%, #daa520 100%);
+  box-shadow: 
+    0 3px 6px rgba(139, 69, 19, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+/* Ancient Parchment Animation */
+@keyframes parchmentGlow {
+  0%, 100% { 
+    box-shadow: 
+      0 0 0 2px #8b4513,
+      0 8px 32px rgba(139, 69, 19, 0.3),
+      inset 0 1px 0 rgba(255, 248, 220, 0.8),
+      inset 0 -1px 0 rgba(139, 69, 19, 0.2);
+  }
+  50% { 
+    box-shadow: 
+      0 0 0 2px #8b4513,
+      0 12px 40px rgba(139, 69, 19, 0.4),
+      inset 0 1px 0 rgba(255, 248, 220, 0.9),
+      inset 0 -1px 0 rgba(139, 69, 19, 0.25),
+      0 0 20px rgba(218, 165, 32, 0.3);
+  }
+}
+
+/* Subtle parchment glow on hover */
+.dnd35e-sheet:hover {
+  animation: parchmentGlow 4s ease-in-out infinite;
+}
+
+/* Field labels with medieval styling */
+.dnd35e-sheet .field-label {
+  font-family: 'Cinzel', serif;
+  font-weight: 600;
+  font-size: 13px;
+  margin-bottom: 6px;
+  color: #3a2817;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.8);
+  position: relative;
+}
+
+.dnd35e-sheet .field-label::after {
+  content: "";
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 30%;
+  height: 1px;
+  background: linear-gradient(90deg, #daa520, transparent);
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+  .dnd35e-sheet {
+    padding: 10px;
+  }
+  
+  .dnd35e-sheet .field {
+    flex: 1 0 100%;
+  }
+  
+  .dnd35e-sheet .ability-scores,
+  .dnd35e-sheet .combat-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

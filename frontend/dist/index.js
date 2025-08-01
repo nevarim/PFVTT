@@ -35,7 +35,7 @@ app.set('views', path.join(__dirname, '..', 'views'));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 // Serve static files from public directory (compiled TypeScript files)
-app.use('/public', express.static(path.join(__dirname, 'public')));
+app.use('/public', express.static(path.join(__dirname, '..', 'dist', 'public')));
 // Serve original static files (CSS, images, etc.)
 app.use(express.static(path.join(__dirname, '..', 'public')));
 // Serve images from backend/images directory
@@ -281,7 +281,55 @@ app.post('/api/token-sheets/auto-create', async (req, res) => {
         res.json(response.data);
     }
     catch (err) {
-        res.status(500).json({ error: 'Failed to auto-create token sheet' });
+        if (err.response) {
+            // Forward the backend response status and data
+            res.status(err.response.status).json(err.response.data);
+        }
+        else {
+            res.status(500).json({ error: 'Failed to auto-create token sheet' });
+        }
+    }
+});
+// === TOKENS API PROXY ===
+app.get('/api/tokens', async (req, res) => {
+    try {
+        let url = `${BACKEND_URL}/api/tokens`;
+        if (req.query.map_id) {
+            url += `?map_id=${encodeURIComponent(req.query.map_id)}`;
+        }
+        const response = await axios.get(url);
+        res.json(response.data);
+    }
+    catch (err) {
+        res.status(500).json({ error: 'Failed to fetch tokens' });
+    }
+});
+app.get('/api/tokens/:id', async (req, res) => {
+    try {
+        const response = await axios.get(`${BACKEND_URL}/api/tokens/${req.params.id}`);
+        res.json(response.data);
+    }
+    catch (err) {
+        res.status(500).json({ error: 'Failed to fetch token' });
+    }
+});
+// POST /api/tokens endpoint removed - use POST /api/map-tokens instead
+app.put('/api/tokens/:id', async (req, res) => {
+    try {
+        const response = await axios.put(`${BACKEND_URL}/api/tokens/${req.params.id}`, req.body);
+        res.json(response.data);
+    }
+    catch (err) {
+        res.status(500).json({ error: 'Failed to update token' });
+    }
+});
+app.delete('/api/tokens/:id', async (req, res) => {
+    try {
+        const response = await axios.delete(`${BACKEND_URL}/api/tokens/${req.params.id}`);
+        res.json(response.data);
+    }
+    catch (err) {
+        res.status(500).json({ error: 'Failed to delete token' });
     }
 });
 // Scenes API proxies
@@ -490,6 +538,23 @@ app.get('/api/debug/session', (req, res) => {
 app.post('/api/debug_log', (req, res) => {
     console.log('DEBUG LOG:', req.body);
     res.json({ success: true });
+});
+// Endpoint per loggare le coordinate dei token
+app.post('/api/log-token-coordinates', (req, res) => {
+    try {
+        const { message } = req.body;
+        if (message) {
+            writeLog(message);
+            res.json({ success: true });
+        }
+        else {
+            res.status(400).json({ success: false, error: 'Message is required' });
+        }
+    }
+    catch (error) {
+        console.error('Error logging token coordinates:', error);
+        res.status(500).json({ success: false, error: 'Failed to log token coordinates' });
+    }
 });
 // Proxy for map layer APIs
 app.get('/api/map-tokens', async (req, res) => {
@@ -821,6 +886,20 @@ app.get('/api/assets', async (req, res) => {
         res.status(500).json({ error: 'Failed to fetch assets' });
     }
 });
+// Proxy for assets API (alternative endpoint)
+app.get('/assets', async (req, res) => {
+    try {
+        let url = `${BACKEND_URL}/api/assets`;
+        if (req.query.campaign_id) {
+            url += `?campaign_id=${encodeURIComponent(req.query.campaign_id)}`;
+        }
+        const response = await axios.get(url);
+        res.json(response.data);
+    }
+    catch (err) {
+        res.status(500).json({ error: 'Failed to fetch assets' });
+    }
+});
 app.post('/api/assets', async (req, res) => {
     try {
         const response = await axios.post(`${BACKEND_URL}/api/assets`, req.body, {
@@ -936,6 +1015,22 @@ app.get('/api/token-borders', async (req, res) => {
     catch (err) {
         console.error('Error fetching token borders from backend:', err);
         res.status(500).json({ error: 'Failed to load token borders' });
+    }
+});
+// Proxy for game system CSS files
+app.get('/games/:system/character_sheet.css', async (req, res) => {
+    try {
+        const response = await axios.get(`${BACKEND_URL}/games/${req.params.system}/character_sheet.css`);
+        res.set('Content-Type', 'text/css');
+        // Disable caching to ensure latest CSS is always loaded
+        res.set('Cache-Control', 'no-cache, no-store, must-revalidate');
+        res.set('Pragma', 'no-cache');
+        res.set('Expires', '0');
+        res.send(response.data);
+    }
+    catch (err) {
+        console.error(`Error fetching CSS for system ${req.params.system}:`, err.message);
+        res.status(404).send('/* CSS file not found */');
     }
 });
 app.post('/api/upload', upload.single('file'), async (req, res) => {

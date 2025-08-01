@@ -4,44 +4,176 @@
   <title>PFVTT Login / Register</title>
   <link rel="stylesheet" href="/style.css">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    .login-page {
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+      min-height: 100vh;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .login-header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    
+    .login-header h1 {
+      font-size: 2.5rem;
+      margin: 0;
+      color: #fff;
+      background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    }
+    
+    #form-container {
+      background: linear-gradient(145deg, #2a2a3e, #1e1e2e);
+      border-radius: 16px;
+      padding: 30px;
+      width: 100%;
+      max-width: 420px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+      color: #fff;
+    }
+    
+    form {
+      background: transparent;
+      box-shadow: none;
+      padding: 0;
+      margin: 0;
+    }
+    
+    label {
+      color: #e0e0e0;
+      margin-bottom: 20px;
+      font-weight: 500;
+    }
+    
+    input[type="text"], input[type="password"] {
+      width: 100%;
+      padding: 12px;
+      margin-top: 8px;
+      border: none;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      font-size: 1em;
+      transition: all 0.3s ease;
+    }
+    
+    input[type="text"]:focus, input[type="password"]:focus {
+      background: rgba(255, 255, 255, 0.15);
+      box-shadow: 0 0 0 2px rgba(78, 205, 196, 0.5);
+      outline: none;
+    }
+    
+    button[type="submit"] {
+      width: 100%;
+      padding: 14px;
+      margin-top: 20px;
+      border: none;
+      border-radius: 8px;
+      background: linear-gradient(45deg, #4ecdc4, #45b7d1);
+      color: #fff;
+      font-size: 1.1em;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(69, 183, 209, 0.3);
+    }
+    
+    button[type="submit"]:hover {
+      background: linear-gradient(45deg, #45b7d1, #4ecdc4);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 18px rgba(69, 183, 209, 0.4);
+    }
+    
+    .form-note {
+      color: #aaa;
+      font-size: 0.9em;
+      margin-top: 15px;
+      text-align: center;
+    }
+    
+    #form-links {
+      margin-top: 25px;
+      text-align: center;
+      color: #aaa;
+      font-size: 0.95em;
+    }
+    
+    #form-links a {
+      color: #4ecdc4;
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
+    
+    #form-links a:hover {
+      color: #ff6b6b;
+      text-decoration: none;
+    }
+    
+    #error-msg {
+      background: rgba(255, 107, 107, 0.2);
+      border-left: 3px solid #ff6b6b;
+      color: #ff6b6b;
+      padding: 10px 15px;
+      border-radius: 4px;
+      margin-top: 20px;
+      font-size: 0.95em;
+    }
+  </style>
 </head>
-<body>
-  <h1 id="form-title">Login to PFVTT</h1>
+<body class="login-page">
+  <div class="login-header">
+    <h1>PFVTT</h1>
+  </div>
+  
   <div id="form-container">
     <form id="auth-form" autocomplete="off">
-      <label>Username:
-        <input type="text" name="username" required autocomplete="username">
+      <label>Username
+        <input type="text" name="username" required autocomplete="username" placeholder="Inserisci il tuo username">
       </label>
-      <label>Password:
-        <input type="password" name="password" required autocomplete="current-password">
+      <label>Password
+        <input type="password" name="password" required autocomplete="current-password" placeholder="Inserisci la tua password">
       </label>
-      <button type="submit" id="submit-btn">Login</button>
+      <button type="submit" id="submit-btn">Accedi</button>
       <p class="form-note">Dopo il login verrai reindirizzato alla pagina campagne.</p>
     </form>
+    
     <form id="register-form" style="display:none;">
-      <label>Username:
-        <input type="text" name="reg_username" required autocomplete="username">
+      <label>Username
+        <input type="text" name="reg_username" required autocomplete="username" placeholder="Scegli un username">
       </label>
-      <label>Password:
-        <input type="password" name="reg_password" required autocomplete="new-password">
+      <label>Password
+        <input type="password" name="reg_password" required autocomplete="new-password" placeholder="Scegli una password">
       </label>
-      <button type="submit">Register</button>
+      <button type="submit">Registrati</button>
       <p class="form-note">Dopo la registrazione verrai reindirizzato alla pagina campagne.</p>
     </form>
+    
     <form id="reset-form" style="display:none;">
-      <label>Username or Email:
-        <input type="text" name="reset_user" required autocomplete="username">
+      <label>Username o Email
+        <input type="text" name="reset_user" required autocomplete="username" placeholder="Inserisci username o email">
       </label>
-      <button type="submit">Request Password Reset</button>
+      <button type="submit">Richiedi Reset Password</button>
     </form>
+    
     <p id="form-links">
       <span id="to-register">Non hai un account? <a href="#" id="register-link">Registrati qui</a></span>
       <span id="to-login" style="display:none;">Hai già un account? <a href="#" id="login-link">Accedi qui</a></span>
       <span id="forgot-pass">| <a href="#" id="forgot-password-link">Password dimenticata?</a></span>
       <span id="back-login" style="display:none;">| <a href="#" id="back-login-link">Torna al login</a></span>
     </p>
-    <p id="error-msg" style="color:red; display:none;"></p>
+    
+    <p id="error-msg" style="display:none;"></p>
   </div>
+  
   <script type="module" src="/public/login.js?v=2"></script>
 </body>
 </html>

@@ -1,0 +1,175 @@
+{
+  "sections": [
+    {
+      "name": "Informazioni Base",
+      "fields": [
+        { "key": "name", "label": "Nome", "type": "text" },
+        { "key": "race", "label": "Razza", "type": "text" },
+        { "key": "theme", "label": "Tema", "type": "text" },
+        { "key": "class", "label": "Classe", "type": "text" },
+        { "key": "alignment", "label": "Allineamento", "type": "text" },
+        { "key": "deity", "label": "Divinità", "type": "text" },
+        { "key": "homeworld", "label": "Mondo Natale", "type": "text" },
+        { "key": "level", "label": "Livello", "type": "number" },
+        { "key": "experience_points", "label": "Punti Esperienza", "type": "number" },
+        { "key": "size", "label": "Taglia", "type": "text" }
+      ]
+    },
+    {
+      "name": "Caratteristiche",
+      "fields": [
+        { "key": "ability_scores.strength", "label": "Forza", "type": "number" },
+        { "key": "ability_scores.dexterity", "label": "Destrezza", "type": "number" },
+        { "key": "ability_scores.constitution", "label": "Costituzione", "type": "number" },
+        { "key": "ability_scores.intelligence", "label": "Intelligenza", "type": "number" },
+        { "key": "ability_scores.wisdom", "label": "Saggezza", "type": "number" },
+        { "key": "ability_scores.charisma", "label": "Carisma", "type": "number" }
+      ]
+    },
+    {
+      "name": "Modificatori di Caratteristica",
+      "fields": [
+        { "key": "ability_modifiers.strength", "label": "Mod. Forza", "type": "number" },
+        { "key": "ability_modifiers.dexterity", "label": "Mod. Destrezza", "type": "number" },
+        { "key": "ability_modifiers.constitution", "label": "Mod. Costituzione", "type": "number" },
+        { "key": "ability_modifiers.intelligence", "label": "Mod. Intelligenza", "type": "number" },
+        { "key": "ability_modifiers.wisdom", "label": "Mod. Saggezza", "type": "number" },
+        { "key": "ability_modifiers.charisma", "label": "Mod. Carisma", "type": "number" }
+      ]
+    },
+    {
+      "name": "Iniziativa e Percezione",
+      "fields": [
+        { "key": "initiative", "label": "Iniziativa", "type": "number" },
+        { "key": "perception", "label": "Percezione", "type": "number" }
+      ]
+    },
+    {
+      "name": "Punti Ferita e Resistenza",
+      "fields": [
+        { "key": "hit_points.max", "label": "PF Massimi", "type": "number" },
+        { "key": "hit_points.current", "label": "PF Attuali", "type": "number" },
+        { "key": "hit_points.temporary", "label": "PF Temporanei", "type": "number" },
+        { "key": "stamina_points.max", "label": "Punti Resistenza Massimi", "type": "number" },
+        { "key": "stamina_points.current", "label": "Punti Resistenza Attuali", "type": "number" },
+        { "key": "resolve_points.max", "label": "Punti Determinazione Massimi", "type": "number" },
+        { "key": "resolve_points.current", "label": "Punti Determinazione Attuali", "type": "number" }
+      ]
+    },
+    {
+      "name": "Classe Armatura",
+      "fields": [
+        { "key": "armor_class.energy", "label": "CA Energia", "type": "number" },
+        { "key": "armor_class.kinetic", "label": "CA Cinetica", "type": "number" },
+        { "key": "armor_class.eac_modifier", "label": "Modificatore CAE", "type": "number" },
+        { "key": "armor_class.kac_modifier", "label": "Modificatore CAC", "type": "number" },
+        { "key": "armor_class.misc_modifier", "label": "Modificatore Vario", "type": "number" },
+        { "key": "armor_class.armor_bonus", "label": "Bonus Armatura", "type": "number" },
+        { "key": "armor_class.dex_modifier", "label": "Modificatore Destrezza", "type": "number" }
+      ]
+    },
+    {
+      "name": "Tiri Salvezza",
+      "fields": [
+        { "key": "saving_throws.fortitude", "label": "Tempra", "type": "number" },
+        { "key": "saving_throws.reflex", "label": "Riflessi", "type": "number" },
+        { "key": "saving_throws.will", "label": "Volontà", "type": "number" }
+      ]
+    },
+    {
+      "name": "Attacco",
+      "fields": [
+        { "key": "attack_bonuses.melee", "label": "Bonus Attacco in Mischia", "type": "number" },
+        { "key": "attack_bonuses.ranged", "label": "Bonus Attacco a Distanza", "type": "number" },
+        { "key": "attack_bonuses.thrown", "label": "Bonus Attacco da Lancio", "type": "number" }
+      ]
+    },
+    {
+      "name": "Movimento",
+      "fields": [
+        { "key": "speed.land", "label": "Velocità Terrestre", "type": "text" },
+        { "key": "speed.fly", "label": "Velocità di Volo", "type": "text" },
+        { "key": "speed.swim", "label": "Velocità di Nuoto", "type": "text" },
+        { "key": "speed.climb", "label": "Velocità di Scalata", "type": "text" },
+        { "key": "speed.burrow", "label": "Velocità di Scavo", "type": "text" }
+      ]
+    },
+    {
+      "name": "Abilità",
+      "fields": [
+        { "key": "skills.acrobatics", "label": "Acrobazia", "type": "number" },
+        { "key": "skills.athletics", "label": "Atletica", "type": "number" },
+        { "key": "skills.bluff", "label": "Raggirare", "type": "number" },
+        { "key": "skills.computers", "label": "Computer", "type": "number" },
+        { "key": "skills.culture", "label": "Cultura", "type": "number" },
+        { "key": "skills.diplomacy", "label": "Diplomazia", "type": "number" },
+        { "key": "skills.disguise", "label": "Camuffare", "type": "number" },
+        { "key": "skills.engineering", "label": "Ingegneria", "type": "number" },
+        { "key": "skills.intimidate", "label": "Intimidire", "type": "number" },
+        { "key": "skills.life_science", "label": "Scienze Biologiche", "type": "number" },
+        { "key": "skills.medicine", "label": "Medicina", "type": "number" },
+        { "key": "skills.mysticism", "label": "Misticismo", "type": "number" },
+        { "key": "skills.perception", "label": "Percezione", "type": "number" },
+        { "key": "skills.physical_science", "label": "Scienze Fisiche", "type": "number" },
+        { "key": "skills.piloting", "label": "Pilotare", "type": "number" },
+        { "key": "skills.profession", "label": "Professione", "type": "number" },
+        { "key": "skills.sense_motive", "label": "Intuizione", "type": "number" },
+        { "key": "skills.sleight_of_hand", "label": "Rapidità di Mano", "type": "number" },
+        { "key": "skills.stealth", "label": "Furtività", "type": "number" },
+        { "key": "skills.survival", "label": "Sopravvivenza", "type": "number" }
+      ]
+    },
+    {
+      "name": "Armi",
+      "fields": [
+        { "key": "weapons", "label": "Armi", "type": "list" }
+      ]
+    },
+    {
+      "name": "Equipaggiamento",
+      "fields": [
+        { "key": "equipment", "label": "Equipaggiamento", "type": "list" },
+        { "key": "bulk.carried", "label": "Ingombro Trasportato", "type": "number" },
+        { "key": "bulk.encumbered", "label": "Soglia Ingombro", "type": "number" },
+        { "key": "bulk.max", "label": "Ingombro Massimo", "type": "number" },
+        { "key": "currency.credits", "label": "Crediti", "type": "number" },
+        { "key": "currency.upbs", "label": "UPB", "type": "number" }
+      ]
+    },
+    {
+      "name": "Capacità Speciali",
+      "fields": [
+        { "key": "special_abilities", "label": "Capacità Speciali", "type": "list" }
+      ]
+    },
+    {
+      "name": "Talenti e Privilegi",
+      "fields": [
+        { "key": "feats", "label": "Talenti", "type": "list" },
+        { "key": "class_features", "label": "Privilegi di Classe", "type": "list" }
+      ]
+    },
+    {
+      "name": "Incantesimi",
+      "fields": [
+        { "key": "spellcasting.class", "label": "Classe Incantatore", "type": "text" },
+        { "key": "spellcasting.ability", "label": "Caratteristica Incantesimi", "type": "text" },
+        { "key": "spellcasting.spell_dc", "label": "CD Incantesimi", "type": "number" },
+        { "key": "spellcasting.spells_per_day_level_0", "label": "Incantesimi al Giorno Livello 0", "type": "number" },
+        { "key": "spellcasting.spells_per_day_level_1", "label": "Incantesimi al Giorno Livello 1", "type": "number" },
+        { "key": "spellcasting.spells_per_day_level_2", "label": "Incantesimi al Giorno Livello 2", "type": "number" },
+        { "key": "spellcasting.spells_per_day_level_3", "label": "Incantesimi al Giorno Livello 3", "type": "number" },
+        { "key": "spellcasting.spells_per_day_level_4", "label": "Incantesimi al Giorno Livello 4", "type": "number" },
+        { "key": "spellcasting.spells_per_day_level_5", "label": "Incantesimi al Giorno Livello 5", "type": "number" },
+        { "key": "spellcasting.spells_per_day_level_6", "label": "Incantesimi al Giorno Livello 6", "type": "number" },
+        { "key": "spells", "label": "Incantesimi", "type": "list" }
+      ]
+    },
+    {
+      "name": "Note",
+      "fields": [
+        { "key": "notes", "label": "Note", "type": "textarea" }
+      ]
+    }
+  ]
+}
