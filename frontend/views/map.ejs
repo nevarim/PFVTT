@@ -1,1323 +1,1105 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Pathfinder - Un mondo di ombre | Roll20</title>
-    <meta content='IE=Edge,chrome=1' http-equiv='X-UA-Compatible'>
-    <meta content='initial-scale=1.0, width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0' name='viewport'>
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="format-detection" content="telephone=no">
+    <title>Roll20 Clone - Virtual Tabletop</title>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href='https://fonts.googleapis.com/css?family=Nunito:400,600,700&display=swap' rel='stylesheet'>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    <link href='https://fonts.googleapis.com/css?family=Merriweather|Anton|Nunito|Rye|Kaushan+Script|Goblin+One|Crimson+Text|Montserrat|IM+Fell+DW+Pica|Della+Respira|Patrick+Hand|Contrail+One|Shadows+Into+Light|Candal&subset=latin,latin-ext' rel='stylesheet' type='text/css'>
-    <link crossorigin='anonymous' href='https://use.fontawesome.com/releases/v5.7.0/css/all.css' integrity='sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ' rel='stylesheet'>
-    <link href='/favicon.ico' rel='icon' type='image/x-icon'>
-    <link href='/style.css?v=1.0' rel='stylesheet' type='text/css'>
-    <link href='/map.css?v=1.2' rel='stylesheet' type='text/css'>
-    <script src='/map.js?v=1.3'></script>
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: #1a1a1a;
+            color: #fff;
+            overflow: visible;
+        }
 
+        .roll20-container {
+            display: flex;
+            height: 100vh;
+            width: 100vw;
+            min-width: 1200px;
+        }
+
+        /* Toolbar sinistra */
+        .left-toolbar {
+            width: 60px;
+            background: #2c2c2c;
+            border-right: 1px solid #444;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 10px 0;
+            z-index: 1000;
+        }
+
+        .tool-button {
+            width: 40px;
+            height: 40px;
+            background: #3a3a3a;
+            border: none;
+            border-radius: 6px;
+            color: #ccc;
+            cursor: pointer;
+            margin: 5px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .tool-button:hover {
+            background: #4a4a4a;
+            color: #fff;
+        }
+
+        .tool-button.active {
+            background: #0066cc;
+            color: #fff;
+        }
+
+        /* Area centrale */
+        .main-area {
+            flex: 1;
+            max-width: calc(100vw - 360px);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Top bar */
+        .top-bar {
+            height: 50px;
+            background: #333;
+            border-bottom: 1px solid #444;
+            display: flex;
+            align-items: center;
+            padding: 0 15px;
+            justify-content: space-between;
+        }
+
+        .page-title {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .zoom-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .zoom-btn {
+            background: #444;
+            border: none;
+            color: #ccc;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .zoom-btn:hover {
+            background: #555;
+            color: #fff;
+        }
+
+        /* Canvas area */
+        .canvas-area {
+            flex: 1;
+            background: #1a1a1a;
+            position: relative;
+            overflow: auto;
+        }
+
+        .game-canvas {
+            width: 4000px;
+            height: 4000px;
+            background: 
+                linear-gradient(90deg, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
+                linear-gradient(0deg, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
+                #2a2a2a;
+            background-size: 50px 50px;
+            position: relative;
+        }
+
+        /* Token styles */
+        .token {
+            position: absolute;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            border: 2px solid #fff;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background-size: cover;
+            background-position: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+        }
+
+        .token:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+        }
+
+        /* Evidenziazione cella di partenza */
+        .start-cell-highlight {
+            position: absolute;
+            width: 48px;
+            height: 48px;
+            background: rgba(0, 255, 0, 0.3);
+            border: 2px solid #00ff00;
+            border-radius: 4px;
+            z-index: 5;
+            animation: pulse-highlight 1.5s infinite;
+            pointer-events: none;
+        }
+
+        @keyframes pulse-highlight {
+            0% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 0.6; transform: scale(1.05); }
+            100% { opacity: 0.3; transform: scale(1); }
+        }
+
+        /* Right panel */
+        .right-panel {
+            width: 300px;
+            min-width: 300px;
+            max-width: 300px;
+            flex-shrink: 0;
+            flex-grow: 0;
+            background: #2c2c2c;
+            border-left: 1px solid #444;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            z-index: 100;
+        }
+
+        .panel-tabs {
+            display: flex;
+            background: #333;
+            border-bottom: 1px solid #444;
+        }
+
+        .panel-tab {
+            flex: 1;
+            padding: 12px;
+            background: none;
+            border: none;
+            color: #ccc;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s ease;
+        }
+
+        .panel-tab.active {
+            color: #fff;
+            border-bottom-color: #0066cc;
+            background: #3a3a3a;
+        }
+
+        .panel-content {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+        }
+
+        /* Token library */
+        .token-library {
+            display: none;
+        }
+
+        .token-library.active {
+            display: block;
+        }
+
+        .token-category {
+            margin-bottom: 20px;
+        }
+
+        .category-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #0066cc;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .token-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .library-token {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: 2px solid #555;
+            cursor: grab;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+            position: relative;
+        }
+
+        .library-token:hover {
+            transform: scale(1.05);
+            border-color: #0066cc;
+        }
+
+        .library-token:active {
+            cursor: grabbing;
+        }
+
+        /* Token colors */
+        .token.player, .library-token.player { background: linear-gradient(45deg, #4CAF50, #45a049); }
+        .token.npc, .library-token.npc { background: linear-gradient(45deg, #f44336, #d32f2f); }
+        .token.monster, .library-token.monster { background: linear-gradient(45deg, #9c27b0, #7b1fa2); }
+        .token.object, .library-token.object { background: linear-gradient(45deg, #607d8b, #455a64); }
+        .token.vehicle, .library-token.vehicle { background: linear-gradient(45deg, #ff9800, #f57c00); }
+        .token.trap, .library-token.trap { background: linear-gradient(45deg, #795548, #5d4037); }
+
+        /* Chat panel */
+        .chat-panel {
+            display: none;
+        }
+
+        .chat-panel.active {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px;
+            background: #1a1a1a;
+            margin-bottom: 10px;
+            border-radius: 4px;
+        }
+
+        .chat-input {
+            display: flex;
+            gap: 10px;
+        }
+
+        .chat-input input {
+            flex: 1;
+            padding: 8px 12px;
+            background: #3a3a3a;
+            border: 1px solid #555;
+            border-radius: 4px;
+            color: #fff;
+        }
+
+        .chat-input button {
+            padding: 8px 15px;
+            background: #0066cc;
+            border: none;
+            border-radius: 4px;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        .chat-input button:hover {
+            background: #0052a3;
+        }
+
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #2a2a2a;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #555;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #666;
+        }
+
+        /* Game Map Selector Menu */
+        .gameMapSelector {
+            position: fixed;
+            top: -300px; /* Div inizialmente nascosto */
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 500px;
+            background-color: #2c2c2c;
+            border: 2px solid #0066cc;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+            text-align: center;
+            transition: top 0.5s ease;
+            z-index: 2000;
+            color: #fff;
+        }
+
+        .gameMapSelectorFlag {
+            position: fixed;
+            top: 10px;
+            left: calc(50% + 250px);
+            transform: translateY(-50%);
+            width: 50px;
+            height: 50px;
+            background-color: #0066cc;
+            border-radius: 50%;
+            cursor: pointer;
+            text-align: center;
+            line-height: 50px;
+            color: white;
+            font-weight: bold;
+            font-size: 14px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+            z-index: 2001;
+        }
+
+        .gameMapSelectorFlag:hover {
+            background-color: #0052a3;
+        }
+
+        .gameMapSelector .content {
+             padding: 20px;
+         }
+
+         .map-controls {
+             margin-bottom: 15px;
+         }
+
+         .create-map-btn {
+             background: #0066cc;
+             color: white;
+             border: none;
+             padding: 10px 20px;
+             border-radius: 5px;
+             cursor: pointer;
+             font-weight: bold;
+             transition: background 0.2s ease;
+         }
+
+         .create-map-btn:hover {
+             background: #0052a3;
+         }
+
+         .map-list {
+             max-height: 200px;
+             overflow-y: auto;
+         }
+
+         .map-item {
+             display: flex;
+             justify-content: space-between;
+             align-items: center;
+             padding: 10px;
+             margin: 5px 0;
+             background: #3a3a3a;
+             border-radius: 5px;
+             cursor: pointer;
+             transition: background 0.2s ease;
+         }
+
+         .map-item:hover {
+             background: #4a4a4a;
+         }
+
+         .map-item.active {
+             background: #0066cc;
+         }
+
+         .map-name {
+             font-weight: bold;
+         }
+
+         .map-status {
+             font-size: 12px;
+             color: #ccc;
+         }
+
+         .map-item.active .map-status {
+             color: #fff;
+         }
+    </style>
 </head>
-<body class='no-touch'>
-    <svg style="display:none" xmlns="http://www.w3.org/2000/svg">
-        <symbol id="torch-icon" viewBox="0 0 24 24">
-            <path fill-rule="evenodd" clip-rule="evenodd" d="M7.52994 9.79C7.81994 12.4 10.4699 14 11.9999 14H12.5599C12.7599 14 14.1699 13.86 15.2399 12.8C16.5199 11.53 16.6899 9.43 16.3399 8C16.2899 7.79 16.2299 7.62 16.2099 7.57C15.8462 6.59281 15.2636 6.06334 14.7345 5.58239C14.5218 5.38906 14.3177 5.20357 14.1399 5C13.6799 4.47 13.2599 3.58 13.1299 2C13.0594 2.06687 12.9763 2.1365 12.8907 2.20838C12.7457 2.32998 12.5931 2.45802 12.4799 2.59C10.8699 4.59 10.7699 7.2 10.8299 8.59C10.6099 8.63 10.4299 8.62 10.2799 8.59C9.47994 8.41 8.85994 7.45 8.62994 6.19C8.34994 6.55 7.32994 7.97 7.52994 9.79ZM10.9999 21.9998L10.1982 14.8013C10.8014 15.055 11.4232 15.1998 12.0001 15.1998H12.5601C12.7616 15.1998 13.2205 15.1565 13.7818 14.9886L12.9999 21.9998H10.9999Z" fill="currentColor"/>
-        </symbol>
-        <symbol id="eye-icon" viewBox="0 0 24 24">
-            <path fill-rule="evenodd" clip-rule="evenodd" d="M12 18C6.48 18 2 12 2 12C2 12 6.48 6 12 6C17.52 6 22 12 22 12C22 12 17.52 18 12 18ZM8.3 12C8.3 9.95655 9.95655 8.3 12 8.3C14.0435 8.3 15.7 9.95655 15.7 12C15.7 14.0435 14.0435 15.7 12 15.7C9.95655 15.7 8.3 14.0435 8.3 12ZM14.5 12C14.5 13.3807 13.3807 14.5 12 14.5C10.6193 14.5 9.5 13.3807 9.5 12C9.5 10.6193 10.6193 9.5 12 9.5C13.3807 9.5 14.5 10.6193 14.5 12Z" fill="currentColor"/>
-        </symbol>
-        <symbol id="invisible-icon" viewBox="0 0 24 24">
-            <path fill-rule="evenodd" clip-rule="evenodd" d="M2.42417 1.57576C2.18985 1.34145 1.80995 1.34145 1.57564 1.57576C1.34132 1.81007 1.34132 2.18997 1.57564 2.42429L21.5756 22.4243C21.81 22.6586 22.1899 22.6586 22.4242 22.4243C22.6585 22.19 22.6585 21.8101 22.4242 21.5758L2.42417 1.57576ZM1.99988 12C1.99988 12 3.47981 10.018 5.78653 8.33224L8.44049 10.9862C8.3489 11.3084 8.29988 11.6485 8.29988 12C8.29988 14.0435 9.95642 15.7 11.9999 15.7C12.3514 15.7 12.6915 15.651 13.0137 15.5594L14.9197 17.4654C13.9959 17.7969 13.0155 18 11.9999 18C6.47988 18 1.99988 12 1.99988 12ZM11.9539 14.4996C10.6097 14.4753 9.52455 13.3902 9.50029 12.046L11.9539 14.4996ZM12.0459 9.50041L14.4995 11.954C14.4752 10.6098 13.3901 9.52467 12.0459 9.50041ZM15.6999 12C15.6999 12.3515 15.6509 12.6916 15.5593 13.0138L18.2132 15.6678C20.52 13.982 21.9999 12 21.9999 12C21.9999 12 17.5199 6 11.9999 6C10.9843 6 10.0038 6.20311 9.08006 6.5346L10.9861 8.44061C11.3082 8.34903 11.6483 8.3 11.9999 8.3C14.0433 8.3 15.6999 9.95655 15.6999 12Z" fill="currentColor"/>
-        </symbol>
-        <symbol id="hand-pan-icon" viewBox="0 0 24 24">
-            <path fill-rule="evenodd" clip-rule="evenodd" d="M13.4001 4C13.4001 4.16936 13.4703 4.32233 13.5832 4.43142L15.5759 6.42417C15.8102 6.65848 16.1901 6.65848 16.4244 6.42417C16.6588 6.18985 16.6588 5.80995 16.4244 5.57564L15.4488 4.6L20.5515 4.6L19.5759 5.57564C19.3416 5.80995 19.3416 6.18985 19.5759 6.42417C19.8102 6.65848 20.1901 6.65848 20.4244 6.42417L22.4187 4.42987C22.4403 4.40887 22.4603 4.38625 22.4785 4.36222C22.5047 4.32778 22.5266 4.29115 22.5443 4.25305C22.5904 4.15399 22.608 4.04495 22.597 3.93829C22.5957 3.92532 22.5939 3.91239 22.5918 3.89951C22.59 3.88905 22.5879 3.87862 22.5856 3.86824C22.5837 3.8598 22.5817 3.8514 22.5794 3.84303C22.553 3.74508 22.5013 3.65252 22.4244 3.57564L20.4244 1.57564C20.1901 1.34132 19.8102 1.34132 19.5759 1.57564C19.3416 1.80995 19.3416 2.18985 19.5759 2.42417L20.5517 3.4L15.4486 3.4L16.4244 2.42417C16.6587 2.18985 16.6587 1.80995 16.4244 1.57564C16.1901 1.34132 15.8102 1.34132 15.5759 1.57564L13.5759 3.57564C13.5147 3.63684 13.4695 3.70798 13.4403 3.78386C13.4143 3.85092 13.4001 3.9238 13.4001 4Z" fill="currentColor"/>
-        </symbol>
-    </svg>
-    
-    <div class="roll20-interface">
-        <!-- Toolbar Laterale Sinistra -->
-        <div class="left-toolbar" id="leftToolbar">
-            <!-- Pulsante Toggle -->
-            <div class="toolbar-toggle">
-                <button class="toggle-btn" id="toolbarToggle" title="Apri/Chiudi Toolbar">
-                    <i class="fas fa-chevron-right" id="toggleIcon"></i>
-                </button>
-            </div>
-            
-            <!-- Contenuto Toolbar -->
-            <div class="toolbar-content" id="toolbarContent">
-                <!-- Strumento Seleziona & Sposta -->
-                <div class="tool-group">
-                    <button class="tool-btn active" data-tool="select" title="Seleziona & Sposta">
-                        <i class="fas fa-mouse-pointer"></i>
-                    </button>
-                </div>
-                
-                <!-- Strumenti Layer -->
-                <div class="tool-group">
-                    <div class="tool-label">Layer</div>
-                    <button class="tool-btn layer-btn active" data-layer="tokens" title="Token & Oggetti">
-                        <i class="fas fa-chess-pawn"></i>
-                    </button>
-                    <button class="tool-btn layer-btn" data-layer="map" title="Mappa">
-                        <i class="fas fa-map"></i>
-                    </button>
-                    <button class="tool-btn layer-btn" data-layer="background" title="Sfondo">
-                        <i class="fas fa-image"></i>
-                    </button>
-                    <button class="tool-btn layer-btn" data-layer="lighting" title="Illuminazione Dinamica">
-                        <i class="fas fa-lightbulb"></i>
-                    </button>
-                    
-                    <!-- Espansione gruppo Layer -->
-                    <div class="tool-group-expanded">
-                        <div class="tool-label">Layer</div>
-                        <button class="tool-btn layer-btn" data-layer="tokens" title="Token & Oggetti">
-                            <i class="fas fa-chess-pawn"></i>
-                        </button>
-                        <button class="tool-btn layer-btn" data-layer="map" title="Mappa">
-                            <i class="fas fa-map"></i>
-                        </button>
-                        <button class="tool-btn layer-btn" data-layer="background" title="Sfondo">
-                            <i class="fas fa-image"></i>
-                        </button>
-                        <button class="tool-btn layer-btn" data-layer="lighting" title="Illuminazione Dinamica">
-                            <i class="fas fa-lightbulb"></i>
-                        </button>
-                    </div>
-                </div>
-                
-                <!-- Strumenti di Disegno -->
-                <div class="tool-group">
-                    <div class="tool-label">Disegno</div>
-                    <button class="tool-btn" data-tool="freehand" title="Mano Libera">
-                        <i class="fas fa-pencil-alt"></i>
-                    </button>
-                    <button class="tool-btn" data-tool="shapes" title="Forme">
-                        <i class="fas fa-square"></i>
-                    </button>
-                    <button class="tool-btn" data-tool="polygon" title="Poligono/Linea">
-                        <i class="fas fa-draw-polygon"></i>
-                    </button>
-                    
-                    <!-- Espansione gruppo Disegno -->
-                    <div class="tool-group-expanded">
-                        <div class="tool-label">Disegno</div>
-                        <button class="tool-btn" data-tool="freehand" title="Mano Libera">
-                            <i class="fas fa-pencil-alt"></i>
-                        </button>
-                        <button class="tool-btn" data-tool="shapes" title="Forme">
-                            <i class="fas fa-square"></i>
-                        </button>
-                        <button class="tool-btn" data-tool="polygon" title="Poligono/Linea">
-                            <i class="fas fa-draw-polygon"></i>
-                        </button>
-                        <button class="tool-btn" data-tool="text" title="Testo">
-                            <i class="fas fa-font"></i>
-                        </button>
-                        <button class="tool-btn" data-tool="eraser" title="Gomma">
-                            <i class="fas fa-eraser"></i>
-                        </button>
-                    </div>
-                </div>
-                
-                <!-- Strumento FX -->
-                <div class="tool-group">
-                    <button class="tool-btn" data-tool="fx" title="Effetti FX">
-                        <i class="fas fa-magic"></i>
-                    </button>
-                    <div class="tool-group-expanded">
-                        <div class="tool-label">Effetti Speciali</div>
-                        <button class="tool-btn" data-tool="fx" title="Effetti speciali">
-                            <i class="fas fa-magic"></i>
-                        </button>
-                        <button class="tool-btn" data-tool="particles" title="Particelle">
-                            <i class="fas fa-sparkles"></i>
-                        </button>
-                        <button class="tool-btn" data-tool="weather" title="Meteo">
-                            <i class="fas fa-cloud-rain"></i>
-                        </button>
-                        <button class="tool-btn" data-tool="lighting-fx" title="Effetti luce">
-                            <i class="fas fa-lightbulb"></i>
-                        </button>
-                    </div>
-                </div>
-                
-                <!-- Strumento Zoom -->
-                <div class="tool-group">
-                    <button class="tool-btn" data-tool="zoom" title="Zoom">
-                        <i class="fas fa-search-plus"></i>
-                    </button>
-                    <div class="tool-group-expanded">
-                        <div class="tool-label">Controlli Zoom</div>
-                        <button class="tool-btn" data-tool="zoom-in" title="Zoom In">
-                            <i class="fas fa-search-plus"></i>
-                        </button>
-                        <button class="tool-btn" data-tool="zoom-out" title="Zoom Out">
-                            <i class="fas fa-search-minus"></i>
-                        </button>
-                        <button class="tool-btn" data-tool="zoom-fit" title="Adatta alla finestra">
-                            <i class="fas fa-expand-arrows-alt"></i>
-                        </button>
-                        <button class="tool-btn" data-tool="zoom-reset" title="Reset Zoom">
-                            <i class="fas fa-undo"></i>
-                        </button>
-                    </div>
-                </div>
-                
-                <!-- Strumento Righello -->
-                <div class="tool-group">
-                    <button class="tool-btn" data-tool="ruler" title="Righello">
-                        <i class="fas fa-ruler"></i>
-                    </button>
-                    <div class="tool-group-expanded">
-                        <div class="tool-label">Strumenti Misura</div>
-                        <button class="tool-btn" data-tool="ruler" title="Righello">
-                            <i class="fas fa-ruler"></i>
-                        </button>
-                        <button class="tool-btn" data-tool="measure-area" title="Misura Area">
-                            <i class="fas fa-vector-square"></i>
-                        </button>
-                        <button class="tool-btn" data-tool="measure-cone" title="Cono">
-                            <i class="fas fa-play"></i>
-                        </button>
-                        <button class="tool-btn" data-tool="measure-circle" title="Cerchio">
-                            <i class="fas fa-circle"></i>
-                        </button>
-                    </div>
-                </div>
-                
-                <!-- Nebbia di Guerra -->
-                <div class="tool-group">
-                    <button class="tool-btn" data-tool="fog" title="Nebbia di Guerra">
-                        <i class="fas fa-cloud"></i>
-                    </button>
-                    <div class="tool-group-expanded">
-                        <div class="tool-label">Nebbia di Guerra</div>
-                        <button class="tool-btn" data-tool="fog-reveal" title="Rivela area">
-                            <i class="fas fa-eye"></i>
-                        </button>
-                        <button class="tool-btn" data-tool="fog-hide" title="Nascondi area">
-                            <i class="fas fa-eye-slash"></i>
-                        </button>
-                        <button class="tool-btn" data-tool="fog-clear" title="Rimuovi tutta">
-                            <i class="fas fa-sun"></i>
-                        </button>
-                        <button class="tool-btn" data-tool="fog-reset" title="Reset nebbia">
-                            <i class="fas fa-cloud"></i>
-                        </button>
-                    </div>
-                </div>
-                
-                <!-- Tracciamento Turni -->
-                <div class="tool-group">
-                    <button class="tool-btn" data-tool="initiative" title="Tracciamento Turni">
-                        <i class="fas fa-list-ol"></i>
-                    </button>
-                </div>
-                
-                <!-- Tiri di Dadi -->
-                <div class="tool-group">
-                    <button class="tool-btn" data-tool="dice" title="Tiri di Dadi">
-                        <i class="fas fa-dice-d20"></i>
-                    </button>
-                    <div class="tool-group-expanded">
-                        <div class="tool-label">Tiri di Dadi</div>
-                        <button class="tool-btn" data-tool="d4" title="D4">
-                            <i class="fas fa-dice-four"></i>
-                        </button>
-                        <button class="tool-btn" data-tool="d6" title="D6">
-                            <i class="fas fa-dice-six"></i>
-                        </button>
-                        <button class="tool-btn" data-tool="d8" title="D8">
-                            <i class="fas fa-dice"></i>
-                        </button>
-                        <button class="tool-btn" data-tool="d10" title="D10">
-                            <i class="fas fa-dice"></i>
-                        </button>
-                        <button class="tool-btn" data-tool="d12" title="D12">
-                            <i class="fas fa-dice"></i>
-                        </button>
-                        <button class="tool-btn" data-tool="d20" title="D20">
-                            <i class="fas fa-dice-d20"></i>
-                        </button>
-                    </div>
-                </div>
-                
-                <!-- Strumento Aiuto -->
-                <div class="tool-group">
-                    <button class="tool-btn" data-tool="help" title="Aiuto">
-                        <i class="fas fa-question-circle"></i>
-                    </button>
-                </div>
-                
-                <!-- Gestione Token -->
-                <div class="tool-group">
-                    <div class="tool-label">Gestione Token</div>
-                    <button class="tool-btn" data-tool="clear-tokens" title="Rimuovi tutti i token">
-                        <i class="fas fa-trash-alt"></i>
-                    </button>
-                </div>
-                
-                <!-- Modalità Scuro/Chiaro -->
-                <div class="tool-group">
-                    <button class="tool-btn" data-tool="theme" title="Modalità Scuro/Chiaro">
-                        <i class="fas fa-adjust"></i>
-                    </button>
-                </div>
-            </div>
+<body>
+    <div class="roll20-container">
+        <!-- Left Toolbar -->
+        <div class="left-toolbar">
+            <button class="tool-button active" id="select-tool" title="Select">
+                <i class="fas fa-mouse-pointer"></i>
+            </button>
+            <button class="tool-button" id="pan-tool" title="Pan">
+                <i class="fas fa-hand-paper"></i>
+            </button>
+            <button class="tool-button" id="measure-tool" title="Measure">
+                <i class="fas fa-ruler"></i>
+            </button>
+            <button class="tool-button" id="draw-tool" title="Draw">
+                <i class="fas fa-pencil-alt"></i>
+            </button>
+            <button class="tool-button" id="text-tool" title="Text">
+                <i class="fas fa-font"></i>
+            </button>
+            <button class="tool-button" id="fog-tool" title="Fog of War">
+                <i class="fas fa-eye-slash"></i>
+            </button>
         </div>
-        
-        <!-- Area principale -->
-        <div class="main-area">
-            <!-- Pannello Layer (nascosto di default) -->
-            <div class="layers-panel" id="layersPanel" style="display: none;">
-                <div class="layers-header">
-                    <i class="fas fa-layer-group"></i> Gestione Layer
-                    <button class="close-panel" id="closeLayersPanel">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-                <div class="layers-content">
-                    <div class="layer-item active" data-layer="tokens">
-                        <i class="fas fa-chess-pawn"></i>
-                        <span>Token & Oggetti</span>
-                        <div class="layer-controls">
-                            <button class="layer-visibility" title="Visibilità"><i class="fas fa-eye"></i></button>
-                            <button class="layer-lock" title="Blocca"><i class="fas fa-unlock"></i></button>
-                        </div>
-                    </div>
-                    <div class="layer-item" data-layer="map">
-                        <i class="fas fa-map"></i>
-                        <span>Mappa</span>
-                        <div class="layer-controls">
-                            <button class="layer-visibility" title="Visibilità"><i class="fas fa-eye"></i></button>
-                            <button class="layer-lock" title="Blocca"><i class="fas fa-unlock"></i></button>
-                        </div>
-                    </div>
-                    <div class="layer-item" data-layer="background">
-                        <i class="fas fa-image"></i>
-                        <span>Sfondo</span>
-                        <div class="layer-controls">
-                            <button class="layer-visibility" title="Visibilità"><i class="fas fa-eye"></i></button>
-                            <button class="layer-lock" title="Blocca"><i class="fas fa-unlock"></i></button>
-                        </div>
-                    </div>
-                    <div class="layer-item" data-layer="lighting">
-                        <i class="fas fa-lightbulb"></i>
-                        <span>Illuminazione</span>
-                        <div class="layer-controls">
-                            <button class="layer-visibility" title="Visibilità"><i class="fas fa-eye"></i></button>
-                            <button class="layer-lock" title="Blocca"><i class="fas fa-unlock"></i></button>
-                        </div>
-                    </div>
-                    <div class="layer-item" data-layer="audio">
-                        <i class="fas fa-volume-up"></i>
-                        <span>Audio</span>
-                        <div class="layer-controls">
-                            <button class="layer-visibility" title="Visibilità"><i class="fas fa-eye"></i></button>
-                            <button class="layer-lock" title="Blocca"><i class="fas fa-unlock"></i></button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Pannello Audio (nascosto di default) -->
-            <div class="audio-panel" id="audioPanel" style="display: none;">
-                <div class="audio-header">
-                    <i class="fas fa-volume-up"></i> Controlli Audio
-                    <button class="close-panel" id="closeAudioPanel">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-                <div class="audio-content">
-                    <div class="audio-section">
-                        <h4>Musica di Sottofondo</h4>
-                        <div class="audio-track">
-                            <div class="track-info">
-                                <i class="fas fa-music"></i>
-                                <span>Taverna Medievale</span>
-                            </div>
-                            <div class="track-controls">
-                                <button class="play-btn"><i class="fas fa-play"></i></button>
-                                <input type="range" class="volume-slider" id="track1-volume" name="track1-volume" min="0" max="100" value="50">
-                                <span class="volume-display">50%</span>
-                            </div>
-                        </div>
-                        <div class="audio-track">
-                            <div class="track-info">
-                                <i class="fas fa-music"></i>
-                                <span>Battaglia Epica</span>
-                            </div>
-                            <div class="track-controls">
-                                <button class="play-btn"><i class="fas fa-play"></i></button>
-                                <input type="range" class="volume-slider" id="track2-volume" name="track2-volume" min="0" max="100" value="70">
-                                <span class="volume-display">70%</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="audio-section">
-                        <h4>Effetti Sonori</h4>
-                        <div class="sfx-grid">
-                            <button class="sfx-button" data-sound="sword">
-                                <i class="fas fa-sword"></i>
-                                <span>Spada</span>
-                            </button>
-                            <button class="sfx-button" data-sound="magic">
-                                <i class="fas fa-magic"></i>
-                                <span>Magia</span>
-                            </button>
-                            <button class="sfx-button" data-sound="door">
-                                <i class="fas fa-door-open"></i>
-                                <span>Porta</span>
-                            </button>
-                            <button class="sfx-button" data-sound="footsteps">
-                                <i class="fas fa-walking"></i>
-                                <span>Passi</span>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="audio-section">
-                        <h4>Volume Generale</h4>
-                        <div class="master-volume">
-                            <i class="fas fa-volume-up"></i>
-                            <input type="range" class="master-volume-slider" id="master-volume" name="master-volume" min="0" max="100" value="75">
-                            <span class="master-volume-display">75%</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Pulsante Back to Campaign -->
-            <div class="back-to-campaign">
-                <button class="back-btn" id="backToCampaign" title="Torna alle Campagne">
-                    <i class="fas fa-arrow-left"></i>
-                    <span>Back to Campaign</span>
-                </button>
-            </div>
-            
-            <!-- Canvas di gioco -->
-            <div class="canvas-container">
-                <div class="game-canvas" id="gameCanvas">
-                    <!-- I token verranno caricati dinamicamente -->
-                </div>
-                
-                <!-- Widget Zoom Verticale (stile Roll20) -->
-                <div class="zoom-widget-vertical">
-                    <button class="zoom-btn-vertical" id="zoomInVertical" title="Zoom In">
-                        <i class="fas fa-plus"></i>
-                    </button>
-                    <div class="zoom-slider-container">
-                        <input type="range" id="zoomSlider" class="zoom-slider" min="25" max="400" value="100" orient="vertical">
-                        <div class="zoom-display-vertical" id="zoomDisplayVertical">100%</div>
-                    </div>
-                    <button class="zoom-btn-vertical" id="zoomOutVertical" title="Zoom Out">
-                        <i class="fas fa-minus"></i>
-                    </button>
-                    <button class="zoom-btn-vertical zoom-reset" id="zoomResetVertical" title="Reset Zoom">
-                        <i class="fas fa-expand-arrows-alt"></i>
-                    </button>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Sidebar con Tab -->
-        <div class="sidebar">
-            <!-- Tab Navigation -->
-            <div class="tab-navigation">
-                <button class="tab-btn active" data-tab="chat" title="Chat">
-                    <i class="fas fa-comments"></i>
-                    <span>Chat</span>
-                </button>
-                <button class="tab-btn" data-tab="assets" title="Art & Assets">
-                    <i class="fas fa-palette"></i>
-                    <span>Assets</span>
-                </button>
-                <button class="tab-btn" data-tab="journal" title="Journal">
-                    <i class="fas fa-users"></i>
-                    <span>Journal</span>
-                </button>
-                <button class="tab-btn" data-tab="compendium" title="Compendium">
-                    <i class="fas fa-book"></i>
-                    <span>Compendium</span>
-                </button>
-                <button class="tab-btn" data-tab="collections" title="Collections">
-                    <i class="fas fa-puzzle-piece"></i>
-                    <span>Collections</span>
-                </button>
-                <button class="tab-btn" data-tab="settings" title="Settings">
-                    <i class="fas fa-cog"></i>
-                    <span>Settings</span>
-                </button>
-            </div>
-            
-            <!-- Tab Content -->
-            <div class="tab-content">
-                <!-- Tab Chat -->
-                <div class="tab-panel active" id="chat-panel">
-                    <div class="panel-header">
-                        <h3>Chat & Comunicazione</h3>
-                    </div>
-                    <div class="panel-body">
-                        <div class="chat-container">
-                            <div class="chat-messages" id="chatMessages">
-                                <!-- I messaggi della chat verranno caricati qui -->
-                            </div>
-                            <div class="chat-input-container">
-                                <input type="text" id="chatInput" placeholder="Scrivi un messaggio..." maxlength="500">
-                                <button id="sendMessage" title="Invia messaggio">
-                                    <i class="fas fa-paper-plane"></i>
-                                </button>
-                            </div>
-                        </div>
-                        <div class="dice-roller">
-                            <h4>Lanci di Dadi</h4>
-                            <div class="dice-buttons">
-                                <button class="dice-btn" data-dice="d4">d4</button>
-                                <button class="dice-btn" data-dice="d6">d6</button>
-                                <button class="dice-btn" data-dice="d8">d8</button>
-                                <button class="dice-btn" data-dice="d10">d10</button>
-                                <button class="dice-btn" data-dice="d12">d12</button>
-                                <button class="dice-btn" data-dice="d20">d20</button>
-                                <button class="dice-btn" data-dice="d100">d100</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Tab Assets -->
-                <div class="tab-panel" id="assets-panel">
-                    <div class="panel-header">
-                        <h3>Art & Assets</h3>
-                        <div class="asset-controls">
-                            <button class="btn-small" id="refreshAssets" title="Aggiorna Assets">
-                                <i class="fas fa-sync-alt"></i>
-                            </button>
-                            <button class="btn-small" id="uploadAsset" title="Carica Asset">
-                                <i class="fas fa-upload"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="panel-body">
-                        <div class="asset-categories">
-                            <h4>Categorie</h4>
-                            <div class="category-selector">
-                                <select id="assetCategorySelect" class="category-dropdown">
-                                    <option value="all">Tutti</option>
-                                    <option value="audio">Audio</option>
-                                    <option value="backgrounds">Backgrounds</option>
-                                    <option value="props">Props</option>
-                                    <option value="tokens">Tokens</option>
-                                </select>
-                            </div>
-                        </div>
-                        
-                        <div class="asset-search">
-                            <input type="text" placeholder="Cerca assets..." class="search-input" id="assetSearchInput">
-                            <button class="search-btn" id="assetSearchBtn"><i class="fas fa-search"></i></button>
-                        </div>
-                        
-                        <div class="asset-loading" id="assetLoading" style="display: none;">
-                            <i class="fas fa-spinner fa-spin"></i> Caricamento assets...
-                        </div>
-                        
-                        <div class="asset-grid" id="assetGrid">
-                            <!-- Gli asset verranno caricati dinamicamente qui -->
-                        </div>
-                        
-                        <div class="asset-empty" id="assetEmpty" style="display: none;">
-                            <i class="fas fa-image"></i>
-                            <p>Nessun asset trovato per questa categoria</p>
-                            <button class="btn-primary" id="uploadFirstAsset">Carica il primo asset</button>
-                        </div>
-                        
-                        <!-- Overlay per la form di caricamento token -->
-                        <div class="token-upload-overlay" id="tokenUploadOverlay" style="display: none;"></div>
-                        
-                        <!-- Form di caricamento token con ridimensionamento -->
-                        <div class="token-upload-form" id="tokenUploadForm" style="display: none;">
-                            <div class="form-header">
-                                <h4>Carica e Ridimensiona Token</h4>
-                                <button class="close-form" id="closeTokenForm">
-                                    <i class="fas fa-times"></i>
-                                </button>
-                            </div>
-                            <div class="form-body">
-                                <div class="upload-section">
-                                    <div class="file-input-group">
-                                        <label for="tokenBackgroundImage">Immagine del Token:</label>
-                                        <input type="file" id="tokenBackgroundImage" accept="image/png" class="file-input">
-                                    </div>
-                                    <div class="file-input-group">
-                                        <label>Bordo del Token:</label>
-                                        <div class="border-gallery" id="tokenBorderGallery">
-                                            <div class="border-loading">Caricamento bordi...</div>
-                                        </div>
-                                    </div>
 
-                                </div>
-                                
-                                <div class="editor-section" id="tokenEditorSection" style="display: none;">
-                                    <div class="editor-controls">
-                                        <label for="tokenLayerSelect">Modifica:</label>
-                                        <select id="tokenLayerSelect" class="layer-select">
-                                            <option value="background">Immagine Token</option>
-                                            <option value="circle">Area di Ritaglio</option>
-                                        </select>
-                                    </div>
-                                    
-                                    <div class="zoom-controls">
-                                        <label for="tokenZoomSlider">Zoom:</label>
-                                        <input type="range" id="tokenZoomSlider" class="zoom-slider" min="0.1" max="3" step="0.1" value="1">
-                                        <span id="tokenZoomValue">100%</span>
-                                    </div>
-                                    
-                                    <div class="canvas-container">
-                                        <canvas id="tokenCanvas" class="token-canvas"></canvas>
-                                    </div>
-                                    
-                                    <div class="editor-instructions">
-                                        <p><strong>Controlli:</strong></p>
-                                        <ul>
-                                            <li>Trascina con il mouse per spostare</li>
-                                            <li>Usa la rotella del mouse per ridimensionare</li>
-                                            <li>Il cerchio rosso indica l'area di ritaglio finale</li>
-                                        </ul>
-                                    </div>
-                                </div>
-                                
-                                <div class="form-actions">
-                                    <button class="btn-secondary" id="cancelTokenUpload">Annulla</button>
-                                    <button class="btn-primary" id="generateTokenButton" style="display: none;">Genera Token</button>
-                                    <button class="btn-success" id="saveTokenButton" style="display: none;">Salva Token</button>
-                                </div>
-                            </div>
+        <!-- Main Area -->
+        <div class="main-area">
+            <!-- Top Bar -->
+            <div class="top-bar">
+                <div class="page-title">Pathfinder - Un mondo di ombre</div>
+                <div class="zoom-controls">
+                    <button class="zoom-btn" onclick="zoomOut()">-</button>
+                    <span id="zoom-level">100%</span>
+                    <button class="zoom-btn" onclick="zoomIn()">+</button>
+                    <button class="zoom-btn" onclick="resetZoom()">Reset</button>
+                </div>
+            </div>
+
+            <!-- Canvas Area -->
+            <div class="canvas-area" id="canvas-area">
+                <div class="game-canvas" id="game-canvas">
+                    <!-- Existing tokens -->
+                    <div class="token player" style="top: 200px; left: 300px;">P1</div>
+                    <div class="token npc" style="top: 250px; left: 400px;">N1</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Panel -->
+        <div class="right-panel">
+            <div class="panel-tabs">
+                <button class="panel-tab active" onclick="showPanel('tokens')">Tokens</button>
+                <button class="panel-tab" onclick="showPanel('chat')">Chat</button>
+                <button class="panel-tab" onclick="showPanel('journal')">Journal</button>
+            </div>
+
+            <div class="panel-content">
+                <!-- Token Library -->
+                <div class="token-library active" id="tokens-panel">
+                    <div class="token-category">
+                        <div class="category-title">Player Characters</div>
+                        <div class="token-grid">
+                            <div class="library-token player" draggable="true" data-type="player">P</div>
+                            <div class="library-token player" draggable="true" data-type="player">H</div>
+                            <div class="library-token player" draggable="true" data-type="player">W</div>
+                            <div class="library-token player" draggable="true" data-type="player">R</div>
+                            <div class="library-token player" draggable="true" data-type="player">M</div>
+                            <div class="library-token player" draggable="true" data-type="player">C</div>
+                        </div>
+                    </div>
+
+                    <div class="token-category">
+                        <div class="category-title">NPCs</div>
+                        <div class="token-grid">
+                            <div class="library-token npc" draggable="true" data-type="npc">G</div>
+                            <div class="library-token npc" draggable="true" data-type="npc">V</div>
+                            <div class="library-token npc" draggable="true" data-type="npc">K</div>
+                            <div class="library-token npc" draggable="true" data-type="npc">Q</div>
+                            <div class="library-token npc" draggable="true" data-type="npc">N</div>
+                            <div class="library-token npc" draggable="true" data-type="npc">B</div>
+                        </div>
+                    </div>
+
+                    <div class="token-category">
+                        <div class="category-title">Monsters</div>
+                        <div class="token-grid">
+                            <div class="library-token monster" draggable="true" data-type="monster">D</div>
+                            <div class="library-token monster" draggable="true" data-type="monster">O</div>
+                            <div class="library-token monster" draggable="true" data-type="monster">T</div>
+                            <div class="library-token monster" draggable="true" data-type="monster">S</div>
+                                            <div class="library-token monster" draggable="true" data-type="monster">L</div>
+                            <div class="library-token monster" draggable="true" data-type="monster">Z</div>
+                        </div>
+                    </div>
+
+                    <div class="token-category">
+                        <div class="category-title">Objects & Vehicles</div>
+                        <div class="token-grid">
+                            <div class="library-token object" draggable="true" data-type="object">📦</div>
+                            <div class="library-token object" draggable="true" data-type="object">🗡️</div>
+                            <div class="library-token object" draggable="true" data-type="object">🛡️</div>
+                            <div class="library-token vehicle" draggable="true" data-type="vehicle">🐎</div>
+                            <div class="library-token vehicle" draggable="true" data-type="vehicle">⛵</div>
+                            <div class="library-token trap" draggable="true" data-type="trap">⚠️</div>
                         </div>
                     </div>
                 </div>
-                
-                <!-- Tab Journal -->
-                <div class="tab-panel" id="journal-panel">
-                    <div class="panel-header">
-                        <h3>Journal & Personaggi</h3>
+
+                <!-- Chat Panel -->
+                <div class="chat-panel" id="chat-panel">
+                    <div class="chat-messages" id="chat-messages">
+                        <div style="color: #888; font-style: italic;">Chat is ready...</div>
                     </div>
-                    <div class="panel-body">
-                        <div class="journal-categories">
-                            <h4>Categorie</h4>
-                            <div class="category-list">
-                                <button class="category-btn active" data-category="characters">Personaggi</button>
-                                <button class="category-btn" data-category="npcs">PNG</button>
-                                <button class="category-btn" data-category="handouts">Handout</button>
-                                <button class="category-btn" data-category="notes">Note</button>
-                            </div>
-                        </div>
-                        
-                        <div class="journal-search">
-                            <input type="text" placeholder="Cerca nel journal..." class="search-input" id="journal-search" name="journal-search">
-                            <button class="search-btn"><i class="fas fa-search"></i></button>
-                        </div>
-                        
-                        <div class="journal-list">
-                            <div class="journal-item" data-type="character">
-                                <i class="fas fa-user"></i>
-                                <span>Personaggio Giocatore 1</span>
-                                <button class="view-btn"><i class="fas fa-eye"></i></button>
-                            </div>
-                            <div class="journal-item" data-type="npc">
-                                <i class="fas fa-users"></i>
-                                <span>PNG Importante</span>
-                                <button class="view-btn"><i class="fas fa-eye"></i></button>
-                            </div>
-                            <div class="journal-item" data-type="handout">
-                                <i class="fas fa-scroll"></i>
-                                <span>Mappa del Tesoro</span>
-                                <button class="view-btn"><i class="fas fa-eye"></i></button>
-                            </div>
-                        </div>
-                        
-                        <div class="journal-actions">
-                            <button class="action-btn"><i class="fas fa-plus"></i> Nuovo</button>
-                            <button class="action-btn"><i class="fas fa-folder"></i> Organizza</button>
-                        </div>
+                    <div class="chat-input">
+                        <input type="text" id="chat-input" placeholder="Type your message..." onkeypress="handleChatKeypress(event)">
+                        <button onclick="sendMessage()">Send</button>
                     </div>
                 </div>
-                
-                <!-- Tab Compendium -->
-                <div class="tab-panel" id="compendium-panel">
-                    <div class="panel-header">
-                        <h3>Compendium</h3>
-                    </div>
-                    <div class="panel-body">
-                        <div class="compendium-categories">
-                            <h4>Categorie</h4>
-                            <div class="category-list">
-                                <button class="category-btn active" data-category="spells">Incantesimi</button>
-                                <button class="category-btn" data-category="items">Oggetti</button>
-                                <button class="category-btn" data-category="monsters">Mostri</button>
-                                <button class="category-btn" data-category="rules">Regole</button>
-                                <button class="category-btn" data-category="feats">Talenti</button>
-                            </div>
-                        </div>
-                        
-                        <div class="compendium-search">
-                            <input type="text" placeholder="Cerca nel compendium..." class="search-input" id="compendium-search" name="compendium-search">
-                            <button class="search-btn"><i class="fas fa-search"></i></button>
-                        </div>
-                        
-                        <div class="compendium-list">
-                            <div class="compendium-item" data-type="spell">
-                                <i class="fas fa-magic"></i>
-                                <span>Palla di Fuoco</span>
-                                <button class="view-btn"><i class="fas fa-eye"></i></button>
-                            </div>
-                            <div class="compendium-item" data-type="item">
-                                <i class="fas fa-sword"></i>
-                                <span>Spada Lunga +1</span>
-                                <button class="view-btn"><i class="fas fa-eye"></i></button>
-                            </div>
-                            <div class="compendium-item" data-type="monster">
-                                <i class="fas fa-dragon"></i>
-                                <span>Drago Rosso</span>
-                                <button class="view-btn"><i class="fas fa-eye"></i></button>
-                            </div>
-                        </div>
-                        
-                        <div class="compendium-actions">
-                            <button class="action-btn"><i class="fas fa-download"></i> Importa</button>
-                            <button class="action-btn"><i class="fas fa-filter"></i> Filtri</button>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Tab Collections -->
-                <div class="tab-panel" id="collections-panel">
-                    <div class="panel-header">
-                        <h3>Collections & Macro</h3>
-                    </div>
-                    <div class="panel-body">
-                        <div class="collections-categories">
-                            <h4>Categorie</h4>
-                            <div class="category-list">
-                                <button class="category-btn active" data-category="macros">Macro</button>
-                                <button class="category-btn" data-category="scripts">Script</button>
-                                <button class="category-btn" data-category="modules">Moduli</button>
-                                <button class="category-btn" data-category="api">API</button>
-                            </div>
-                        </div>
-                        
-                        <div class="collections-search">
-                            <input type="text" placeholder="Cerca macro/script..." class="search-input" id="collections-search" name="collections-search">
-                            <button class="search-btn"><i class="fas fa-search"></i></button>
-                        </div>
-                        
-                        <div class="collections-list">
-                            <div class="collection-item" data-type="macro">
-                                <i class="fas fa-code"></i>
-                                <span>Attacco Base</span>
-                                <button class="run-btn"><i class="fas fa-play"></i></button>
-                                <button class="edit-btn"><i class="fas fa-edit"></i></button>
-                            </div>
-                            <div class="collection-item" data-type="macro">
-                                <i class="fas fa-dice-d20"></i>
-                                <span>Tiro Salvezza</span>
-                                <button class="run-btn"><i class="fas fa-play"></i></button>
-                                <button class="edit-btn"><i class="fas fa-edit"></i></button>
-                            </div>
-                            <div class="collection-item" data-type="script">
-                                <i class="fas fa-cogs"></i>
-                                <span>Auto-Iniziativa</span>
-                                <button class="run-btn"><i class="fas fa-play"></i></button>
-                                <button class="edit-btn"><i class="fas fa-edit"></i></button>
-                            </div>
-                        </div>
-                        
-                        <div class="collections-actions">
-                            <button class="action-btn"><i class="fas fa-plus"></i> Nuova Macro</button>
-                            <button class="action-btn"><i class="fas fa-folder"></i> Organizza</button>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Tab Settings -->
-                <div class="tab-panel" id="settings-panel">
-                    <div class="panel-header">
-                        <h3>Impostazioni</h3>
-                    </div>
-                    <div class="panel-body">
-                        <div class="settings-group">
-                            <h4>Audio/Video</h4>
-                            <div class="setting-item">
-                                <label>Volume Master:</label>
-                                <input type="range" id="masterVolume" min="0" max="100" value="50">
-                                <span id="volumeDisplay">50%</span>
-                            </div>
-                            <div class="setting-item">
-                                <label>
-                                    <input type="checkbox" id="enableMicrophone"> Abilita Microfono
-                                </label>
-                            </div>
-                            <div class="setting-item">
-                                <label>
-                                    <input type="checkbox" id="enableCamera"> Abilita Camera
-                                </label>
-                            </div>
-                        </div>
-                        
-                        <div class="settings-group">
-                            <h4>Interfaccia</h4>
-                            <div class="setting-item">
-                                <label>
-                                    <input type="checkbox" id="darkMode"> Modalità Scura
-                                </label>
-                            </div>
-                            <div class="setting-item">
-                                <label>
-                                    <input type="checkbox" id="legacyMode"> Modalità Legacy
-                                </label>
-                            </div>
-                            <div class="setting-item">
-                                <label>Dimensione UI:</label>
-                                <select id="uiScale">
-                                    <option value="small">Piccola</option>
-                                    <option value="medium" selected>Media</option>
-                                    <option value="large">Grande</option>
-                                </select>
-                            </div>
-                        </div>
-                        
-                        <div class="settings-group">
-                            <h4>Sessione</h4>
-                            <div class="setting-item">
-                                <button class="action-btn danger"><i class="fas fa-sign-out-alt"></i> Esci dalla Sessione</button>
-                            </div>
-                            <div class="setting-item">
-                                <button class="action-btn"><i class="fas fa-save"></i> Salva Impostazioni</button>
-                            </div>
-                        </div>
-                    </div>
+
+                <!-- Journal Panel -->
+                <div class="journal-panel" id="journal-panel" style="display: none;">
+                    <div style="color: #888; font-style: italic;">Journal entries will appear here...</div>
                 </div>
             </div>
         </div>
     </div>
-    
 
-    
+    <!-- Game Map Selector Menu -->
+    <div class="gameMapSelector" id="gameMapSelector">
+        <div class="content">
+            <h3>Gestione Mappe</h3>
+            <div class="map-controls">
+                <button class="create-map-btn" onclick="createNewMap()">+ Nuova Mappa</button>
+            </div>
+            <div class="map-list" id="mapList">
+                <div class="map-item active" data-map-id="default" onclick="switchToMap('default')">
+                    <span class="map-name">Mappa Principale</span>
+                    <span class="map-status">Attiva</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="gameMapSelectorFlag" onclick="toggleGameMapSelector()">Maps</div>
+
     <script>
-        // Variabili globali - recuperate dal localStorage/sessionStorage
-        // currentCampaignId e currentMapId sono già dichiarati in map.js
-        let tokens = [];
-        // isDragging, currentToken, startX, startY, draggedAsset sono già dichiarati in map.js
-        let draggedTokenType = null;
-        
-        // Recupera i dati completi della campagna dal localStorage
-        let currentCampaignData = null;
-        try {
-            const campaignDataStr = localStorage.getItem('current_campaign_data');
-            if (campaignDataStr) {
-                currentCampaignData = JSON.parse(campaignDataStr);
-                console.log('MAP.EJS: Campaign data loaded from localStorage:', currentCampaignData);
-            }
-        } catch (error) {
-            console.error('MAP.EJS: Error parsing campaign data from localStorage:', error);
-        }
-        
-        // Verifica che abbiamo un campaign ID valido
-        if (!currentCampaignId) {
-            console.error('No campaign ID found in storage, redirecting to campaigns page');
-            window.location.href = '/campaigns';
-        }
-        
-        // Aggiorna il titolo della pagina con il nome della campagna se disponibile
-        if (currentCampaignData && currentCampaignData.name) {
-            document.title = `${currentCampaignData.name} - PFVTT Map`;
-        }
-        const gameCanvas = document.getElementById('gameCanvas');
-        
-        // Funzionalità base per il clone di Roll20
-        
-        // Gestione chat
-        const chatInput = document.getElementById('chatInput');
-        const sendButton = document.getElementById('sendMessage');
-        
-        if (chatInput) {
-            chatInput.addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    sendChatMessage();
-                }
-            });
-        }
-        
-        if (sendButton) {
-            sendButton.addEventListener('click', sendChatMessage);
-        }
-        
-        function sendChatMessage() {
-            const chatInput = document.getElementById('chatInput');
-            if (chatInput) {
-                const message = chatInput.value.trim();
-                if (message) {
-                    addChatMessage('Giocatore', message);
-                    chatInput.value = '';
-                }
-            }
-        }
-        
-        function addChatMessage(sender, message) {
-            const chatMessages = document.getElementById('chatMessages');
-            if (chatMessages) {
-                const messageDiv = document.createElement('div');
-                messageDiv.className = 'chat-message';
-                messageDiv.innerHTML = `
-                    <div class="chat-sender">${sender}</div>
-                    <div class="chat-content">${message}</div>
-                `;
-                chatMessages.appendChild(messageDiv);
-                chatMessages.scrollTop = chatMessages.scrollHeight;
-            }
-        }
-        
-        // Gestione tab navigation
-        document.querySelectorAll('.tab-btn').forEach(button => {
-            button.addEventListener('click', function() {
-                const targetTab = this.dataset.tab;
-                
-                // Rimuovi active da tutti i tab
-                document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-                document.querySelectorAll('.tab-panel').forEach(panel => panel.classList.remove('active'));
-                
-                // Attiva il tab selezionato
-                this.classList.add('active');
-                const targetPanel = document.getElementById(targetTab + '-panel');
-                if (targetPanel) {
-                    targetPanel.classList.add('active');
-                }
-            });
-        });
-        
-        // Caricamento token dal backend
-        async function loadTokens() {
-            try {
-                console.log('[PFVTT Map] Loading tokens for map:', currentMapId);
-                const response = await fetch(`/api/map-tokens?map_id=${currentMapId}`);
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                const data = await response.json();
-                // Assicurati che tokens sia sempre un array
-                tokens = Array.isArray(data) ? data : (data && data.tokens ? data.tokens : []);
-                console.log('[PFVTT Map] Loaded tokens:', tokens);
-                renderTokens();
-            } catch (error) {
-                console.error('[PFVTT Map Error] Failed to load tokens', error);
-                tokens = []; // Inizializza come array vuoto in caso di errore
-                addChatMessage('Sistema', 'Errore nel caricamento dei token');
-            }
-        }
-        
-        // Eliminazione di tutti i token dalla mappa
-        async function clearAllTokens() {
-            if (!tokens || tokens.length === 0) {
-                console.log('[PFVTT Map] No tokens to clear');
-                addChatMessage('Sistema', 'Non ci sono token da rimuovere');
-                return;
-            }
+        // Application state management
+        const AppState = {
+            currentTool: 'select',
+            zoomLevel: 1,
+            draggedToken: null,
+            tokenCounter: 1,
+            isDragging: false,
+            showingMeasurement: false,
+            measurementLine: null,
+            measurementText: null,
+            measurementContainer: null,
+            currentToken: null,
+            isPanning: false,
+            panData: {
+                startX: 0,
+                startY: 0,
+                startScrollX: 0,
+                startScrollY: 0
+            },
             
-            if (!confirm(`Sei sicuro di voler rimuovere tutti i ${tokens.length} token dalla mappa?\n\nQuesta azione non può essere annullata.`)) {
-                return;
-            }
+            // Constants
+            GRID_SIZE: 50,
+            METERS_PER_CELL: 1.5,
+            MIN_ZOOM: 0.3,
+            MAX_ZOOM: 3,
+            ZOOM_FACTOR: 1.2
+        };
+
+        // Utility functions
+        const Utils = {
+            clamp: (value, min, max) => Math.min(Math.max(value, min), max),
             
-            try {
-                console.log('[PFVTT Map] Clearing all tokens from map:', currentMapId);
-                
-                // Elimina ogni token dal database
-                const deletePromises = tokens.map(async (token) => {
-                    const response = await fetch(`/api/map-tokens/${token.id}`, {
-                        method: 'DELETE'
-                    });
-                    if (!response.ok) {
-                        throw new Error(`Failed to delete token ${token.id}: ${response.status}`);
-                    }
-                    return response.json();
+            sanitizeInput: (input) => {
+                if (typeof input !== 'string') return '';
+                return input.trim().replace(/<[^>]*>/g, ''); // Basic XSS protection
+            },
+            
+            debounce: (func, wait) => {
+                let timeout;
+                return function executedFunction(...args) {
+                    const later = () => {
+                        clearTimeout(timeout);
+                        func(...args);
+                    };
+                    clearTimeout(timeout);
+                    timeout = setTimeout(later, wait);
+                };
+            },
+            
+            snapToGrid: (value) => {
+                return Math.round(value / AppState.GRID_SIZE) * AppState.GRID_SIZE;
+            },
+            
+            getGridPosition: (x, y) => {
+                return {
+                    x: Math.floor(x / AppState.GRID_SIZE),
+                    y: Math.floor(y / AppState.GRID_SIZE)
+                };
+            },
+            
+            calculateDistance: (x1, y1, x2, y2) => {
+                const dx = x2 - x1;
+                const dy = y2 - y1;
+                const pixelDistance = Math.sqrt(dx * dx + dy * dy);
+                const cellDistance = pixelDistance / AppState.GRID_SIZE;
+                const meterDistance = cellDistance * AppState.METERS_PER_CELL;
+                return {
+                    pixels: pixelDistance,
+                    cells: cellDistance,
+                    meters: meterDistance
+                };
+            }
+        };
+
+        // Tool management
+        const ToolManager = {
+            setActiveTool: (toolName) => {
+                // Remove active class from all tools
+                document.querySelectorAll('.tool-button').forEach(btn => {
+                    btn.classList.remove('active');
                 });
                 
-                await Promise.all(deletePromises);
-                
-                // Aggiorna l'array locale e ricarica la visualizzazione
-                tokens = [];
-                renderTokens();
-                
-                console.log('[PFVTT Map] All tokens cleared successfully');
-                addChatMessage('Sistema', 'Tutti i token sono stati rimossi dalla mappa');
-                
-            } catch (error) {
-                console.error('[PFVTT Map Error] Failed to clear tokens', error);
-                addChatMessage('Sistema', 'Errore nella rimozione dei token');
-                // Ricarica i token per sincronizzare lo stato
-                loadTokens();
-            }
-        }
-        
-        // Rendering dei token sulla mappa
-        function renderTokens() {
-            const canvas = document.getElementById('gameCanvas');
-            // Rimuovi token esistenti
-            canvas.querySelectorAll('.token').forEach(token => token.remove());
-            
-            // Verifica che tokens sia un array prima di iterare
-            if (Array.isArray(tokens)) {
-                tokens.forEach(token => {
-                    const tokenElement = createTokenElement(token);
-                    canvas.appendChild(tokenElement);
-                });
-            } else {
-                console.warn('[PFVTT Map] Tokens is not an array:', tokens);
-            }
-        }
-        
-        // Creazione elemento token
-        function createTokenElement(tokenData) {
-            const tokenElement = document.createElement('div');
-            
-            // Determina il tipo di token (player o npc) basato sul nome
-            const isPlayerToken = ['hero', 'warrior', 'mage', 'rogue'].includes(tokenData.name.toLowerCase());
-            tokenElement.className = isPlayerToken ? 'token player' : 'token npc';
-            tokenElement.dataset.tokenId = tokenData.id;
-            
-            // Calcola posizione pixel dalla griglia
-            const gridSize = 50;
-                const tokenSize = 48;
-                const offset = (gridSize - tokenSize) / 2;
-                const pixelX = tokenData.grid_x * gridSize + offset;
-                const pixelY = tokenData.grid_y * gridSize + offset;
-            
-            tokenElement.style.left = pixelX + 'px';
-            tokenElement.style.top = pixelY + 'px';
-            
-            // Cerca l'asset associato al token
-            let assetImageUrl = null;
-            if (tokenData.asset_id && window.allAssets) {
-                const associatedAsset = window.allAssets.find(asset => asset.id == tokenData.asset_id);
-                if (associatedAsset && associatedAsset.file_url) {
-                    assetImageUrl = associatedAsset.file_url;
-                }
-            }
-            
-            // Imposta l'aspetto del token
-            if (assetImageUrl) {
-                // Usa l'immagine dell'asset se disponibile
-                tokenElement.style.backgroundImage = `url('${assetImageUrl}')`;
-                tokenElement.style.backgroundSize = 'cover';
-                tokenElement.style.backgroundPosition = 'center';
-                tokenElement.style.backgroundRepeat = 'no-repeat';
-            } else {
-                // Fallback al token generico
-                const letter = tokenData.name ? tokenData.name.charAt(0).toUpperCase() : 'T';
-                const color = (tokenData.properties && tokenData.properties.color) || '#ff6b6b';
-                
-                const svgData = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"><circle cx="20" cy="20" r="18" fill="${color}"/><text x="20" y="26" text-anchor="middle" fill="white" font-size="12" font-weight="bold">${letter}</text></svg>`;
-                tokenElement.style.backgroundImage = `url('data:image/svg+xml,${encodeURIComponent(svgData)}')`;
-            }
-            
-            // Aggiungi tooltip con il nome del token
-            tokenElement.title = tokenData.name;
-            
-            // Aggiungi eventi di trascinamento
-            addTokenDragEvents(tokenElement);
-            
-            return tokenElement;
-        }
-        
-        // Aggiungi evento per deselezionare quando si clicca sul canvas
-        if (gameCanvas) {
-            gameCanvas.addEventListener('click', function(e) {
-                // Deseleziona solo se il click è direttamente sul canvas
-                if (e.target === gameCanvas) {
-                    if (selectedToken) {
-                        selectedToken.classList.remove('selected');
-                        selectedToken = null;
-                    }
-                }
-            });
-        }
-        
-        // Esponi le funzioni come variabili globali per map.js
-        window.createTokenElement = createTokenElement;
-        window.addTokenDragEvents = addTokenDragEvents;
-        window.selectToken = selectToken;
-        
-        // Funzione per loggare le coordinate dei token nel file frontend.log
-        async function logTokenCoordinates(action, tokenId, tokenName, gridX, gridY, oldGridX = null, oldGridY = null) {
-            try {
-                const timestamp = new Date().toISOString();
-                let logMessage;
-                
-                if (action === 'CREATE') {
-                    logMessage = `[${timestamp}] TOKEN CREATED - ID: ${tokenId}, Name: ${tokenName}, Coordinates: (${gridX}, ${gridY})`;
-                } else if (action === 'MOVE') {
-                    logMessage = `[${timestamp}] TOKEN MOVED - ID: ${tokenId}, Name: ${tokenName}, Old: (${oldGridX}, ${oldGridY}), New: (${gridX}, ${gridY})`;
+                // Add active class to selected tool
+                const toolButton = document.getElementById(toolName + '-tool');
+                if (toolButton) {
+                    toolButton.classList.add('active');
                 }
                 
-                // Invia il log al backend per scriverlo nel file
-                await fetch('/api/log-token-coordinates', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        message: logMessage
-                    })
-                });
-            } catch (error) {
-                console.error('[PFVTT Map Error] Failed to log token coordinates', error);
+                // Update app state
+                AppState.currentTool = toolName;
+                
+                // Clear any active measurements
+                MeasurementTool.clearMeasurement();
+                
+                // Update cursor based on tool
+                const canvas = document.getElementById('game-canvas');
+                switch (toolName) {
+                    case 'pan':
+                        canvas.style.cursor = 'grab';
+                        break;
+                    case 'measure':
+                        canvas.style.cursor = 'crosshair';
+                        break;
+                    case 'draw':
+                        canvas.style.cursor = 'crosshair';
+                        break;
+                    case 'text':
+                        canvas.style.cursor = 'text';
+                        break;
+                    default:
+                        canvas.style.cursor = 'default';
+                }
             }
-        }
-        
-        // Aggiornamento posizione token
-        async function updateTokenPosition(tokenId, gridX, gridY) {
-            try {
-                const token = tokens.find(t => t.id == tokenId);
-                const oldGridX = token?.x_position || 0;
-                const oldGridY = token?.y_position || 0;
+        };
+
+        // Zoom management
+        const ZoomManager = {
+            updateZoom: (newZoom) => {
+                AppState.zoomLevel = Utils.clamp(newZoom, AppState.MIN_ZOOM, AppState.MAX_ZOOM);
                 
-                console.log(`[PFVTT Map] TOKEN MOVEMENT - ID: ${tokenId}`);
-                console.log(`[PFVTT Map] OLD GRID: ${oldGridX}, ${oldGridY}`);
-                console.log(`[PFVTT Map] NEW GRID: ${gridX}, ${gridY}`);
+                const canvas = document.getElementById('game-canvas');
+                canvas.style.transform = `scale(${AppState.zoomLevel})`;
+                canvas.style.transformOrigin = '0 0';
                 
-                const response = await fetch(`/api/map-tokens/${tokenId}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        x_position: gridX,
-                        y_position: gridY
-                    })
-                });
+                // Update zoom display
+                const zoomDisplay = document.getElementById('zoom-level');
+                if (zoomDisplay) {
+                    zoomDisplay.textContent = Math.round(AppState.zoomLevel * 100) + '%';
+                }
+            }
+        };
+
+        // Measurement tool
+        const MeasurementTool = {
+            startMeasurement: (x, y) => {
+                if (AppState.currentTool !== 'measure') return;
                 
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
+                AppState.showingMeasurement = true;
+                
+                // Create measurement container if it doesn't exist
+                if (!AppState.measurementContainer) {
+                    AppState.measurementContainer = document.createElement('div');
+                    AppState.measurementContainer.style.position = 'absolute';
+                    AppState.measurementContainer.style.pointerEvents = 'none';
+                    AppState.measurementContainer.style.zIndex = '1000';
+                    document.getElementById('game-canvas').appendChild(AppState.measurementContainer);
                 }
                 
-                // Aggiorna il token locale
-                const tokenIndex = tokens.findIndex(t => t.id == tokenId);
-                if (tokenIndex !== -1) {
-                    tokens[tokenIndex].x_position = gridX;
-                    tokens[tokenIndex].y_position = gridY;
+                // Create line element
+                AppState.measurementLine = document.createElement('div');
+                AppState.measurementLine.style.position = 'absolute';
+                AppState.measurementLine.style.background = '#ff0000';
+                AppState.measurementLine.style.height = '2px';
+                AppState.measurementLine.style.transformOrigin = '0 0';
+                AppState.measurementLine.style.left = x + 'px';
+                AppState.measurementLine.style.top = y + 'px';
+                AppState.measurementContainer.appendChild(AppState.measurementLine);
+                
+                // Create text element
+                AppState.measurementText = document.createElement('div');
+                AppState.measurementText.style.position = 'absolute';
+                AppState.measurementText.style.background = 'rgba(0, 0, 0, 0.8)';
+                AppState.measurementText.style.color = '#fff';
+                AppState.measurementText.style.padding = '4px 8px';
+                AppState.measurementText.style.borderRadius = '4px';
+                AppState.measurementText.style.fontSize = '12px';
+                AppState.measurementText.style.whiteSpace = 'nowrap';
+                AppState.measurementContainer.appendChild(AppState.measurementText);
+                
+                AppState.measurementStartX = x;
+                AppState.measurementStartY = y;
+            },
+            
+            updateMeasurement: (x, y) => {
+                if (!AppState.showingMeasurement || !AppState.measurementLine) return;
+                
+                const dx = x - AppState.measurementStartX;
+                const dy = y - AppState.measurementStartY;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+                
+                // Update line
+                AppState.measurementLine.style.width = distance + 'px';
+                AppState.measurementLine.style.transform = `rotate(${angle}deg)`;
+                
+                // Calculate distances
+                const distanceData = Utils.calculateDistance(
+                    AppState.measurementStartX, AppState.measurementStartY, x, y
+                );
+                
+                // Update text
+                AppState.measurementText.textContent = 
+                    `${distanceData.cells.toFixed(1)} cells (${distanceData.meters.toFixed(1)}m)`;
+                AppState.measurementText.style.left = (x + 10) + 'px';
+                AppState.measurementText.style.top = (y - 25) + 'px';
+            },
+            
+            clearMeasurement: () => {
+                if (AppState.measurementContainer) {
+                    AppState.measurementContainer.innerHTML = '';
                 }
-                
-                // Logga le coordinate del token spostato
-                await logTokenCoordinates('MOVE', tokenId, token?.name || 'Unknown', gridX, gridY, oldGridX, oldGridY);
-                
-                console.log(`[PFVTT Map] Token ${tokenId} moved successfully`);
-            } catch (error) {
-                console.error('[PFVTT Map Error] Failed to update token position', error);
-                addChatMessage('Sistema', 'Errore nell\'aggiornamento della posizione del token');
+                AppState.showingMeasurement = false;
+                AppState.measurementLine = null;
+                AppState.measurementText = null;
             }
-        }
-        
-        // Drag and drop dalla libreria token rimosso - non ci sono più token predefiniti
-        
-        // Drop events are now handled in map.js to avoid duplicates
-        
-        // Token and asset creation functions are now handled in map.js to avoid duplicates
-        
-        // Funzione per aggiungere eventi di drag agli asset sulla mappa
-        function addAssetDragEvents(assetElement) {
-            assetElement.addEventListener('mousedown', function(e) {
-                if (e.button !== 0) return; // Solo click sinistro
+        };
+
+        // Token management
+        const TokenManager = {
+            createToken: (type, x, y, content = '') => {
+                const token = document.createElement('div');
+                token.className = `token ${type}`;
+                token.style.left = Utils.snapToGrid(x) + 'px';
+                token.style.top = Utils.snapToGrid(y) + 'px';
+                token.textContent = content || type.charAt(0).toUpperCase();
+                token.id = `token-${AppState.tokenCounter++}`;
                 
-                isDragging = true;
-                currentToken = this; // Riutilizza la logica esistente
+                // Add event listeners
+                token.addEventListener('mousedown', TokenManager.handleTokenMouseDown);
+                token.addEventListener('contextmenu', TokenManager.handleTokenRightClick);
                 
-                const rect = gameCanvas.getBoundingClientRect();
-                const assetRect = this.getBoundingClientRect();
-                
-                const mouseX = (e.clientX - rect.left - panX) / scale;
-                const mouseY = (e.clientY - rect.top - panY) / scale;
-                
-                const assetX = parseInt(this.style.left);
-                const assetY = parseInt(this.style.top);
-                
-                startX = mouseX - assetX;
-                startY = mouseY - assetY;
-                
-                this.style.zIndex = '1000';
-                e.preventDefault();
-            });
-        }
-        
-        // Variabile per tracciare il token selezionato
-        let selectedToken = null;
-        
-        // Funzione per selezionare un token
-        function selectToken(token) {
-            // Rimuovi selezione precedente
-            if (selectedToken) {
-                selectedToken.classList.remove('selected');
-            }
+                document.getElementById('game-canvas').appendChild(token);
+                return token;
+            },
             
-            // Seleziona il nuovo token
-            selectedToken = token;
-            if (selectedToken) {
-                selectedToken.classList.add('selected');
-            }
-        }
-        
-        // Funzione per aggiungere eventi di drag ai token
-        function addTokenDragEvents(token) {
-            let mouseDownTime = 0;
-            let hasMoved = false;
-            
-            token.addEventListener('mousedown', function(e) {
-                if (e.button !== 0) return; // Solo click sinistro
+            handleTokenMouseDown: (e) => {
+                if (AppState.currentTool !== 'select') return;
                 
-                mouseDownTime = Date.now();
-                hasMoved = false;
-                
-                isDragging = true;
-                currentToken = this;
-                
-                // Calcola l'offset del mouse rispetto al token considerando la trasformazione
-                const rect = gameCanvas.getBoundingClientRect();
-                const tokenRect = this.getBoundingClientRect();
-                
-                // Coordinate del mouse nel sistema del canvas trasformato
-                const mouseX = (e.clientX - rect.left - panX) / scale;
-                const mouseY = (e.clientY - rect.top - panY) / scale;
-                
-                // Coordinate attuali del token
-                const tokenX = parseInt(this.style.left) || 0;
-                const tokenY = parseInt(this.style.top) || 0;
-                
-                // Offset del mouse rispetto al centro del token
-                startX = mouseX - tokenX;
-                startY = mouseY - tokenY;
-                
-                this.style.zIndex = '1000';
                 e.preventDefault();
                 e.stopPropagation();
-            });
+                
+                const token = e.target;
+                AppState.currentToken = token;
+                AppState.isDragging = true;
+                
+                // Add start cell highlight
+                TokenManager.addStartCellHighlight(token);
+                
+                const rect = token.getBoundingClientRect();
+                const canvasRect = document.getElementById('game-canvas').getBoundingClientRect();
+                
+                AppState.dragOffset = {
+                    x: e.clientX - rect.left,
+                    y: e.clientY - rect.top
+                };
+                
+                document.addEventListener('mousemove', TokenManager.handleTokenDrag);
+                document.addEventListener('mouseup', TokenManager.handleTokenDragEnd);
+            },
             
-            token.addEventListener('mousemove', function(e) {
-                if (isDragging) {
-                    hasMoved = true;
+            handleTokenDrag: (e) => {
+                if (!AppState.isDragging || !AppState.currentToken) return;
+                
+                const canvasRect = document.getElementById('game-canvas').getBoundingClientRect();
+                const x = e.clientX - canvasRect.left - AppState.dragOffset.x;
+                const y = e.clientY - canvasRect.top - AppState.dragOffset.y;
+                
+                AppState.currentToken.style.left = Utils.snapToGrid(x) + 'px';
+                AppState.currentToken.style.top = Utils.snapToGrid(y) + 'px';
+            },
+            
+            handleTokenDragEnd: (e) => {
+                if (AppState.isDragging) {
+                    AppState.isDragging = false;
+                    TokenManager.removeStartCellHighlight();
+                    
+                    document.removeEventListener('mousemove', TokenManager.handleTokenDrag);
+                    document.removeEventListener('mouseup', TokenManager.handleTokenDragEnd);
+                    
+                    AppState.currentToken = null;
                 }
-            });
+            },
             
-            token.addEventListener('mouseup', function(e) {
-                if (e.button !== 0) return;
-                
-                const clickDuration = Date.now() - mouseDownTime;
-                
-                // Se è stato un click veloce senza movimento, seleziona il token
-                if (clickDuration < 200 && !hasMoved) {
-                    selectToken(this);
+            handleTokenRightClick: (e) => {
+                e.preventDefault();
+                // TODO: Show context menu for token options
+                console.log('Token right-clicked:', e.target.id);
+            },
+            
+            addStartCellHighlight: (token) => {
+                const highlight = document.createElement('div');
+                highlight.className = 'start-cell-highlight';
+                highlight.id = 'start-cell-highlight';
+                highlight.style.left = token.style.left;
+                highlight.style.top = token.style.top;
+                document.getElementById('game-canvas').appendChild(highlight);
+            },
+            
+            removeStartCellHighlight: () => {
+                const highlight = document.getElementById('start-cell-highlight');
+                if (highlight) {
+                    highlight.remove();
                 }
-            });
-            
-            token.addEventListener('click', function(e) {
-                e.stopPropagation(); // Previeni la deselezione dal click sul canvas
-            });
-        }
-        
-        document.addEventListener('mousemove', function(e) {
-            if (isDragging && currentToken) {
-                // Calcola le coordinate del mouse nel sistema del canvas trasformato
-                const rect = gameCanvas.getBoundingClientRect();
-                const mouseX = (e.clientX - rect.left - panX) / scale;
-                const mouseY = (e.clientY - rect.top - panY) / scale;
-                
-                // Calcola la nuova posizione del token
-                const newX = mouseX - startX;
-                const newY = mouseY - startY;
-                
-                // Snap alla griglia - centra il token nella cella
-                const gridSize = 50;
-                const tokenSize = 48; // Dimensione del token dal CSS
-                const offset = (gridSize - tokenSize) / 2; // Offset per centrare il token
-                
-                const snappedX = Math.round(newX / gridSize) * gridSize + offset;
-                const snappedY = Math.round(newY / gridSize) * gridSize + offset;
-                
-                currentToken.style.left = snappedX + 'px';
-                currentToken.style.top = snappedY + 'px';
             }
-        });
-        
-        document.addEventListener('mouseup', function() {
-            if (isDragging && currentToken) {
-                // Calcola nuove coordinate griglia
-                const gridSize = 50;
-                const tokenSize = 48;
-                const offset = (gridSize - tokenSize) / 2;
-                
-                // Sottrai l'offset per ottenere le coordinate corrette della griglia
-                const pixelX = parseInt(currentToken.style.left) - offset;
-                const pixelY = parseInt(currentToken.style.top) - offset;
-                const gridX = Math.round(pixelX / gridSize);
-                const gridY = Math.round(pixelY / gridSize);
-                
-                // Aggiorna posizione nel backend
-                const tokenId = currentToken.dataset.tokenId;
-                if (tokenId) {
-                    updateTokenPosition(tokenId, gridX, gridY);
-                }
-                
-                currentToken.style.zIndex = '';
-                isDragging = false;
-                currentToken = null;
-            }
-        });
-        
-        // Funzione rimossa: addTestTokens() - i token di esempio sono stati eliminati
-        
-        // Funzione per ottenere il colore del token
-        function getTokenColor(type) {
-            const colors = {
-                hero: 'linear-gradient(45deg, #ff6b6b, #ee5a24)',
-                warrior: 'linear-gradient(45deg, #4834d4, #686de0)',
-                mage: 'linear-gradient(45deg, #00d2d3, #54a0ff)',
-                rogue: 'linear-gradient(45deg, #1dd1a1, #10ac84)',
-                orc: 'linear-gradient(45deg, #e74c3c, #c0392b)',
-                dragon: 'linear-gradient(45deg, #8e44ad, #9b59b6)',
-                skeleton: 'linear-gradient(45deg, #95a5a6, #7f8c8d)',
-                goblin: 'linear-gradient(45deg, #27ae60, #2ecc71)'
-            };
-            return colors[type] || '#666';
-        }
-        
-        // Gestione zoom e pan del canvas - stile Roll20
-        // scale, panX, panY sono già dichiarati in map.js
-        // Event listeners per pan e zoom sono ora gestiti in map.js
-        // per evitare conflitti e duplicazioni
-        
+        };
 
-        
-        // Gestione dadi
-        document.querySelectorAll('.dice-btn').forEach(button => {
-            button.addEventListener('click', function() {
-                const diceType = this.dataset.dice;
-                const sides = parseInt(diceType.substring(1));
-                const result = Math.floor(Math.random() * sides) + 1;
-                addChatMessage('Sistema', `Lancio ${diceType}: ${result}`);
-            });
-        });
-        
-        // Inizializzazione
-        document.addEventListener('DOMContentLoaded', function() {
-            addChatMessage('Sistema', 'Sessione iniziata. Buona fortuna!');
-            loadTokens();
+        // Pan tool
+        const PanTool = {
+            startPan: (e) => {
+                if (AppState.currentTool !== 'pan') return;
+                
+                AppState.isPanning = true;
+                const canvasArea = document.getElementById('canvas-area');
+                
+                AppState.panData.startX = e.clientX;
+                AppState.panData.startY = e.clientY;
+                AppState.panData.startScrollX = canvasArea.scrollLeft;
+                AppState.panData.startScrollY = canvasArea.scrollTop;
+                
+                document.getElementById('game-canvas').style.cursor = 'grabbing';
+                
+                document.addEventListener('mousemove', PanTool.handlePan);
+                document.addEventListener('mouseup', PanTool.endPan);
+            },
             
-            // Token di test rimossi - ora i token vengono caricati solo dal database
+            handlePan: (e) => {
+                if (!AppState.isPanning) return;
+                
+                const canvasArea = document.getElementById('canvas-area');
+                const deltaX = AppState.panData.startX - e.clientX;
+                const deltaY = AppState.panData.startY - e.clientY;
+                
+                canvasArea.scrollLeft = AppState.panData.startScrollX + deltaX;
+                canvasArea.scrollTop = AppState.panData.startScrollY + deltaY;
+            },
             
-            // Inizializzazione zoom e posizione canvas ora gestita in map.js
-            // per evitare conflitti con le funzioni definite lì
-            
-            // Event listener per il pulsante Back to Campaign
-            const backToCampaignBtn = document.getElementById('backToCampaign');
-            if (backToCampaignBtn) {
-                backToCampaignBtn.addEventListener('click', function() {
-                    window.location.href = '/campaigns';
-                });
+            endPan: () => {
+                AppState.isPanning = false;
+                document.getElementById('game-canvas').style.cursor = 'grab';
+                
+                document.removeEventListener('mousemove', PanTool.handlePan);
+                document.removeEventListener('mouseup', PanTool.endPan);
             }
+        };
+
+        // Panel management
+        function showPanel(panelName) {
+            // Hide all panels
+            document.querySelectorAll('.token-library, .chat-panel, .journal-panel').forEach(panel => {
+                panel.style.display = 'none';
+                panel.classList.remove('active');
+            });
+            
+            // Remove active class from all tabs
+            document.querySelectorAll('.panel-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected panel
+            const targetPanel = document.getElementById(panelName + '-panel');
+            if (targetPanel) {
+                targetPanel.style.display = panelName === 'chat' ? 'flex' : 'block';
+                targetPanel.classList.add('active');
+            }
+            
+            // Add active class to clicked tab
+            event.target.classList.add('active');
+        }
+
+        // Chat functionality
+        function sendMessage() {
+            const input = document.getElementById('chat-input');
+            const messages = document.getElementById('chat-messages');
+            
+            const message = Utils.sanitizeInput(input.value);
+            if (!message.trim()) return;
+            
+            const messageElement = document.createElement('div');
+            messageElement.style.marginBottom = '8px';
+            messageElement.innerHTML = `<strong>You:</strong> ${message}`;
+            
+            messages.appendChild(messageElement);
+            messages.scrollTop = messages.scrollHeight;
+            
+            input.value = '';
+        }
+
+        function handleChatKeypress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        // Map selector functionality
+        function toggleGameMapSelector() {
+            const selector = document.getElementById('gameMapSelector');
+            const isVisible = selector.style.top === '10px';
+            
+            if (isVisible) {
+                selector.style.top = '-300px';
+            } else {
+                selector.style.top = '10px';
+            }
+        }
+
+        function createNewMap() {
+            const mapName = prompt('Enter map name:');
+            if (mapName) {
+                console.log('Creating new map:', mapName);
+                // TODO: Implement map creation
+            }
+        }
+
+        function switchToMap(mapId) {
+            console.log('Switching to map:', mapId);
+            // TODO: Implement map switching
+        }
+
+        // Zoom functions
+        function zoomIn() {
+            ZoomManager.updateZoom(AppState.zoomLevel * AppState.ZOOM_FACTOR);
+        }
+
+        function zoomOut() {
+            ZoomManager.updateZoom(AppState.zoomLevel / AppState.ZOOM_FACTOR);
+        }
+
+        function resetZoom() {
+            ZoomManager.updateZoom(1);
+        }
+
+        // Event listeners setup
+        document.addEventListener('DOMContentLoaded', () => {
+            // Tool button event listeners
+            document.querySelectorAll('.tool-button').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const toolName = e.target.closest('.tool-button').id.replace('-tool', '');
+                    ToolManager.setActiveTool(toolName);
+                });
+            });
+            
+            // Canvas event listeners
+            const canvas = document.getElementById('game-canvas');
+            
+            canvas.addEventListener('mousedown', (e) => {
+                const rect = canvas.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                switch (AppState.currentTool) {
+                    case 'measure':
+                        MeasurementTool.startMeasurement(x, y);
+                        break;
+                    case 'pan':
+                        PanTool.startPan(e);
+                        break;
+                }
+            });
+            
+            canvas.addEventListener('mousemove', (e) => {
+                if (AppState.currentTool === 'measure' && AppState.showingMeasurement) {
+                    const rect = canvas.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    MeasurementTool.updateMeasurement(x, y);
+                }
+            });
+            
+            canvas.addEventListener('mouseup', () => {
+                if (AppState.currentTool === 'measure') {
+                    MeasurementTool.clearMeasurement();
+                }
+            });
+            
+            // Library token drag and drop
+            document.querySelectorAll('.library-token').forEach(token => {
+                token.addEventListener('dragstart', (e) => {
+                    AppState.draggedToken = {
+                        type: e.target.dataset.type,
+                        content: e.target.textContent
+                    };
+                });
+            });
+            
+            canvas.addEventListener('dragover', (e) => {
+                e.preventDefault();
+            });
+            
+            canvas.addEventListener('drop', (e) => {
+                e.preventDefault();
+                
+                if (AppState.draggedToken) {
+                    const rect = canvas.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    
+                    TokenManager.createToken(
+                        AppState.draggedToken.type,
+                        x - 24, // Center the token
+                        y - 24,
+                        AppState.draggedToken.content
+                    );
+                    
+                    AppState.draggedToken = null;
+                }
+            });
+            
+            // Zoom with mouse wheel
+            canvas.addEventListener('wheel', (e) => {
+                e.preventDefault();
+                
+                if (e.deltaY < 0) {
+                    zoomIn();
+                } else {
+                    zoomOut();
+                }
+            });
+            
+            // Initialize zoom display
+            ZoomManager.updateZoom(1);
         });
     </script>
 </body>

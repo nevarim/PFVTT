@@ -276,7 +276,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // Image upload functionality for edit campaign
     const editImageUpload = document.getElementById('edit-campaign-image-upload');
     if (editImageUpload) {
-        editImageUpload.addEventListener('change', function (e) {
+        editImageUpload.addEventListener('change', async function (e) {
             const target = e.target;
             const file = target.files?.[0];
             if (file) {
@@ -290,10 +290,16 @@ document.addEventListener('DOMContentLoaded', function () {
                     alert('User not logged in.');
                     return;
                 }
+                // Get the numeric user ID
+                const userId = await getUserId(user);
+                if (!userId) {
+                    alert('Failed to get user ID. Please login again.');
+                    return;
+                }
                 // Upload the image
                 const formData = new FormData();
                 formData.append('file', file);
-                formData.append('user_id', user);
+                formData.append('user_id', userId.toString());
                 formData.append('campaign_id', document.getElementById('edit-campaign-id').value);
                 formData.append('upload_type', 'campaign');
                 fetch('/api/upload', {

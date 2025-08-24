@@ -319,7 +319,7 @@ document.addEventListener('DOMContentLoaded', function() {
   // Image upload functionality for edit campaign
   const editImageUpload = document.getElementById('edit-campaign-image-upload') as HTMLInputElement;
   if (editImageUpload) {
-    editImageUpload.addEventListener('change', function(this: HTMLInputElement, e: Event) {
+    editImageUpload.addEventListener('change', async function(this: HTMLInputElement, e: Event) {
       const target = e.target as HTMLInputElement;
       const file: File | undefined = target.files?.[0];
       
@@ -336,10 +336,17 @@ document.addEventListener('DOMContentLoaded', function() {
           return;
         }
         
+        // Get the numeric user ID
+        const userId: number | null = await getUserId(user);
+        if (!userId) {
+          alert('Failed to get user ID. Please login again.');
+          return;
+        }
+        
         // Upload the image
         const formData = new FormData();
         formData.append('file', file);
-        formData.append('user_id', user);
+        formData.append('user_id', userId.toString());
         formData.append('campaign_id', (document.getElementById('edit-campaign-id') as HTMLInputElement).value);
         formData.append('upload_type', 'campaign');
         

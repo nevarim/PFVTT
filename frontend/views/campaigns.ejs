@@ -3,6 +3,7 @@
 <head>
   <title>PFVTT Campaigns</title>
   <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="/campaign.css">
   <style>
     .campaigns-page {
       background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
@@ -393,8 +394,11 @@
             <input type="text" id="edit-campaign-image-url" placeholder="Image URL" />
           </div>
           <div class="form-group">
-            <label for="edit-campaign-image-upload">Or Upload Campaign Image:</label>
-            <input type="file" id="edit-campaign-image-upload" accept="image/png" />
+            <label for="edit-campaign-image-upload">Upload Campaign Image:</label>
+            <div class="file-upload-wrapper">
+              <button type="button" class="file-upload-btn" onclick="document.getElementById('edit-campaign-image-upload').click()">Choose Image File</button>
+              <input type="file" id="edit-campaign-image-upload" accept="image/png" />
+            </div>
           </div>
           <div id="edit-campaign-image-preview-container" style="display:none; margin: 12px 0; text-align: center;">
             <img id="edit-campaign-image-preview" style="max-width:200px;max-height:200px; border-radius: 6px; border: 1px solid #ccc;" />

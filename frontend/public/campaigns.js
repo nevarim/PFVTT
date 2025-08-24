@@ -68,8 +68,10 @@ async function loadCampaigns() {
           // Find the campaign data from the loaded campaigns
           const campaign = data.campaigns.find(c => c.id == campaignId);
           
-          // Save campaign ID in session storage for map page
+          // Save campaign ID in session storage and localStorage for map page
           sessionStorage.setItem('current_campaign_id', campaignId);
+          localStorage.setItem('current_campaign_id', campaignId);
+          localStorage.setItem('current_campaign_id', campaignId);
           
           // Save complete campaign data in localStorage
           if (campaign) {
@@ -116,6 +118,7 @@ async function loadCampaigns() {
           const campaignId = this.getAttribute('data-id');
           const campaign = data.campaigns.find(c => c.id == campaignId);
           sessionStorage.setItem('current_campaign_id', campaignId);
+          localStorage.setItem('current_campaign_id', campaignId);
           if (campaign) {
             localStorage.setItem('current_campaign_data', JSON.stringify({
               id: campaign.id,
@@ -136,6 +139,7 @@ async function loadCampaigns() {
           const campaignId = this.getAttribute('data-id');
           const campaign = data.campaigns.find(c => c.id == campaignId);
           sessionStorage.setItem('current_campaign_id', campaignId);
+          localStorage.setItem('current_campaign_id', campaignId);
           if (campaign) {
             localStorage.setItem('current_campaign_data', JSON.stringify({
               id: campaign.id,
@@ -156,6 +160,7 @@ async function loadCampaigns() {
           const campaignId = this.getAttribute('data-id');
           const campaign = data.campaigns.find(c => c.id == campaignId);
           sessionStorage.setItem('current_campaign_id', campaignId);
+          localStorage.setItem('current_campaign_id', campaignId);
           if (campaign) {
             localStorage.setItem('current_campaign_data', JSON.stringify({
               id: campaign.id,
@@ -196,6 +201,7 @@ async function loadCampaigns() {
           const campaignId = this.getAttribute('data-id');
           // Set current campaign in session storage
           sessionStorage.setItem('current_campaign_id', campaignId);
+          localStorage.setItem('current_campaign_id', campaignId);
           const campaign = data.campaigns.find(c => c.id == campaignId);
           if (!campaign) return;
           // Populate modal fields
@@ -226,6 +232,14 @@ async function loadCampaigns() {
               systemSelect.appendChild(opt);
             });
           });
+          
+          // Reset file upload button
+          const uploadBtn = document.querySelector('.file-upload-btn');
+          if (uploadBtn) {
+            uploadBtn.textContent = '📁 Choose Image File';
+            uploadBtn.style.background = 'linear-gradient(135deg, #667eea, #764ba2)';
+          }
+          
           document.getElementById('edit-campaign-modal').style.display = 'block';
         });
       });
@@ -334,20 +348,41 @@ document.addEventListener('DOMContentLoaded', function() {
   // Image upload functionality for edit campaign
   const editImageUpload = document.getElementById('edit-campaign-image-upload');
   if (editImageUpload) {
-    editImageUpload.addEventListener('change', function(e) {
+    editImageUpload.addEventListener('change', async function(e) {
       const file = e.target.files[0];
+      const uploadBtn = document.querySelector('.file-upload-btn');
+      
       if (file) {
+        // Update button text to show selected file
+        uploadBtn.textContent = `📁 ${file.name}`;
+        uploadBtn.style.background = 'linear-gradient(135deg, #4ecdc4, #44a08d)';
+        // Get the logged-in user
+        const user = localStorage.getItem('pfvtt_user') || sessionStorage.getItem('pfvtt_user');
+        if (!user) {
+          alert('User not found. Please login again.');
+          return;
+        }
+        
+        // Get the numeric user ID
+        const userId = await getUserId(user);
+        if (!userId) {
+          alert('Failed to get user ID. Please login again.');
+          return;
+        }
+        
         // Validate PNG file type
         if (file.type !== 'image/png' && !file.name.toLowerCase().endsWith('.png')) {
           alert('Only PNG files are allowed.');
           e.target.value = ''; // Clear the input
+          uploadBtn.textContent = '📁 Choose Image File';
+          uploadBtn.style.background = 'linear-gradient(135deg, #667eea, #764ba2)';
           return;
         }
         
         // Upload the image
          const formData = new FormData();
          formData.append('file', file);
-         formData.append('user_id', user);
+         formData.append('user_id', userId.toString());
          formData.append('campaign_id', document.getElementById('edit-campaign-id').value);
          formData.append('upload_type', 'campaign');
          
@@ -372,7 +407,14 @@ document.addEventListener('DOMContentLoaded', function() {
         .catch(error => {
           console.error('Error uploading image:', error);
           alert('Error uploading image');
+          // Reset button on error
+          uploadBtn.textContent = '📁 Choose Image File';
+          uploadBtn.style.background = 'linear-gradient(135deg, #667eea, #764ba2)';
         });
+      } else {
+        // Reset button when no file selected
+        uploadBtn.textContent = '📁 Choose Image File';
+        uploadBtn.style.background = 'linear-gradient(135deg, #667eea, #764ba2)';
       }
     });
   }
@@ -390,7 +432,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const description = document.getElementById('edit-campaign-description').value.trim();
     const system = document.getElementById('edit-campaign-system').value.trim();
     const image_url = document.getElementById('edit-campaign-image-url').value.trim();
+    const user = localStorage.getItem('pfvtt_user') || sessionStorage.getItem('pfvtt_user');
     const userId = localStorage.getItem('pfvtt_user_id') || sessionStorage.getItem('pfvtt_user_id');
+    if (!user) { alert('User not found. Please login again.'); return; }
     if (!userId) { alert('User ID not found. Please login again.'); return; }
     if (!name) { alert('Please enter a campaign name.'); return; }
      

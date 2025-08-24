@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Div con Linguetta a Destra</title>
+    <style>
+        .gameMapSelector {
+            position: fixed;
+            top: -300px; /* Div inizialmente nascosto */
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 500px;
+            background-color: #f0f0f0;
+            border: 2px solid #007BFF;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            transition: top 0.5s ease;
+        }
+
+        .gameMapSelectorFlag {
+            position: fixed;
+            top: 10px; /* Posiziona la linguetta al centro verticale della pagina */
+            left: calc(50% + 250px); /* Allinea la linguetta a destra del div */
+            transform: translateY(-50%);
+            width: 50px;
+            height: 50px;
+            background-color: #007BFF;
+            border-radius: 50%;
+            cursor: pointer;
+            text-align: center;
+            line-height: 50px;
+            color: white;
+            font-weight: bold;
+            font-size: 14px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+        }
+
+        .gameMapSelectorFlag:hover {
+            background-color: #0056b3;
+        }
+
+        .content {
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="gameMapSelector" id="gameMapSelector">
+        <div class="content">
+            <h3>Benvenuto nel Div!</h3>
+            <p>Questo è un contenitore a scomparsa con contenuto personalizzabile.</p>
+            <p>Modifica il contenuto come preferisci!</p>
+        </div>
+    </div>
+    <div class="gameMapSelectorFlag" onclick="toggleGameMapSelector()">Maps</div>
+
+    <script>
+        function toggleGameMapSelector() {
+            const gameMapSelector = document.getElementById('gameMapSelector');
+
+            if (gameMapSelector.style.top === '0px') {
+                gameMapSelector.style.top = '-300px'; // Nascondi il div
+            } else {
+                gameMapSelector.style.top = '0px'; // Mostra il div
+            }
+        }
+    </script>
+</body>
+</html>

@@ -572,7 +572,19 @@ app.get('/api/map-tokens', async (req, res) => {
             res.status(400).json({ success: false, error: 'Invalid map_id format. Must be numeric.' });
             return;
         }
-        const url = `${BACKEND_URL}/api/map-tokens?map_id=${encodeURIComponent(mapId)}`;
+        // Validate campaign_id parameter
+        const campaignId = req.query.campaign_id;
+        if (!campaignId) {
+            writeLog(`[FRONTEND PROXY] GET /api/map-tokens - ERROR: Missing campaign_id parameter`);
+            res.status(400).json({ success: false, error: 'Missing campaign_id parameter' });
+            return;
+        }
+        if (typeof campaignId !== 'string' || !/^\d+$/.test(campaignId)) {
+            writeLog(`[FRONTEND PROXY] GET /api/map-tokens - ERROR: Invalid campaign_id format: ${campaignId}`);
+            res.status(400).json({ success: false, error: 'Invalid campaign_id format. Must be numeric.' });
+            return;
+        }
+        const url = `${BACKEND_URL}/api/map-tokens?map_id=${encodeURIComponent(mapId)}&campaign_id=${encodeURIComponent(campaignId)}`;
         writeLog(`[FRONTEND PROXY] GET /api/map-tokens - URL: ${url}`);
         console.log(`[FRONTEND PROXY] GET /api/map-tokens - URL: ${url}`);
         // Add timeout and retry logic
@@ -632,21 +644,21 @@ app.post('/api/map-tokens', async (req, res) => {
     console.log(`[FRONTEND PROXY] POST /api/map-tokens - Request body:`, req.body);
     try {
         // Validate required fields
-        const { map_id, asset_id, grid_x, grid_y } = req.body;
-        if (!map_id || !asset_id || grid_x === undefined || grid_y === undefined) {
+        const { map_id, asset_id, grid_x, grid_y, campaign_id } = req.body;
+        if (!map_id || !asset_id || grid_x === undefined || grid_y === undefined || !campaign_id) {
             writeLog(`[FRONTEND PROXY] POST /api/map-tokens - ERROR: Missing required fields`);
             res.status(400).json({
                 success: false,
-                error: 'Missing required fields: map_id, asset_id, grid_x, grid_y'
+                error: 'Missing required fields: map_id, asset_id, grid_x, grid_y, campaign_id'
             });
             return;
         }
         // Validate field types
-        if (isNaN(parseInt(map_id)) || isNaN(parseInt(asset_id))) {
+        if (isNaN(parseInt(map_id)) || isNaN(parseInt(asset_id)) || isNaN(parseInt(campaign_id))) {
             writeLog(`[FRONTEND PROXY] POST /api/map-tokens - ERROR: Invalid field types`);
             res.status(400).json({
                 success: false,
-                error: 'map_id and asset_id must be numeric'
+                error: 'map_id, asset_id and campaign_id must be numeric'
             });
             return;
         }
@@ -840,6 +852,26 @@ app.post('/api/map-audio', async (req, res) => {
     }
     catch (err) {
         res.status(500).json({ error: 'Failed to place audio' });
+    }
+});
+app.put('/api/map-audio/:id', async (req, res) => {
+    try {
+        const response = await axios.put(`${BACKEND_URL}/api/map-audio/${req.params.id}`, req.body, {
+            headers: { 'Content-Type': 'application/json' }
+        });
+        res.json(response.data);
+    }
+    catch (err) {
+        res.status(500).json({ error: 'Failed to update audio' });
+    }
+});
+app.delete('/api/map-audio/:id', async (req, res) => {
+    try {
+        const response = await axios.delete(`${BACKEND_URL}/api/map-audio/${req.params.id}`);
+        res.json(response.data);
+    }
+    catch (err) {
+        res.status(500).json({ error: 'Failed to delete audio' });
     }
 });
 app.get('/api/map-props', async (req, res) => {

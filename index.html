@@ -1,0 +1,1699 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Roll20 Clone - Virtual Tabletop</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href='https://fonts.googleapis.com/css?family=Nunito:400,600,700&display=swap' rel='stylesheet'>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: #1a1a1a;
+            color: #fff;
+            overflow: visible;
+        }
+
+        .roll20-container {
+            display: flex;
+            height: 100vh;
+            width: 100vw;
+            min-width: 1200px;
+        }
+
+        /* Toolbar sinistra */
+        .left-toolbar {
+            width: 60px;
+            background: #2c2c2c;
+            border-right: 1px solid #444;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 10px 0;
+            z-index: 1000;
+        }
+
+        .tool-button {
+            width: 40px;
+            height: 40px;
+            background: #3a3a3a;
+            border: none;
+            border-radius: 6px;
+            color: #ccc;
+            cursor: pointer;
+            margin: 5px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .tool-button:hover {
+            background: #4a4a4a;
+            color: #fff;
+        }
+
+        .tool-button.active {
+            background: #0066cc;
+            color: #fff;
+        }
+
+        /* Area centrale */
+        .main-area {
+            flex: 1;
+            max-width: calc(100vw - 360px);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Top bar */
+        .top-bar {
+            height: 50px;
+            background: #333;
+            border-bottom: 1px solid #444;
+            display: flex;
+            align-items: center;
+            padding: 0 15px;
+            justify-content: space-between;
+        }
+
+        .page-title {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .zoom-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .zoom-btn {
+            background: #444;
+            border: none;
+            color: #ccc;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .zoom-btn:hover {
+            background: #555;
+            color: #fff;
+        }
+
+        /* Canvas area */
+        .canvas-area {
+            flex: 1;
+            background: #1a1a1a;
+            position: relative;
+            overflow: auto;
+        }
+
+        .game-canvas {
+            width: 4000px;
+            height: 4000px;
+            background: 
+                linear-gradient(90deg, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
+                linear-gradient(0deg, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
+                #2a2a2a;
+            background-size: 50px 50px;
+            position: relative;
+        }
+
+        /* Token styles */
+        .token {
+            position: absolute;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            border: 2px solid #fff;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background-size: cover;
+            background-position: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+        }
+
+        .token:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+        }
+
+        /* Evidenziazione cella di partenza */
+        .start-cell-highlight {
+            position: absolute;
+            width: 48px;
+            height: 48px;
+            background: rgba(0, 255, 0, 0.3);
+            border: 2px solid #00ff00;
+            border-radius: 4px;
+            z-index: 5;
+            animation: pulse-highlight 1.5s infinite;
+            pointer-events: none;
+        }
+
+        @keyframes pulse-highlight {
+            0% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 0.6; transform: scale(1.05); }
+            100% { opacity: 0.3; transform: scale(1); }
+        }
+
+        /* Right panel */
+        .right-panel {
+            width: 300px;
+            min-width: 300px;
+            max-width: 300px;
+            flex-shrink: 0;
+            flex-grow: 0;
+            background: #2c2c2c;
+            border-left: 1px solid #444;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            z-index: 100;
+        }
+
+        .panel-tabs {
+            display: flex;
+            background: #333;
+            border-bottom: 1px solid #444;
+        }
+
+        .panel-tab {
+            flex: 1;
+            padding: 12px;
+            background: none;
+            border: none;
+            color: #ccc;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s ease;
+        }
+
+        .panel-tab.active {
+            color: #fff;
+            border-bottom-color: #0066cc;
+            background: #3a3a3a;
+        }
+
+        .panel-content {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+        }
+
+        /* Token library */
+        .token-library {
+            display: none;
+        }
+
+        .token-library.active {
+            display: block;
+        }
+
+        .token-category {
+            margin-bottom: 20px;
+        }
+
+        .category-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #0066cc;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .token-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .library-token {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: 2px solid #555;
+            cursor: grab;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+            position: relative;
+        }
+
+        .library-token:hover {
+            transform: scale(1.05);
+            border-color: #0066cc;
+        }
+
+        .library-token:active {
+            cursor: grabbing;
+        }
+
+        /* Token colors */
+        .token.player, .library-token.player { background: linear-gradient(45deg, #4CAF50, #45a049); }
+        .token.npc, .library-token.npc { background: linear-gradient(45deg, #f44336, #d32f2f); }
+        .token.monster, .library-token.monster { background: linear-gradient(45deg, #9c27b0, #7b1fa2); }
+        .token.object, .library-token.object { background: linear-gradient(45deg, #607d8b, #455a64); }
+        .token.vehicle, .library-token.vehicle { background: linear-gradient(45deg, #ff9800, #f57c00); }
+        .token.trap, .library-token.trap { background: linear-gradient(45deg, #795548, #5d4037); }
+
+        /* Chat panel */
+        .chat-panel {
+            display: none;
+        }
+
+        .chat-panel.active {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px;
+            background: #1a1a1a;
+            margin-bottom: 10px;
+            border-radius: 4px;
+        }
+
+        .chat-input {
+            display: flex;
+            gap: 10px;
+        }
+
+        .chat-input input {
+            flex: 1;
+            padding: 8px 12px;
+            background: #3a3a3a;
+            border: 1px solid #555;
+            border-radius: 4px;
+            color: #fff;
+        }
+
+        .chat-input button {
+            padding: 8px 15px;
+            background: #0066cc;
+            border: none;
+            border-radius: 4px;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        .chat-input button:hover {
+            background: #0052a3;
+        }
+
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #2a2a2a;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #555;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #666;
+        }
+
+        /* Game Map Selector Menu */
+        .gameMapSelector {
+            position: fixed;
+            top: -300px; /* Div inizialmente nascosto */
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 500px;
+            background-color: #2c2c2c;
+            border: 2px solid #0066cc;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+            text-align: center;
+            transition: top 0.5s ease;
+            z-index: 2000;
+            color: #fff;
+        }
+
+        .gameMapSelectorFlag {
+            position: fixed;
+            top: 10px;
+            left: calc(50% + 250px);
+            transform: translateY(-50%);
+            width: 50px;
+            height: 50px;
+            background-color: #0066cc;
+            border-radius: 50%;
+            cursor: pointer;
+            text-align: center;
+            line-height: 50px;
+            color: white;
+            font-weight: bold;
+            font-size: 14px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+            z-index: 2001;
+        }
+
+        .gameMapSelectorFlag:hover {
+            background-color: #0052a3;
+        }
+
+        .gameMapSelector .content {
+             padding: 20px;
+         }
+
+         .map-controls {
+             margin-bottom: 15px;
+         }
+
+         .create-map-btn {
+             background: #0066cc;
+             color: white;
+             border: none;
+             padding: 10px 20px;
+             border-radius: 5px;
+             cursor: pointer;
+             font-weight: bold;
+             transition: background 0.2s ease;
+         }
+
+         .create-map-btn:hover {
+             background: #0052a3;
+         }
+
+         .map-list {
+             max-height: 200px;
+             overflow-y: auto;
+         }
+
+         .map-item {
+             display: flex;
+             justify-content: space-between;
+             align-items: center;
+             padding: 10px;
+             margin: 5px 0;
+             background: #3a3a3a;
+             border-radius: 5px;
+             cursor: pointer;
+             transition: background 0.2s ease;
+         }
+
+         .map-item:hover {
+             background: #4a4a4a;
+         }
+
+         .map-item.active {
+             background: #0066cc;
+         }
+
+         .map-name {
+             font-weight: bold;
+         }
+
+         .map-status {
+             font-size: 12px;
+             color: #ccc;
+         }
+
+         .map-item.active .map-status {
+             color: #fff;
+         }
+    </style>
+</head>
+<body>
+    <div class="roll20-container">
+        <!-- Left Toolbar -->
+        <div class="left-toolbar">
+            <button class="tool-button active" id="select-tool" title="Select">
+                <i class="fas fa-mouse-pointer"></i>
+            </button>
+            <button class="tool-button" id="pan-tool" title="Pan">
+                <i class="fas fa-hand-paper"></i>
+            </button>
+            <button class="tool-button" id="measure-tool" title="Measure">
+                <i class="fas fa-ruler"></i>
+            </button>
+            <button class="tool-button" id="draw-tool" title="Draw">
+                <i class="fas fa-pencil-alt"></i>
+            </button>
+            <button class="tool-button" id="text-tool" title="Text">
+                <i class="fas fa-font"></i>
+            </button>
+            <button class="tool-button" id="fog-tool" title="Fog of War">
+                <i class="fas fa-eye-slash"></i>
+            </button>
+        </div>
+
+        <!-- Main Area -->
+        <div class="main-area">
+            <!-- Top Bar -->
+            <div class="top-bar">
+                <div class="page-title">Pathfinder - Un mondo di ombre</div>
+                <div class="zoom-controls">
+                    <button class="zoom-btn" onclick="zoomOut()">-</button>
+                    <span id="zoom-level">100%</span>
+                    <button class="zoom-btn" onclick="zoomIn()">+</button>
+                    <button class="zoom-btn" onclick="resetZoom()">Reset</button>
+                </div>
+            </div>
+
+            <!-- Canvas Area -->
+            <div class="canvas-area" id="canvas-area">
+                <div class="game-canvas" id="game-canvas">
+                    <!-- Existing tokens -->
+                    <div class="token player" style="top: 200px; left: 300px;">P1</div>
+                    <div class="token npc" style="top: 250px; left: 400px;">N1</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Panel -->
+        <div class="right-panel">
+            <div class="panel-tabs">
+                <button class="panel-tab active" onclick="showPanel('tokens')">Tokens</button>
+                <button class="panel-tab" onclick="showPanel('chat')">Chat</button>
+                <button class="panel-tab" onclick="showPanel('journal')">Journal</button>
+            </div>
+
+            <div class="panel-content">
+                <!-- Token Library -->
+                <div class="token-library active" id="tokens-panel">
+                    <div class="token-category">
+                        <div class="category-title">Player Characters</div>
+                        <div class="token-grid">
+                            <div class="library-token player" draggable="true" data-type="player">P</div>
+                            <div class="library-token player" draggable="true" data-type="player">H</div>
+                            <div class="library-token player" draggable="true" data-type="player">W</div>
+                            <div class="library-token player" draggable="true" data-type="player">R</div>
+                            <div class="library-token player" draggable="true" data-type="player">M</div>
+                            <div class="library-token player" draggable="true" data-type="player">C</div>
+                        </div>
+                    </div>
+
+                    <div class="token-category">
+                        <div class="category-title">NPCs</div>
+                        <div class="token-grid">
+                            <div class="library-token npc" draggable="true" data-type="npc">G</div>
+                            <div class="library-token npc" draggable="true" data-type="npc">V</div>
+                            <div class="library-token npc" draggable="true" data-type="npc">K</div>
+                            <div class="library-token npc" draggable="true" data-type="npc">Q</div>
+                            <div class="library-token npc" draggable="true" data-type="npc">N</div>
+                            <div class="library-token npc" draggable="true" data-type="npc">B</div>
+                        </div>
+                    </div>
+
+                    <div class="token-category">
+                        <div class="category-title">Monsters</div>
+                        <div class="token-grid">
+                            <div class="library-token monster" draggable="true" data-type="monster">D</div>
+                            <div class="library-token monster" draggable="true" data-type="monster">O</div>
+                            <div class="library-token monster" draggable="true" data-type="monster">T</div>
+                            <div class="library-token monster" draggable="true" data-type="monster">S</div>
+                            <div class="library-token monster" draggable="true" data-type="monster">L</div>
+                            <div class="library-token monster" draggable="true" data-type="monster">Z</div>
+                        </div>
+                    </div>
+
+                    <div class="token-category">
+                        <div class="category-title">Objects & Vehicles</div>
+                        <div class="token-grid">
+                            <div class="library-token object" draggable="true" data-type="object">📦</div>
+                            <div class="library-token object" draggable="true" data-type="object">🗡️</div>
+                            <div class="library-token object" draggable="true" data-type="object">🛡️</div>
+                            <div class="library-token vehicle" draggable="true" data-type="vehicle">🐎</div>
+                            <div class="library-token vehicle" draggable="true" data-type="vehicle">⛵</div>
+                            <div class="library-token trap" draggable="true" data-type="trap">⚠️</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chat Panel -->
+                <div class="chat-panel" id="chat-panel">
+                    <div class="chat-messages" id="chat-messages">
+                        <div style="color: #888; font-style: italic;">Chat is ready...</div>
+                    </div>
+                    <div class="chat-input">
+                        <input type="text" id="chat-input" placeholder="Type your message..." onkeypress="handleChatKeypress(event)">
+                        <button onclick="sendMessage()">Send</button>
+                    </div>
+                </div>
+
+                <!-- Journal Panel -->
+                <div class="journal-panel" id="journal-panel" style="display: none;">
+                    <div style="color: #888; font-style: italic;">Journal entries will appear here...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Game Map Selector Menu -->
+    <div class="gameMapSelector" id="gameMapSelector">
+        <div class="content">
+            <h3>Gestione Mappe</h3>
+            <div class="map-controls">
+                <button class="create-map-btn" onclick="createNewMap()">+ Nuova Mappa</button>
+            </div>
+            <div class="map-list" id="mapList">
+                <div class="map-item active" data-map-id="default" onclick="switchToMap('default')">
+                    <span class="map-name">Mappa Principale</span>
+                    <span class="map-status">Attiva</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="gameMapSelectorFlag" onclick="toggleGameMapSelector()">Maps</div>
+
+    <script>
+        // Application state management
+        const AppState = {
+            currentTool: 'select',
+            zoomLevel: 1,
+            draggedToken: null,
+            tokenCounter: 1,
+            isDragging: false,
+            showingMeasurement: false,
+            measurementLine: null,
+            measurementText: null,
+            measurementContainer: null,
+            currentToken: null,
+            isPanning: false,
+            panData: {
+                startX: 0,
+                startY: 0,
+                startScrollX: 0,
+                startScrollY: 0
+            },
+            
+            // Constants
+            GRID_SIZE: 50,
+            METERS_PER_CELL: 1.5,
+            MIN_ZOOM: 0.3,
+            MAX_ZOOM: 3,
+            ZOOM_FACTOR: 1.2
+        };
+
+        // Utility functions
+        const Utils = {
+            clamp: (value, min, max) => Math.min(Math.max(value, min), max),
+            
+            sanitizeInput: (input) => {
+                if (typeof input !== 'string') return '';
+                return input.trim().replace(/<[^>]*>/g, ''); // Basic XSS protection
+            },
+            
+            debounce: (func, wait) => {
+                let timeout;
+                return function executedFunction(...args) {
+                    const later = () => {
+                        clearTimeout(timeout);
+                        func(...args);
+                    };
+                    clearTimeout(timeout);
+                    timeout = setTimeout(later, wait);
+                };
+            },
+            
+            getElementSafely: (id) => {
+                const element = document.getElementById(id);
+                if (!element) {
+                    console.warn(`Element with id '${id}' not found`);
+                }
+                return element;
+            }
+        };
+
+        // Tool management
+        const ToolManager = {
+            init() {
+                document.querySelectorAll('.tool-button').forEach(button => {
+                    button.addEventListener('click', this.handleToolSelection.bind(this));
+                });
+            },
+            
+            handleToolSelection(event) {
+                try {
+                    const button = event.currentTarget;
+                    if (!button || !button.id) return;
+                    
+                    document.querySelectorAll('.tool-button').forEach(b => b.classList.remove('active'));
+                    button.classList.add('active');
+                    AppState.currentTool = button.id.replace('-tool', '');
+                    
+                    // Reset any active operations when switching tools
+                    if (AppState.isDragging) {
+                        MeasurementTool.hide();
+                        AppState.isDragging = false;
+                    }
+                } catch (error) {
+                    console.error('Error in tool selection:', error);
+                }
+            }
+        };
+
+        // Panel management
+        const PanelManager = {
+            showPanel(panelName, event) {
+                try {
+                    if (!panelName) return;
+                    
+                    // Update tabs
+                    document.querySelectorAll('.panel-tab').forEach(tab => tab.classList.remove('active'));
+                    if (event && event.target) {
+                        event.target.classList.add('active');
+                    }
+
+                    // Show/hide panels
+                    document.querySelectorAll('.token-library, .chat-panel, .journal-panel').forEach(panel => {
+                        panel.classList.remove('active');
+                        panel.style.display = 'none';
+                    });
+
+                    const targetPanel = Utils.getElementSafely(panelName + '-panel');
+                    if (targetPanel) {
+                        targetPanel.classList.add('active');
+                        targetPanel.style.display = panelName === 'tokens' ? 'block' : 'flex';
+                    }
+                } catch (error) {
+                    console.error('Error in panel switching:', error);
+                }
+            }
+        };
+        
+        // Make showPanel globally accessible
+        window.showPanel = (panelName) => PanelManager.showPanel(panelName, event);
+
+        // Game Map Selector Menu functionality
+         function toggleGameMapSelector() {
+             const gameMapSelector = document.getElementById('gameMapSelector');
+
+             if (gameMapSelector.style.top === '0px') {
+                 gameMapSelector.style.top = '-300px'; // Nascondi il div
+             } else {
+                 gameMapSelector.style.top = '0px'; // Mostra il div
+             }
+         }
+
+         // Map Management System
+         const MapManager = {
+             maps: {
+                 'default': {
+                     name: 'Mappa Principale',
+                     tokens: [
+                         { id: 'p1', type: 'player', text: 'P1', x: 300, y: 200 },
+                         { id: 'n1', type: 'npc', text: 'N1', x: 400, y: 250 }
+                     ]
+                 }
+             },
+             currentMap: 'default',
+             mapCounter: 1,
+
+             createNewMap() {
+                 this.mapCounter++;
+                 const mapId = `map_${this.mapCounter}`;
+                 const mapName = `Mappa ${this.mapCounter}`;
+                 
+                 this.maps[mapId] = {
+                     name: mapName,
+                     tokens: []
+                 };
+                 
+                 this.addMapToList(mapId, mapName);
+                 this.switchToMap(mapId);
+             },
+
+             addMapToList(mapId, mapName) {
+                 const mapList = document.getElementById('mapList');
+                 const mapItem = document.createElement('div');
+                 mapItem.className = 'map-item';
+                 mapItem.setAttribute('data-map-id', mapId);
+                 mapItem.onclick = () => this.switchToMap(mapId);
+                 
+                 mapItem.innerHTML = `
+                     <span class="map-name">${mapName}</span>
+                     <span class="map-status">Vuota</span>
+                 `;
+                 
+                 mapList.appendChild(mapItem);
+             },
+
+             switchToMap(mapId) {
+                 if (!this.maps[mapId]) return;
+                 
+                 // Salva i token della mappa corrente
+                 this.saveCurrentMapTokens();
+                 
+                 // Aggiorna mappa corrente
+                 this.currentMap = mapId;
+                 
+                 // Aggiorna UI
+                 this.updateMapListUI();
+                 this.loadMapTokens(mapId);
+                 
+                 // Aggiorna titolo pagina
+                 document.querySelector('.page-title').textContent = `Pathfinder - ${this.maps[mapId].name}`;
+             },
+
+             saveCurrentMapTokens() {
+                 const tokens = document.querySelectorAll('.token');
+                 const tokenData = [];
+                 
+                 tokens.forEach(token => {
+                     tokenData.push({
+                         id: token.id || `token_${Date.now()}_${Math.random()}`,
+                         type: token.className.split(' ')[1] || 'player',
+                         text: token.textContent,
+                         x: parseInt(token.style.left) || 0,
+                         y: parseInt(token.style.top) || 0
+                     });
+                 });
+                 
+                 this.maps[this.currentMap].tokens = tokenData;
+             },
+
+             loadMapTokens(mapId) {
+                 // Rimuovi tutti i token esistenti
+                 document.querySelectorAll('.token').forEach(token => token.remove());
+                 
+                 // Carica i token della nuova mappa
+                 const canvas = document.getElementById('game-canvas');
+                 this.maps[mapId].tokens.forEach(tokenData => {
+                     const token = document.createElement('div');
+                     token.className = `token ${tokenData.type}`;
+                     token.id = tokenData.id;
+                     token.textContent = tokenData.text;
+                     token.style.left = `${tokenData.x}px`;
+                     token.style.top = `${tokenData.y}px`;
+                     
+                     canvas.appendChild(token);
+                 });
+                 
+                 // Riapplica gli event listener ai nuovi token
+                 TokenDragManager.init();
+             },
+
+             updateMapListUI() {
+                 document.querySelectorAll('.map-item').forEach(item => {
+                     item.classList.remove('active');
+                     const status = item.querySelector('.map-status');
+                     const mapId = item.getAttribute('data-map-id');
+                     
+                     if (mapId === this.currentMap) {
+                         item.classList.add('active');
+                         status.textContent = 'Attiva';
+                     } else {
+                         const tokenCount = this.maps[mapId].tokens.length;
+                         status.textContent = tokenCount > 0 ? `${tokenCount} token` : 'Vuota';
+                     }
+                 });
+             }
+         };
+
+         // Global functions for onclick handlers
+         function createNewMap() {
+             MapManager.createNewMap();
+         }
+
+         function switchToMap(mapId) {
+             MapManager.switchToMap(mapId);
+         }
+
+        // Zoom management
+        const ZoomManager = {
+            zoomIn() {
+                try {
+                    AppState.zoomLevel = Utils.clamp(
+                        AppState.zoomLevel * AppState.ZOOM_FACTOR, 
+                        AppState.MIN_ZOOM, 
+                        AppState.MAX_ZOOM
+                    );
+                    this.updateZoom();
+                } catch (error) {
+                    console.error('Error in zoom in:', error);
+                }
+            },
+
+            zoomOut() {
+                try {
+                    AppState.zoomLevel = Utils.clamp(
+                        AppState.zoomLevel / AppState.ZOOM_FACTOR, 
+                        AppState.MIN_ZOOM, 
+                        AppState.MAX_ZOOM
+                    );
+                    this.updateZoom();
+                } catch (error) {
+                    console.error('Error in zoom out:', error);
+                }
+            },
+
+            resetZoom() {
+                try {
+                    AppState.zoomLevel = 1;
+                    this.updateZoom();
+                } catch (error) {
+                    console.error('Error in zoom reset:', error);
+                }
+            },
+
+            updateZoom() {
+                try {
+                    const canvas = Utils.getElementSafely('game-canvas');
+                    const zoomDisplay = Utils.getElementSafely('zoom-level');
+                    
+                    if (canvas) {
+                        canvas.style.transform = `scale(${AppState.zoomLevel})`;
+                        canvas.style.transformOrigin = '0 0';
+                    }
+                    
+                    if (zoomDisplay) {
+                        zoomDisplay.textContent = Math.round(AppState.zoomLevel * 100) + '%';
+                    }
+                } catch (error) {
+                    console.error('Error updating zoom:', error);
+                }
+            }
+        };
+        
+        // Make zoom functions globally accessible
+        window.zoomIn = () => ZoomManager.zoomIn();
+        window.zoomOut = () => ZoomManager.zoomOut();
+        window.resetZoom = () => ZoomManager.resetZoom();
+
+        // Token drag and drop management
+        const TokenDragManager = {
+            init() {
+                document.querySelectorAll('.library-token').forEach(token => {
+                    token.addEventListener('dragstart', this.handleDragStart.bind(this));
+                });
+            },
+            
+            handleDragStart(e) {
+                try {
+                    const token = e.currentTarget;
+                    if (!token.dataset.type) {
+                        console.warn('Token missing data-type attribute');
+                        return;
+                    }
+                    
+                    AppState.draggedToken = {
+                        type: token.dataset.type,
+                        text: token.textContent,
+                        className: token.className
+                    };
+                } catch (error) {
+                    console.error('Error in drag start:', error);
+                }
+            }
+        };
+
+        // Canvas drop management
+        const CanvasManager = {
+            init() {
+                const canvas = Utils.getElementSafely('game-canvas');
+                if (canvas) {
+                    canvas.addEventListener('dragover', this.handleDragOver.bind(this));
+                    canvas.addEventListener('drop', this.handleDrop.bind(this));
+                }
+            },
+            
+            handleDragOver(e) {
+                e.preventDefault();
+            },
+            
+            handleDrop(e) {
+                try {
+                    e.preventDefault();
+                    if (!AppState.draggedToken) return;
+
+                    const canvasArea = Utils.getElementSafely('canvas-area');
+                    if (!canvasArea) return;
+                    
+                    const canvasRect = canvasArea.getBoundingClientRect();
+                    const scrollLeft = canvasArea.scrollLeft;
+                    const scrollTop = canvasArea.scrollTop;
+                    
+                    // Calculate position relative to canvas area, accounting for zoom
+                    const x = ((e.clientX - canvasRect.left + scrollLeft) / AppState.zoomLevel);
+                    const y = ((e.clientY - canvasRect.top + scrollTop) / AppState.zoomLevel);
+
+                    // Snap to grid
+                    const snappedX = Math.round(x / AppState.GRID_SIZE) * AppState.GRID_SIZE;
+                    const snappedY = Math.round(y / AppState.GRID_SIZE) * AppState.GRID_SIZE;
+
+                    // Create new token
+                    const newToken = this.createToken(snappedX, snappedY, AppState.draggedToken);
+                    if (newToken) {
+                        e.currentTarget.appendChild(newToken);
+                        TokenMovement.addDragEvents(newToken);
+                    }
+                    
+                    AppState.draggedToken = null;
+                } catch (error) {
+                    console.error('Error in token drop:', error);
+                    AppState.draggedToken = null;
+                }
+            },
+            
+            createToken(x, y, tokenData) {
+                try {
+                    const newToken = document.createElement('div');
+                    newToken.className = `token ${tokenData.type}`;
+                    newToken.style.left = x + 'px';
+                    newToken.style.top = y + 'px';
+                    newToken.textContent = tokenData.text;
+                    newToken.draggable = true;
+                    newToken.setAttribute('data-token-id', `token-${AppState.tokenCounter++}`);
+                    
+                    return newToken;
+                } catch (error) {
+                    console.error('Error creating token:', error);
+                    return null;
+                }
+            }
+        };
+
+        // Advanced measurement tool with waypoints
+        const MeasurementTool = {
+            waypoints: [],
+            segments: [],
+            totalDistance: 0,
+            
+            show(startX, startY) {
+                try {
+                    console.log('MeasurementTool.show called with startX:', startX, 'startY:', startY);
+                    
+                    if (AppState.showingMeasurement) return;
+                    AppState.showingMeasurement = true;
+                    
+                    // Validate input coordinates
+                    if (typeof startX === 'undefined' || typeof startY === 'undefined' || isNaN(startX) || isNaN(startY)) {
+                        console.error('Invalid coordinates passed to MeasurementTool.show:', startX, startY);
+                        console.error('Cannot create measurement with invalid coordinates');
+                        return;
+                    }
+                    
+                    // Initialize waypoints with starting position
+                    const startPoint = { x: startX + 24, y: startY + 24 };
+                    console.log('Created start point:', startPoint);
+                    this.waypoints = [startPoint];
+                    this.segments = [];
+                    this.totalDistance = 0;
+                    
+                    const canvas = Utils.getElementSafely('game-canvas');
+                    if (!canvas) return;
+                    
+                    // Create container for all measurement elements
+                    AppState.measurementContainer = document.createElement('div');
+                    AppState.measurementContainer.className = 'measurement-container';
+                    Object.assign(AppState.measurementContainer.style, {
+                        position: 'absolute',
+                        top: '0',
+                        left: '0',
+                        width: '100%',
+                        height: '100%',
+                        pointerEvents: 'none',
+                        zIndex: '999'
+                    });
+                    canvas.appendChild(AppState.measurementContainer);
+                    
+                    // Create total distance display
+                    AppState.measurementText = document.createElement('div');
+                    Object.assign(AppState.measurementText.style, {
+                        position: 'absolute',
+                        background: 'rgba(0, 0, 0, 0.9)',
+                        color: '#fff',
+                        padding: '8px 12px',
+                        borderRadius: '6px',
+                        fontSize: '14px',
+                        fontWeight: 'bold',
+                        zIndex: '1001',
+                        pointerEvents: 'none',
+                        whiteSpace: 'nowrap',
+                        border: '2px solid #ff6b35',
+                        boxShadow: '0 2px 8px rgba(0,0,0,0.3)'
+                    });
+                    canvas.appendChild(AppState.measurementText);
+                } catch (error) {
+                    console.error('Error showing measurement:', error);
+                }
+            },
+            
+            addWaypoint(x, y) {
+                try {
+                    if (!AppState.showingMeasurement) return;
+                    
+                    const newPoint = { x: x + 24, y: y + 24 };
+                    
+                    // Check if there's a temporary segment that matches this waypoint
+                    let hasMatchingTempSegment = false;
+                    if (this.segments.length > 0 && this.segments[this.segments.length - 1].isTemporary) {
+                        const tempSegment = this.segments[this.segments.length - 1];
+                        const tempEndX = Math.round(tempSegment.endPoint.x);
+                        const tempEndY = Math.round(tempSegment.endPoint.y);
+                        const newPointX = Math.round(newPoint.x);
+                        const newPointY = Math.round(newPoint.y);
+                        
+                        // If the temporary segment ends at the same position as the new waypoint
+                        if (Math.abs(tempEndX - newPointX) < 5 && Math.abs(tempEndY - newPointY) < 5) {
+                            // Convert temporary segment to permanent
+                            tempSegment.isTemporary = false;
+                            tempSegment.element.style.background = '#ff6b35';
+                            tempSegment.arrow.style.borderLeft = '8px solid #ff6b35';
+                            
+                            // Ensure the segment is properly attached to the container
+                            if (!tempSegment.element.parentNode && AppState.measurementContainer) {
+                                AppState.measurementContainer.appendChild(tempSegment.element);
+                                AppState.measurementContainer.appendChild(tempSegment.arrow);
+                            }
+                            
+                            hasMatchingTempSegment = true;
+                            console.log('Converted temporary segment to permanent:', tempSegment);
+                        }
+                    }
+                    
+                    this.waypoints.push(newPoint);
+                    
+                    // Only create a new segment if we didn't convert a temporary one
+                    if (!hasMatchingTempSegment && this.waypoints.length > 1) {
+                        const prevPoint = this.waypoints[this.waypoints.length - 2];
+                        console.log('Creating segment from:', prevPoint, 'to:', newPoint);
+                        console.log('Waypoints array:', this.waypoints);
+                        console.log('Previous point index:', this.waypoints.length - 2);
+                        
+                        if (prevPoint && typeof prevPoint.x === 'number' && typeof prevPoint.y === 'number') {
+                            const segment = this.createSegment(prevPoint, newPoint, this.waypoints.length - 2);
+                            if (segment) {
+                                this.segments.push(segment);
+                                console.log('Segment created and added:', segment);
+                            } else {
+                                console.error('Failed to create segment');
+                            }
+                        } else {
+                            console.error('Invalid previous point:', prevPoint);
+                        }
+                    } else {
+                        console.log('Skipping segment creation - hasMatchingTempSegment:', hasMatchingTempSegment, 'waypoints.length:', this.waypoints.length);
+                    }
+                    
+                    this.updateDisplay();
+                } catch (error) {
+                    console.error('Error adding waypoint:', error);
+                }
+            },
+            
+            update(currentX, currentY) {
+                try {
+                    if (!AppState.showingMeasurement || this.waypoints.length === 0) return;
+                    
+                    const currentPoint = { x: currentX + 24, y: currentY + 24 };
+                    const lastWaypoint = this.waypoints[this.waypoints.length - 1];
+                    
+                    // Remove the last temporary segment if it exists
+                    if (this.segments.length > 0 && this.segments[this.segments.length - 1].isTemporary) {
+                        this.segments[this.segments.length - 1].element.remove();
+                        this.segments[this.segments.length - 1].arrow.remove();
+                        this.segments.pop();
+                    }
+                    
+                    // Create temporary segment to current position
+                    const tempSegment = this.createSegment(lastWaypoint, currentPoint, this.segments.length, true);
+                    this.segments.push(tempSegment);
+                    
+                    this.updateDisplay();
+                } catch (error) {
+                    console.error('Error updating measurement:', error);
+                }
+            },
+            
+            createSegment(startPoint, endPoint, index, isTemporary = false) {
+                try {
+                    const deltaX = endPoint.x - startPoint.x;
+                    const deltaY = endPoint.y - startPoint.y;
+                    const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+                    const angle = Math.atan2(deltaY, deltaX) * 180 / Math.PI;
+                    
+                    // Create line element
+                    const line = document.createElement('div');
+                    Object.assign(line.style, {
+                        position: 'absolute',
+                        left: startPoint.x + 'px',
+                        top: startPoint.y + 'px',
+                        width: distance + 'px',
+                        height: '3px',
+                        background: isTemporary ? 'rgba(255, 107, 53, 0.7)' : '#ff6b35',
+                        transformOrigin: '0 50%',
+                        transform: `rotate(${angle}deg)`,
+                        borderRadius: '2px',
+                        boxShadow: '0 1px 3px rgba(0,0,0,0.3)'
+                    });
+                    
+                    // Create arrow head
+                    const arrow = document.createElement('div');
+                    Object.assign(arrow.style, {
+                        position: 'absolute',
+                        left: (endPoint.x - 4) + 'px',
+                        top: (endPoint.y - 3) + 'px',
+                        width: '0',
+                        height: '0',
+                        borderLeft: '8px solid ' + (isTemporary ? 'rgba(255, 107, 53, 0.7)' : '#ff6b35'),
+                        borderTop: '6px solid transparent',
+                        borderBottom: '6px solid transparent',
+                        transformOrigin: '4px 3px',
+                        transform: `rotate(${angle}deg)`,
+                        filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.3))',
+                        zIndex: '1000'
+                    });
+                    arrow.className = 'measurement-arrow';
+                    console.log('Creating arrow at:', endPoint.x - 4, endPoint.y - 3, 'angle:', angle);
+                    
+                    if (AppState.measurementContainer) {
+                        AppState.measurementContainer.appendChild(line);
+                        AppState.measurementContainer.appendChild(arrow);
+                        console.log('Segment elements added to container - Line:', line.style.left, line.style.top, 'Arrow:', arrow.style.left, arrow.style.top);
+                        console.log('Arrow element:', arrow, 'Parent:', AppState.measurementContainer);
+                    } else {
+                        console.error('measurementContainer not found when creating segment');
+                        return null;
+                    }
+                    
+                    // Calculate grid-based distance
+                    const gridDistance = this.calculateSegmentDistance(startPoint, endPoint);
+                    
+                    return {
+                        element: line,
+                        arrow: arrow,
+                        distance: gridDistance,
+                        isTemporary: isTemporary,
+                        startPoint: startPoint,
+                        endPoint: endPoint
+                    };
+                } catch (error) {
+                    console.error('Error creating segment:', error);
+                    return null;
+                }
+            },
+            
+            calculateSegmentDistance(startPoint, endPoint) {
+                try {
+                    // Calculate grid squares moved
+                    const deltaXSquares = Math.abs(Math.round((endPoint.x - startPoint.x) / AppState.GRID_SIZE));
+                    const deltaYSquares = Math.abs(Math.round((endPoint.y - startPoint.y) / AppState.GRID_SIZE));
+                    
+                    // Calculate distance using Pathfinder/D&D 3.5 diagonal rules
+                    const straightMoves = Math.abs(deltaXSquares - deltaYSquares);
+                    const diagonalMoves = Math.min(deltaXSquares, deltaYSquares);
+                    
+                    // Calculate diagonal cost using 1-2-1-2 pattern
+                    let diagonalCost = 0;
+                    for (let i = 0; i < diagonalMoves; i++) {
+                        if (i % 2 === 0) {
+                            diagonalCost += 1; // First, third, fifth... diagonal = 1 square
+                        } else {
+                            diagonalCost += 2; // Second, fourth, sixth... diagonal = 2 squares
+                        }
+                    }
+                    
+                    const totalSquares = straightMoves + diagonalCost;
+                    return totalSquares * AppState.METERS_PER_CELL;
+                } catch (error) {
+                    console.error('Error calculating segment distance:', error);
+                    return 0;
+                }
+            },
+            
+            updateDisplay() {
+                try {
+                    if (!AppState.measurementText) return;
+                    
+                    // Calculate total distance
+                    this.totalDistance = this.segments.reduce((total, segment) => {
+                        return total + (segment ? segment.distance : 0);
+                    }, 0);
+                    
+                    // Update text display
+                    const segmentCount = this.segments.filter(s => !s.isTemporary).length;
+                    const tempSegment = this.segments.find(s => s.isTemporary);
+                    const tempDistance = tempSegment ? tempSegment.distance : 0;
+                    
+                    let displayText = `Totale: ${this.totalDistance.toFixed(1)}m`;
+                    if (segmentCount > 0) {
+                        displayText += ` (${segmentCount} segmenti)`;
+                    }
+                    
+                    AppState.measurementText.textContent = displayText;
+                    
+                    // Position text near the current end point
+                    if (this.waypoints.length > 0) {
+                        const lastPoint = this.waypoints[this.waypoints.length - 1];
+                        Object.assign(AppState.measurementText.style, {
+                            left: lastPoint.x + 30 + 'px',
+                            top: lastPoint.y - 40 + 'px'
+                        });
+                    }
+                } catch (error) {
+                    console.error('Error updating display:', error);
+                }
+            },
+            
+            hide() {
+                try {
+                    if (AppState.measurementContainer) {
+                        AppState.measurementContainer.remove();
+                        AppState.measurementContainer = null;
+                    }
+                    if (AppState.measurementText) {
+                        AppState.measurementText.remove();
+                        AppState.measurementText = null;
+                    }
+                    
+                    this.waypoints = [];
+                    this.segments = [];
+                    this.totalDistance = 0;
+                    AppState.showingMeasurement = false;
+                } catch (error) {
+                    console.error('Error hiding measurement:', error);
+                }
+            }
+        };
+
+        // Token movement management
+        const TokenMovement = {
+            addDragEvents(token) {
+                try {
+                    let startX, startY, initialX, initialY;
+                    let ctrlPressed = false;
+                    let isDraggingThisToken = false;
+                    let mouseMoveHandler, mouseUpHandler, keyDownHandler, keyUpHandler, contextMenuHandler;
+
+                    const startDrag = (e) => {
+                        if (AppState.currentTool !== 'select') return;
+                        
+                        // Reset any existing drag state
+                        if (AppState.isDragging && AppState.currentToken !== token) {
+                            return; // Another token is being dragged
+                        }
+                        
+                        AppState.isDragging = true;
+                        AppState.currentToken = token;
+                        isDraggingThisToken = true;
+                        startX = e.clientX;
+                        startY = e.clientY;
+                        initialX = parseInt(token.style.left) || 0;
+                        initialY = parseInt(token.style.top) || 0;
+                        
+                        console.log('Token drag started - initialX:', initialX, 'initialY:', initialY);
+                        console.log('Token style.left:', token.style.left, 'Token style.top:', token.style.top);
+                        console.log('Variables set in startDrag scope - initialX:', initialX, 'initialY:', initialY);
+                        
+                        // Assicurati che initialX e initialY siano numeri validi
+                        if (isNaN(initialX)) {
+                            console.warn('initialX is NaN, setting to 0');
+                            initialX = 0;
+                        }
+                        if (isNaN(initialY)) {
+                            console.warn('initialY is NaN, setting to 0');
+                            initialY = 0;
+                        }
+                        
+                        token.style.zIndex = '1000';
+                        ctrlPressed = false;
+                        
+                        // Crea evidenziazione della cella di partenza
+                        const canvas = Utils.getElementSafely('game-canvas');
+                        if (canvas) {
+                            const highlight = document.createElement('div');
+                            highlight.className = 'start-cell-highlight';
+                            highlight.style.left = initialX + 'px';
+                            highlight.style.top = initialY + 'px';
+                            highlight.id = 'start-highlight-' + Date.now();
+                            canvas.appendChild(highlight);
+                            token.dataset.highlightId = highlight.id;
+                        }
+                        
+                        // Add event listeners for this drag session
+                        document.addEventListener('mousemove', mouseMoveHandler);
+                        document.addEventListener('mouseup', mouseUpHandler);
+                        document.addEventListener('keydown', keyDownHandler);
+                        document.addEventListener('keyup', keyUpHandler);
+                        document.addEventListener('contextmenu', contextMenuHandler);
+                    };
+
+                    // Context menu handler
+                    contextMenuHandler = (e) => {
+                        if (isDraggingThisToken && AppState.currentToken === token) {
+                            e.preventDefault();
+                            if (!AppState.showingMeasurement) {
+                                MeasurementTool.show(initialX, initialY);
+                            }
+                        }
+                    };
+
+                    // Keyboard event handlers for Ctrl key
+                    keyDownHandler = (e) => {
+                        if (isDraggingThisToken && AppState.currentToken === token && e.ctrlKey && !ctrlPressed) {
+                            ctrlPressed = true;
+                            const currentX = parseInt(token.style.left) || 0;
+                            const currentY = parseInt(token.style.top) || 0;
+                            
+                            console.log('keyDownHandler called - checking variables in scope:');
+                            console.log('initialX:', initialX, 'initialY:', initialY);
+                            console.log('typeof initialX:', typeof initialX, 'typeof initialY:', typeof initialY);
+                            
+                            if (!AppState.showingMeasurement) {
+                                // Verifica che le coordinate iniziali siano valide
+                                if (typeof initialX === 'undefined' || typeof initialY === 'undefined') {
+                                    console.error('initialX or initialY is undefined. Cannot start measurement.');
+                                    console.log('initialX:', initialX, 'initialY:', initialY);
+                                    return;
+                                }
+                                
+                                // Start measurement from initial position
+                                console.log('Calling MeasurementTool.show with initialX:', initialX, 'initialY:', initialY);
+                                MeasurementTool.show(initialX, initialY);
+                                // Add the current position as the first waypoint to create the first segment
+                                console.log('Calling MeasurementTool.addWaypoint with currentX:', currentX, 'currentY:', currentY);
+                                MeasurementTool.addWaypoint(currentX, currentY);
+                                console.log('First segment created from:', initialX, initialY, 'to:', currentX, currentY);
+                            } else {
+                                // Add waypoint at current position
+                                MeasurementTool.addWaypoint(currentX, currentY);
+                            }
+                        }
+                    };
+
+                    keyUpHandler = (e) => {
+                        if (isDraggingThisToken && AppState.currentToken === token && !e.ctrlKey) {
+                            ctrlPressed = false;
+                        }
+                    };
+
+                    token.addEventListener('mousedown', startDrag);
+
+                    // Mouse move handler
+                    mouseMoveHandler = Utils.debounce((e) => {
+                        if (!isDraggingThisToken || AppState.currentToken !== token) return;
+                        e.preventDefault();
+
+                        const deltaX = (e.clientX - startX) / AppState.zoomLevel;
+                        const deltaY = (e.clientY - startY) / AppState.zoomLevel;
+
+                        const newX = initialX + deltaX;
+                        const newY = initialY + deltaY;
+
+                        // Snap to grid
+                        const snappedX = Math.round(newX / AppState.GRID_SIZE) * AppState.GRID_SIZE;
+                        const snappedY = Math.round(newY / AppState.GRID_SIZE) * AppState.GRID_SIZE;
+
+                        token.style.left = snappedX + 'px';
+                        token.style.top = snappedY + 'px';
+
+                        // Update measurement if showing
+                        if (AppState.showingMeasurement) {
+                            MeasurementTool.update(snappedX, snappedY);
+                        }
+                    }, 16); // ~60fps
+
+                    // Mouse up handler
+                    mouseUpHandler = () => {
+                        if (isDraggingThisToken && AppState.currentToken === token) {
+                            AppState.isDragging = false;
+                            AppState.currentToken = null;
+                            isDraggingThisToken = false;
+                            token.style.zIndex = 'auto';
+                            
+                            // Se c'è una misurazione attiva, anima il movimento lungo i waypoints
+                            if (AppState.showingMeasurement && MeasurementTool.waypoints.length > 1) {
+                                animateTokenAlongPath(token, MeasurementTool.waypoints);
+                            } else {
+                                MeasurementTool.hide();
+                            }
+                            
+                            ctrlPressed = false;
+                            
+                            // Rimuovi evidenziazione della cella di partenza
+                            if (token.dataset.highlightId) {
+                                const highlight = document.getElementById(token.dataset.highlightId);
+                                if (highlight) {
+                                    highlight.remove();
+                                }
+                                delete token.dataset.highlightId;
+                            }
+                            
+                            // Remove all event listeners for this drag session
+                            document.removeEventListener('mousemove', mouseMoveHandler);
+                            document.removeEventListener('mouseup', mouseUpHandler);
+                            document.removeEventListener('keydown', keyDownHandler);
+                            document.removeEventListener('keyup', keyUpHandler);
+                            document.removeEventListener('contextmenu', contextMenuHandler);
+                        }
+                    };
+                    
+                    // Funzione per animare il token lungo il percorso
+                    const animateTokenAlongPath = (token, waypoints) => {
+                        if (waypoints.length < 2) {
+                            MeasurementTool.hide();
+                            return;
+                        }
+                        
+                        let currentWaypointIndex = 0;
+                        const animationDuration = 300; // ms per segmento
+                        
+                        const animateToNextWaypoint = () => {
+                            if (currentWaypointIndex >= waypoints.length - 1) {
+                                // Animazione completata
+                                MeasurementTool.hide();
+                                return;
+                            }
+                            
+                            const startPoint = waypoints[currentWaypointIndex];
+                            const endPoint = waypoints[currentWaypointIndex + 1];
+                            
+                            // Converti le coordinate dei waypoints in coordinate del token (rimuovi l'offset di 24px)
+                            const startX = startPoint.x - 24;
+                            const startY = startPoint.y - 24;
+                            const endX = endPoint.x - 24;
+                            const endY = endPoint.y - 24;
+                            
+                            const startTime = performance.now();
+                            
+                            const animate = (currentTime) => {
+                                const elapsed = currentTime - startTime;
+                                const progress = Math.min(elapsed / animationDuration, 1);
+                                
+                                // Interpolazione lineare
+                                const currentX = startX + (endX - startX) * progress;
+                                const currentY = startY + (endY - startY) * progress;
+                                
+                                // Aggiorna la posizione del token
+                                token.style.left = currentX + 'px';
+                                token.style.top = currentY + 'px';
+                                
+                                if (progress < 1) {
+                                    requestAnimationFrame(animate);
+                                } else {
+                                    // Passa al prossimo waypoint
+                                    currentWaypointIndex++;
+                                    setTimeout(animateToNextWaypoint, 100); // Piccola pausa tra i segmenti
+                                }
+                            };
+                            
+                            requestAnimationFrame(animate);
+                        };
+                        
+                        // Inizia l'animazione
+                        animateToNextWaypoint();
+                    };
+                } catch (error) {
+                    console.error('Error adding drag events to token:', error);
+                }
+            }
+        };
+
+        // Chat management
+        const ChatManager = {
+            init() {
+                const chatInput = Utils.getElementSafely('chat-input');
+                if (chatInput) {
+                    chatInput.addEventListener('keypress', this.handleKeypress.bind(this));
+                }
+            },
+            
+            sendMessage() {
+                try {
+                    const input = Utils.getElementSafely('chat-input');
+                    if (!input) return;
+                    
+                    const message = Utils.sanitizeInput(input.value);
+                    if (!message) return;
+
+                    const chatMessages = Utils.getElementSafely('chat-messages');
+                    if (!chatMessages) return;
+                    
+                    const messageDiv = document.createElement('div');
+                    messageDiv.style.marginBottom = '8px';
+                    messageDiv.innerHTML = `<strong>Player:</strong> ${message}`;
+                    chatMessages.appendChild(messageDiv);
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+
+                    input.value = '';
+                } catch (error) {
+                    console.error('Error sending message:', error);
+                }
+            },
+            
+            handleKeypress(event) {
+                if (event.key === 'Enter') {
+                    this.sendMessage();
+                }
+            }
+        };
+        
+        // Make chat functions globally accessible
+        window.sendMessage = () => ChatManager.sendMessage();
+        window.handleChatKeypress = (event) => ChatManager.handleKeypress(event);
+
+        // Canvas panning management
+        const PanManager = {
+            init() {
+                const canvasArea = Utils.getElementSafely('canvas-area');
+                if (canvasArea) {
+                    canvasArea.addEventListener('mousedown', this.handleMouseDown.bind(this));
+                    canvasArea.addEventListener('contextmenu', this.preventContextMenu.bind(this));
+                }
+                
+                document.addEventListener('mousemove', this.handleMouseMove.bind(this));
+                document.addEventListener('mouseup', this.handleMouseUp.bind(this));
+            },
+            
+            handleMouseDown(e) {
+                try {
+                    if (AppState.currentTool === 'pan' || e.button === 1) { // Middle mouse button
+                        AppState.isPanning = true;
+                        AppState.panData.startX = e.clientX;
+                        AppState.panData.startY = e.clientY;
+                        AppState.panData.startScrollX = e.currentTarget.scrollLeft;
+                        AppState.panData.startScrollY = e.currentTarget.scrollTop;
+                        e.currentTarget.style.cursor = 'grabbing';
+                    }
+                } catch (error) {
+                    console.error('Error in pan mouse down:', error);
+                }
+            },
+            
+            handleMouseMove(e) {
+                try {
+                    if (!AppState.isPanning) return;
+                    e.preventDefault();
+
+                    const canvasArea = Utils.getElementSafely('canvas-area');
+                    if (!canvasArea) return;
+                    
+                    const deltaX = e.clientX - AppState.panData.startX;
+                    const deltaY = e.clientY - AppState.panData.startY;
+
+                    canvasArea.scrollLeft = AppState.panData.startScrollX - deltaX;
+                    canvasArea.scrollTop = AppState.panData.startScrollY - deltaY;
+                } catch (error) {
+                    console.error('Error in pan mouse move:', error);
+                }
+            },
+            
+            handleMouseUp() {
+                try {
+                    if (AppState.isPanning) {
+                        AppState.isPanning = false;
+                        const canvasArea = Utils.getElementSafely('canvas-area');
+                        if (canvasArea) {
+                            canvasArea.style.cursor = 'default';
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error in pan mouse up:', error);
+                }
+            },
+            
+            preventContextMenu(e) {
+                e.preventDefault();
+            }
+        };
+
+        // Global keyboard event management
+        const KeyboardManager = {
+            init() {
+                document.addEventListener('keydown', this.handleKeyDown.bind(this));
+            },
+            
+            handleKeyDown(e) {
+                try {
+                    // Ctrl key for measurement tool - disabled as TokenMovement handles this
+                    // if (AppState.isDragging && e.ctrlKey && !AppState.showingMeasurement) {
+                    //     MeasurementTool.show();
+                    // }
+                    console.log('KeyboardManager.handleKeyDown called - doing nothing to avoid conflicts');
+                } catch (error) {
+                    console.error('Error in keyboard handler:', error);
+                }
+            }
+        };
+
+        // Application initialization
+        const App = {
+            init() {
+                try {
+                    // Initialize all managers
+                    ToolManager.init();
+                    TokenDragManager.init();
+                    CanvasManager.init();
+                    ChatManager.init();
+                    PanManager.init();
+                    KeyboardManager.init();
+                    
+                    // Add drag events to existing tokens
+                    document.querySelectorAll('.token').forEach(token => {
+                        TokenMovement.addDragEvents(token);
+                    });
+                    
+                    // Initialize zoom display
+                    ZoomManager.updateZoom();
+                    
+                    console.log('Roll20 Clone initialized successfully');
+                } catch (error) {
+                    console.error('Error initializing application:', error);
+                }
+            }
+        };
+
+        // Start the application when DOM is loaded
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', App.init);
+        } else {
+            App.init();
+        }
+    </script>
+</body>
+</html>

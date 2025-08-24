@@ -2694,8 +2694,10 @@ Future<void> main(List<String> arguments) async {
             else if (request.uri.path == '/api/map-tokens' &&
                 request.method == 'GET') {
               String? mapId;
+              String? campaignId;
               try {
                 print('GET /api/map-tokens - Request received');
+                print('GET /api/map-tokens - Query parameters: ${request.uri.queryParameters}');
 
                 // Set CORS headers
                 request.response.headers.set(
@@ -2713,6 +2715,8 @@ Future<void> main(List<String> arguments) async {
                 request.response.headers.contentType = ContentType.json;
 
                 mapId = request.uri.queryParameters['map_id'];
+                campaignId = request.uri.queryParameters['campaign_id'];
+                
                 if (mapId == null || mapId.isEmpty) {
                   print(
                     'GET /api/map-tokens - ERROR: Missing or empty map_id parameter',
@@ -2722,6 +2726,21 @@ Future<void> main(List<String> arguments) async {
                     jsonEncode({
                       'success': false,
                       'error': 'Missing or empty map_id parameter',
+                    }),
+                  );
+                  await request.response.close();
+                  return;
+                }
+                
+                if (campaignId == null || campaignId.isEmpty) {
+                  print(
+                    'GET /api/map-tokens - ERROR: Missing or empty campaign_id parameter',
+                  );
+                  request.response.statusCode = 400;
+                  request.response.write(
+                    jsonEncode({
+                      'success': false,
+                      'error': 'Missing or empty campaign_id parameter',
                     }),
                   );
                   await request.response.close();
@@ -2743,8 +2762,71 @@ Future<void> main(List<String> arguments) async {
                   await request.response.close();
                   return;
                 }
+                
+                // Validate campaign_id is numeric
+                if (int.tryParse(campaignId) == null) {
+                  print(
+                    'GET /api/map-tokens - ERROR: Invalid campaign_id format: $campaignId',
+                  );
+                  request.response.statusCode = 400;
+                  request.response.write(
+                    jsonEncode({
+                      'success': false,
+                      'error': 'Invalid campaign_id format. Must be numeric.',
+                    }),
+                  );
+                  await request.response.close();
+                  return;
+                }
 
                 print('GET /api/map-tokens - Querying for map_id: $mapId');
+                
+                // First, verify that the map exists and get its campaign_id
+                var mapResults = await _connectionPool
+                    .query(
+                      'SELECT id, campaign_id FROM maps WHERE id = ?',
+                      [mapId],
+                    )
+                    .timeout(
+                      Duration(seconds: 30),
+                      onTimeout: () {
+                        throw TimeoutException(
+                          'Database query timeout',
+                          Duration(seconds: 30),
+                        );
+                      },
+                    );
+                
+                if (mapResults.isEmpty) {
+                  print('GET /api/map-tokens - ERROR: Map $mapId not found');
+                  request.response.statusCode = 404;
+                  request.response.write(
+                    jsonEncode({
+                      'success': false,
+                      'error': 'Map not found',
+                    }),
+                  );
+                  await request.response.close();
+                  return;
+                }
+                
+                final mapCampaignId = mapResults.first[1];
+                print('GET /api/map-tokens - Map $mapId belongs to campaign $mapCampaignId');
+                
+                // Verify that the map belongs to the specified campaign
+                if (mapCampaignId.toString() != campaignId) {
+                  print('GET /api/map-tokens - ERROR: Map $mapId does not belong to campaign $campaignId (belongs to $mapCampaignId)');
+                  request.response.statusCode = 403;
+                  request.response.write(
+                    jsonEncode({
+                      'success': false,
+                      'error': 'Map does not belong to the specified campaign',
+                    }),
+                  );
+                  await request.response.close();
+                  return;
+                }
+                
                 print(
                   'GET /api/map-tokens - About to execute database query...',
                 );
@@ -2894,6 +2976,7 @@ Future<void> main(List<String> arguments) async {
                 }
 
                 final mapId = params['map_id'];
+                final campaignId = params['campaign_id'];
                 final assetId = params['asset_id'];
                 // Support both grid_x/grid_y and x_position/y_position for compatibility
                 final gridX = params['grid_x'] ?? params['x_position'];
@@ -2903,6 +2986,7 @@ Future<void> main(List<String> arguments) async {
 
                 // Validate required fields
                 if (mapId == null ||
+                    campaignId == null ||
                     assetId == null ||
                     gridX == null ||
                     gridY == null) {
@@ -2914,7 +2998,7 @@ Future<void> main(List<String> arguments) async {
                     jsonEncode({
                       'success': false,
                       'error':
-                          'Missing required fields: map_id, asset_id, and position (grid_x/grid_y or x_position/y_position)',
+                          'Missing required fields: map_id, campaign_id, asset_id, and position (grid_x/grid_y or x_position/y_position)',
                     }),
                   );
                   await request.response.close();
@@ -2944,6 +3028,67 @@ Future<void> main(List<String> arguments) async {
                     jsonEncode({
                       'success': false,
                       'error': 'asset_id must be numeric',
+                    }),
+                  );
+                  await request.response.close();
+                  return;
+                }
+                
+                if (int.tryParse(campaignId.toString()) == null) {
+                  print(
+                    'POST /api/map-tokens - ERROR: Invalid campaign_id format',
+                  );
+                  request.response.statusCode = 400;
+                  request.response.write(
+                    jsonEncode({
+                      'success': false,
+                      'error': 'campaign_id must be numeric',
+                    }),
+                  );
+                  await request.response.close();
+                  return;
+                }
+                
+                // Verify that the map exists and get its campaign_id
+                var mapResults = await _connectionPool
+                    .query(
+                      'SELECT id, campaign_id FROM maps WHERE id = ?',
+                      [mapId],
+                    )
+                    .timeout(
+                      Duration(seconds: 30),
+                      onTimeout: () {
+                        throw TimeoutException(
+                          'Database query timeout',
+                          Duration(seconds: 30),
+                        );
+                      },
+                    );
+                
+                if (mapResults.isEmpty) {
+                  print('POST /api/map-tokens - ERROR: Map $mapId not found');
+                  request.response.statusCode = 404;
+                  request.response.write(
+                    jsonEncode({
+                      'success': false,
+                      'error': 'Map not found',
+                    }),
+                  );
+                  await request.response.close();
+                  return;
+                }
+                
+                final mapCampaignId = mapResults.first[1];
+                print('POST /api/map-tokens - Map $mapId belongs to campaign $mapCampaignId');
+                
+                // Verify that the map belongs to the specified campaign
+                if (mapCampaignId.toString() != campaignId.toString()) {
+                  print('POST /api/map-tokens - ERROR: Map $mapId does not belong to campaign $campaignId (belongs to $mapCampaignId)');
+                  request.response.statusCode = 403;
+                  request.response.write(
+                    jsonEncode({
+                      'success': false,
+                      'error': 'Map does not belong to the specified campaign',
                     }),
                   );
                   await request.response.close();
@@ -4110,6 +4255,117 @@ Future<void> main(List<String> arguments) async {
               request.response.headers.contentType = ContentType.json;
               request.response.write(
                 jsonEncode({'success': true, 'audio_id': result.insertId}),
+              );
+              await request.response.close();
+            } else if (request.uri.path.startsWith('/api/map-audio/') &&
+                request.method == 'PUT') {
+              // Estrai l'ID audio dall'URL
+              final pathSegments = request.uri.pathSegments;
+              if (pathSegments.length < 3) {
+                request.response.statusCode = 400;
+                request.response.headers.contentType = ContentType.json;
+                request.response.write(
+                  jsonEncode({'success': false, 'error': 'Invalid audio ID'}),
+                );
+                await request.response.close();
+                return;
+              }
+              
+              final audioId = pathSegments[2];
+              final body = await utf8.decoder.bind(request).join();
+              final params = jsonDecode(body);
+              
+              // Costruisci la query di aggiornamento dinamicamente
+              List<String> updateFields = [];
+              List<dynamic> updateValues = [];
+              
+              if (params.containsKey('grid_x')) {
+                updateFields.add('grid_x = ?');
+                updateValues.add(params['grid_x']);
+              }
+              if (params.containsKey('grid_y')) {
+                updateFields.add('grid_y = ?');
+                updateValues.add(params['grid_y']);
+              }
+              if (params.containsKey('grid_z')) {
+                updateFields.add('grid_z = ?');
+                updateValues.add(params['grid_z']);
+              }
+              if (params.containsKey('volume')) {
+                updateFields.add('volume = ?');
+                updateValues.add(params['volume']);
+              }
+              if (params.containsKey('loop_audio')) {
+                updateFields.add('loop_audio = ?');
+                updateValues.add(params['loop_audio']);
+              }
+              if (params.containsKey('auto_play')) {
+                updateFields.add('auto_play = ?');
+                updateValues.add(params['auto_play']);
+              }
+              if (params.containsKey('radius_grid')) {
+                updateFields.add('radius_grid = ?');
+                updateValues.add(params['radius_grid']);
+              }
+              if (params.containsKey('visible')) {
+                updateFields.add('visible = ?');
+                updateValues.add(params['visible']);
+              }
+              if (params.containsKey('locked')) {
+                updateFields.add('locked = ?');
+                updateValues.add(params['locked']);
+              }
+              if (params.containsKey('properties')) {
+                updateFields.add('properties = ?');
+                updateValues.add(jsonEncode(params['properties']));
+              }
+              
+              if (updateFields.isEmpty) {
+                request.response.statusCode = 400;
+                request.response.headers.contentType = ContentType.json;
+                request.response.write(
+                  jsonEncode({'success': false, 'error': 'No fields to update'}),
+                );
+                await request.response.close();
+                return;
+              }
+              
+              updateFields.add('updated_at = NOW()');
+              updateValues.add(audioId);
+              
+              final query = 'UPDATE map_audio SET ${updateFields.join(', ')} WHERE id = ?';
+              
+              var result = await _connectionPool.query(query, updateValues);
+              
+              request.response.headers.contentType = ContentType.json;
+              request.response.write(
+                jsonEncode({'success': true, 'affected_rows': result.affectedRows}),
+              );
+              await request.response.close();
+            } else if (request.uri.path.startsWith('/api/map-audio/') &&
+                request.method == 'DELETE') {
+              // Estrai l'ID audio dall'URL
+              final pathSegments = request.uri.pathSegments;
+              if (pathSegments.length < 3) {
+                request.response.statusCode = 400;
+                request.response.headers.contentType = ContentType.json;
+                request.response.write(
+                  jsonEncode({'success': false, 'error': 'Invalid audio ID'}),
+                );
+                await request.response.close();
+                return;
+              }
+              
+              final audioId = pathSegments[2];
+              
+              var result = await _connectionPool.query(
+                'DELETE FROM map_audio WHERE id = ?',
+                [audioId],
+              );
+              
+              request.response.headers.contentType = ContentType.json;
+              request.response.write(
+                jsonEncode({'success': true, 'affected_rows': result.affectedRows}),
               );
               await request.response.close();
             }
